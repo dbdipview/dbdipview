@@ -1,0 +1,7 @@
+<?php
+//Access for the user. Readonly!
+$serverName = "localhost";
+$port="5432";
+$userName = "citalnica";
+$password = "xxx";
+$timezone='Europe/Ljubljana';
