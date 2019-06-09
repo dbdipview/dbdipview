@@ -1,0 +1,78 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 //EN"> 
+<html>
+<head>
+  <title>dbDIPview</title>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="stylesheet" href="main.css">
+</head>
+<?php
+include "confighdr.txt";
+include "messagesw.php";
+?>
+<body onload="bodyOnLoad()">
+<div style="line-height:0.31"><br />
+	<div style="font-family: Comic Sans MS, cursive, sans-serif; 
+		font-size: 90%;text-align:right;
+		color: #333;background-color:#FFFFFF; ">dbDIPview
+	</div>
+</div>
+<br />
+<center>
+<h3><?php echo $INSTITUTION; ?></h3>
+<h2><?php echo $MSGSW01_MainSubTitle; ?></h2><br />
+<br />
+   <form name="forma" action="prog1.php" method="get" target='topframe'>
+    <table>
+    <tbody>
+      <tr>
+        <td><?php echo $MSGSW02_Code; ?>: </td>
+        <td><input type="text" name="user" size="30" value=""/></td>
+      </tr>
+      <tr>
+        <td><?php echo $MSGSW03_Database; ?>:</td>
+        <td><input type="text" size="30" name="dbname" value="citalnica" /></td>
+      </tr>
+      <tr>
+<?php
+	
+		echo "<td>$MSGSW04_Records:</td>";
+		if(file_exists ("data/configuration.dat")) {
+			$fh = fopen("data/configuration.dat", "r");
+			if(! $fh) {
+				echo "<td><h2>$MSGSW05_ErrorNoConfiguration (R).</h2></td>";
+			} else {
+				echo '<td><select name="xmlfile"> ';
+				print '<option value="default.xml" selected="selected"> </option>' . PHP_EOL;
+				while (list($myval, $mydb, $myxml, $mytoken, $myaccess, $mydesc) = fgetcsv($fh, 1024, "\t")) {
+					print '<option value="' . $myxml . '">' . $myval . " - " . $mydesc . '</option>' . PHP_EOL;
+				}
+				print '</select>';
+				echo '</td>';
+			}
+		} else
+			echo "<td><h2>$MSGSW05_ErrorNoConfiguration.</h2></td>";
+?>
+      </tr>
+      <tr>
+        <td>
+        </td>
+        <td style="text-align:center">
+          <input type="hidden" name="submit_cycle" value="CheckLogin" /><br />
+          <input type="hidden" name="lang"         value="<?php echo $myLang; ?>" /><br />
+          <input type="submit" value="&#x27a4;" alt="<?php echo $MSGSW08_Continue; ?>" class='button'/>
+        </td>
+      </tr>
+    </tbody>
+    </table>
+
+   </form>
+</center>
+<script>
+function bodyOnLoad() {
+	top.frames['bottomframe'].location.href = 'empty.htm';
+}
+</script>
+
+</body>
+</html>
