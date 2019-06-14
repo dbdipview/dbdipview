@@ -20,7 +20,7 @@ $DDVEXTRACTED="";
 $PACKAGEFILE="";
 
 include 'configa.txt';
-
+include 'messagesm.php';
 //--------------------------------------------
 
 $SERVERCONFIGFILE=$SERVERDATADIR."configuration.dat";
@@ -39,126 +39,6 @@ $XC=" ";$XD=" ";$X0=" ";$X1=" ";$X2=" ";$XS=' ';$X3=" ";$X4=" ";$X5=" ";$X6=" ";
 $SCHEMA="";
 $PKGFILEPATH="-";
 $debug=false;
-
-if ( "$MYLANG" == "sl" ){
-$MSG_TITLE="dbDIPview konfigurator";
-$MSG0_LISTDIRS="prikaz trenutne konfiguracije";
-$MSGR_SELECT_DB="izberi podatkovno zbirko";
-$MSG3_CHECKDB="izpis podatkovnih zbirk";
-$MSGP_PACKAGES="aktivirani paketi";
-$MSG0_CREATEDB="(CSV) kreiraj podatkovno zbirko";
-$MSG1_LISTDDV="izbira paketa s shemo";
-$MSG2_UNPACKDDV="odpakiraj izbrani paket";
-$MSGS_INSTALLSIARD="(SIARD) namesti vsebino paketa SIARD (vzpostavitev sheme, prenos podatkov)";
-$MSG3_ENABLEACCESS="nastavi dostopne pravice za shemo, vzpostavljene iz paketa SIARD";
-$MSG4_CREATEAPL="(CSV) kreiraj prazno shemo";
-$MSG5_MOVEDATA="(CSV) prenos podatkov v shemo";
-$MSG6_ACTIVATEDIP="aktiviraj dostop do sheme";
-$MSG7_DEACTAPL="deaktiviraj dostop in odstrani shemo";
-$MSG8_RM_UNPACKED_DDV="(CSV) brisanje odpakirane vsebine paketa";
-$MSG9_RMDDV="brisanje paketa";
-$MSG10_UNKNOWNC="neznan ukaz";
-$MSG11_DB_ALREADY_EXISTS="Prazne podatkovne zbirke ni potrebno kreirati, saj obstaja";
-$MSG12_ERR_DDV_NOT_AVAILABLE="Napaka: paket ni na voljo";
-$MSG13_DDV_FOLDER_EXISTS="Imenik obstaja in se zato odpakiranje paketa ne bo izvedlo za";
-$MSG14_DDV_UNPACKED="Paket je zdaj razpakiran.";
-$MSG15_CANNOT_FIND_FILE_FROM_DDV="Napaka, paket verjetno ni razpakiran. Ne najdem datoteke";
-$MSG16_FOLDER_NOT_FOUND="Napaka, mapa ne obstaja";
-$MSG17_FILE_NOT_FOUND="Napaka, ni datoteke";
-$MSG18_DDV_NOT_SELECTED="Paket ni izbran.";
-$MSG19_DDV_PACKAGES="Vsi paketi:";
-$MSG20_UNPACKED_DDV_PACKAGES="Razpakirani paketi";
-$MSG21_SELECT_DDV="Izberi paket";
-$MSG22_DB_CREATED="Prazna podatkovna zbirka je kreirana";
-$MSG23_SCHEMA_ACCESS="Dodajanje dostopa do sheme";
-$MSG24_NO_SCHEMA="Schema ni definirana";
-$MSG25_EMPTY_TABLES_CREATED="Prazne podatkovne tabele kreirane.";
-$MSG26_DELETED="Zbrisano:";
-$MSG27_ACTIVATED="Aktivacija opravljena";
-$MSG28_DEACTIVATED="Deaktiviran";
-$MSG29_EXECUTING="Izvajam";
-$MSG30_ALREADY_ACTIVATED="Aktivacija obstaja: ";
-$MSG31_NOSCHEMA="Shema ni definirana, ne morem nadaljevati.";
-$MSG32_SERVER_DATABASE_NOT_SELECTED="Prosim, najprej izberi podatkovno zbirko.";
-$MSG33_SKIPPING="Neuporabljeno";
-$MSG34_NOACTIVEP="Nobena paket ni aktiviran";
-$MSG35_CHECKXML="Preverjam XML s poizvedbami...";
-$MSG36_NOPACKAGE="ni paketov";
-$MSG37_MOREACTIVE="brisanje ni potrebno, obstaja druga aktivacija za isti paket";
-$MSG38_SIARDNORM="Ni brisanja SIARD datoteke, ker tudi ni razpakirana";
-$MSG39_AVAILABLEPKGS="Paketi na voljo";
-$MSG40_ACTIVATEDPKGS="Aktivirani paketi in njihove podatkovne zbirke";
-$MSG41_SIARDUNPACK="Paketa SIARD ni potrebno razpakirati";
-$MSG42_NOTSIARD="To ni SIARD datoteka";
-$MSG43_INITCONFIG="Inicializacija. Kreiram";
-$MSG_EXIT="izhod";
-$MSG_SELECTEDDDV="Paket";
-$MSG_CMD="Ukaz: ";
-$MSG_EMPTY="neznano";
-$MSG_ACCESSDB="krovna podatkovna zbirka";
-$MSG_ENTER="Pritisni Enter za nadaljevanje...";
-$MSG_ERROR="Napaka.";
-$MSG_YESNO="d/n";
-} else { 
-$MSG_TITLE="dbDIPview administration tool";
-$MSG0_LISTDIRS="Show current configuration";
-$MSGR_SELECT_DB="Select database";
-$MSG3_CHECKDB="Show existing databases";
-$MSGP_PACKAGES="Show activated packages";
-$MSG0_CREATEDB="(CSV) create database";
-$MSG1_LISTDDV="Select a package";
-$MSG2_UNPACKDDV="Unpack selected package";
-$MSGS_INSTALLSIARD="(SIARD) deploy selected SIARD package (create schema and upload the data)";
-$MSG3_ENABLEACCESS="Set permissions for the schema that was deployed from a SIARD package";
-$MSG4_CREATEAPL="(CSV) create empty schema";
-$MSG5_MOVEDATA="(CSV) populate the schema tables with the data";
-$MSG6_ACTIVATEDIP="Activate access to the schema";
-$MSG7_DEACTAPL="Deactivate access and delete the schema";
-$MSG8_RM_UNPACKED_DDV="(CSV) remove folder with unpacked package";
-$MSG9_RMDDV="Remove package from the group of available packages";
-$MSG10_UNKNOWNC="unknown command";
-$MSG11_DB_ALREADY_EXISTS="This database already exists";
-$MSG12_ERR_DDV_NOT_AVAILABLE="Error: selected package is not available";
-$MSG13_DDV_FOLDER_EXISTS="Tha folder already exists and no unpacking will be done for";
-$MSG14_DDV_UNPACKED="Selected package has been unpacked.";
-$MSG15_CANNOT_FIND_FILE_FROM_DDV="Error, it seems that the selected package is not unpacked yet. Cannot find file";
-$MSG16_FOLDER_NOT_FOUND="Error, folder not found";
-$MSG17_FILE_NOT_FOUND="Error, file not found";
-$MSG18_DDV_NOT_SELECTED="Please first select a package.";
-$MSG19_DDV_PACKAGES="All DDV packages";
-$MSG20_UNPACKED_DDV_PACKAGES="Extracted packages";
-$MSG21_SELECT_DDV="Select a package";
-$MSG22_DB_CREATED="Database created";
-$MSG23_SCHEMA_ACCESS="Granting access for";
-$MSG24_NO_SCHEMA="Schema not defined";
-$MSG25_EMPTY_TABLES_CREATED="Empty tables have been created.";
-$MSG26_DELETED="Deleted";
-$MSG27_ACTIVATED="Activation done";
-$MSG28_DEACTIVATED="Deactivated";
-$MSG29_EXECUTING="Executing";
-$MSG30_ALREADY_ACTIVATED="Already activated";
-$MSG31_NOSCHEMA="No schema is defined, cannot continue.";
-$MSG32_SERVER_DATABASE_NOT_SELECTED="Please first select a database.";
-$MSG33_SKIPPING="Skipping";
-$MSG34_NOACTIVEP="Na active package";
-$MSG35_CHECKXML="Validating XML with queries...";
-$MSG36_NOPACKAGE="No packages found";
-$MSG37_MOREACTIVE="removal is not needed, there is another activated instance for the same package";
-$MSG38_SIARDNORM="SIARD file is not unpacked before installation";
-$MSG39_AVAILABLEPKGS="Available packages";
-$MSG40_ACTIVATEDPKGS="Activated packages and their databases";
-$MSG41_SIARDUNPACK="There is no need to unpack a SIARD package";
-$MSG42_NOTSIARD="Not a SIARD file";
-$MSG43_INITCONFIG="Initialization. Creating";
-$MSG_EXIT="exit";
-$MSG_SELECTEDDDV="Package";
-$MSG_CMD="Command: ";
-$MSG_EMPTY="not_defined";
-$MSG_ACCESSDB="Database";
-$MSG_ENTER="Press Enter to continue...";
-$MSG_ERROR="Error";
-$MSG_YESNO="y/n";
-} 
 
 $TXT_RED=chr(27).'[31m'; 
 $TXT_GREEN=chr(27).'[32m';
@@ -215,16 +95,39 @@ function notSet($var) {
 }
 
 function showConfiguration() {
-	global $SERVERCONFIGFILE, $TXT_CYAN,$TXT_RESET;
+	global $SERVERCONFIGFILE, $TXT_GREEN,$TXT_RESET;
 	global $MSG34_NOACTIVEDB, $MSG_ACCESSDB, $MSG40_ACTIVATEDPKGS;
+	$length0=$length1=$length2=$length3=$length4=5;
+	
+	if (($handle = fopen($SERVERCONFIGFILE, "r")) !== FALSE) {
+		while (($line = fgets($handle)) !== false) {
+			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);
+			if(count($tok)>=2) {
+				if(strlen($tok[0]) > $length0)
+					$length0 = strlen($tok[0]);
+				if(strlen($tok[1]) > $length1)
+					$length1 = strlen($tok[1]);
+				if(strlen($tok[3]) > $length3)
+					$length3 = strlen($tok[3]);
+				if(strlen($tok[4]) > $length4)
+					$length4 = strlen($tok[4]);
+			}
+		}
+		fclose($handle);
+	}
 
 	if (($handle = fopen($SERVERCONFIGFILE, "r")) !== FALSE) {
 		$i=0;
 		msgCyan($MSG40_ACTIVATEDPKGS);
 		while (($line = fgets($handle)) !== false) {
 			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);
-			if(count($tok)>=2)
-				echo "$tok[0] ($tok[1]) [$tok[3]] $tok[4] $tok[5]" . PHP_EOL;
+			if(count($tok)>=2) {
+				echo str_pad($tok[0],$length0) . "|";
+				echo str_pad($tok[1],$length1) . "|";
+				echo str_pad($tok[3],$length3) . "|";
+				echo str_pad($tok[4],$length4) . "|";
+				echo $tok[5] . PHP_EOL;
+			}
 			$i++;
 		}
 		fclose($handle);
@@ -246,6 +149,7 @@ function getPackageName(&$outname, &$outfilename) {
 	
 	msgCyan($MSG19_DDV_PACKAGES);
 	$out = array_diff(scandir($DDV_DIR_PACKED), array('.', '..'));
+
 	foreach($out as $key => $value) {
 		
 		if(isAtype($value, "siard")) {
@@ -263,7 +167,9 @@ function getPackageName(&$outname, &$outfilename) {
 		
 		$arrPkgName[$i] = $val1;
 		$arrFilename[$i] = $value;
-		echo "$i  $arrPkgName[$i]  ($description)" . PHP_EOL;
+		echo str_pad($i,3, " ", STR_PAD_LEFT) . " ";
+		echo str_pad($arrPkgName[$i],35) . " ";
+		echo $description . PHP_EOL;
 		$i++;
 	}
 	
@@ -466,6 +372,7 @@ while ( "$answer" != "q" ) {
 			$PACKAGEFILE=$file;
 			$PKGFILEPATH=$DDV_DIR_PACKED . "/" . $file;
 			$DDVEXTRACTED=$DDV_DIR_UNPACKED . $DDV;
+			$LISTFILE=$DDVEXTRACTED . "/metadata/list.txt";
 			debug("NAME=$name  FILE=$file DDV=$DDV"); echo PHP_EOL;
 			break;
 		case "2": $X2=' ';
@@ -518,6 +425,19 @@ while ( "$answer" != "q" ) {
 					msgCyan($MSG14_DDV_UNPACKED);
 					debug($DDVEXTRACTED);
 				}
+				if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
+					while (($line = fgets($handleList)) !== false) {
+						$line=rtrim($line);
+						$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
+						$LTYPE=$tok[0];
+						if ("$LTYPE" == "DESCRIPTION" ) {
+							$DESCRIPTION=$tok[1];
+							echo $DESCRIPTION . PHP_EOL;
+						}
+					}
+					fclose($handleList);
+				}
+
 				$X2='X';
 			}
 			enter();
@@ -536,7 +456,6 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 		case "3": $X3=' ';
-			$LISTFILE=$DDVEXTRACTED . "/metadata/list.txt";
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if( !file_exists($LISTFILE))
@@ -566,7 +485,6 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 		case "4": $X4=' ';
-			$LISTFILE=$DDVEXTRACTED . "/metadata/list.txt";
 			$CREATEDB0=$DDVEXTRACTED . "/metadata/createdb.sql";
 			$CREATEDB1=$DDVEXTRACTED . "/metadata/createdb01.sql";
 			if (notSet($DDV))
@@ -622,7 +540,6 @@ while ( "$answer" != "q" ) {
 				break;
 			}
 		case "5": $X5=' ';
-			$LISTFILE=$DDVEXTRACTED . "/metadata/list.txt";
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if (isAtype($PACKAGEFILE, "siard"))
@@ -643,12 +560,8 @@ while ( "$answer" != "q" ) {
 
 						if ("$LTYPE" == "SCHEMA" ) 
 							$SCHEMA=addQuotes($tok[1]);
-						
-						if ("$LTYPE" == "DESCRIPTION" ) 
-							$DESCRIPTION=addQuotes($tok[1]);
-						
+
 						else if ("$LTYPE" == "TABLE") {
-							
 							$TABLE=addQuotes($tok[1]);
 							$FILE=$tok[2];
 							$CSVMODE=$tok[3];
@@ -745,7 +658,6 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;  
 		case "7": $X7=' ';
-			$LISTFILE=$DDVEXTRACTED . "/metadata/list.txt";
 			$XMLFILEDST=$DDV;
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
@@ -825,6 +737,7 @@ while ( "$answer" != "q" ) {
 			break;
 		case "9": $X9=' ';
 			err_msg("Disabled functionality");
+			enter();
 			break;
 			
 			$F=$DDV_DIR_PACKED . $FILE;
