@@ -36,7 +36,7 @@ function FunctionHelpToggle() {
 $myselectStmnt="";
 $screenFields=0;
 foreach ($xml->database->screens->screen as $screen) {
-	//debug ("screenID " . $screen->id);
+
 	if($screen->id == $targetQueryNum) {
 
 		foreach ($screen->param as $param) {
@@ -65,7 +65,6 @@ foreach ($xml->database->screens->screen as $screen) {
 			$infotip = (string) $param->infotip;
 
 			if(0==strcmp("text", $param->type)) {
-				//input_text($field, $param->type,"");
 				if($bSize)
 					input_text_size($field, $attributeSize, "", TRUE);
 				else
@@ -80,7 +79,6 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 
 			if(0==strcmp("integer", $param->type)) {
-				//input_integer($field, $param->type,"");
 				if($bSize)
 					input_integer($field, $attributeSize, "", TRUE);
 				else
@@ -89,7 +87,7 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			if(0==strcmp("combotext", $param->type)) {
 				input_combotext_db_multi($field, $param->name, $param->select, "", TRUE);   // default=""
-			} //combotext
+			}
 			
 			if( (0==strcmp("date",    $param->type)) ||
 				(0==strcmp("date_ge", $param->type)) ||
@@ -107,6 +105,8 @@ foreach ($xml->database->screens->screen as $screen) {
 
 	} //if screnid=#
 } //for each screen
+if($screenFields == 0)
+	echo str_repeat("&nbsp;", 30) . "<BR />";
 ?>
 		</left>
 	</td>
@@ -134,6 +134,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		</center>
 
 	</td>
+<?php if($screenFields > 0) { ?>
 	<td style="vertical-align:top">
 		<button type="button" class='button' onclick="FunctionHelpToggle()">
 			<?php echo (isset($MHLP00) ? $MHLP00 : "Kako iskati?"); ?> &darr;
@@ -159,6 +160,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		<br />
 	</div>
 	</td>
+<?php } ?>
 </tr>
 </table>
 </form>
