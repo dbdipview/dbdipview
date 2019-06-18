@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <dbDIPview schemaVersion="1.0">
 	<database>
-		<name></name>
+		<name>Register XYZ</name>
+		<revisions>
+			<revision date="2019-06-12" version="0.1">draft version during ingest</revision>
+		</revisions>
 		<ref_number></ref_number>
 		<screens>
 			<screen>

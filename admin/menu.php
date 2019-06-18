@@ -31,7 +31,7 @@ $SERVERCONFIGFILE=$SERVERDATADIR."configuration.dat";
 
 # run as root?
 #test "$(whoami)" != 'root' && echo you are using a non-privileged account && exit 1
-$XC=" ";$XD=" ";$X0=" ";$X1=" ";$X2=" ";$XS=' ';$X3=" ";$X4=" ";$X5=" ";$X6=" ";$X7=" ";$X8=" ";$X9=" ";
+$XC=" ";$XD=" ";$X0=" ";$X1=" ";$X2=" ";$XP=' ';$XS=' ';$X3=" ";$X4=" ";$X5=" ";$X6=" ";$X7=" ";$X8=" ";$X9=" ";
 
 # pg_dump -sC gzsars0test -U pg_boris	 #schema,create
 # pg_dump -da gzsars0test -U pg_boris	 #insert, data
@@ -282,12 +282,13 @@ while ( "$answer" != "q" ) {
 	echo "${XC}c  $MSG0_LISTDIRS" . PHP_EOL;
 	echo "${XD}d  $MSGR_SELECT_DB" . PHP_EOL;
 	echo "${X0}0  $MSG0_CREATEDB $DATABASE" . PHP_EOL;
+	echo "${XP}p  (SIARD) $MSG1_LISTDDV" . PHP_EOL;
+	echo "${XS}s  $MSGS_INSTALLSIARD" . PHP_EOL;
 	echo "${X1}1  $MSG1_LISTDDV" . PHP_EOL;
 	echo "${X2}2  $MSG2_UNPACKDDV" . PHP_EOL;
-	echo "${XS}s  $MSGS_INSTALLSIARD" . PHP_EOL;
 	echo "${X3}3  $MSG3_ENABLEACCESS" . PHP_EOL;
-	echo "${X4}4  $MSG4_CREATEAPL" . PHP_EOL;
-	echo "${X5}5  $MSG5_MOVEDATA" . PHP_EOL;
+	echo "${X4}4  (CSV) $MSG4_CREATEAPL" . PHP_EOL;
+	echo "${X5}5  (CSV) $MSG5_MOVEDATA" . PHP_EOL;
 	echo "${X6}6  $MSG6_ACTIVATEDIP" . PHP_EOL;
 	echo "${X7}7  $MSG7_DEACTAPL" . PHP_EOL;
 	echo "${X8}8  $MSG8_RM_UNPACKED_DDV" . PHP_EOL;
@@ -363,6 +364,18 @@ while ( "$answer" != "q" ) {
 			}
 			enter();
 			break;
+		case "p":
+			$name="";
+			$file="";
+			getPackageName($name, $file);
+			$XP = ($name === "-") ? ' ' : 'X';
+			$DDV=$name;
+			$PACKAGEFILE=$file;
+			$PKGFILEPATH=$DDV_DIR_PACKED . "/" . $file;
+			$SIARDFILE=$DDV_DIR_PACKED . $PACKAGEFILE; 
+			debug("NAME=$name  FILE=$file DDV=$DDV"); echo PHP_EOL;
+			break;
+			
 		case "1":
 			$name="";
 			$file="";
@@ -443,7 +456,6 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 		case "s": $XS=' ';
-			$SIARDFILE=$DDV_DIR_PACKED . $PACKAGEFILE; 
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if( !file_exists($SIARDFILE))
@@ -700,18 +712,17 @@ while ( "$answer" != "q" ) {
 					if (($handleRead = fopen($SERVERCONFIGFILE, "r")) !== FALSE) {
 						while (($line = fgets($handleRead)) !== false) {
 							$line=rtrim($line);
-							$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
+							$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);
 							if ( (0==strcmp($tok[0], $DDV)) && (0==strcmp($tok[1],$DATABASE)) ) {
-								msgCyan("$MSG28_DEACTIVATED $DDV ($DATABASE)"); //forget this line
+								msgCyan("$MSG28_DEACTIVATED $DDV ($DATABASE)");
 							} else
-								fwrite($handleWrite,$line . "\n");
-						} //while
+								fwrite($handleWrite,$line . "\t\r\n");
+						}
 						fclose($handleRead);
-					} //if rd
+					} //if r
 					fclose($handleWrite);
 				} //if w
-				
-				//awk -F"\t" -v a="$DDV" -v b="$DATABASE" '{if(!($1==a && $2==b)) print $0}' $SERVERCONFIGFILE > $SERVERCONFIGFILE.tmp
+
 				rename("$SERVERCONFIGFILE.tmp",  $SERVERCONFIGFILE);
 				$X7='X';
 			}
