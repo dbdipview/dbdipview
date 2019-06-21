@@ -17,19 +17,24 @@ else
 
 switch ($submit_cycle) {
 	case "CheckLogin":
-		if (array_key_exists("xmlfile", $_GET))
-			$myXMLfile = trim($_GET['xmlfile']);
-		else
-			$myXMLfile="not_set";
-			
-		if (array_key_exists("dbname", $_GET))
-			$myDBname = trim($_GET['dbname']);
-		else
-			$myDBname="db_not_selected";
-
+		if (array_key_exists("code", $_GET)) {
+			$code = trim($_GET['code']);
+			list($myDBname, $myXMLfile) = code2database("data/configuration.dat", $code);
+		} else {
+			if (array_key_exists("xmlfile", $_GET))
+				$myXMLfile = trim($_GET['xmlfile']);
+			else
+				$myXMLfile="not_set";
+				
+			if (array_key_exists("dbname", $_GET))
+				$myDBname = trim($_GET['dbname']);
+			else
+				$myDBname="db_not_selected";
+		}
+		
 		$mydebug="0";
-		if (array_key_exists("user", $_GET))
-			$mydebug = trim($_GET['user']);
+		if (array_key_exists("debug", $_GET))
+			$mydebug = trim($_GET['debug']);
 
 		if (array_key_exists("lang", $_GET))
 			$myLang = trim($_GET['lang']);
@@ -81,7 +86,7 @@ include "utils/fillCreateQuery.php";
 
 include "messagesw.php";
 
-if ("$myXMLfile"=="" || "$myXMLfile"=="") {
+if ("$myXMLfile"=="") {
 	echo "</BR><h2>$MSGSW06_ErrorSessionExpired</h2></BR>";
 	die("");
 }
@@ -100,12 +105,10 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 				<abbr title="<?php echo $MSGSW11_Reports; ?>"><a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) .'?submit_cycle=Logout';?>" ><img src="img/gnome_go_home.png" height="18" width="18" alt="Home"></a></abbr>&nbsp;
 			</td>
 			<td align="right">
-<?php 		echo $_SESSION['mylogin'] . "&nbsp";
-			echo $_SESSION['administrator'] . "&nbsp";
-			echo $_SESSION['myId'] . "&nbsp&nbsp";
+<?php
 			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . 
 				"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a></abbr>" .
-				"&nbsp&nbsp&nbsp";
+				"&nbsp;&nbsp;&nbsp;";
 ?>
 			</td>
 		</tr>

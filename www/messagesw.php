@@ -3,7 +3,7 @@
 if ( "$myLang" == "sl" ){
 $MSGSW01_MainSubTitle="Dostop do gradiva: vsebine podatkovnih zbirk";
 $MSGSW02_Code="Koda";
-$MSGSW03_Database="Poddatkovna zbirka";
+$MSGSW03_Database="Podatkovna zbirka";
 $MSGSW04_Records="Gradivo";
 $MSGSW05_ErrorNoConfiguration="Napaka, ne morem odpreti konfiguracijske datoteke";
 $MSGSW06_ErrorSessionExpired="Napaka, vaša seja je potekla";

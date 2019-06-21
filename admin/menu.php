@@ -18,6 +18,8 @@ if( ! is_file($PROGDIR . "/menu.php")) {
 $SERVERDATADIR="$PROGDIR/../www/data/";
 $DDVEXTRACTED="";
 $PACKAGEFILE="";
+$SIARDNAME="";
+$SIARDFILE="";
 
 include 'configa.txt';
 include 'messagesm.php';
@@ -48,8 +50,6 @@ $TXT_RESET=chr(27).'[0m';
 $DDV="-";
 $DATABASE="-";
 $DESCRIPTION="no description";
-$TOKEN="-";
-
 
 //false=continue
 function stopHere($p) {
@@ -278,15 +278,15 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 
 
 while ( "$answer" != "q" ) { 
-	echo "$TXT_CYAN $MSG_TITLE $TXT_RESET" . "[$MSG_ACCESSDB: $DATABASE $MSG_SELECTEDDDV: $DDV]" . PHP_EOL;;
+	echo "$TXT_CYAN $MSG_TITLE $TXT_RESET" . "$MSG_SELECTEDDDV: $DDV SIARD: $SIARDNAME]" . PHP_EOL;;
 	echo "${XC}c  $MSG0_LISTDIRS" . PHP_EOL;
 	echo "${XD}d  $MSGR_SELECT_DB" . PHP_EOL;
-	echo "${X0}0  $MSG0_CREATEDB $DATABASE" . PHP_EOL;
-	echo "${XP}p  (SIARD) $MSG1_LISTDDV" . PHP_EOL;
-	echo "${XS}s  $MSGS_INSTALLSIARD" . PHP_EOL;
-	echo "${X1}1  $MSG1_LISTDDV" . PHP_EOL;
+	echo "${X0}0  $MSG0_CREATEDB [$DATABASE]" . PHP_EOL;
+	echo "${X1}1  $MSG1_SELECTPKG" . PHP_EOL;
 	echo "${X2}2  $MSG2_UNPACKDDV" . PHP_EOL;
-	echo "${X3}3  $MSG3_ENABLEACCESS" . PHP_EOL;
+	echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
+	echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD" . PHP_EOL;
+	echo "${X3}3  (SIARD) $MSG3_ENABLEACCESS" . PHP_EOL;
 	echo "${X4}4  (CSV) $MSG4_CREATEAPL" . PHP_EOL;
 	echo "${X5}5  (CSV) $MSG5_MOVEDATA" . PHP_EOL;
 	echo "${X6}6  $MSG6_ACTIVATEDIP" . PHP_EOL;
@@ -303,6 +303,7 @@ while ( "$answer" != "q" ) {
 		case "debug": $debug=($debug == true) ? false : true;
 			msgCyan("debug=" . (($debug) ? "on" : "off"));
 			break;
+
 		case "q": exit(0);
 		case "c": 
 			echo "DDV_DIR_PACKED=" . $DDV_DIR_PACKED . PHP_EOL;
@@ -337,20 +338,23 @@ while ( "$answer" != "q" ) {
 
 			enter();
 			break;
+
 		case "d": $XD='X';
 			echo "$MSG_ACCESSDB: ";
 			$name = trim(fgets($handleKbd));
 			if(strlen($name) > 0)
 				$DATABASE=$name;
 			break;
+
 		case "0": $X0=' ';
 			if (notSet($DATABASE)) 
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else {
 				passthru("PGPASSWORD=$PGPASSWORD psql -P pager=off -q -l -U " . $DBADMINUSER . " -d " . $DATABASE, $rv);
-				if ( $rv == 0 ) 
+				if ( $rv == 0 ) {
 					err_msg("$MSG11_DB_ALREADY_EXISTS:", $DATABASE);
-				else {
+					$X0='X';
+				} else {
 					passthru("PGPASSWORD=$PGPASSWORD createdb " . $DATABASE . 
 							" -U ". $DBADMINUSER . " -E UTF8 --locale=sl_SI.UTF-8 --template=template0", $rv);
 					if ( $rv == 0 ) {
@@ -364,18 +368,7 @@ while ( "$answer" != "q" ) {
 			}
 			enter();
 			break;
-		case "p":
-			$name="";
-			$file="";
-			getPackageName($name, $file);
-			$XP = ($name === "-") ? ' ' : 'X';
-			$DDV=$name;
-			$PACKAGEFILE=$file;
-			$PKGFILEPATH=$DDV_DIR_PACKED . "/" . $file;
-			$SIARDFILE=$DDV_DIR_PACKED . $PACKAGEFILE; 
-			debug("NAME=$name  FILE=$file DDV=$DDV"); echo PHP_EOL;
-			break;
-			
+
 		case "1":
 			$name="";
 			$file="";
@@ -386,8 +379,12 @@ while ( "$answer" != "q" ) {
 			$PKGFILEPATH=$DDV_DIR_PACKED . "/" . $file;
 			$DDVEXTRACTED=$DDV_DIR_UNPACKED . $DDV;
 			$LISTFILE=$DDVEXTRACTED . "/metadata/list.txt";
-			debug("NAME=$name  FILE=$file DDV=$DDV"); echo PHP_EOL;
-			break;
+			echo $DDV . PHP_EOL;
+			if(stopHere($MSG2_UNPACKDDV)) {
+				enter();
+				break;
+			}
+
 		case "2": $X2=' ';
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
@@ -395,9 +392,10 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG12_ERR_DDV_NOT_AVAILABLE . ":", $PKGFILEPATH);
 			else if(isAtype($PKGFILEPATH, "siard"))  
 				err_msg($MSG41_SIARDUNPACK);
-			else if(file_exists($DDVEXTRACTED))
+			else if(file_exists($DDVEXTRACTED)) {
 				err_msg($MSG13_DDV_FOLDER_EXISTS . ":", $DDV);
-			else {
+				$X2='X';
+			} else {
 				msgCyan($MSG29_EXECUTING);
 				mkdir($DDVEXTRACTED, 0777, true);
 				if(isAtype($PKGFILEPATH, "tar.gz"))
@@ -438,23 +436,24 @@ while ( "$answer" != "q" ) {
 					msgCyan($MSG14_DDV_UNPACKED);
 					debug($DDVEXTRACTED);
 				}
-				if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
-					while (($line = fgets($handleList)) !== false) {
-						$line=rtrim($line);
-						$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-						$LTYPE=$tok[0];
-						if ("$LTYPE" == "DESCRIPTION" ) {
-							$DESCRIPTION=$tok[1];
-							echo $DESCRIPTION . PHP_EOL;
-						}
-					}
-					fclose($handleList);
-				}
-
 				$X2='X';
 			}
 			enter();
 			break;
+
+		case "p":
+			$name="";
+			$file="";
+			getPackageName($name, $file);
+			$XP = ($name === "-") ? ' ' : 'X';
+			$SIARDNAME=$name;
+			$SIARDFILE=$DDV_DIR_PACKED . $file; 
+			echo $SIARDNAME . PHP_EOL;
+			if(stopHere($MSGS_INSTALLSIARD)) {
+				enter();
+				break;
+			}
+
 		case "s": $XS=' ';
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
@@ -465,8 +464,12 @@ while ( "$answer" != "q" ) {
 					$XS='X';
 			} else
 				err_msg($MSG42_NOTSIARD . ":", $PACKAGEFILE);
-			enter();
-			break;
+			
+			if(stopHere($MSG3_ENABLEACCESS)) {
+				enter();
+				break;
+			}
+
 		case "3": $X3=' ';
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
@@ -496,6 +499,7 @@ while ( "$answer" != "q" ) {
 			}
 			enter();
 			break;
+
 		case "4": $X4=' ';
 			$CREATEDB0=$DDVEXTRACTED . "/metadata/createdb.sql";
 			$CREATEDB1=$DDVEXTRACTED . "/metadata/createdb01.sql";
@@ -551,6 +555,7 @@ while ( "$answer" != "q" ) {
 				enter();
 				break;
 			}
+
 		case "5": $X5=' ';
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
@@ -633,6 +638,7 @@ while ( "$answer" != "q" ) {
 				enter();
 				break;
 			}
+
 		case "6": $X6=' ';
 			$XMLFILESRC=$DDVEXTRACTED . "/metadata/queries.xml";
 			$XMLFILEDST=$DDV;
@@ -657,7 +663,20 @@ while ( "$answer" != "q" ) {
 				if(isPackageActivated($SERVERCONFIGFILE, $DDV, $DATABASE) > 0) 
 					err_msg($MSG30_ALREADY_ACTIVATED, "$DDV ($DATABASE)");
 				else { 
-					//ZPIZP	xx	ZPIZP.xml	token	restrictions	description	
+				
+					if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
+						while (($line = fgets($handleList)) !== false) {
+							$line=rtrim($line);
+							$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
+							$LTYPE=$tok[0];
+							if ("$LTYPE" == "DESCRIPTION" ) {
+								$DESCRIPTION=$tok[1];
+								echo $DESCRIPTION . PHP_EOL;
+							}
+						}
+						fclose($handleList);
+					}
+					$TOKEN=uniqid("c", FALSE); 
 					$txt="$DDV\t$DATABASE\t$XMLFILEDST.xml\t$TOKEN\tpublic\t$DESCRIPTION\t";
 					$rv = file_put_contents($SERVERCONFIGFILE, $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
 					if( $rv !== FALSE) {
@@ -669,6 +688,7 @@ while ( "$answer" != "q" ) {
 			}
 			enter();
 			break;  
+
 		case "7": $X7=' ';
 			$XMLFILEDST=$DDV;
 			if (notSet($DDV))
@@ -728,6 +748,7 @@ while ( "$answer" != "q" ) {
 			}
 			enter();
 			break;
+
 		case "8": $X8=' ';
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
@@ -746,6 +767,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG16_FOLDER_NOT_FOUND . ":", $DDVEXTRACTED);
 			enter();
 			break;
+
 		case "9": $X9=' ';
 			err_msg("Disabled functionality");
 			enter();
@@ -764,6 +786,7 @@ while ( "$answer" != "q" ) {
 			}
 			enter();
 			break;	
+
 		default: err_msg($MSG10_UNKNOWNC . ":", $answer);
 			enter();
 			break;
