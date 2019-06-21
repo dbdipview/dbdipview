@@ -90,7 +90,10 @@ php menu.php
 The user can now use the browser to access the information in the database. Similarly, the access can be deactivated and the restored copy of the database deleted.
 
 ### User Access
-The user's entry point is the address http://yourHostName/dbdipview/login.htm 
+The entry point is the address http://yourHostName/dbdipview/login.htm. The user's redirection from the archive finding aid or ordering system to the dbDIPview server can be implemented in different ways:
+* URL parameter is a unique target database id,
+* URL parameters are database and schema names, or
+* URL redirects to the selection menu.
 
 ## Versioning
 For the archiving purpose, backward compatibility needs to be maintained at least on the level of XML schema.

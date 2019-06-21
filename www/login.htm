@@ -5,8 +5,28 @@
   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
   <link rel="stylesheet" href="main.css">
 </head>
+<?php 
+//optional: c or d,s
+$c=$_POST['c'];  
+if(strlen($c == 0))
+	$c=$_GET['c'];   //remove GET for production
+	
+$d=$_POST['d']; 
+if(strlen($d == 0))
+	$d=$_GET['d']; 
+	
+$s=$_POST['s'];
+if(strlen($s == 0))
+	$s=$_GET['s']; 
+	
+$debug=$_GET['debug'];
+
+?>
 <frameset border="3" frameborder="3" rows="40%,*">
-    <frame name="topframe"    src="prog0.htm">
+    <frame name="topframe"    src="prog0.htm?<?php echo 'c='  . $c . 
+														'&d=' . $d . 
+														'&s=' . $s .
+														'&debug=' . $debug ?>">
     <frame name="bottomframe" src="empty.htm">
 </frameset>
 

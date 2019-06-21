@@ -21,37 +21,66 @@ include "messagesw.php";
 <center>
 <h3><?php echo $INSTITUTION; ?></h3>
 <h2><?php echo $MSGSW01_MainSubTitle; ?></h2><br />
+<?php
+    $c=$_GET['c'];
+    $d=$_GET['d'];
+    $s=$_GET['s'];
+    $debug=$_GET['debug'];
+?>
+
 <br />
    <form name="forma" action="prog1.php" method="get" target='topframe'>
     <table>
     <tbody>
+<?php if(strlen($c) > 0) { ?>
       <tr>
-        <td><?php echo $MSGSW02_Code; ?>: </td>
-        <td><input type="text" name="user" size="30" value=""/></td>
+        <td>
+           <?php echo $MSGSW02_Code; ?>: 
+        </td>
+        <td>
+           <input type="text" name="code" size="15" value="<?php echo $c;?>" readonly/>
+        </td>
       </tr>
-      <tr>
-        <td><?php echo $MSGSW03_Database; ?>:</td>
-        <td><input type="text" size="30" name="dbname" value="citalnica" /></td>
-      </tr>
-      <tr>
+<?php } else { ?>
+
+		  <tr>
+			<td>
+				<?php echo $MSGSW03_Database; ?>: 
+			</td>
+			<td>
+				<input type="text" size="30" name="dbname" 
+					value="<?php echo (strlen($d) > 0) ? $d : '';?>" 
+					       <?php echo (strlen($d) > 0) ? ' readonly' : '';?> 
+				/>
+			</td>
+		  </tr>
+		  <tr>
 <?php
-	
 		echo "<td>$MSGSW04_Records:</td>";
-		if(file_exists ("data/configuration.dat")) {
-			$fh = fopen("data/configuration.dat", "r");
-			if(! $fh) {
-				echo "<td><h2>$MSGSW05_ErrorNoConfiguration (R).</h2></td>";
-			} else {
-				echo '<td><select name="xmlfile"> ';
-				print '<option value="default.xml" selected="selected"> </option>' . PHP_EOL;
-				while (list($myval, $mydb, $myxml, $mytoken, $myaccess, $mydesc) = fgetcsv($fh, 1024, "\t")) {
-					print '<option value="' . $myxml . '">' . $myval . " - " . $mydesc . '</option>' . PHP_EOL;
+		echo "<td>";
+		if(strlen($s) > 0) {
+?>
+			<input type="text" size="30" name="xmlfile" value="<?php echo $s;?>" readonly />
+<?
+		} else {
+			if(file_exists ("data/configuration.dat")) {
+				$fh = fopen("data/configuration.dat", "r");
+				if(! $fh) {
+					echo "<h2>$MSGSW05_ErrorNoConfiguration (R).</h2>";
+				} else {
+					echo '<select name="xmlfile"> ';
+					print '<option value="default.xml" selected="selected"> </option>' . PHP_EOL;
+					while (list($myval, $mydb, $myxml, $mytoken, $myaccess, $mydesc) = fgetcsv($fh, 1024, "\t")) {
+						print '<option value="' . $myxml . '">' . $myval . " - " . $mydesc . '</option>' . PHP_EOL;
+					}
+					print '</select>';
 				}
-				print '</select>';
-				echo '</td>';
-			}
-		} else
-			echo "<td><h2>$MSGSW05_ErrorNoConfiguration.</h2></td>";
+			} else
+				echo "<h2>$MSGSW05_ErrorNoConfiguration.</h2>";
+		}
+		echo "</td>";
+		
+	} //c=''
 ?>
       </tr>
       <tr>
@@ -60,6 +89,7 @@ include "messagesw.php";
         <td style="text-align:center">
           <input type="hidden" name="submit_cycle" value="CheckLogin" /><br />
           <input type="hidden" name="lang"         value="<?php echo $myLang; ?>" /><br />
+          <input type="hidden" name="debug"        value="<?php echo $debug; ?>" readonly /><br />
           <input type="submit" value="&#x27a4;" alt="<?php echo $MSGSW08_Continue; ?>" class='button'/>
         </td>
       </tr>

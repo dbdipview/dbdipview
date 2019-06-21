@@ -11,18 +11,41 @@
  * @return int $found            number of occurencies
  */
 function isPackageActivated($serverconfig, $ddv, $database="") {
-    $found=0;
-    if (($handleRead = fopen($serverconfig, "r")) !== FALSE) {
-        while (($line = fgets($handleRead)) !== false) {
-            $tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-            if ((0==strcmp($tok[0], $ddv)) && 
-               ((0==strcmp($tok[1], $database)) || $database == "") ) {
-                $found++;
-            } 
-        } //while
-        fclose($handleRead);
-    } 
-    return($found);
+	$found=0;
+	if (($handleRead = fopen($serverconfig, "r")) !== FALSE) {
+		while (($line = fgets($handleRead)) !== false) {
+			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);
+			if ((0==strcmp($tok[0], $ddv)) && 
+				((0==strcmp($tok[1], $database)) || $database == "") ) {
+				 $found++;
+			} 
+		}
+		fclose($handleRead);
+	} 
+	return($found);
+}
+
+/**
+ * For a given "secret" code returns the active database configuration information
+ *
+ * @param string $code                code of a configuration entry
+ *
+ * @return array $database, $xmlfile  pair needed for access
+ */
+function code2database($serverconfig, $code) {
+	$database="_not_set";
+	$xmlfile="_not_set";
+	if (($handleRead = fopen($serverconfig, "r")) !== FALSE) {
+		while (($line = fgets($handleRead)) !== false) {
+			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);
+			if (0==strcmp($tok[3], $code)) {
+				$database=$tok[1];
+				$xmlfile=$tok[2];
+			} 
+		}
+		fclose($handleRead);
+	} 
+	return(array($database, $xmlfile));
 }
 
 /**
@@ -40,8 +63,7 @@ function validateXML($file, $schema) {
 	}
  }
 
-function libxml_display_error($error)
-{
+function libxml_display_error($error) {
 	$return = "<br/>\n";
 	switch ($error->level) {
 		case LIBXML_ERR_WARNING:
