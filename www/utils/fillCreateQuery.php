@@ -1,8 +1,10 @@
 <?php
 /**
  * fillCreateQuery.php
- * Build SELECT and execute
- *
+ * Based on predefined queries and user's input:
+ * - build the SELECT statements (i.e. main query and optional subqueries), 
+ * - execute them, 
+ * - display the results.
  */
 
 ?>
@@ -258,6 +260,8 @@ foreach ($xml->database->screens->screen as $screen) {
 			$subquery = $subselect->query;
 			$subqueriesTitle[$sqindex] = $subselect->title;
 			$subqueriesSubTitle[$sqindex] = $subselect->subtitle;
+			
+			debug("fillCreateQuery: subselect title: " . $subselect->title);
 			//-------------------------------------------------------------------
 			foreach ($subselect->param as $param) {
 
@@ -353,7 +357,8 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 
 			$subqueries[$sqindex] = $subquery;
-			debug("fillCreateQuery: <b>subquery$sqindex </b>= $subqueries[$sqindex]");
+			debug("fillCreateQuery: <b>subquery$sqindex </b>= $subqueries[$sqindex]");	
+			debug(str_repeat(".",80));
 			$sqindex  += 1;
 		} //for each subselect
 

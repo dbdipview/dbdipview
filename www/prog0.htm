@@ -54,8 +54,8 @@ include "messagesw.php";
 				/>
 			</td>
 		  </tr>
-		  <tr>
 <?php
+		echo "<tr>";
 		echo "<td>$MSGSW04_Records:</td>";
 		echo "<td>";
 		if(strlen($s) > 0) {
@@ -71,7 +71,7 @@ include "messagesw.php";
 					echo '<select name="xmlfile"> ';
 					print '<option value="default.xml" selected="selected"> </option>' . PHP_EOL;
 					while (list($myval, $mydb, $myxml, $mytoken, $myaccess, $mydesc) = fgetcsv($fh, 1024, "\t")) {
-						print '<option value="' . $myxml . '">' . $myval . " - " . $mydesc . '</option>' . PHP_EOL;
+						print '<option value="' . $myxml . '">' . $myval . " (" . $mydb . ") - " . $mydesc . '</option>' . PHP_EOL;
 					}
 					print '</select>';
 				}
@@ -79,17 +79,16 @@ include "messagesw.php";
 				echo "<h2>$MSGSW05_ErrorNoConfiguration.</h2>";
 		}
 		echo "</td>";
-		
+		echo "</tr>";	
 	} //c=''
 ?>
-      </tr>
       <tr>
         <td>
         </td>
         <td style="text-align:center">
           <input type="hidden" name="submit_cycle" value="CheckLogin" /><br />
-          <input type="hidden" name="lang"         value="<?php echo $myLang; ?>" /><br />
-          <input type="hidden" name="debug"        value="<?php echo $debug; ?>" readonly /><br />
+          <input type="hidden" name="lang"         value="<?php echo $myLang; ?>" />
+          <input type="hidden" name="debug"        value="<?php echo $debug; ?>" readonly />
           <input type="submit" value="&#x27a4;" alt="<?php echo $MSGSW08_Continue; ?>" class='button'/>
         </td>
       </tr>
