@@ -61,7 +61,7 @@ include "messagesw.php";
 		if(strlen($s) > 0) {
 ?>
 			<input type="text" size="30" name="xmlfile" value="<?php echo $s;?>" readonly />
-<?
+<?php
 		} else {
 			if(file_exists ("data/configuration.dat")) {
 				$fh = fopen("data/configuration.dat", "r");
