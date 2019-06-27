@@ -11,10 +11,11 @@ $MYLANG="en";
 $DDV_DIR_PACKED="$PROGDIR/../records/DIP0/";             //default location for input packages
 $DDV_DIR_UNPACKED="$PROGDIR/../records/DIP0unpacked/";   //default location for extracted content
 
-//SIARD section
+//SIARD section ////////////
 $JAR="$PROGDIR/siard/dbptk-app-2.2.0.jar";				 //DBPTK package
-$JAVA="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/java";
+$JAVA="java";
+#$JAVA="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/java";
 $MEM="-Xmx1000m";
 $DBTYPE="postgresql";
 $HOST="localhost";
-//
+////////////////////////////

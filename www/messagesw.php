@@ -3,8 +3,8 @@
 if ( "$myLang" == "sl" ){
 $MSGSW01_MainSubTitle="Dostop do gradiva: vsebine podatkovnih zbirk";
 $MSGSW02_Code="Koda";
-$MSGSW03_Database="Podatkovna zbirka";
-$MSGSW04_Records="Gradivo";
+$MSGSW03_Database="Vsebnik za podatkovne zbirke";
+$MSGSW04_Records="Pregledovalnik";
 $MSGSW05_ErrorNoConfiguration="Napaka, ne morem odpreti konfiguracijske datoteke";
 $MSGSW06_ErrorSessionExpired="Napaka, vaša seja je potekla";
 $MSGSW07_ErrorNoSuchCombination="NAPAKA: Ta kombinacija ni na voljo";
@@ -33,8 +33,8 @@ $MHLP12="preklopite s + ter ob pritisnjeni tipki Ctrl dodajajte vrednosti";
 } else { 
 $MSGSW01_MainSubTitle="Access to the records of archived databases";
 $MSGSW02_Code="Code";
-$MSGSW03_Database="Database";
-$MSGSW04_Records="Archival records";
+$MSGSW03_Database="Database container";
+$MSGSW04_Records="Viewer for archival records";
 $MSGSW05_ErrorNoConfiguration="Error, cannot open the configuration file";
 $MSGSW06_ErrorSessionExpired="Error, your session has expired";
 $MSGSW07_ErrorNoSuchCombination="Error: no such configuration is available";

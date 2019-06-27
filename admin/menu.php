@@ -49,7 +49,6 @@ $TXT_RESET=chr(27).'[0m';
 
 $DDV="-";
 $DATABASE="-";
-$DESCRIPTION="no description";
 
 //false=continue
 function stopHere($p) {
@@ -278,20 +277,20 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 
 
 while ( "$answer" != "q" ) { 
-	echo "$TXT_CYAN $MSG_TITLE $TXT_RESET" . "$MSG_SELECTEDDDV: $DDV SIARD: $SIARDNAME]" . PHP_EOL;;
+	echo "$TXT_CYAN $MSG_TITLE $TXT_RESET" . PHP_EOL;;
 	echo "${XC}c  $MSG0_LISTDIRS" . PHP_EOL;
 	echo "${XD}d  $MSGR_SELECT_DB" . PHP_EOL;
 	echo "${X0}0  $MSG0_CREATEDB [$DATABASE]" . PHP_EOL;
-	echo "${X1}1  $MSG1_SELECTPKG" . PHP_EOL;
-	echo "${X2}2  $MSG2_UNPACKDDV" . PHP_EOL;
+	echo "${X1}1  (dbDIPview) $MSG1_SELECTPKG" . PHP_EOL;
+	echo "${X2}2  (dbDIPview) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 	echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
-	echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD" . PHP_EOL;
+	echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD [$SIARDNAME]" . PHP_EOL;
 	echo "${X3}3  (SIARD) $MSG3_ENABLEACCESS" . PHP_EOL;
 	echo "${X4}4  (CSV) $MSG4_CREATEAPL" . PHP_EOL;
 	echo "${X5}5  (CSV) $MSG5_MOVEDATA" . PHP_EOL;
 	echo "${X6}6  $MSG6_ACTIVATEDIP" . PHP_EOL;
 	echo "${X7}7  $MSG7_DEACTAPL" . PHP_EOL;
-	echo "${X8}8  $MSG8_RM_UNPACKED_DDV" . PHP_EOL;
+	echo "${X8}8  $MSG8_RM_UNPACKED_DDV  [$DDV]" . PHP_EOL;
 	echo "${X9}9  $MSG9_RMDDV" . PHP_EOL;
 	echo " q  $MSG_EXIT" . PHP_EOL;
 	echo "$MSG_CMD";
@@ -458,14 +457,14 @@ while ( "$answer" != "q" ) {
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if( !file_exists($SIARDFILE))
-				err_msg($MSG15_CANNOT_FIND_FILE_FROM_DDV . ":", $SIARDFILE);
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $SIARDFILE);
 			else if (isAtype($SIARDFILE, "siard")) { 
 				if(installSIARD($DATABASE, $SIARDFILE))
 					$XS='X';
 			} else
-				err_msg($MSG42_NOTSIARD . ":", $PACKAGEFILE);
+				err_msg($MSG42_NOTSIARD . ":", $SIARDFILE);
 			
-			if(stopHere($MSG3_ENABLEACCESS)) {
+			if($XS==' ' || stopHere($MSG3_ENABLEACCESS)) {
 				enter();
 				break;
 			}
@@ -473,8 +472,10 @@ while ( "$answer" != "q" ) {
 		case "3": $X3=' ';
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
+			else if( !is_dir($DDVEXTRACTED))
+				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 			else if( !file_exists($LISTFILE))
-				err_msg($MSG15_CANNOT_FIND_FILE_FROM_DDV . ":", $LISTFILE);
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if (notSet($DATABASE))
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else {
@@ -505,14 +506,16 @@ while ( "$answer" != "q" ) {
 			$CREATEDB1=$DDVEXTRACTED . "/metadata/createdb01.sql";
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
+			else if( !is_dir($DDVEXTRACTED))
+				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 			else if(notSet($DATABASE))
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else if (isAtype($PACKAGEFILE, "siard"))
 				err_msg("SIARD!");
 			else if( !is_file($LISTFILE))
-				err_msg($MSG15_CANNOT_FIND_FILE_FROM_DDV . ":", $LISTFILE);
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if( !is_file($CREATEDB0))
-				err_msg($MSG15_CANNOT_FIND_FILE_FROM_DDV . ":", $CREATEDB0);
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $CREATEDB0);
 			else {
 				if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
 					while (($line = fgets($handleList)) !== false) {
@@ -559,10 +562,12 @@ while ( "$answer" != "q" ) {
 		case "5": $X5=' ';
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
+			else if( !is_dir($DDVEXTRACTED))
+				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 			else if (isAtype($PACKAGEFILE, "siard"))
 				err_msg("SIARD!");
 			else if( !is_dir($DDVEXTRACTED))
-				err_msg($MSG15_CANNOT_FIND_FILE_FROM_DDV . ":", $DDVEXTRACTED);
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $DDVEXTRACTED);
 			else if( !is_file($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else {
@@ -621,6 +626,7 @@ while ( "$answer" != "q" ) {
 							$cmd="";
 							passthru("echo GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST . 
 									"| PGPASSWORD=$PGPASSWORD psql $DATABASE -U $DBADMINUSER");
+							$X5='X';
 						} //TABLE
 
 						else if( "$LTYPE" == "NOSCHEMA" )
@@ -630,7 +636,6 @@ while ( "$answer" != "q" ) {
 
 					} //while
 					fclose($handleList);
-					$X5='X';
 				} else
 					err_msg($MSG_ERROR); //if handleList
 			} 
@@ -642,14 +647,17 @@ while ( "$answer" != "q" ) {
 		case "6": $X6=' ';
 			$XMLFILESRC=$DDVEXTRACTED . "/metadata/queries.xml";
 			$XMLFILEDST=$DDV;
+			$DESCRIPTION="...";
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
+			else if( !is_dir($DDVEXTRACTED))
+				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 			else if(notSet($DATABASE))
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else if( !is_dir("$SERVERDATADIR"))
 				err_msg($MSG16_FOLDER_NOT_FOUND . ":", $SERVERDATADIR);
 			else if( !is_file("$XMLFILESRC"))
-				err_msg($MSG15_CANNOT_FIND_FILE_FROM_DDV . ":", $XMLFILESRC);
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $XMLFILESRC);
 			else {
 				$targetFile=$SERVERDATADIR . $XMLFILEDST . ".xml";
 				if( !is_file($targetFile))  //copy to be sure
@@ -693,8 +701,10 @@ while ( "$answer" != "q" ) {
 			$XMLFILEDST=$DDV;
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
+			else if( !is_dir($DDVEXTRACTED))
+				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 			else if( !is_file("$LISTFILE"))
-				err_msg($MSG15_CANNOT_FIND_FILE_FROM_DDV . ":", $LISTFILE);
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
 				while (($line = fgets($handleList)) !== false) {
 					$line=rtrim($line);
@@ -752,6 +762,8 @@ while ( "$answer" != "q" ) {
 		case "8": $X8=' ';
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
+			else if( !is_dir($DDVEXTRACTED))
+				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 			else if(is_link($DDVEXTRACTED))
 				debug("Skip symbolic link: " . $DDVEXTRACTED);
 			else if (isAtype($PACKAGEFILE, "siard"))
