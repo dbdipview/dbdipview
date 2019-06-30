@@ -14,16 +14,16 @@ One of the alternative solutions is to store these queries in a way that will en
 * Export data from the database and create a preservation package. This is usually done by the creator (or maintainer).
 * When the database content is delivered to the archives as a Submission Information Package (SIP), the typical goal and use of the data by the future user will be defined. The starting point here is the information from the creator combined with available documentation.
 * Prepare the SQL queries as part of the validation of the content in the package. In the process, we test the quality and usability of the data when they are received in the archives. The queries are stored in an XML file.
-* Create an additional package with information on how to access the data - "access enabling configuration package". Both packages are using the same schema name. 
+* Create an additional package with information on how to access the data - "enabling configuration package". Both packages are using the same schema name. 
 * When the acceptance testing is completed, the packages are stored for future use - with no need for involvement of a database expert.
 ### Use
 * In a reading room environment, restore the database by deploying the database preservation package to a database management system (DBMS).
-* Activate the access package. More than one database can be activated and handled by the same tool in a DBMS - the user simply selects the target database.
+* Activate the viewer package. More than one database can be activated and handled by the same tool in a DBMS - the user simply selects the target database.
 * As a consequence, the user gets access to a list of configured reports for a selected database. For each report a menu is available where search terms can be entered in different forms and combinations (basic AND, OR, NOT). Also, drop-down menus with table data can be used with the possibility of multiple selections, as well as inline help for a specific input field. 
 * In the results pane, for a single report output of one or more different queries is displayed, and each is preceded by a title and a subtitle (or short explanation text). User may sort the lines based on a selected column and columns may also be removed. It is possible to link a column value as a parameter to another report. 
 
 ## The Benefits
-* PHP code of the access module can be modified if the technology changes
+* PHP code of the viewer module can be modified if the technology changes
 * PHP code simplifies security audit
 * The quality of the ingested data can be tested during the ingest process
 * No further expert involvement is needed for future use of the content
@@ -66,7 +66,8 @@ cd dbdipview/admin
 php menu.php
 ```
 
-### Creation of an access enabling dbDIPview package
+### Creation of a dbDIPview package
+* One viewer configuration package will be created for one database. Nevertheless, we can use it with all databases with the same structure.
 * Create an XML file with your first query. The XML template is in the folder ```dbdipview/doc```.
 * Build the dbDIPview package. Note that the package can optionally include the complete database content (CSV). With data in the work folder ```dbdipview/records``` use this command:
 
@@ -81,12 +82,16 @@ Here we use the administration menu that allows us to do step by step operations
 * Define the target database.
 * Select the desired package.
 * Restore the database content (using the SIARD package or CSV, or dedicated external tool). 
-* Unpack and activate the corresponding dbDIPview access package for this schema. 
+* Unpack and activate the corresponding dbDIPview viewer package for this schema. 
 
 ```
 cd dbdipview/admin
 php menu.php
 ```
+We execute the menu options following their typical order:
+
+***![Alt text](docs/images/adminmenu1.png?raw=true "adminmenu")
+
 The user can now use the browser to access the information in the database. Similarly, the access can be deactivated and the restored copy of the database deleted.
 
 ### User Access
