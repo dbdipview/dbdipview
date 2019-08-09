@@ -42,6 +42,7 @@
 			<xs:element name="selectOrder"       type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="ahrefs"            type="ahrefs"    minOccurs="0" maxOccurs="1" />
 			<xs:element name="images"            type="images"    minOccurs="0" maxOccurs="1" />
+			<xs:element name="blobs"             type="blobs"     minOccurs="0" maxOccurs="1" />
 			<xs:element name="links_to_next_screen" type="linkstns" minOccurs="0" maxOccurs="unbounded" />
 
 			<xs:element name="subselect" minOccurs="0" maxOccurs="unbounded">
@@ -54,6 +55,7 @@
 						<xs:element name="selectOrder" type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="ahrefs"      type="ahrefs"         minOccurs="0" maxOccurs="1" />
 						<xs:element name="images"      type="images"         minOccurs="0" maxOccurs="1" />
+						<xs:element name="blobs"       type="blobs"          minOccurs="0" maxOccurs="1" />
 						<xs:element name="param"       type="paramSubselect" minOccurs="0" maxOccurs="unbounded" />
 						<xs:element name="links_to_next_screen" type="linkstns" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
@@ -93,6 +95,29 @@
 						<xs:element name="dbcolumnname" type="xs:string" minOccurs="1" maxOccurs="1" />
 						<xs:element name="style"        type="xs:string" minOccurs="1" maxOccurs="1" />
 					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="blobs">
+		<xs:sequence>
+			<xs:element name="blob" minOccurs="1" maxOccurs="unbounded" >
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="id"           type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="dbcolumnname" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="query"        type="xs:string" minOccurs="1" maxOccurs="1" />
+					</xs:sequence>
+					<xs:attribute name="mode">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="CLOB" />
+								<xs:enumeration value="BLOB" />
+								<xs:enumeration value="OID" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
