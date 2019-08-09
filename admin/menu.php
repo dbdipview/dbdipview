@@ -263,8 +263,8 @@ function installSIARD($database, $siardfile) {
 		err_msg($MSG17_FILE_NOT_FOUND, $JAR);
 		return(false);
 	}
-	debug(   "$JAVA $MEM $ENCODING -jar $JAR -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn 5432 -i siard-2 -if $siardfile");
-	passthru("$JAVA $MEM $ENCODING -jar $JAR -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn 5432 -i siard-2 -if $siardfile");
+	debug(   "$JAVA $MEM $ENCODING -jar $JAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn 5432 -i siard-2 -if $siardfile");
+	passthru("$JAVA $MEM $ENCODING -jar $JAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn 5432 -i siard-2 -if $siardfile");
 	return(true);
 }
 
@@ -512,7 +512,13 @@ while ( "$answer" != "q" ) {
 						if ("$LTYPE" == "SCHEMA" ) {
 							$SCHEMA = addQuotes($tok[1]);
 							echo $MSG23_SCHEMA_ACCESS . " " . $SCHEMA . PHP_EOL;
+							
 							passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
+									"| PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER, $rv);
+							if ( $rv != 0 )
+								err_msg($MSG_ERROR);
+							
+							passthru("echo GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
 									"| PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER, $rv);
 							if ( $rv != 0 )
 								err_msg($MSG_ERROR);
@@ -637,11 +643,11 @@ while ( "$answer" != "q" ) {
 							if ( "$CSVMODE" == "CSV" ) {
 								passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
 										"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' CSV $HEADER" . 
-										" | PGPASSWORD=$PGPASSWORD psql $DATABASE -U $DBADMINUSER");
+										" | PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER);
 							} else if ( "$CSVMODE" == "TAB" ) {
 								passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
 										"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' $HEADER WITH NULL AS \'\'" . 
-										" | PGPASSWORD=$PGPASSWORD psql $DATABASE -U $DBADMINUSER");
+										" | PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER);
 							} else
 								err_msg("Error, wrong CSVMODE:", $CSVMODE);
 
@@ -650,7 +656,7 @@ while ( "$answer" != "q" ) {
  
 							$cmd="";
 							passthru("echo GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST . 
-									"| PGPASSWORD=$PGPASSWORD psql $DATABASE -U $DBADMINUSER");
+									"| PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER);
 							$X5='X';
 						} //TABLE
 
@@ -743,7 +749,8 @@ while ( "$answer" != "q" ) {
 						else if (notSet($DATABASE))
 							err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 						else {
-							passthru("echo DROP SCHEMA " . $SCHEMA . " CASCADE | PGPASSWORD=$PGPASSWORD psql $DATABASE -U $DBADMINUSER", $rv);
+							passthru("echo DROP SCHEMA " . $SCHEMA . 
+							" CASCADE | PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER, $rv);
 						}
 					}
 				} //while

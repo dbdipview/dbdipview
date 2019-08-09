@@ -74,7 +74,7 @@ font-size:0.75rem;
 table.mydbtable1 {
 	border-width: 1px 1px 1px 1px;
 	border-spacing: 0px;
-	border-style: dotted dotted dotted dotted 
+	border-style: dotted dotted dotted dotted;
 	border-color: gray gray gray gray;
 	border-collapse: separate;
 	background-color: white;
@@ -105,7 +105,7 @@ font-size:0.75rem;
 table.sortable1 {
 	border-width: 1px 1px 1px 1px;
 	border-spacing: 0px;
-	border-style: dotted dotted dotted dotted 
+	border-style: dotted dotted dotted dotted;
 	border-color: gray gray gray gray;
 	border-collapse: separate;
 	background-color: white;
@@ -141,17 +141,16 @@ color:#000000;
 text-decoration:none;
 }
 
-//buttons border: 1px solid #006; border: 1px solid #006;
+
 .button {
-border: none;
-border-style: outset;
-background: #ccf;
+border: 1px gray solid;
+background: #DCDCDC;
 }
 .button:hover {
-border: none;
-border-style: outset;
+border: 1px gray solid;
 background: #eef;
 }
+
 
 .box {
 background-color: #F4F4F4;
@@ -164,21 +163,5 @@ position:absolute;
 input[type=checkbox]
 {
   transform: scale(0.7);
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
 }
 
-.noselect {
-  -webkit-touch-callout: none; /* iOS Safari        div class="noselect" */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
-}

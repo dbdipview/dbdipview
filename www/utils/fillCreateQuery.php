@@ -69,9 +69,16 @@ $paramForwardNum = array();
 
 foreach ($xml->database->screens->screen as $screen) {
 	$where="";
+	
 	$f_ahrefs=false;
 	$ahref_columns=array();
+	
 	$f_images=false;
+	$images_image_style=array();
+	
+	$f_blobs=false;
+	$blob_columns=array();
+
 	$f_links_to_next_screen=false;
 	$linknextscreen_columns=array();
 	
@@ -206,6 +213,20 @@ foreach ($xml->database->screens->screen as $screen) {
 				debug("fillCreateQuery: IMAGE style:        $image->style");
 
 				$images_image_style[(string)$image->dbcolumnname] = $image->style;
+			}
+		}
+
+		//----------------------
+		foreach ($screen->blobs as $blobs) {
+			foreach ($blobs->blob as $blob) {
+				$f_blobs = true;
+				$blob_column = array();
+								
+				debug("fillCreateQuery: BLOB dbcolumnname: $blob->dbcolumnname");
+				debug("fillCreateQuery: BLOB id:           $blob->id");
+
+				$blob_column["id"] = $blob->id;
+				$blob_columns[(string)$blob->dbcolumnname] = $blob_column;
 			}
 		}
 
@@ -415,12 +436,14 @@ foreach ($xml->database->screens->screen as $screen) {
 										$linknextscreen_columns,
 										$images_image_style,
 										$ahref_columns,
+										$blob_columns,
 										"M");
 			else 
 				$newlist=qToTableWithLink($query, 
 										$linknextscreen_columns,
 										$images_image_style,
 										$ahref_columns,
+										$blob_columns,
 										"M");
 			
 			print $newlist[0];
@@ -438,12 +461,14 @@ foreach ($xml->database->screens->screen as $screen) {
 											$subqueries_linknextscreen_columns[$sqindexLoop],
 											$subqueries_images_image_style[$sqindexLoop],
 											$subqueries_ahref_columns[$sqindexLoop],
+											$subqueries_blob_columns[$sqindexLoop],
 											$sqindexLoop);
 				else 
 					$newlist=qToTableWithLink($subqueries[$sqindexLoop], 
 											$subqueries_linknextscreen_columns[$sqindexLoop],
 											$subqueries_images_image_style[$sqindexLoop],
 											$subqueries_ahref_columns[$sqindexLoop],
+											$subqueries_blob_columns[$sqindexLoop],
 											$sqindexLoop);
 										
 				print $newlist[0];
@@ -467,7 +492,8 @@ foreach ($xml->database->screens->screen as $screen) {
 				$newlist=qToListWithLink($query, 
 										$linknextscreen_columns,
 										$images_image_style,
-										$ahref_columns);
+										$ahref_columns,
+										$blob_columns);
 			else 
 				$newlist=qToList($query);
 
@@ -486,7 +512,8 @@ foreach ($xml->database->screens->screen as $screen) {
 					$newlist=qToListWithLink($subqueries[$sqindexLoop], 
 											$subqueries_linknextscreen_columns[$sqindexLoop], 
 											$subqueries_images_image_style[$sqindexLoop],
-											$subqueries_ahref_columns[$sqindexLoop]);
+											$subqueries_ahref_columns[$sqindexLoop],
+											$subqueries_blob_columns[$sqindexLoop]);
 				else 
 					$newlist=qToList($subqueries[$sqindexLoop]);  //display
 
