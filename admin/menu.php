@@ -9,7 +9,7 @@
  *
  */
 
-$PROGDIR=getcwd();  //`pwd`  = /home/dbdipview/tools
+$PROGDIR=getcwd();  //`pwd` , e.g. /home/dbdipview/admin
 if ( ! is_file($PROGDIR . "/menu.php")) {
 	echo "Wrong start directory: $PROGDIR " . PHP_EOL;
 	exit(1);
@@ -20,35 +20,28 @@ $DDVEXTRACTED="";
 $PACKAGEFILE="";
 $SIARDNAME="";
 $SIARDFILE="";
+$orderInfo=array();
 
 include 'configa.txt';
 include 'messagesm.php';
+include 'funcConfig.php';
 //--------------------------------------------
 
-$SERVERCONFIGFILE=$SERVERDATADIR."configuration.dat";
-
-#barve: http://edoceo.com/liber/linux-bash-shell
-#http://prefetch.net/blog/index.php/2005/01/28/no-md5sum-use-openssl/
-#http://sleepyhead.de/howto/?href=other
-
-# run as root?
-#test "$(whoami)" != 'root' && echo you are using a non-privileged account && exit 1
 $XB=" ";$XC=" ";$XD=" ";$X0=" ";$X1=" ";$X2=" ";$XP=' ';$XS=' ';$X3=" ";$X4=" ";$X5=" ";$X6=" ";$X7=" ";$X8=" ";$X9=" ";
-
-# pg_dump -sC gzsars0test -U pg_boris	 #schema,create
-# pg_dump -da gzsars0test -U pg_boris	 #insert, data
+$XOS=" ";$XOI=" ";$XOD=" ";
 
 $SCHEMA="";
 $PKGFILEPATH="-";
 $debug=false;
 
-$TXT_RED=chr(27).'[31m'; 
+$TXT_RED=  chr(27).'[31m'; 
 $TXT_GREEN=chr(27).'[32m';
-$TXT_CYAN=chr(27).'[36m';
+$TXT_CYAN= chr(27).'[36m';
 $TXT_RESET=chr(27).'[0m';
 
+$ORDER="";
 $DDV="";
-$DATABASE="";
+$DBC="";
 
 //false=continue
 function stopHere($p) {
@@ -93,74 +86,15 @@ function notSet($var) {
 		return(false);
 }
 
-function showConfiguration() {
-	global $SERVERCONFIGFILE, $TXT_GREEN,$TXT_RESET;
-	global $MSG34_NOACTIVEDB, $MSG_ACCESSDB, $MSG40_ACTIVATEDPKGS;
-	$length0=$length1=$length2=$length3=$length4=5;
-	
-	if (($handle = fopen($SERVERCONFIGFILE, "r")) !== FALSE) {
-		while (($line = fgets($handle)) !== false) {
-			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);
-			if (count($tok)>=2) {
-				if (strlen($tok[0]) > $length0)
-					$length0 = strlen($tok[0]);
-				if (strlen($tok[1]) > $length1)
-					$length1 = strlen($tok[1]);
-				if (strlen($tok[3]) > $length3)
-					$length3 = strlen($tok[3]);
-				if (strlen($tok[4]) > $length4)
-					$length4 = strlen($tok[4]);
-			}
-		}
-		fclose($handle);
-	}
-
-	if (($handle = fopen($SERVERCONFIGFILE, "r")) !== FALSE) {
-		$i=0;
-		msgCyan($MSG40_ACTIVATEDPKGS);
-		while (($line = fgets($handle)) !== false) {
-			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);
-			if (count($tok)>=2) {
-				echo str_pad($tok[0],$length0) . "|";
-				echo str_pad($tok[1],$length1) . "|";
-				echo str_pad($tok[3],$length3) . "|";
-				echo str_pad($tok[4],$length4) . "|";
-				echo $tok[5] . PHP_EOL;
-			}
-			$i++;
-		}
-		fclose($handle);
-		if ($i == 0)
-			err_msg($MSG34_NOACTIVEDB);
-	}
-}
 
 /**
- * Checks if a container database is being used.
- * Returns number of lines with the same database (0..N).
+ * List all files with a given extension, then select a file
  *
- * @param string $serverconfig   confguration file
- * @param string $database       selected database (or any)
- *
- * @return int $found            number of occurencies
+ * @param string $outname       package name
+ * @param string $outfilename   filename
+ * @param string $extension     filename extension for search criteria
  */
-function isDatabaseActive($database) {
-	global $SERVERCONFIGFILE;
-	$found=0;
-	if (($handleRead = fopen($SERVERCONFIGFILE, "r")) !== FALSE) {
-		while (($line = fgets($handleRead)) !== false) {
-			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);
-			if (0==strcmp($tok[1], $database)) {
-				 $found++;
-			} 
-		}
-		fclose($handleRead);
-	} 
-	return($found);
-}
-
-//returns array
-function getPackageName(&$outname, &$outfilename) {
+function getPackageName(&$outname, &$outfilename, $extension) {
 	global $MSG19_DDV_PACKAGES, $MSG21_SELECT_DDV, $MSG36_NOPACKAGE;
 	global $handleKbd, $DDV_DIR_PACKED;
 	
@@ -171,8 +105,18 @@ function getPackageName(&$outname, &$outfilename) {
 	$description="UNKNOWN";
 	
 	msgCyan($MSG19_DDV_PACKAGES);
-	$out = array_diff(scandir($DDV_DIR_PACKED), array('.', '..'));
+	//$out = array_diff(scandir($DDV_DIR_PACKED), array('.', '..'));
 
+	if ($dh = opendir($DDV_DIR_PACKED)) {
+        $out = array();
+        while (($file = readdir($dh)) !== false) {
+            if (strcasecmp(substr($file, strlen($file) - strlen($extension)), $extension) == 0) {   //name.ext
+                array_push($out, $file);
+            }
+        }
+        closedir($dh);
+    }
+	
 	foreach($out as $key => $value) {
 		
 		if (isAtype($value, "siard")) {
@@ -181,7 +125,10 @@ function getPackageName(&$outname, &$outfilename) {
 		} else if (isAtype($value, "zip")) {
 			$description="dbdipview configuration for SIARD - .zip";
 			$val1 = substr($value, 0, -4);
-		} else if (isAtype($value, "tar.gz")) {
+		} else if (isAtype($value, "xml")) {
+			$description="order package with all information about packages - .xml";
+			$val1 = substr($value, 0, -4);
+		}else if (isAtype($value, "tar.gz")) {
 			$description="dbdipview configuration+CSV - .tar.gz";
 			$val1 = substr($value, 0, -7);
 		} else {
@@ -200,14 +147,14 @@ function getPackageName(&$outname, &$outfilename) {
 		echo $MSG21_SELECT_DDV . ": ";
 		$name = trim(fgets($handleKbd));
 		if (is_numeric($name) && $name < $i) {
-			$outname =$arrPkgName[intval($name)];
-			$outfilename=$arrFilename[intval($name)];
+			$outname = $arrPkgName[intval($name)];
+			$outfilename= $arrFilename[intval($name)];
 		}
 	} else
 		err_msg($MSG36_NOPACKAGE);
 }
 
-include "common.php";
+include "funcXml.php";
 
 //not used
 function showFilesInFolder($dir) {
@@ -237,6 +184,7 @@ function addQuotes($word) {
 	return $line;
 }
 
+//chck a file type
 //example: x.zip, .zip =>true
 function isAtype($name, $ending) {
 	$endingLength=strlen(".".$ending);
@@ -255,9 +203,9 @@ function installSIARD($database, $siardfile) {
 	global $DBADMINUSER, $PGPASSWORD, $JAR, $JAVA;
 	global $MEM, $DBTYPE, $HOST;
 	
-	$ENCODING="-Dfile.encoding=UTF-8";
-	$SIARDUSER=$DBADMINUSER;
-	$SIARDPASS=$PGPASSWORD;
+	$ENCODING = "-Dfile.encoding=UTF-8";
+	$SIARDUSER = $DBADMINUSER;
+	$SIARDPASS = $PGPASSWORD;
 
 	if (!file_exists($JAR)) {
 		err_msg($MSG17_FILE_NOT_FOUND, $JAR);
@@ -268,11 +216,13 @@ function installSIARD($database, $siardfile) {
 	return(true);
 }
 
+
+
 //[ ! -x $PROGDIR/removeBOM ] && echo No executable $PROGDIR/removeBOM found. && exit -1
 
 $handleKbd = fopen ("php://stdin","r");
-$answer="X";
-$rv=''; //return value for passthru()
+$answer = "X";
+$rv = ''; //return value for passthru()
 
 //first installation? Check existence of some folders and create them if needed
 if (!is_dir($SERVERDATADIR)) {
@@ -281,11 +231,8 @@ if (!is_dir($SERVERDATADIR)) {
 		die($MSG_ERROR);
 }
 
-if (!file_exists($SERVERCONFIGFILE)) {        //disappeared??
-	msgCyan($MSG43_INITCONFIG . ": " . $SERVERCONFIGFILE);
-	if (!touch($SERVERCONFIGFILE))
-		die($MSG_ERROR);
-}
+config_create();   //check existence of config file
+config_migrate();  //migration?
 
 if (!is_dir($DDV_DIR_PACKED)) {
 	msgCyan($MSG43_INITCONFIG . ": " . $DDV_DIR_PACKED);
@@ -300,11 +247,32 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 }
 
 
+$options = getopt("x:h");
+if (array_key_exists('h', $options)) {
+	echo "Usage: php menu.php" . PHP_EOL;
+	echo "   or: php menu.php [-xXML] [-h]" . PHP_EOL;
+	exit;
+} 
+if (array_key_exists('x', $options)) {
+	$xmlorder= $options['x'];
+	if (!file_exists($xmlorder)) {
+		err_msg($MSG17_FILE_NOT_FOUND . ":", $xmlorder);
+		exit;
+	}
+	loadOrder($xmlorder);
+	exit;
+} 
+
+
 while ( "$answer" != "q" ) { 
-	echo "$TXT_CYAN $MSG_TITLE $TXT_RESET" . PHP_EOL;;
+	echo "$TXT_CYAN $MSG_TITLE $TXT_RESET" . PHP_EOL;
 	echo "${XC}c  $MSG0_LISTDIRS" . PHP_EOL;
+	echo "    $MSGO_ORDER: ";
+    echo "${XOS}os $MSGO_SELECT" . " - ";
+	echo "${XOI}oi $MSGO_DEPLOY" . " - ";
+	echo "${XOD}od $MSGO_DELETE  [$ORDER]" . PHP_EOL;
 	echo "${XD}d  $MSGR_SELECT_DB" . PHP_EOL;
-	echo "${X0}0  $MSG0_CREATEDB [$DATABASE]" . PHP_EOL;
+	echo "${X0}0  $MSG0_CREATEDB [$DBC]" . PHP_EOL;
 	echo "${X1}1  (dbDIPview) $MSG1_SELECTPKG" . PHP_EOL;
 	echo "${X2}2  (dbDIPview) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 	echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
@@ -316,7 +284,7 @@ while ( "$answer" != "q" ) {
 	echo "${X7}7  $MSG7_DEACTAPL" . PHP_EOL;
 	echo "${X8}8  $MSG8_RM_UNPACKED_DDV [$DDV]" . PHP_EOL;
 	echo "${X9}9  $MSG9_RMDDV" . PHP_EOL;
-	echo "${XB}B  $MSGB_RMDB [$DATABASE]" . PHP_EOL;
+	echo "${XB}B  $MSGB_RMDB [$DBC]" . PHP_EOL;
 	echo " q  $MSG_EXIT" . PHP_EOL;
 	echo "$MSG_CMD";
 	$answer = fgets($handleKbd);
@@ -340,8 +308,11 @@ while ( "$answer" != "q" ) {
 				echo "DDV=" . $DDV . PHP_EOL;
 				echo "PACKAGEFILE=" . $PACKAGEFILE . PHP_EOL;
 			
-				msgCyan("SERVERCONFIGFILE=" . $SERVERCONFIGFILE);
-				$out = passthru("cat $SERVERCONFIGFILE");
+				config_list();
+				
+				echo "Current package:";
+				$x=configGetInfo($DDV, $DBC);
+				print_r($x);
 			}
 			msgCyan($MSG3_CHECKDB);
 			$out = passthru("PGPASSWORD=$PGPASSWORD psql -P pager=off -l -U $DBADMINUSER");
@@ -363,29 +334,59 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 
+		case "os": $XOS='X';
+			echo "$MSGO_ORDER: ";
+			$name = "";
+			$file = "";
+			getPackageName($name, $file, "xml");
+			$ORDER = $name;
+			$ORDERFILEPATH = $DDV_DIR_PACKED . "/" . $file;
+			$orderInfo = loadOrder($ORDERFILEPATH);
+			print_r($orderInfo);
+			$DDV = pathinfo($orderInfo['ddv'], PATHINFO_FILENAME);
+			$DBC = $orderInfo['dbc'];
+			$PKGFILEPATH = $DDV_DIR_PACKED . "/" . $orderInfo['ddv'];
+			$DDVEXTRACTED = $DDV_DIR_UNPACKED . $DDV;
+			$LISTFILE = $DDVEXTRACTED . "/metadata/list.txt";
+			$SIARDNAME = pathinfo($orderInfo['siardname'], PATHINFO_FILENAME);
+			$SIARDFILE = $DDV_DIR_PACKED . $orderInfo['siardname'];
+			echo $ORDER . PHP_EOL;
+			if (stopHere($MSG2_UNPACKDDV)) {
+				enter();
+				break;
+			}
+
+		case "oi": $XOI='X';
+			echo "TBD";
+			break;
+			
+		case "od": $XOD='X';
+			echo "TBD";
+			break;
+			
 		case "d": $XD='X';
 			echo "$MSG_ACCESSDB: ";
 			$name = trim(fgets($handleKbd));
 			if (strlen($name) > 0)
-				$DATABASE=$name;
+				$DBC = $name;
 			break;
 
 		case "0": $X0=' ';
-			if (notSet($DATABASE)) 
+			if (notSet($DBC)) 
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else {
-				passthru("PGPASSWORD=$PGPASSWORD psql -P pager=off -q -l -U " . $DBADMINUSER . " -d " . $DATABASE, $rv);
+				passthru("PGPASSWORD=$PGPASSWORD psql -P pager=off -q -l -U " . $DBADMINUSER . " -d " . $DBC, $rv);
 				if ( $rv == 0 ) {
-					err_msg("$MSG11_DB_ALREADY_EXISTS:", $DATABASE);
+					err_msg("$MSG11_DB_ALREADY_EXISTS:", $DBC);
 					$X0='X';
 				} else {
-					passthru("PGPASSWORD=$PGPASSWORD createdb " . $DATABASE . 
+					passthru("PGPASSWORD=$PGPASSWORD createdb " . $DBC . 
 							" -U ". $DBADMINUSER . " -E UTF8 --locale=sl_SI.UTF-8 --template=template0", $rv);
 					if ( $rv == 0 ) {
 						passthru("PGPASSWORD=$PGPASSWORD psql -P pager=off -l -U " . $DBADMINUSER . 
-							"| grep " . $DATABASE, $rv);
+							"| grep " . $DBC, $rv);
 						if ( $rv == 0 ) 
-							msgCyan($MSG22_DB_CREATED . ": " . $DATABASE);
+							msgCyan($MSG22_DB_CREATED . ": " . $DBC);
 						$X0='X';
 					}
 				}
@@ -396,13 +397,13 @@ while ( "$answer" != "q" ) {
 		case "1":
 			$name="";
 			$file="";
-			getPackageName($name, $file);
+			getPackageName($name, $file, "zip");
 			$X1 = ($name === "-") ? ' ' : 'X';
-			$DDV=$name;
-			$PACKAGEFILE=$file;
-			$PKGFILEPATH=$DDV_DIR_PACKED . "/" . $file;
-			$DDVEXTRACTED=$DDV_DIR_UNPACKED . $DDV;
-			$LISTFILE=$DDVEXTRACTED . "/metadata/list.txt";
+			$DDV = $name;
+			$PACKAGEFILE = $file;
+			$PKGFILEPATH = $DDV_DIR_PACKED . "/" . $file;
+			$DDVEXTRACTED = $DDV_DIR_UNPACKED . $DDV;
+			$LISTFILE = $DDVEXTRACTED . "/metadata/list.txt";
 			echo $DDV . PHP_EOL;
 			if (stopHere($MSG2_UNPACKDDV)) {
 				enter();
@@ -447,20 +448,23 @@ while ( "$answer" != "q" ) {
 					echo "SIARD!" . PHP_EOL;
 				}
 
-				$file = $DDVEXTRACTED . "/metadata/queries.xml";
-				$schema = "$PROGDIR/queries.xsd";
+				if (! empty($cmd)) {
+					$file = $DDVEXTRACTED . "/metadata/queries.xml";
+					$schema = "$PROGDIR/queries.xsd";
 
-				msgCyan($MSG35_CHECKXML);
-				validateXML($file, $schema);
+					msgCyan($MSG35_CHECKXML);
+					validateXML($file, $schema);
 
-				# for i in *.csv; do
-				# file $i | grep "with BOM" --> clearBOM
-				#done
-				if ( $rv == 0 ) {
-					msgCyan($MSG14_DDV_UNPACKED);
-					debug($DDVEXTRACTED);
+					# for i in *.csv; do
+					# file $i | grep "with BOM" --> clearBOM
+					#done
+					
+					if ( $rv == 0 ) {
+						msgCyan($MSG14_DDV_UNPACKED);
+						debug($DDVEXTRACTED);
+					}
+					$X2='X';
 				}
-				$X2='X';
 			}
 			enter();
 			break;
@@ -468,10 +472,10 @@ while ( "$answer" != "q" ) {
 		case "p":
 			$name="";
 			$file="";
-			getPackageName($name, $file);
+			getPackageName($name, $file, "siard");
 			$XP = ($name === "-") ? ' ' : 'X';
-			$SIARDNAME=$name;
-			$SIARDFILE=$DDV_DIR_PACKED . $file; 
+			$SIARDNAME = $name;
+			$SIARDFILE = $DDV_DIR_PACKED . $file; 
 			echo $SIARDNAME . PHP_EOL;
 			if (stopHere($MSGS_INSTALLSIARD)) {
 				enter();
@@ -484,7 +488,7 @@ while ( "$answer" != "q" ) {
 			else if ( !file_exists($SIARDFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $SIARDFILE);
 			else if (isAtype($SIARDFILE, "siard")) { 
-				if (installSIARD($DATABASE, $SIARDFILE))
+				if (installSIARD($DBC, $SIARDFILE))
 					$XS='X';
 			} else
 				err_msg($MSG42_NOTSIARD . ":", $SIARDFILE);
@@ -501,25 +505,25 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 			else if ( !file_exists($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
-			else if (notSet($DATABASE))
+			else if (notSet($DBC))
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else {
 				if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
 					while (($line = fgets($handleList)) !== false) {
-						$line=rtrim($line);
+						$line = rtrim($line);
 						$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-						$LTYPE=$tok[0];
+						$LTYPE = $tok[0];
 						if ("$LTYPE" == "SCHEMA" ) {
 							$SCHEMA = addQuotes($tok[1]);
 							echo $MSG23_SCHEMA_ACCESS . " " . $SCHEMA . PHP_EOL;
 							
 							passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
-									"| PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER, $rv);
+									"| PGPASSWORD=$PGPASSWORD psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 							if ( $rv != 0 )
 								err_msg($MSG_ERROR);
 							
 							passthru("echo GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
-									"| PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER, $rv);
+									"| PGPASSWORD=$PGPASSWORD psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 							if ( $rv != 0 )
 								err_msg($MSG_ERROR);
 						}
@@ -533,13 +537,13 @@ while ( "$answer" != "q" ) {
 			break;
 
 		case "4": $X4=' ';
-			$CREATEDB0=$DDVEXTRACTED . "/metadata/createdb.sql";
-			$CREATEDB1=$DDVEXTRACTED . "/metadata/createdb01.sql";
+			$CREATEDB0 = $DDVEXTRACTED . "/metadata/createdb.sql";
+			$CREATEDB1 = $DDVEXTRACTED . "/metadata/createdb01.sql";
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if ( !is_dir($DDVEXTRACTED))
 				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
-			else if (notSet($DATABASE))
+			else if (notSet($DBC))
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else if (isAtype($PACKAGEFILE, "siard"))
 				err_msg("SIARD!");
@@ -550,30 +554,30 @@ while ( "$answer" != "q" ) {
 			else {
 				if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
 					while (($line = fgets($handleList)) !== false) {
-						$line=rtrim($line);
+						$line = rtrim($line);
 						$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-						$LTYPE=$tok[0];
+						$LTYPE = $tok[0];
 						if ("$LTYPE" == "SCHEMA" ) {
 							$SCHEMA = addQuotes($tok[1]);
 
 							passthru("echo CREATE SCHEMA " . $SCHEMA . " AUTHORIZATION " . $DBADMINUSER . 
-									"| PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER, $rv);
+									"| PGPASSWORD=$PGPASSWORD psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 							if ( $rv != 0 )
 								err_msg($MSG_ERROR);;
 
 							passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
-									"| PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER, $rv);
+									"| PGPASSWORD=$PGPASSWORD psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 							if ( $rv != 0 )
 								err_msg($MSG_ERROR);
 
 							echo $MSG29_EXECUTING . " " . $CREATEDB0 . PHP_EOL;
-							passthru("cat ".$CREATEDB0."| PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER, $rv);
+							passthru("cat ".$CREATEDB0."| PGPASSWORD=$PGPASSWORD psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 							if ( $rv != 0 )
 								err_msg($MSG_ERROR);
 
 							if (is_file($CREATEDB1)) {
 								echo $MSG29_EXECUTING . " " . $CREATEDB1 . PHP_EOL;
-								passthru("cat ".$CREATEDB1."| PGPASSWORD=$PGPASSWORD psql ".$DATABASE." -U ".$DBADMINUSER, $rv);
+								passthru("cat ".$CREATEDB1."| PGPASSWORD=$PGPASSWORD psql ".$DBC." -U ".$DBADMINUSER, $rv);
 								if ( $rv != 0 )
 									err_msg($MSG_ERROR);
 							}
@@ -605,28 +609,28 @@ while ( "$answer" != "q" ) {
 				debug($MSG29_EXECUTING . " " . $LISTFILE);
 				if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
 					while (($line = fgets($handleList)) !== false) {
-						$line=rtrim($line);
+						$line = rtrim($line);
 						$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-						$LTYPE=$tok[0];
+						$LTYPE = $tok[0];
 						//LTYPE TABLE FILE CSVMODE DATEMODE DELIMITER CODESET HEADER TBD
 						//0		1		2	3		4		5			6		7		8
 
 						if ("$LTYPE" == "SCHEMA" ) 
-							$SCHEMA=addQuotes($tok[1]);
+							$SCHEMA = addQuotes($tok[1]);
 
 						else if ("$LTYPE" == "TABLE") {
-							$TABLE=addQuotes($tok[1]);
-							$FILE=$tok[2];
-							$CSVMODE=$tok[3];
-							$DATEMODE=$tok[4];
-							$DELIMITER=$tok[5];
-							$CODESET=$tok[6];
+							$TABLE = addQuotes($tok[1]);
+							$FILE = $tok[2];
+							$CSVMODE = $tok[3];
+							$DATEMODE = $tok[4];
+							$DELIMITER = $tok[5];
+							$CODESET = $tok[6];
 							if ($tok[7] == "y" )
 								$HEADER="HEADER";
 							else
 								$HEADER="";
 
-							$SRCFILE=$DDVEXTRACTED . "/data/$FILE";
+							$SRCFILE= $DDVEXTRACTED . "/data/$FILE";
 
 							debug("LTYPE=" . $tok[0]);
 							debug("TABLE=" . $TABLE);
@@ -637,17 +641,17 @@ while ( "$answer" != "q" ) {
 							
 							if ("$CODESET" == "UTF8BOM") { 
 								passthru("$PROGDIR/removeBOM $SRCFILE $SRCFILE" . "_noBOM");
-								$SRCFILE=$SRCFILE."_noBOM";
+								$SRCFILE= $SRCFILE."_noBOM";
 							}
 							passthru("chmod o+r $SRCFILE");
 							if ( "$CSVMODE" == "CSV" ) {
 								passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
 										"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' CSV $HEADER" . 
-										" | PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER);
+										" | PGPASSWORD=$PGPASSWORD psql " . $DBC . " -U " . $DBADMINUSER);
 							} else if ( "$CSVMODE" == "TAB" ) {
 								passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
 										"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' $HEADER WITH NULL AS \'\'" . 
-										" | PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER);
+										" | PGPASSWORD=$PGPASSWORD psql " . $DBC . " -U " . $DBADMINUSER);
 							} else
 								err_msg("Error, wrong CSVMODE:", $CSVMODE);
 
@@ -656,7 +660,7 @@ while ( "$answer" != "q" ) {
  
 							$cmd="";
 							passthru("echo GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST . 
-									"| PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER);
+									"| PGPASSWORD=$PGPASSWORD psql " . $DBC . " -U " . $DBADMINUSER);
 							$X5='X';
 						} //TABLE
 
@@ -676,21 +680,21 @@ while ( "$answer" != "q" ) {
 			}
 
 		case "6": $X6=' ';
-			$XMLFILESRC=$DDVEXTRACTED . "/metadata/queries.xml";
-			$XMLFILEDST=$DDV;
-			$DESCRIPTION="...";
+			$XMLFILESRC = $DDVEXTRACTED . "/metadata/queries.xml";
+			$XMLFILEDST = $DDV;
+			$DESCRIPTION ="...";
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if ( !is_dir($DDVEXTRACTED))
 				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
-			else if (notSet($DATABASE))
+			else if (notSet($DBC))
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else if ( !is_dir("$SERVERDATADIR"))
 				err_msg($MSG16_FOLDER_NOT_FOUND . ":", $SERVERDATADIR);
 			else if ( !is_file("$XMLFILESRC"))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $XMLFILESRC);
 			else {
-				$targetFile=$SERVERDATADIR . $XMLFILEDST . ".xml";
+				$targetFile= $SERVERDATADIR . $XMLFILEDST . ".xml";
 				if ( !is_file($targetFile))  //copy to be sure
 					if (! copy($XMLFILESRC, $targetFile))
 						err_msg("Error:" . $XMLFILEDST . ".xml");
@@ -699,37 +703,31 @@ while ( "$answer" != "q" ) {
 				else
 					debug("ALREADY EXISTS $targetFile");
 					
-				if (isPackageActivated($SERVERCONFIGFILE, $DDV, $DATABASE) > 0) 
-					err_msg($MSG30_ALREADY_ACTIVATED, "$DDV ($DATABASE)");
+				if (isPackageActivated($DDV, $DBC) > 0) 
+					err_msg($MSG30_ALREADY_ACTIVATED, "$DDV ($DBC)");
 				else { 
-				
-					if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
-						while (($line = fgets($handleList)) !== false) {
-							$line=rtrim($line);
-							$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-							$LTYPE=$tok[0];
-							if ("$LTYPE" == "DESCRIPTION" ) {
-								$DESCRIPTION=$tok[1];
-								echo $DESCRIPTION . PHP_EOL;
-							}
-						}
-						fclose($handleList);
-					}
-					$TOKEN=uniqid("c", FALSE); 
-					$txt="$DDV\t$DATABASE\t$XMLFILEDST.xml\t$TOKEN\tpublic\t$DESCRIPTION\t";
-					$rv = file_put_contents($SERVERCONFIGFILE, $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
-					if ( $rv !== FALSE) {
-						msgCyan($MSG27_ACTIVATED);
-						showConfiguration();
-						$X6='X';
-					}
+					$DDVTEXT = "";
+					$REF = "";
+					$TITLE = "";
+					$info['ddv'] = $DDV;
+					$info['dbcontainer'] = $DBC;
+					$info['queriesfile'] = $XMLFILEDST . ".xml";
+					$info['ddvtext'] = $DDVTEXT;
+					$info['token'] = $TOKEN;
+					$info['access'] = 'public';
+					$info['ref'] = $REF;
+					$info['title'] = $TITLE;
+					config_json_add_item($info);
+					msgCyan($MSG27_ACTIVATED);
+					showConfiguration();
+					$X6='X';
 				}
 			}
 			enter();
 			break;
 
 		case "7": $X7=' ';
-			$XMLFILEDST=$DDV;
+			$XMLFILEDST= $DDV;
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if ( !is_dir($DDVEXTRACTED))
@@ -738,54 +736,36 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
 				while (($line = fgets($handleList)) !== false) {
-					$line=rtrim($line);
+					$line = rtrim($line);
 					debug("LINE=$line");
 					$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-					$LTYPE=rtrim($tok[0]);
+					$LTYPE = rtrim($tok[0]);
 					if ("$LTYPE" == "SCHEMA" ) {
-						$SCHEMA=addQuotes($tok[1]);
+						$SCHEMA = addQuotes($tok[1]);
 						if (notSet($SCHEMA))
 							err_msg($MSG24_NO_SCHEMA);
-						else if (notSet($DATABASE))
+						else if (notSet($DBC))
 							err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 						else {
 							passthru("echo DROP SCHEMA " . $SCHEMA . 
-							" CASCADE | PGPASSWORD=$PGPASSWORD psql " . $DATABASE . " -U " . $DBADMINUSER, $rv);
+							" CASCADE | PGPASSWORD=$PGPASSWORD psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 						}
 					}
 				} //while
 				fclose($handleList);
 				
 				#this part is executed also if LISTFILE is empty - no csv and sql exist
-				if (isPackageActivated($SERVERCONFIGFILE, $DDV) > 1)
+				if (isPackageActivated($DDV) > 1)
 					err_msg($MSG37_MOREACTIVE);
 				else {
 					$file="$SERVERDATADIR" . $XMLFILEDST . ".xml";
 					if (is_file($file))
 						if (unlink($file))
-							debug("$MSG26_DELETED $XMLFILEDST.xml");
+							debug("$MSG26_DELETED: $XMLFILEDST.xml");
 				}
+				
+				config_json_remove_item($DDV, $DBC);
 
-				if (!copy($SERVERCONFIGFILE, "$SERVERCONFIGFILE.old"))
-					err_msg($MSG_ERROR);
-					
-				#remove line
-				if (($handleWrite = fopen("$SERVERCONFIGFILE.tmp", "w")) !== FALSE) {
-					if (($handleRead = fopen($SERVERCONFIGFILE, "r")) !== FALSE) {
-						while (($line = fgets($handleRead)) !== false) {
-							$line=rtrim($line);
-							$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);
-							if ( (0==strcmp($tok[0], $DDV)) && (0==strcmp($tok[1],$DATABASE)) ) {
-								msgCyan("$MSG28_DEACTIVATED $DDV ($DATABASE)");
-							} else
-								fwrite($handleWrite,$line . "\t\r\n");
-						}
-						fclose($handleRead);
-					} //if r
-					fclose($handleWrite);
-				} //if w
-
-				rename("$SERVERCONFIGFILE.tmp", $SERVERCONFIGFILE);
 				$X7='X';
 			}
 			enter();
@@ -800,12 +780,12 @@ while ( "$answer" != "q" ) {
 				debug("Skip symbolic link: " . $DDVEXTRACTED);
 			else if (isAtype($PACKAGEFILE, "siard"))
 				err_msg($MSG38_SIARDNORM);
-			else if (isPackageActivated($SERVERCONFIGFILE, $DDV) > 0)
+			else if (isPackageActivated($DDV) > 0)
 					err_msg($MSG37_MOREACTIVE);
 			else if (is_dir("$DDVEXTRACTED")) {
 				$out = passthru("rm -r " . $DDVEXTRACTED, $rv);
 				echo $out . PHP_EOL;
-				msgCyan($MSG26_DELETED . " " . $DDVEXTRACTED);
+				msgCyan($MSG26_DELETED . ": " . $DDVEXTRACTED);
 				$X8='X';
 			} else
 				err_msg($MSG16_FOLDER_NOT_FOUND . ":", $DDVEXTRACTED);
@@ -817,7 +797,7 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 			
-			$F=$DDV_DIR_PACKED . $FILE;
+			$F= $DDV_DIR_PACKED . $FILE;
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if (!file_exists($F))
@@ -832,17 +812,15 @@ while ( "$answer" != "q" ) {
 			break;	
 
 		case "B": $XB=' ';
-			if (notSet($DATABASE)) 
+			if (notSet($DBC)) 
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
-			else if (isDatabaseActive($DATABASE) > 0)
-					err_msg($MSG44_ISACTIVEDB. ": " . $DATABASE);
+			else if (isDatabaseActive($DBC) > 0)
+					err_msg($MSG44_ISACTIVEDB. ": " . $DBC);
 			else {
-					passthru("PGPASSWORD=$PGPASSWORD dropdb " . $DATABASE . 
+					msgCyan($MSG26_DELETING . ": " . $DBC);
+					passthru("PGPASSWORD=$PGPASSWORD dropdb " . $DBC . 
 							" -U ". $DBADMINUSER . " --if-exists", $rv);
-					if ( $rv == 0 ) {
-						msgCyan($MSG26_DELETED . ": " . $DATABASE);
-						$XB='X';
-					}
+					$XB='X';
 			}
 			enter();
 			break;	
