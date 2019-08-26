@@ -9,6 +9,7 @@
 <?php
 include "confighdr.txt";
 include "messagesw.php";
+include '../admin/funcConfig.php';
 ?>
 <body onload="bodyOnLoad()">
 <div style="line-height:0.31"><br />
@@ -56,25 +57,18 @@ include "messagesw.php";
 		  </tr>
 <?php
 		echo "<tr>";
-		echo "<td>$MSGSW04_Records:</td>";
+		echo "<td>$MSGSW04_Viewer:</td>";
 		echo "<td>";
 		if(strlen($s) > 0) {
 ?>
 			<input type="text" size="30" name="xmlfile" value="<?php echo $s;?>" readonly />
 <?php
 		} else {
-			if(file_exists ("data/configuration.dat")) {
-				$fh = fopen("data/configuration.dat", "r");
-				if(! $fh) {
-					echo "<h2>$MSGSW05_ErrorNoConfiguration (R).</h2>";
-				} else {
+			if(file_exists ("data/config.json")) {
 					echo '<select name="xmlfile"> ';
 					print '<option value="default.xml" selected="selected"> </option>' . PHP_EOL;
-					while (list($myval, $mydb, $myxml, $mytoken, $myaccess, $mydesc) = fgetcsv($fh, 1024, "\t")) {
-						print '<option value="' . $myxml . '">' . $myval . " (" . $mydb . ") - " . $mydesc . '</option>' . PHP_EOL;
-					}
+					config_get_options();
 					print '</select>';
-				}
 			} else
 				echo "<h2>$MSGSW05_ErrorNoConfiguration.</h2>";
 		}

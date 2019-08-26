@@ -3,7 +3,11 @@
 
 if ( "$MYLANG" == "sl" ){
 $MSG_TITLE="dbDIPview konfigurator";
-$MSG0_LISTDIRS="prikaz trenutne konfiguracije";
+$MSG0_LISTDIRS="prikaz trenutne konfiguracije";	
+$MSGO_ORDER="Naročilo";	
+$MSGO_SELECT="izberi";	
+$MSGO_DEPLOY="inštaliraj";	
+$MSGO_DELETE="izbriši";	
 $MSGR_SELECT_DB="ime vsebnika za podatkovne zbirke";
 $MSGB_RMDB="izbriši vsebnik za podatkovne zbirke";
 $MSG3_CHECKDB="izpis vsebnikov podatkovnih zbirk";
@@ -35,7 +39,8 @@ $MSG22_DB_CREATED="Prazna podatkovna zbirka je kreirana";
 $MSG23_SCHEMA_ACCESS="Dodajanje dostopa do sheme";
 $MSG24_NO_SCHEMA="Schema ni definirana";
 $MSG25_EMPTY_TABLES_CREATED="Prazne podatkovne tabele kreirane.";
-$MSG26_DELETED="Zbrisano:";
+$MSG26_DELETED="Zbrisano";
+$MSG26_DELETING="Brisanje";
 $MSG27_ACTIVATED="Aktivacija opravljena";
 $MSG28_DEACTIVATED="Deaktiviran";
 $MSG29_EXECUTING="Izvajam";
@@ -65,6 +70,10 @@ $MSG_YESNO="d/n";
 } else { 
 $MSG_TITLE="dbDIPview administration tool";
 $MSG0_LISTDIRS="Show current configuration";
+$MSGO_ORDER="Order";	
+$MSGO_SELECT="select";	
+$MSGO_DEPLOY="deploy";	
+$MSGO_DELETE="remove";
 $MSGR_SELECT_DB="Enter database container name";
 $MSGB_RMDB="Remove database container";
 $MSG3_CHECKDB="Show existing database containers";
@@ -97,6 +106,7 @@ $MSG23_SCHEMA_ACCESS="Granting access for";
 $MSG24_NO_SCHEMA="Schema not defined";
 $MSG25_EMPTY_TABLES_CREATED="Empty tables have been created.";
 $MSG26_DELETED="Deleted";
+$MSG26_DELETING="Deleting";
 $MSG27_ACTIVATED="Activation done";
 $MSG28_DEACTIVATED="Deactivated";
 $MSG29_EXECUTING="Executing";

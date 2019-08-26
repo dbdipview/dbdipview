@@ -4,11 +4,13 @@
  * dbDIPview main program
  *
  */
- 
+ini_set( 'session.cookie_httponly', 1 );
+session_start();
+
 define("QUOTE_WHERE","'");     //portability: SELECT * FROM x WHERE name='Abc'
 define("TABLECOLUMN","_");     //cities.id -> cities_id, needed for parameter passing
 
-include "../admin/common.php";
+include "../admin/funcConfig.php";
 
 if (array_key_exists("submit_cycle", $_GET)) 
 	$submit_cycle = pg_escape_string($_GET['submit_cycle']);
@@ -19,7 +21,7 @@ switch ($submit_cycle) {
 	case "CheckLogin":
 		if (array_key_exists("code", $_GET)) {
 			$code = trim($_GET['code']);
-			list($myDBname, $myXMLfile) = code2database("data/configuration.dat", $code);
+			list($myDBname, $myXMLfile) = config_code2database($code);
 		} else {
 			if (array_key_exists("xmlfile", $_GET))
 				$myXMLfile = trim($_GET['xmlfile']);
@@ -40,28 +42,48 @@ switch ($submit_cycle) {
 			$myLang = trim($_GET['lang']);
 		else
 			$myLang = "en";
-		
-		setcookie("myXMLfile", $myXMLfile, time()+3600*10, NULL, NULL, NULL, TRUE );  //expire in 10 hours, httponly
-		setcookie("myDBname",  $myDBname,  time()+3600*10, NULL, NULL, NULL, TRUE );  //expire in 10 hours, httponly
-		setcookie("mydebug",   $mydebug,   time()+3600*10, NULL, NULL, NULL, TRUE );  //expire in 10 hours, httponly
-		setcookie("myLang",    $myLang,    time()+3600*10, NULL, NULL, NULL, TRUE );  //expire in 10 hours, httponly
 
+		$recordsInfo = configGetInfo(substr($myXMLfile, 0, -4), $myDBname);  //filename without .xml
+		session_regenerate_id();
+		$_SESSION['myXMLfile'] = $myXMLfile;
+		$_SESSION['myDBname'] = $myDBname;
+		$_SESSION['myLang'] = $myLang;
+		$_SESSION['title'] = $recordsInfo['title'];
+		$_SESSION['mydebug'] = $mydebug;
+		
 		break;
-	case "Logout":     
-		setcookie("myXMLfile", "", time()-3600);  //delete the cookies
-		setcookie("myDBname", "",  time()-3600);
+	case "Logout":
+		$_SESSION = array();
+		$session_name = session_name();
+		session_destroy();
+		
 		header("Location: prog0.htm");
 		break;
 	case "ShowMenu":
 	default:
-		if (isset($_COOKIE['myXMLfile']))
-			$myXMLfile=$_COOKIE['myXMLfile'];
-		if (isset($_COOKIE['myDBname']))
-			$myDBname=$_COOKIE['myDBname'];
-		if (isset($_COOKIE['myLang']))
-			$myLang=$_COOKIE['myLang'];
+		if (isset       ($_SESSION['myXMLfile']))
+			$myXMLfile = $_SESSION['myXMLfile'];
+		if (isset       ($_SESSION['myDBname']))
+			$myDBname =  $_SESSION['myDBname'];
+		if (isset       ($_SESSION['myLang']))
+			$myLang=     $_SESSION['myLang'];
 		break;
 } // switch
+
+$myXMLpath="data/";
+$myXMLfilePath=$myXMLpath . $myXMLfile;
+
+include "blob.php";
+
+switch ($submit_cycle) {
+	case "showBlob":
+		//no error messages here, just output
+		$xml = simplexml_load_file($myXMLfilePath);
+		$id  = pg_escape_string($_GET['id']); 
+		$val = pg_escape_string($_GET['val']); 
+		showBlobRaw($id, $val);
+		break;
+}
 
 ?>
 <!doctype html public "-//W3C//DTD HTML 4.0 //EN"> 
@@ -106,8 +128,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 			</td>
 			<td align="right">
 <?php
-			echo $myDBname . ":&nbsp;&nbsp;";
-			echo $myXMLfile. "&nbsp;&nbsp;&nbsp;";
+			echo $myDBname . "(" . $myXMLfile . ")&nbsp;&nbsp;";
 			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . 
 				"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a></abbr>" .
 				"&nbsp;&nbsp;&nbsp;";
@@ -118,12 +139,8 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 <?php
 } //if submit_cycle
 
-$myXMLpath="data/";
-$myXMLfilePath=$myXMLpath . $myXMLfile;
-
 if (file_exists($myXMLfilePath)) {
 	$xml = simplexml_load_file($myXMLfilePath);
-	//debug( print_r($xml) );
 } else {
 	echo "</BR><h2>$MSGSW05_ErrorNoConfiguration.</h2></BR>"; 
 	die("");
@@ -131,7 +148,7 @@ if (file_exists($myXMLfilePath)) {
 
 if(strlen($myXMLfile)==0 || 
 	strlen($myDBname)==0 ||
-	isPackageActivated("data/configuration.dat", substr($myXMLfile, 0, -4), $myDBname) == 0) {
+	isPackageActivated(substr($myXMLfile, 0, -4), $myDBname) == 0) {
 		echo "</BR><h2>$MSGSW07_ErrorNoSuchCombination.</h2></BR>";
 		die("");
 }
@@ -139,12 +156,8 @@ if(strlen($myXMLfile)==0 ||
 $filespath="files/".str_replace(".xml", "", $myXMLfile)."/";  //area for attachments/BLOB content
 
 $PARAMS = $_GET;
-echo "<h3>$MSGSW03_Database: ";
-echo    $xml->database->name;
-echo "<br>";
-echo "$MSGSW04_Records: ";
-echo    $xml->database->ref_number;
-echo "</h3>";
+echo  "<h3>$MSGSW17_Records: " . $_SESSION['title'] . "</h3>";
+echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
 
 $targetQueryNum = pg_escape_string($_GET['targetQueryNum']); 
 
@@ -191,8 +204,8 @@ default:
 
 
 function debug($mytxt) {
-	if (isset($_COOKIE['mydebug'])){
-		$mydebug=$_COOKIE['mydebug'];
+	if (isset(   $_SESSION['mydebug'])){
+		$mydebug=$_SESSION['mydebug'];
 		if($mydebug == "123")
 			echo "<p style='font-family:courier;color:red;'>DEBUG: $mytxt</p>\n";
 	}
