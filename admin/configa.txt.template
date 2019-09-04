@@ -4,18 +4,18 @@ $ENVLANG="LANG=sl_SI.UTF-8";
 $DBADMINUSER='postgres';  //user with admin rights to create schemas
 $PGPASSWORD='mypassword'; //admin password
 
-$DBGUEST='citalnica';    //end user, access only for the reports
+$DBGUEST='ddvreader';    //database user for end user access
 
 $MYLANG="en";
 
 $DDV_DIR_PACKED="$PROGDIR/../records/DIP0/";             //default location for input packages
 $DDV_DIR_UNPACKED="$PROGDIR/../records/DIP0unpacked/";   //default location for extracted content
 
-//SIARD section ////////////
-$JAR="$PROGDIR/siard/dbptk-app-2.4.0.jar";				 //DBPTK package
+//SIARD tools
+$JAR="$PROGDIR/siard/dbptk-app-2.4.0.jar";
 $JAVA="java";
 #$JAVA="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/java";
 $MEM="-Xmx1000m";
 $DBTYPE="postgresql";
 $HOST="localhost";
-////////////////////////////
+//

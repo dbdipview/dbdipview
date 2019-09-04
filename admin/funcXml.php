@@ -6,25 +6,17 @@
  * 
  */
 function loadOrder($xmlinput) {
-	//$orderInfo = array();
 	
 	$xml=simplexml_load_file($xmlinput);
-	print_r($xml);
-	
-	echo $xml->order . PHP_EOL;
-	echo $xml->dbcontainer . PHP_EOL;
-	echo $xml->siard . PHP_EOL;
-	echo $xml->viewercsv . PHP_EOL;
-	echo $xml->viewer . PHP_EOL;
-	echo $xml->title . PHP_EOL;
-	echo $xml->reference . PHP_EOL;
 
+	$orderInfo['order'] =     "" . $xml->order;
+	$orderInfo['reference'] = "" . $xml->reference;
+	$orderInfo['title'] =     "" . $xml->title;
 	$orderInfo['dbc'] =       "" . $xml->dbcontainer;
 	$orderInfo['siardname'] = "" . $xml->siard;
 	$orderInfo['ddvcsv'] =    "" . $xml->viewercsv;
 	$orderInfo['ddv'] =       "" . $xml->viewer;
-	$orderInfo['title'] =     "" . $xml->title;
-	$orderInfo['reference'] = "" . $xml->reference;
+	$orderInfo['access'] =    "" . $xml->access;
 	
 	return($orderInfo);
 }
