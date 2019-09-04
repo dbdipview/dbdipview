@@ -2,6 +2,6 @@
 //Access for the user. Readonly!
 $serverName = "localhost";
 $port="5432";
-$userName = "citalnica";
-$password = "xxx";
+$userName = "ddvreader";
+$password = "ddvreader";
 $timezone='Europe/Ljubljana';

@@ -148,7 +148,7 @@ if (file_exists($myXMLfilePath)) {
 
 if(strlen($myXMLfile)==0 || 
 	strlen($myDBname)==0 ||
-	isPackageActivated(substr($myXMLfile, 0, -4), $myDBname) == 0) {
+	config_isPackageActivated(substr($myXMLfile, 0, -4), $myDBname) == 0) {
 		echo "</BR><h2>$MSGSW07_ErrorNoSuchCombination.</h2></BR>";
 		die("");
 }
