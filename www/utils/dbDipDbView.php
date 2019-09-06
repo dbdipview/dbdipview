@@ -120,7 +120,7 @@ function qToList($query){
 	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
 	$result = pg_query($dbConn, $query );
 	if (!$result) {
-	return(array("ERROR: qToList<br/>"));
+		return(array("ERROR: qToList<br/>"));
 	}
 	while ($row = pg_fetch_assoc($result)){
 		foreach ($row as $col=>$val){

@@ -185,7 +185,12 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 			$disabler = "disabled";
 
 		if ($paramselect != "") {  //fill the drop-down values
-			$result = pg_query($dbConnection, $paramselect) or die("Error in query for $fieldname");
+			$result = pg_query($dbConnection, $paramselect);
+			if (!$result) {
+				echo "Error in query for: $fieldname ";
+				pg_close($dbConnection);
+				return;
+			}
 			$rows = pg_num_rows($result);
 			
 			if($multiple != "") {

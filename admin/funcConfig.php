@@ -246,21 +246,23 @@ function config_get_options() {
 function config_show() {
 	global $SERVERCONFIGJSON, $TXT_GREEN,$TXT_RESET;
 	global $MSG34_NOACTIVEDB, $MSG_ACCESSDB, $MSG40_ACTIVATEDPKGS;
-	$length0=$length1=$length2=$length3=$length4=5;
+	$length0=$length1=$length2=$length3=$length4=$length5=5;
 
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 		
 	foreach ($array as $index=>$line) {
-		if (strlen($line['ddv']) > $length0)
+		if (strlen($line['ddv'])         > $length0)
 			$length0 = strlen($line['ddv']);
 		if (strlen($line['dbcontainer']) > $length1)
 			$length1 = strlen($line['dbcontainer']);
-		if (strlen($line['access']) > $length2)
+		if (strlen($line['access'])      > $length2)
 			$length2 = strlen($line['access']);
-		if (strlen($line['ref']) > $length3)
-			$length3 = strlen($line['ref']);
-		if (strlen($line['title']) > $length4)
-			$length4 = strlen($line['title']);
+		if (strlen($line['token'])       > $length3)
+			$length3 = strlen($line['token']);
+		if (strlen($line['ref'])         > $length4)
+			$length4 = strlen($line['ref']);
+		if (strlen($line['title'])       > $length5)
+			$length5 = strlen($line['title']);
 	}
 
 	msgCyan($MSG40_ACTIVATEDPKGS . ":");
@@ -269,8 +271,9 @@ function config_show() {
 		echo str_pad($line['ddv'],        $length0) . "|";
 		echo str_pad($line['dbcontainer'],$length1) . "|";
 		echo str_pad($line['access'],     $length2) . "|";
-		echo str_pad($line['ref'],        $length3) . "|";
-		echo str_pad($line['title'],      $length4) . "|" .  PHP_EOL;
+		echo str_pad($line['token'],      $length3) . "|";
+		echo str_pad($line['ref'],        $length4) . "|";
+		echo str_pad($line['title'],      $length5) . "|" .  PHP_EOL;
 		$i++;
 	}
 	if ($i == 0)
