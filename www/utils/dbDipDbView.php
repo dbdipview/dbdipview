@@ -111,33 +111,6 @@ function qToPrepValue($query, $params){
 } // end qToPrepValue
 
 
-////might notbe needed - it does the some functionality as qToListWithLink!
-//given a query, makes a quick list of data
-//returns array("html string with results","number of results")
-function qToList($query){
-	global $dbConn; 
-	$output = "";
-	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
-	$result = pg_query($dbConn, $query );
-	if (!$result) {
-		return(array("ERROR: qToList<br/>"));
-	}
-	while ($row = pg_fetch_assoc($result)){
-		foreach ($row as $col=>$val){
-			$output .= "<b>$col:</b> $val<br />\n";
-		}
-		$output .= "<hr /> \n" ;
-	}
-
-	if (strlen($output)==0)
-		$output .= "<hr /> \n" ;
- 
-	$hits = pg_num_rows($result);
-	$returnarray = array($output, $hits);
-	return $returnarray;
-	
-} // end qToList
-
 //given a query, creates an HTML table output
 function qToListWithLink($query, 
 					$linknextscreen_columns, 
@@ -160,7 +133,7 @@ function qToListWithLink($query,
 				$column = $linknextscreen_columns[$col];
 				if (!is_null($column) && $column["dbtable"]!="") { 
 					$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
-					$link= str_replace(" ", "_space_", $link);   //mask blanks  
+					$link= str_replace(" ", "__20__", $link);   //temporarily replace space  
 					$output .= "  <a href='?tablelist=list&submit_cycle=".
 						$column["linkaction"].
 						"&targetQueryNum=".$column["next_screen_id"].
@@ -170,17 +143,17 @@ function qToListWithLink($query,
 				}
 
 				$column = $ahref_columns[$col];
-				if (!is_null($column) && $column["atext"]!="") { 
+				if (!is_null($column)) { 
 					$link= $val;
 					$link= str_replace("\\", "/", $link);   //folder path
 					$link= $filespath . $link;
 					$text=$column["atext"];
 					if (strlen((string)$text)==0)
-							 $text = $val;   //if no text
+						$text = $val;   //if no text
 					if (strlen((string)$val)==0)
-						 $output .= "<br />\n";
+						$output .= "<br />\n";
 					else
-						 $output .= "  <a href='$link' target='_blank'>$text</a><br />\n";
+						$output .= "  <a href='$link' target='_blank'>$text</a><br />\n";
 					continue;
 				}
 				
@@ -307,9 +280,9 @@ function qToTableWithLink($query,
 			foreach ($row as $col=>$val) {
 				
 				$column = $linknextscreen_columns[$col];
-				if (!is_null($column)) { 
+				if (!is_null($column) && $column["dbtable"]!="") { 
 					$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
-					$link= str_replace(" ", "_space_", $link);   //mask blanks 
+					$link= str_replace(" ", "__20__", $link);   //temporarily replace space 
 					$output .= "  <td><a href='?tablelist=table&submit_cycle=".
 						$column["linkaction"].
 						"&targetQueryNum=".
@@ -320,7 +293,7 @@ function qToTableWithLink($query,
 				} 
 
 				$column = $ahref_columns[$col];
-				if (!is_null($column) && $column[$atext]!="") { 
+				if (!is_null($column)) { 
 					$link= $val;
 					$link= str_replace("\\", "/", $link);   //folder path
 					$link= $filespath . $link;
@@ -350,7 +323,7 @@ function qToTableWithLink($query,
 
 				$column = $blob_columns[$col];
 				if (!is_null($column) && $column["id"]!="") {
- 					if (strlen((string)$val)==0)
+					if (strlen((string)$val)==0)
 						$output .= "  <td></td>\n";
 					else {
 						$id=$column["id"];

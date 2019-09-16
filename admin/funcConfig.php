@@ -40,8 +40,8 @@ function config_migrate() {
 			echo "Error";
 		} else {
 			while (list ($myval, $mydbc, $myxml, $mytoken, $myaccess) = fgetcsv($fh, 1024, "\t")) {
+				$configItemInfo['dbc'] = $mydbc;
 				$configItemInfo['ddv'] = $myval;
-				$configItemInfo['dbcontainer'] = $mydbc;
 				$configItemInfo['queriesfile'] = $myxml;
 				$configItemInfo['ddvtext'] = '';
 				$configItemInfo['token'] = $mytoken;
@@ -85,8 +85,8 @@ function config_json_add_item($configItemInfo) {
 	global $SERVERCONFIGJSON;
 
 	$newjson  = '{';
+	$newjson .= '"dbc":"' .        $configItemInfo['dbc']          . '",';
 	$newjson .= '"ddv":"' .        $configItemInfo['ddv']          . '",';
-	$newjson .= '"dbcontainer":"' .$configItemInfo['dbcontainer']  . '",';
 	$newjson .= '"queriesfile":"' .$configItemInfo['queriesfile']  . '",';
 	$newjson .= '"ddvtext":"' .    $configItemInfo['ddvtext']      . '",';
 	$newjson .= '"token":"' .      $configItemInfo['token']        . '",';
@@ -132,7 +132,7 @@ function config_json_remove_item($DDV, $DBC) {
 		$i=0;
 		$json = "["; 
 		foreach ($array as $index=>$line) {
-			if ( array_key_exists('ddv', $line) && (0==strcmp($line['ddv'], $DDV)) && (0==strcmp($line['dbcontainer'],$DBC)) ) {
+			if ( array_key_exists('ddv', $line) && (0==strcmp($line['ddv'], $DDV)) && (0==strcmp($line['dbc'],$DBC)) ) {
 				msgCyan("$MSG28_DEACTIVATED $DDV ($DBC)");
 			} else {
 				$json .= ($i++ > 0 ? ',' : '' );
@@ -163,7 +163,7 @@ function config_isDBCactive($DBC) {
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 	
 	foreach ($array as $index=>$line) {
-		if ( array_key_exists('dbcontainer', $line) && 0==strcmp($line['dbcontainer'],$DBC)) {
+		if ( array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC)) {
 			$found++;
 		} 
 	} 
@@ -189,7 +189,7 @@ function config_isPackageActivated($ddv, $DBC="") {
 	foreach ($array as $index=>$line) {
 		if ( 
 			(array_key_exists('ddv', $line) && 0==strcmp($line['ddv'],$ddv)) &&
-			( $DBC == "" || (array_key_exists('dbcontainer', $line) && 0==strcmp($line['dbcontainer'],$DBC)) )
+			( $DBC == "" || (array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC)) )
 			) {
 			$found++;
 		} 
@@ -214,7 +214,7 @@ function config_code2database($token) {
 
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('token', $line) && 0==strcmp($line['token'],$token)) {
-			$database=$line['dbcontainer'];
+			$database=$line['dbc'];
 			$xmlfile=$line['queriesfile'];
 		} 
 	} 
@@ -234,7 +234,7 @@ function config_get_options() {
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('access', $line) && 0==strcmp($line['access'],"public")) {
 			print '<option value="' . $line['queriesfile'] . '">' . 
-			$line['ddv'] . " (" . $line['dbcontainer'] . ") - " . $line['ref'] . " " . $line['title'] . 
+			$line['ddv'] . " (" . $line['dbc'] . ") - " . $line['ref'] . " " . $line['title'] . 
 			'</option>' . PHP_EOL;
 		} 
 	} 
@@ -251,10 +251,10 @@ function config_show() {
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 		
 	foreach ($array as $index=>$line) {
-		if (strlen($line['ddv'])         > $length0)
-			$length0 = strlen($line['ddv']);
-		if (strlen($line['dbcontainer']) > $length1)
-			$length1 = strlen($line['dbcontainer']);
+		if (strlen($line['dbc'])         > $length0)
+			$length0 = strlen($line['dbc']);
+		if (strlen($line['ddv'])         > $length1)
+			$length1 = strlen($line['ddv']);
 		if (strlen($line['access'])      > $length2)
 			$length2 = strlen($line['access']);
 		if (strlen($line['token'])       > $length3)
@@ -268,8 +268,8 @@ function config_show() {
 	msgCyan($MSG40_ACTIVATEDPKGS . ":");
 	$i=0;
 	foreach ($array as $index=>$line) {
-		echo str_pad($line['ddv'],        $length0) . "|";
-		echo str_pad($line['dbcontainer'],$length1) . "|";
+		echo str_pad($line['dbc'],        $length0) . "|";
+		echo str_pad($line['ddv'],        $length1) . "|";
 		echo str_pad($line['access'],     $length2) . "|";
 		echo str_pad($line['token'],      $length3) . "|";
 		echo str_pad($line['ref'],        $length4) . "|";
@@ -291,9 +291,9 @@ function configGetInfo($ddv, $DBC) {
 	
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('ddv', $line) && 0==strcmp($line['ddv'],$ddv) &&
-			 array_key_exists('dbcontainer', $line) && 0==strcmp($line['dbcontainer'],$DBC) ) {
-			$configItemInfo['ddv'] = $line['ddv'];
-			$configItemInfo['dbcontainer'] = $line['dbcontainer'];
+			 array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC) ) {
+			$configItemInfo['dbc']         = $line['dbc'];
+			$configItemInfo['ddv']         = $line['ddv'];
 			$configItemInfo['queriesfile'] = $line['queriesfile'];
 			$configItemInfo['ddvtext']     = $line['ddvtext'];
 			$configItemInfo['token']       = $line['token'];

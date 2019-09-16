@@ -288,11 +288,14 @@ while ( "$answer" != "q" ) {
 	if(!empty($csv)) echo "${V3}V3  (CSV) $MSG4_CREATEAPL" . PHP_EOL;
 	if(!empty($csv)) echo "${V4}V4  (CSV) $MSG5_MOVEDATA" . PHP_EOL;
 	if(empty($om))  echo "${X1}1  (dbDIPview) $MSG1_SELECTPKG" . PHP_EOL;
-					echo "${X2}2  (dbDIPview) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
+	
+	if(empty($csv))  echo "${X2}2  (dbDIPview) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
+	if(!empty($csv)) echo "${X2}2o (dbDIPview) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
+		
 	if(!empty($srd)) echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
 	if(!empty($srd)) echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD [$SIARDNAME]" . PHP_EOL;
   //echo "${X3}3  (SIARD) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
-					echo "${X6}6  $MSG6_ACTIVATEDIP" . PHP_EOL;
+					echo "${X6}6  $MSG6_ACTIVATEDIP [$DBC][$DDV] " . PHP_EOL;
 					echo "${X7}7  $MSG7_DEACTAPL [$DDV]" . PHP_EOL;
 					echo "${X8}8  $MSG8_RM_UNPACKED_DDV [$DDV]" . PHP_EOL;
 					echo "${X9}9  $MSG9_RMDDV" . PHP_EOL;
@@ -723,7 +726,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG42_NOTSIARD . ":", $SIARDFILE);
 			else { 
 				if (installSIARD($DBC, $SIARDFILE)) {
-					echo "$MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
+					echo "$MSG3_ENABLEACCESS [$DDV]:" . PHP_EOL;
 					if (($handleList = fopen($LISTFILE, "r")) !== FALSE) {
 						while (($line = fgets($handleList)) !== false) {
 							$line = rtrim($line);
@@ -761,6 +764,8 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG16_FOLDER_NOT_FOUND . ":", $SERVERDATADIR);
 			else if ( !is_file("$XMLFILESRC"))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $XMLFILESRC);
+			else if (config_isPackageActivated($DDV, $DBC) > 0) 
+					err_msg($MSG30_ALREADY_ACTIVATED, "$DDV ($DBC)");
 			else {
 
 				if ( empty($orderInfo['access']) )  {
@@ -781,23 +786,19 @@ while ( "$answer" != "q" ) {
 						debug("COPIED $SERVERDATADIR" . $XMLFILEDST . ".xml");
 				else
 					debug("ALREADY EXISTS $targetFile");
-					
-				if (config_isPackageActivated($DDV, $DBC) > 0) 
-					err_msg($MSG30_ALREADY_ACTIVATED, "$DDV ($DBC)");
-				else { 
-					$configItemInfo['ddv']         = $DDV;
-					$configItemInfo['dbcontainer'] = $DBC;
-					$configItemInfo['queriesfile'] = $XMLFILEDST . ".xml";
-					$configItemInfo['ddvtext']     = '--';
-					$configItemInfo['token']       = uniqid("c", FALSE);
-					$configItemInfo['access']      = $orderInfo['access'];
-					$configItemInfo['ref']         = $orderInfo['reference'];
-					$configItemInfo['title']       = $orderInfo['title'];
-					config_json_add_item($configItemInfo);
-					msgCyan($MSG27_ACTIVATED);
-					config_show();
-					$X6='X';
-				}
+
+				$configItemInfo['dbc']         = $DBC;
+				$configItemInfo['ddv']         = $DDV;
+				$configItemInfo['queriesfile'] = $XMLFILEDST . ".xml";
+				$configItemInfo['ddvtext']     = '--';
+				$configItemInfo['token']       = uniqid("c", FALSE);
+				$configItemInfo['access']      = $orderInfo['access'];
+				$configItemInfo['ref']         = $orderInfo['reference'];
+				$configItemInfo['title']       = $orderInfo['title'];
+				config_json_add_item($configItemInfo);
+				msgCyan($MSG27_ACTIVATED);
+				config_show();
+				$X6='X';
 			}
 			enter();
 			break;
