@@ -23,9 +23,9 @@ include '../admin/funcConfig.php';
 <h3><?php echo $INSTITUTION; ?></h3>
 <h2><?php echo $MSGSW01_MainSubTitle; ?></h2><br />
 <?php
-    $c=$_GET['c'];
-    $d=$_GET['d'];
-    $s=$_GET['s'];
+    $c=$_GET['c'];          //code
+    $d=$_GET['d'];          //dbc
+    $v=$_GET['v'];          //viewer
     $debug=$_GET['debug'];
 ?>
 
@@ -59,9 +59,9 @@ include '../admin/funcConfig.php';
 		echo "<tr>";
 		echo "<td>$MSGSW04_Viewer:</td>";
 		echo "<td>";
-		if(strlen($s) > 0) {
+		if(strlen($v) > 0) {
 ?>
-			<input type="text" size="30" name="xmlfile" value="<?php echo $s;?>" readonly />
+			<input type="text" size="30" name="xmlfile" value="<?php echo $v;?>" readonly />
 <?php
 		} else {
 			if(file_exists ("data/config.json")) {

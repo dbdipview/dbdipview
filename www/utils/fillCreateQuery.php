@@ -92,8 +92,8 @@ foreach ($xml->database->screens->screen as $screen) {
 			debug("fillCreateQuery: checking param name: $param->name, dbcolumn: $param->dbcolumn, 
 				field: $field, type: $param->type, forward as: $fieldParamForward");
 
-			$fieldType = str_replace(" ", "_space_", $fieldType);
-			$field     = str_replace(" ", "_space_", $field);   //mask blanks
+			$fieldType = str_replace(" ", "__20__", $fieldType);
+			$field     = str_replace(" ", "__20__", $field);     //temporarily replace space
 
 			foreach($_GET as $key => $value){
 				$x=$field . $param->type;
@@ -431,20 +431,12 @@ foreach ($xml->database->screens->screen as $screen) {
 			if($subTitle && strlen($subTitle)>0 ) 
 				print("<h5>".$subTitle."</h5>");
 
-			if($f_links_to_next_screen || $f_images || $f_ahrefs)
-				$newlist=qToTableWithLink($query, 
-										$linknextscreen_columns,
-										$images_image_style,
-										$ahref_columns,
-										$blob_columns,
-										"M");
-			else 
-				$newlist=qToTableWithLink($query, 
-										$linknextscreen_columns,
-										$images_image_style,
-										$ahref_columns,
-										$blob_columns,
-										"M");
+			$newlist=qToTableWithLink($query, 
+									$linknextscreen_columns,
+									$images_image_style,
+									$ahref_columns,
+									$blob_columns,
+									"M");
 			
 			print $newlist[0];
 			$hits=$newlist[1];
@@ -456,20 +448,12 @@ foreach ($xml->database->screens->screen as $screen) {
 				if($subqueriesSubTitle[$sqindexLoop] && strlen($subqueriesSubTitle[$sqindexLoop])>0 )
 					print("<h5>".$subqueriesSubTitle[$sqindexLoop]."</h5>");
 
-				if($f_subqeries_links_to_next_screen[$sqindexLoop] || $f_subqeries_images[$sqindexLoop] || $f_subqeries_ahrefs[$sqindexLoop])
-					$newlist=qToTableWithLink($subqueries[$sqindexLoop], 
-											$subqueries_linknextscreen_columns[$sqindexLoop],
-											$subqueries_images_image_style[$sqindexLoop],
-											$subqueries_ahref_columns[$sqindexLoop],
-											$subqueries_blob_columns[$sqindexLoop],
-											$sqindexLoop);
-				else 
-					$newlist=qToTableWithLink($subqueries[$sqindexLoop], 
-											$subqueries_linknextscreen_columns[$sqindexLoop],
-											$subqueries_images_image_style[$sqindexLoop],
-											$subqueries_ahref_columns[$sqindexLoop],
-											$subqueries_blob_columns[$sqindexLoop],
-											$sqindexLoop);
+				$newlist=qToTableWithLink($subqueries[$sqindexLoop], 
+										$subqueries_linknextscreen_columns[$sqindexLoop],
+										$subqueries_images_image_style[$sqindexLoop],
+										$subqueries_ahref_columns[$sqindexLoop],
+										$subqueries_blob_columns[$sqindexLoop],
+										$sqindexLoop);
 										
 				print $newlist[0];
 				$sqindexLoop  += 1;
@@ -488,14 +472,12 @@ foreach ($xml->database->screens->screen as $screen) {
 				print ("<h5>".$screen->subtitle."</h5>");
 			print ("<br/>");
 
-			if($f_links_to_next_screen || $f_images || $f_ahrefs)
-				$newlist=qToListWithLink($query, 
-										$linknextscreen_columns,
-										$images_image_style,
-										$ahref_columns,
-										$blob_columns);
-			else 
-				$newlist=qToList($query);
+			////if($f_links_to_next_screen || $f_images || $f_ahrefs)
+			$newlist=qToListWithLink($query, 
+									$linknextscreen_columns,
+									$images_image_style,
+									$ahref_columns,
+									$blob_columns);
 
 			print $newlist[0];
 			$hits=$newlist[1];
@@ -508,14 +490,11 @@ foreach ($xml->database->screens->screen as $screen) {
 					print("<h5>".$subqueriesSubTitle[$sqindexLoop]."</h5>\n");
 				print("<br/>");
 
-				if($f_subqeries_links_to_next_screen[$sqindexLoop] || $f_subqeries_images[$sqindexLoop] || $f_subqeries_ahrefs[$sqindexLoop]) 
-					$newlist=qToListWithLink($subqueries[$sqindexLoop], 
-											$subqueries_linknextscreen_columns[$sqindexLoop], 
-											$subqueries_images_image_style[$sqindexLoop],
-											$subqueries_ahref_columns[$sqindexLoop],
-											$subqueries_blob_columns[$sqindexLoop]);
-				else 
-					$newlist=qToList($subqueries[$sqindexLoop]);  //display
+				$newlist=qToListWithLink($subqueries[$sqindexLoop], 
+										$subqueries_linknextscreen_columns[$sqindexLoop], 
+										$subqueries_images_image_style[$sqindexLoop],
+										$subqueries_ahref_columns[$sqindexLoop],
+										$subqueries_blob_columns[$sqindexLoop]);
 
 				print $newlist[0];
 				$sqindexLoop  += 1;

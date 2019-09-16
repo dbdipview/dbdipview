@@ -59,7 +59,7 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			$screenFields+=1;
 			$field=$param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
-			$field = str_replace(" ","_space_", $field);		//mask blanks
+			$field = str_replace(" ","__20__", $field);		                      //temporarily replace space
 			echo "$param->name: ";
 			
 			$infotip = (string) $param->infotip;
