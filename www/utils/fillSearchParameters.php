@@ -33,20 +33,18 @@ function FunctionHelpToggle() {
 	<td colspan = 2>
 		<left>
 <?php
-$myselectStmnt="";
 $screenFields=0;
 foreach ($xml->database->screens->screen as $screen) {
 
 	if($screen->id == $targetQueryNum) {
 
 		foreach ($screen->param as $param) {
-
-			$attributeHR = (string) $param->attributes()->hr;
-			if($attributeHR == "1" || $attributeHR == true) 
+			$attributeHR = get_bool($param->attributes()->hr);
+			if($attributeHR == true) 
 				echo "<hr/>" . "\r\n";
 
-			$attributeSkipNewLine = (string) $param->attributes()->skipNewLine;
-			if($attributeSkipNewLine == "1" || $attributeSkipNewLine == true) 
+			$attributeSkipNewLine = get_bool($param->attributes()->skipNewLine);
+			if($attributeSkipNewLine == true) 
 				$stringNewLine = "&nbsp;" . "\r\n";
 			else 
 				$stringNewLine = "<br/>" . "\r\n";
@@ -100,8 +98,6 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			echo "$stringNewLine";
 		} //for each param
-
-		$myselectStmnt=$screen->selectStmnt;
 
 	} //if screnid=#
 } //for each screen

@@ -5,6 +5,15 @@
  *
  */
 
+function get_bool($value){
+	switch( strtolower($value) ){
+		case '1': 
+		case 'true': return true;
+	}
+	return false;
+}
+
+
 function getQueryNumber() { 
 global $xml;
 
@@ -23,11 +32,11 @@ global $xml;
 	$screenCounter=0;
 	foreach ($xml->database->screens->screen as $screen) {
 		$fshow=false;
-		$attributeHide = (string) $screen->id->attributes()->hide;
-		$attributeTextOnly = (string) $screen->attributes()->textOnly;
+		$attributeHide =     get_bool($screen->id->attributes()->hide);
+		$attributeTextOnly = get_bool($screen->attributes()->textOnly);
 
-		if($attributeHide != "1") {
-			if($attributeTextOnly == "1")
+		if($attributeHide != true) {
+			if($attributeTextOnly == true)
 				echo "<b>$screen->selectDescription</b><br />";
 			else {
 				echo "<label>";

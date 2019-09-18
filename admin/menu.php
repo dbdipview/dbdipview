@@ -100,6 +100,16 @@ function err_msg($p1, $p2="") {
 	echo $TXT_RED . $p1 . " " . $p2 . $TXT_RESET . PHP_EOL;
 }
 
+function msg_red_on() {
+	global $TXT_RED; 
+	echo $TXT_RED;
+}
+
+function msg_colour_reset() {
+	global $TXT_RESET; 
+	echo $TXT_RESET;
+}
+
 function notSet($var) {
 	if ("$var" == "-" || "$var" == "")
 		return(true);
@@ -670,7 +680,9 @@ while ( "$answer" != "q" ) {
 					$schema = "$PROGDIR/queries.xsd";
 
 					msgCyan($MSG35_CHECKXML);
+					msg_red_on();
 					validateXML($file, $schema);
+					msg_colour_reset();
 				
 					if ( $rv == 0 ) {
 						msgCyan($MSG14_DDV_UNPACKED);
