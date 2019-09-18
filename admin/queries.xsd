@@ -2,7 +2,7 @@
 <xs:schema xmlns:dbd="dbipview/schema" 
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
-           vc:minVersion="1.0">
+           vc:minVersion="2.0">
 	<!-- dbDIPview schema for queries.xml -->
 	<xs:complexType name="revisions">
 		<xs:sequence>
@@ -37,7 +37,7 @@
 			<xs:element name="title"             type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="subtitle"          type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="param"             type="param"     minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="selectStmnt"       type="xs:string" minOccurs="0" maxOccurs="1" />
+			<xs:element name="query"             type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="selectGroup"       type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="selectOrder"       type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="ahrefs"            type="ahrefs"    minOccurs="0" maxOccurs="1" />
@@ -62,14 +62,14 @@
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="textOnly" type="xs:string" />
+		<xs:attribute name="textOnly" type="xs:boolean" use="optional" />
 	</xs:complexType>
 
 	<xs:complexType name="id" >
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="size" type="xs:string" />
-				<xs:attribute name="hide" type="xs:string" />
+				<xs:attribute name="size" type="xs:integer" />
+				<xs:attribute name="hide" type="xs:boolean" use="optional" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -139,9 +139,9 @@
 			<xs:element name="type"     type="xs:string"              minOccurs="0" maxOccurs="1" />
 			<xs:element name="forwardToSubqueryName" type="xs:string" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
-		<xs:attribute name="skipNewLine" type="xs:string" />
-		<xs:attribute name="size"        type="xs:string" />
-		<xs:attribute name="hr"          type="xs:string" />
+		<xs:attribute name="skipNewLine" type="xs:boolean" use="optional" />
+		<xs:attribute name="size"        type="xs:integer" use="optional" />
+		<xs:attribute name="hr"          type="xs:boolean" use="optional" />
 	</xs:complexType>
 
 	<xs:complexType name="paramSubselect">
@@ -172,7 +172,7 @@
 					</xs:complexType>
 				</xs:element>
 			</xs:choice>
-			<xs:attribute name="schemaVersion" type="xs:decimal" use="required" fixed="1" />
+			<xs:attribute name="schemaMajorVersion" type="xs:integer" use="required" fixed="2" />
 		</xs:complexType>
 	</xs:element>
 

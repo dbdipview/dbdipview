@@ -131,7 +131,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			} else
 				debug("fillCreateQuery: UNKNOWN param->type: $param->type");
 
-			$and = is_where_already_here($screen->selectStmnt);     //true=yes, put AND before for next search element
+			$and = is_where_already_here($screen->query);     //true=yes, put AND before for next search element
 		
 			if (isset($_GET[$field]) || isset($_GET[$fieldType])) {   
 						
@@ -256,7 +256,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 		} //for each link to next screen
 		//----------------------
-		$query="$screen->selectStmnt $where";
+		$query="$screen->query $where";
 		
 		//-------------------
 		// subqeries are additional simple queries that will be executed separately AFTER the basic query. 
