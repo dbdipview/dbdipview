@@ -1,0 +1,185 @@
+<?php
+/**
+ * Functions for menu.php
+ *
+ * @author    Boris Domajnko <boris.domajnko@gov.si
+ *
+ */
+ 
+ 
+/**
+ * menu helper
+ * jump to next menu command or not
+ *
+ * @return false=continue to next command, true: stop
+ */
+function stopHere($p) {
+	global $MSG_YESNO;
+	global $handleKbd;
+	echo "$p ($MSG_YESNO)";
+	$key = trim(fgets($handleKbd));
+	if ($key === $MSG_YESNO[0])
+		return(false);
+	else
+		return(true);
+}
+
+function enter() {
+	global $MSG_ENTER;
+	global $handleKbd;
+	echo "................................................." . $MSG_ENTER;
+	$key = fgets($handleKbd);
+}
+
+
+$TXT_RED=  chr(27).'[31m'; 
+$TXT_GREEN=chr(27).'[32m';
+$TXT_CYAN= chr(27).'[36m';
+$TXT_RESET=chr(27).'[0m';
+
+function msgCyan($p1) {
+	global $TXT_CYAN, $TXT_RESET; 
+	echo $TXT_CYAN . $p1 . $TXT_RESET . PHP_EOL;
+}
+
+function debug($p1) {
+	global $debug; 
+	global $TXT_GREEN, $TXT_RESET; 
+	if ($debug)
+		echo $TXT_GREEN . $p1 . $TXT_RESET . PHP_EOL;
+}
+
+function err_msg($p1, $p2="") {
+	global $TXT_RED, $TXT_RESET; 
+	echo $TXT_RED . $p1 . " " . $p2 . $TXT_RESET . PHP_EOL;
+}
+
+function msg_red_on() {
+	global $TXT_RED; 
+	echo $TXT_RED;
+}
+
+function msg_colour_reset() {
+	global $TXT_RESET; 
+	echo $TXT_RESET;
+}
+
+function notSet($var) {
+	if ("$var" == "-" || "$var" == "")
+		return(true);
+	else
+		return(false);
+}
+
+
+/**
+ * List all files with a given extension, then select a file
+ *
+ * @param string $outname       package name
+ * @param string $outfilename   filename
+ * @param string $extension     filename extension for search criteria
+ */
+function getPackageName(&$outname, &$outfilename, $extension) {
+	global $MSG19_DDV_PACKAGES, $MSG21_SELECT_DDV, $MSG36_NOPACKAGE;
+	global $handleKbd, $DDV_DIR_PACKED;
+	
+	$arrPkgName = array();
+	$arrFilename = array();
+	
+	$i=1;
+	$description="UNKNOWN";
+	
+	msgCyan($MSG19_DDV_PACKAGES);
+	//$out = array_diff(scandir($DDV_DIR_PACKED), array('.', '..'));
+
+	if ($dh = opendir($DDV_DIR_PACKED)) {
+		$out = array();
+		while (($file = readdir($dh)) !== false) {
+			if (strcasecmp(substr($file, strlen($file) - strlen($extension)), $extension) == 0) {   //name.ext
+				array_push($out, $file);
+			}
+		}
+		closedir($dh);
+	}
+
+	foreach($out as $key => $value) {
+		
+		if (isAtype($value, "siard")) {
+			$description="SIARD";
+			$val1 = substr($value, 0, -6);
+		} else if (isAtype($value, "zip")) {
+			$description="dbdipview configuration for SIARD - .zip";
+			$val1 = substr($value, 0, -4);
+		} else if (isAtype($value, "xml")) {
+			$description="order package with all information about packages - .xml";
+			$val1 = substr($value, 0, -4);
+		} else if (isAtype($value, "tar.gz")) {
+			$description="dbdipview configuration+CSV - .tar.gz";
+			$val1 = substr($value, 0, -7);
+		} else {
+			$val1 = $value;
+		}
+
+		$arrPkgName[$i] = $val1;
+		$arrFilename[$i] = $value;
+		echo str_pad($i,3, " ", STR_PAD_LEFT) . " ";
+		echo str_pad($arrPkgName[$i],35) . " ";
+		echo $description . PHP_EOL;
+		$i++;
+	}
+
+	if ($i > 1) {
+		echo $MSG21_SELECT_DDV . ": ";
+		$name = trim(fgets($handleKbd));
+		if (is_numeric($name) && $name < $i) {
+			$outname = $arrPkgName[intval($name)];
+			$outfilename= $arrFilename[intval($name)];
+		}
+	} else
+		err_msg($MSG36_NOPACKAGE);
+}
+
+
+//not used
+function showFilesInFolder($dir) {
+	if ($handle = opendir($dir)) {
+		while (false !== ($entry = readdir($handle))) {
+
+			if ($entry != "." && $entry != "..") {
+				echo "$entry" . PHP_EOL;
+			}
+		}
+		closedir($handle);
+	}
+}
+
+//set quotes to schema or table name
+//example: bb.aa -> "bb"."aa"
+//do not add quotes if they already exsits, e.g. "aaa.bbb"."cc"
+function addQuotes($word) {
+	if ($word[0] == '"') {
+		$line = str_replace('"', '\"', $word);
+	} else {
+		$text = trim($word);
+		$text = str_replace('"', '', $text);
+		$text = str_replace('.', '\".\"', $text);
+		$line = '\"' . $text . '\"';
+	}
+	return $line;
+}
+
+//chck a file type
+//example: x.zip, .zip =>true
+function isAtype($name, $ending) {
+	$endingLength=strlen(".".$ending);
+	if (strlen($name) <= (1+$endingLength))
+		return(false);
+		
+	$ret=substr($name, -$endingLength);
+	if (strcasecmp ($ret, "." . $ending) == 0)
+		return(true);
+	else
+		return(false);
+}
+
+?>

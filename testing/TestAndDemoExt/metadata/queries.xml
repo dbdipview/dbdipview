@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dbDIPview 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
+	schemaMajorVersion="2" >
+
+	<database>
+		<name>Regression test viewer - DDV EXTENDED viewer package with external LOBs</name>
+		<revisions>
+			<revision date="2019-09-23" version="0.1">Test file ready</revision>
+		</revisions>
+		<ref_number>v01</ref_number>
+
+		<screens>
+		
+			<screen>
+				<id>5</id>
+				<selectDescription>External LOBs - files on file-system, RC airplane pictures</selectDescription>
+				<subtitle>display images as thumbnails or as links</subtitle>
+				
+				<param>
+					<name>Name</name>
+					<dbtable>models</dbtable>
+					<dbcolumn>name</dbcolumn>
+					<type>textlike</type>
+				</param>			
+				
+				<query>SELECT id, 
+						name, 
+						"picture" AS pictureimg, 
+						"picture" AS pictureslink,
+						"picture" AS pictureimg1, 
+						"picture" AS pictureslink1 						
+						FROM "AirplanesLinks"."models"
+				</query>
+				<ahrefs>
+					<ahref>
+						<dbcolumnname>pictureslink</dbcolumnname>
+						<atext/>
+					</ahref>
+					<ahref>
+						<dbcolumnname>pictureslink1</dbcolumnname>
+						<atext>picture1</atext>
+					</ahref>
+				</ahrefs>
+				<images>
+					<image>
+						<dbcolumnname>pictureimg</dbcolumnname>
+						<style>width:30px;height:22px;</style>
+					</image>
+					<image>
+						<dbcolumnname>pictureimg1</dbcolumnname>
+						<style>width:31px;height:22px;</style>
+					</image>
+				</images>
+				<subselect>
+					<title>Changed thumbnail size</title>
+					<query>SELECT id, name, 
+							"picture" AS image, 
+							"picture" AS link
+							FROM "AirplanesLinks"."models"
+					</query>
+					<ahrefs>
+						<ahref>
+							<dbcolumnname>link</dbcolumnname>
+							<atext>pic</atext>
+						</ahref>
+					</ahrefs>
+					<images>
+						<image>
+							<dbcolumnname>image</dbcolumnname>
+							<style>width:50px;height:30px;</style>
+						</image>
+					</images>
+				</subselect>
+			</screen>
+			
+			<screen>
+				<id>6</id>
+				<selectDescription>Display data from a view</selectDescription>
+				<subtitle>see queries01.sql</subtitle>   
+				<query>SELECT *					
+						FROM "AirplanesLinks"."my_view"
+				</query>
+			</screen>
+			
+		</screens>
+	</database>
+</dbDIPview>
