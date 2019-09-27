@@ -65,7 +65,11 @@ fi
 
 ALLMETADATA="metadata/queries.xml metadata/list.txt metadata/history.txt"
 
-ls ${SOURCE}/data/*.csv > /dev/null 2> /dev/null
+ls ${SOURCE}/data/*.csv \
+	${SOURCE}/data/*.tar \
+	${SOURCE}/data/*.tar.gz \
+	${SOURCE}/data/*.tgz \
+	${SOURCE}/data/*.zip > /dev/null 2> /dev/null
 if [ $? != 0 ] ; then
     echo 'No files in data/*.csv'
 	cd  ${SOURCE} && \
@@ -73,17 +77,19 @@ if [ $? != 0 ] ; then
 	echo Done. Result directory: && \
 	ls -l ${OUTDIR}
 else
-	ALLDATA='data/*.csv'
+	ALLDATA='data/*.csv  data/*.tar  data/*.tar.gz  data/*.tgz  data/*.zip'
 	ALLMETADATA="$ALLMETADATA metadata/createdb.sql"
-	if [ -f metadata/createdb01.sql ] ; then
-		ALLMETADATA="$ALLMETADATA metadata/createdb01.sql"
+	if [ -f ${SOURCE}/metadata/createdb01.sql ] ; then
+			ALLMETADATA="$ALLMETADATA metadata/createdb01.sql"
 	fi
+	echo "ALLMETADATA=$ALLMETADATA";
 	cd  ${SOURCE} && \
 	tar cf ${OUTFILE_TAR} $ALLMETADATA $ALLDATA && \
 	gzip ${OUTFILE_TAR} && \
 	echo Done. Result directory: && \
 	ls -l ${OUTDIR}
 fi
+
 
 
 

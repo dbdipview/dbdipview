@@ -7,15 +7,35 @@
  */
 function loadOrder($xmlinput) {
 	
+	$asiardfiles = array();
+	$aextfiles = array();
+	
 	$xml=simplexml_load_file($xmlinput);
 
 	$orderInfo['order'] =     "" . $xml->order;
 	$orderInfo['reference'] = "" . $xml->reference;
 	$orderInfo['title'] =     "" . $xml->title;
 	$orderInfo['dbc'] =       "" . $xml->dbcontainer;
-	$orderInfo['siardname'] = "" . $xml->siard;
-	$orderInfo['ddvcsv'] =    "" . $xml->viewercsv;
-	$orderInfo['ddv'] =       "" . $xml->viewer;
+	
+	if(isset    ($xml->siards)) 
+		foreach ($xml->siards->siard as $s) {
+			if ( !empty($s) ) {
+				debug("siard=" . $s);
+				array_push($asiardfiles, $s);
+			}
+		}
+	$orderInfo['siardFiles'] = $asiardfiles;
+	
+	if(isset    ($xml->viewers_extended)) 
+		foreach ($xml->viewers_extended->viewer_extended as $v) {
+			if ( !empty($v) ) {
+				debug("viewer_extended=" . $v);
+				array_push($aextfiles, $v);
+			}
+		}
+	$orderInfo['ddvExtFiles'] =  $aextfiles;
+	
+	$orderInfo['ddvFile'] =       "" . $xml->viewer;
 	$orderInfo['access'] =    "" . $xml->access;
 	
 	return($orderInfo);

@@ -1,0 +1,9 @@
+VERSION	2019-09-24
+SCHEMA	AirplanesLinks
+COMMENT	table	file	format	date_format	delimiter	encoding	header	TBD
+TABLE	"AirplanesLinks"."models"	models.csv	CSV	YMD	,	UTF8	y	TBD
+VIEW	"AirplanesLinks"."my_view"
+BFILES	filesInTar.tar
+BFILES	filesInTarGz.tar.gz
+BFILES	filesInTgz.tgz
+BFILES	filesInZip.zip

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dbDIPview 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
+	schemaMajorVersion="2" >
+
+	<database>
+		<name>TestAndDemo regression test viewer</name>
+		<revisions>
+			<revision date="2019-09-16" version="0.8">Sample XML for regression test and demonstration of functionality</revision>
+			<revision date="2019-09-27" version="1.0">Tow siard packages</revision>
+		</revisions>
+		<ref_number>v02</ref_number>
+		<screens>
+			<screen>
+				<id>1</id>
+				<selectDescription>A simple report, no search parameters</selectDescription>
+				<title>Employees</title>
+				<subtitle>Optional subtitle</subtitle>   
+				<query>SELECT * 			
+					FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen>
+				<id>2</id>
+				<selectDescription>Use of search; use of link to next screen with forwarded parameters</selectDescription>
+				<title>Employees again</title>
+				<subtitle>A link is made to another report, with a columns as a source value from the target report to be searched as field that is described in the &lt;link&gt; element. Use of ORDER.</subtitle> 
+				<param size='15'>
+					<name>ID</name>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>Id</dbcolumn>
+					<type>integer</type>
+				</param>
+					<param>
+					<name>employee name</name>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>The name</dbcolumn>
+					<type>textlike</type>
+				</param>
+				<query>SELECT 
+                    "HR employees"."Id", 
+                    "HR employees"."Employee Name" AS "The name" 				
+						FROM "HR members"."HR employees"
+				</query>
+				<selectOrder>"The name", "Id"</selectOrder>
+				<links_to_next_screen>
+					<link>
+						<dbcolumnname>Id</dbcolumnname>
+						<next_screen_id>2a</next_screen_id>
+						<dbtable>HR employees</dbtable>
+						<dbcolumn>Id</dbcolumn>
+						<linkaction/>
+					</link>
+				</links_to_next_screen>
+			</screen>
+
+			<screen>
+				<id hide='true'>2a</id>
+				<selectDescription>Hidden report, called from another report, with parameter; use of parameter in subselect reports</selectDescription>
+				<subtitle/>   
+				<param>
+					<name>ID</name>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>Id</dbcolumn>
+					<type>integer</type>
+					<forwardToSubqueryName>param1</forwardToSubqueryName>
+				</param>
+				<query>SELECT 
+                    "HR employees"."Id", 
+                    "HR employees"."Employee Name" AS "The name" 				
+						FROM "HR members"."HR employees"
+				</query>
+
+				<subselect>
+					<title>Subselect 1, called with a forwarded parameter from the main screen</title>
+					<query>SELECT 
+                    "HR employees"."Id", 
+                    "HR employees"."Employee Name" AS "The name" 				
+						FROM "HR members"."HR employees"</query>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>HR employees</dbtable>
+						<dbcolumn>Id</dbcolumn>
+					</param>
+				</subselect>
+
+				<subselect>
+					<title>Subselect 2, called with a forwarded parameter from the main screen</title>
+					<query>SELECT 
+                    "Arrivals"."id_emp", 
+                    "Arrivals"."arrival" 				
+						FROM "HR members"."Arrivals"</query>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>Arrivals</dbtable>
+						<dbcolumn>id_emp</dbcolumn>
+					</param>
+					<links_to_next_screen>
+						<link>
+							<dbcolumnname>id_emp</dbcolumnname>
+							<next_screen_id>3</next_screen_id>
+							<dbtable>HR employees</dbtable>
+							<dbcolumn>Id</dbcolumn>
+							<linkaction/>
+						</link>
+					</links_to_next_screen>
+				</subselect>
+
+			</screen>
+
+			<screen>
+				<id>3</id>
+				<selectDescription>Search parameters; infotip</selectDescription>
+				<title>use of infotip, attribute: size, skipNewLine</title>
+				<subtitle>use of infotip, attribute: size, skipNewLine</subtitle>    
+				<param size='15'>
+					<name>ID</name>
+					<infotip>This is a sample help text for this field. &lt;br /&gt;
+					Some basic html formatting is &lt;b&gt;possible&lt;/b&gt;</infotip>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>Id</dbcolumn>
+					<type>integer</type>
+				</param>
+				<param skipNewLine="1">
+					<name>Name of the employee</name>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>Employee Name</dbcolumn>
+					<type>textlike</type>
+				</param>
+				<param>
+					<name>Name</name>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>date Hired /hq</dbcolumn>
+					<type>date_ge</type>
+				</param>
+				<query>SELECT
+				*
+				FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen textOnly="1">
+				<id>not used</id>
+				<selectDescription>Another group of reports</selectDescription>
+			</screen>
+
+			<screen>
+				<id>4</id>
+				<selectDescription>Use of SELECT, example 1</selectDescription>
+				<subtitle>use of dropdownselection</subtitle>   
+				<param>
+					<name>Department</name>
+					<dbtable>Departments</dbtable>
+					<dbcolumn>Id</dbcolumn>
+					<select>SELECT "Id", "Dept Name" FROM "HR members"."Departments" ORDER BY "Dept Name"</select>
+					<type>combotext</type>
+				</param>
+				<query>SELECT
+				"HR employees"."Id",
+				"HR employees"."Employee Name",
+				"HR employees"."date Hired /hq",
+				"Assignments"."Id Employee",
+				"Assignments"."Id Department",
+				"Departments"."Id" AS "IDdep",
+				"Departments"."Dept Name"
+				FROM      "HR members"."HR employees"
+				LEFT JOIN "HR members"."Assignments" ON "HR employees"."Id" = "Assignments"."Id Employee" 
+				LEFT JOIN "HR members"."Departments" ON "Assignments"."Id Department" = "Departments"."Id" 
+				</query>
+				<selectOrder>"IDdep", "Employee Name"</selectOrder>
+			</screen>
+
+			<screen>
+				<id>5</id>
+				<selectDescription>Use of SELECT, example 2</selectDescription>
+				<subtitle>use of dropdownselection</subtitle>   
+				<param>
+					<name>Department</name>
+					<dbtable>dE</dbtable>
+					<dbcolumn>Id</dbcolumn>
+					<select>SELECT "Id", "Dept Name" FROM "HR members"."Departments" ORDER BY "Dept Name"</select>
+					<type>combotext</type>
+				</param>
+				<query>SELECT
+				"eM"."Id", 
+				"eM"."Employee Name", 
+				"eM"."date Hired /hq", 
+				"aS"."Id Employee", 
+				"aS"."Id Department", 
+				"dE"."Id" AS "IDdep", 
+				"dE"."Dept Name" 
+				FROM      "HR members"."HR employees" AS "eM"
+				LEFT JOIN "HR members"."Assignments"  AS "aS" ON "eM"."Id" = "aS"."Id Employee" 
+				LEFT JOIN "HR members"."Departments"  AS "dE" ON "aS"."Id Department" = "dE"."Id" 
+				</query>
+				<selectOrder>Employee Name</selectOrder>
+			</screen>
+
+			<screen textOnly="1">
+				<id>not used</id>
+				<selectDescription>Examples with CLOB and BLOB</selectDescription>
+			</screen>
+			
+		<screen>
+				<id>11</id>
+				<selectDescription>Use of BLOBS (note: using content of the 2nd SIARD package)</selectDescription>
+				<subtitle>Integration of RTF, JPG, PDF</subtitle>   
+                <param>
+					<name>ID</name>
+					<dbtable>table10</dbtable>
+					<dbcolumn>id</dbcolumn>
+					<type>integer</type>
+				</param>
+                <param>
+					<name>poradi</name>
+					<dbtable>table10</dbtable>
+					<dbcolumn>poradi</dbcolumn>
+					<type>integer</type>
+				</param> 
+               <param>
+					<name>Name</name>
+					<dbtable>table10</dbtable>
+					<dbcolumn>name</dbcolumn>
+					<type>textlike</type>
+				</param>
+				<query>SELECT
+		 "dbo"."table10"."id",
+		 "dbo"."table10"."poradi", 
+
+		 CASE WHEN "obsah" IS NULL
+			THEN null
+			ELSE "dbo"."table10"."poradi" 
+		 END AS "RTF", 
+
+		 CASE WHEN "picture" IS NULL
+			THEN null
+			ELSE "dbo"."table10"."poradi" 
+		 END AS "JPG", 
+
+		 CASE WHEN "documentpdf" IS NULL
+			THEN null
+			ELSE "dbo"."table10"."poradi" 
+		 END AS "PDF", 
+
+		 "dbo"."table10"."name"
+				FROM "dbo"."table10"
+				</query>
+				<blobs>
+					<blob mode="CLOB">
+						<id>2_1</id>
+						<dbcolumnname>RTF</dbcolumnname>
+						<query>SELECT 
+							'application/rtf' AS "ContentType", 
+							'obsah.rtf'       AS "filename", 
+							"obsah"           AS "blob" 
+						FROM "dbo"."table10" 
+						WHERE "poradi" = ?</query>
+					</blob>
+					<blob mode="OID">
+						<id>2_2</id>
+						<dbcolumnname>JPG</dbcolumnname>
+						<query>SELECT 
+							'image/jpeg'  AS "ContentType", 
+							'picture.jpg' AS "filename", 
+							"picture"     AS "blob" 
+						FROM "dbo"."table10" 
+						WHERE "poradi" = ?</query>
+					</blob>
+					<blob mode="OID">
+						<id>2_3</id>
+						<dbcolumnname>PDF</dbcolumnname>
+						<query>SELECT 
+							'application/pdf' AS "ContentType", 
+							'document.pdf'    AS "filename", 
+							"documentpdf"     AS "blob" 
+						FROM "dbo"."table10" 
+						WHERE "poradi" = ?</query>
+					</blob>
+				</blobs>
+				<links_to_next_screen>
+					<link>
+						<dbcolumnname>poradi</dbcolumnname>
+						<next_screen_id>11</next_screen_id>
+						<dbtable>table10</dbtable>
+						<dbcolumn>poradi</dbcolumn>
+						<linkaction></linkaction>
+					</link>
+				</links_to_next_screen>
+			</screen>
+            
+		</screens>
+	</database>
+</dbDIPview>

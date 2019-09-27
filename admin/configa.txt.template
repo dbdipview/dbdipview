@@ -10,6 +10,7 @@ $MYLANG="en";
 
 $DDV_DIR_PACKED="$PROGDIR/../records/DIP0/";             //default location for input packages
 $DDV_DIR_UNPACKED="$PROGDIR/../records/DIP0unpacked/";   //default location for extracted content
+$BFILES_DIR="$PROGDIR/../www/files/";                    //default location for external files (LOBs)
 
 //SIARD tools
 $JAR="$PROGDIR/siard/dbptk-app-2.5.0.jar";
