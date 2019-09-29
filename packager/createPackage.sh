@@ -55,41 +55,35 @@ echo "Validating xml..."
 php validator.php $SOURCE
 echo
 
-echo "Creating package..."
-
 if [ -d data ] ; then
     echo Error: missing data/
     sleep 1
     exit 1
 fi
 
-ALLMETADATA="metadata/queries.xml metadata/list.txt metadata/history.txt"
+ALLMETADATA="metadata/queries.xml metadata/list.txt metadata/info.txt"
 
-ls ${SOURCE}/data/*.csv \
-	${SOURCE}/data/*.tar \
-	${SOURCE}/data/*.tar.gz \
-	${SOURCE}/data/*.tgz \
-	${SOURCE}/data/*.zip > /dev/null 2> /dev/null
+ls ${SOURCE}/data/* > /dev/null 2> /dev/null
 if [ $? != 0 ] ; then
-    echo 'No files in data/*.csv'
+    echo 'No files in data/'
+    echo "Creating package ${OUTFILE_ZIP}..."
 	cd  ${SOURCE} && \
 	zip -r ${OUTFILE_ZIP} $ALLMETADATA && \
-	echo Done. Result directory: && \
+	echo Done. Result directory ${OUTDIR}: && \
 	ls -l ${OUTDIR}
 else
-	ALLDATA='data/*.csv  data/*.tar  data/*.tar.gz  data/*.tgz  data/*.zip'
+	ALLDATA='data/*'
 	ALLMETADATA="$ALLMETADATA metadata/createdb.sql"
 	if [ -f ${SOURCE}/metadata/createdb01.sql ] ; then
-			ALLMETADATA="$ALLMETADATA metadata/createdb01.sql"
+		ALLMETADATA="$ALLMETADATA metadata/createdb01.sql"
 	fi
-	echo "ALLMETADATA=$ALLMETADATA";
+    echo "Creating package ${OUTFILE_TAR}..."
 	cd  ${SOURCE} && \
 	tar cf ${OUTFILE_TAR} $ALLMETADATA $ALLDATA && \
 	gzip ${OUTFILE_TAR} && \
-	echo Done. Result directory: && \
+	echo Done. Result directory ${OUTDIR}: && \
 	ls -l ${OUTDIR}
 fi
-
 
 
 

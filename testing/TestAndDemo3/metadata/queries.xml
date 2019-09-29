@@ -5,10 +5,10 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo regression test viewer</name>
+		<name>Regression test viewer TestAndDemo3: query contents of the two SIARD packages</name>
 		<revisions>
 			<revision date="2019-09-16" version="0.8">Sample XML for regression test and demonstration of functionality</revision>
-			<revision date="2019-09-27" version="1.0">Tow siard packages</revision>
+			<revision date="2019-09-28" version="1.0">Tow siard packages</revision>
 		</revisions>
 		<ref_number>v02</ref_number>
 		<screens>

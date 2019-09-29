@@ -18,7 +18,10 @@ function connectToDB(){
 	$connectString = 'host=' . $serverName . ' port=' . $port . ' dbname=' . $dbName . ' user=' . $userName; 
 	$dbConn = pg_connect($connectString . ' password=' . $password);
 	if (!$dbConn){
-		print "<p style='color:red;'>Error connecting to database.</p>\n";
+		print "<p style='color:red;'>Error connecting to database.</p>";
+		print "<p style='color:red;'>Error connecting to database.</p>";
+		print "<p style='color:red;'>" . pg_last_error($dbConn) . "</p>";
+		print $connectString;
 	}
 	return $dbConn;
 }

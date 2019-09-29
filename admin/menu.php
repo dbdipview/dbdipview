@@ -5,8 +5,7 @@
  * Interactive menu: installs or deinstalls packages, shows status.
  * Uses folder as configured in configa.txt.
  *
- * @author    Boris Domajnko <boris.domajnko@gov.si
- *
+ * @author     Boris Domajnko
  */
 
 $PROGDIR=__DIR__;  //getcwd();  //`pwd` , e.g. /home/dbdipview/admin
@@ -69,10 +68,16 @@ $handleKbd = fopen ("php://stdin","r");
 $answer = "X";
 $rv = ''; //return value for passthru()
 
-//first installation? Check existence of some folders and create them if needed
+//after installation?
 if (!is_dir($SERVERDATADIR)) {
 	msgCyan($MSG43_INITCONFIG . ": " . $SERVERDATADIR);
 	if (!mkdir($SERVERDATADIR, 0777, true))
+		die($MSG_ERROR);
+}
+
+if (!is_dir($PROGDIR . "/siard/")) {
+	msgCyan($MSG43_INITCONFIG . ": " . $PROGDIR . "/siard");
+	if (!mkdir($PROGDIR . "/siard", 0777, true))
 		die($MSG_ERROR);
 }
 
@@ -157,8 +162,9 @@ while ( "$answer" != "q" ) {
 					echo "${V3}V3 (EXT) $MSG4_CREATEAPL" . PHP_EOL;
 					echo "${V4}V4 (EXT) $MSG5_MOVEDATA" . PHP_EOL;
 	}
-	if(!empty($all) || empty($om))  {
+	if(!empty($all) || empty($om))
 					echo "${X1}1  (dbDIPview) $MSG1_SELECTPKG" . PHP_EOL;
+	if(!empty($all))  {
 					echo "${X2}2  (dbDIPview) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 					echo "${X2}2o (dbDIPview) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 	}
@@ -206,6 +212,7 @@ while ( "$answer" != "q" ) {
 				$x=configGetInfo($DDV, $DBC);
 				print_r($x);
 			}
+			config_get_options_token();
 			msgCyan($MSG3_CHECKDB . ":");
 			dbf_list_databases();
 

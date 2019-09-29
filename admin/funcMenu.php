@@ -2,7 +2,7 @@
 /**
  * Functions for menu.php
  *
- * @author    Boris Domajnko <boris.domajnko@gov.si
+ * @author     Boris Domajnko
  *
  */
  
@@ -105,16 +105,16 @@ function getPackageName(&$outname, &$outfilename, $extension) {
 	foreach($out as $key => $value) {
 		
 		if (isAtype($value, "siard")) {
-			$description="SIARD";
+			$description="database structure and content package (SIARD)";
 			$val1 = substr($value, 0, -6);
 		} else if (isAtype($value, "zip")) {
-			$description="dbdipview configuration for SIARD - .zip";
+			$description="dbdipview viewer configuration file (.zip)";
 			$val1 = substr($value, 0, -4);
 		} else if (isAtype($value, "xml")) {
-			$description="order package with all information about packages - .xml";
+			$description="order file with a list of packages (.xml)";
 			$val1 = substr($value, 0, -4);
 		} else if (isAtype($value, "tar.gz")) {
-			$description="dbdipview configuration+CSV - .tar.gz";
+			$description="dbdipview extended viewer configuration file (.tar.gz)";
 			$val1 = substr($value, 0, -7);
 		} else {
 			$val1 = $value;
@@ -168,7 +168,7 @@ function addQuotes($word) {
 	return $line;
 }
 
-//chck a file type
+//check file type
 //example: x.zip, .zip =>true
 function isAtype($name, $ending) {
 	$endingLength=strlen(".".$ending);

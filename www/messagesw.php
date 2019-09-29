@@ -1,8 +1,8 @@
 <?php
 
 if ( "$myLang" == "sl" ){
-$MSGSW01_MainSubTitle="Dostop do gradiva: vsebine podatkovnih zbirk";
-$MSGSW02_Code="Koda";
+$MSGSW01_MainSubTitle="Dostop do gradiva: vsebina podatkovnih zbirk";
+$MSGSW02_Code="Koda za dostop";
 $MSGSW03_Database="Vsebnik za podatkovne zbirke";
 $MSGSW04_Viewer="Pregledovalnik";
 $MSGSW05_ErrorNoConfiguration="Napaka, ne morem odpreti konfiguracijske datoteke";
@@ -32,8 +32,8 @@ $MHLP10="Dom% && %Kamnik";
 $MHLP11="spustni seznam z večkratno izbiro (ali):";
 $MHLP12="preklopite s + ter ob pritisnjeni tipki Ctrl dodajajte vrednosti";
 } else { 
-$MSGSW01_MainSubTitle="Access to the records of archived databases";
-$MSGSW02_Code="Code";
+$MSGSW01_MainSubTitle="Access to the archived databases";
+$MSGSW02_Code="Access code";
 $MSGSW03_Database="Database container";
 $MSGSW04_Viewer="Viewer";
 $MSGSW05_ErrorNoConfiguration="Error, cannot open the configuration file";
