@@ -33,7 +33,7 @@ include '../admin/funcConfig.php';
    <form name="forma" action="prog1.php" method="get" target='topframe'>
     <table>
     <tbody>
-<?php if(strlen($c) > 0) { ?>
+<?php if( strlen($c) > 0 ) { ?>
       <tr>
         <td>
            <?php echo $MSGSW02_Code; ?>: 
@@ -42,39 +42,46 @@ include '../admin/funcConfig.php';
            <input type="text" name="code" size="15" value="<?php echo $c;?>" readonly/>
         </td>
       </tr>
-<?php } else { ?>
 
-		  <tr>
-			<td>
-				<?php echo $MSGSW03_Database; ?>: 
-			</td>
-			<td>
-				<input type="text" size="30" name="dbname" 
-					value="<?php echo (strlen($d) > 0) ? $d : '';?>" 
-					       <?php echo (strlen($d) > 0) ? ' readonly' : '';?> 
-				/>
-			</td>
-		  </tr>
 <?php
-		echo "<tr>";
-		echo "<td>$MSGSW04_Viewer:</td>";
-		echo "<td>";
-		if(strlen($v) > 0) {
-?>
-			<input type="text" size="30" name="xmlfile" value="<?php echo $v;?>" readonly />
-<?php
-		} else {
+		} else if( !strlen($v) > 0 ) {
+			echo "<tr>";
+			echo "<td>$MSGSW17_Records</td>";
+			echo "<td>";
 			if(file_exists ("data/config.json")) {
-					echo '<select name="xmlfile"> ';
-					print '<option value="default.xml" selected="selected"> </option>' . PHP_EOL;
-					config_get_options();
-					print '</select>';
+				echo '<select name="code"> ';
+				print '<option value="c5d903dedce4f8" selected="selected"> </option>' . PHP_EOL;
+				config_get_options_token();
+				print '</select>';
 			} else
 				echo "<h2>$MSGSW05_ErrorNoConfiguration.</h2>";
+			echo "</td>";
+			echo "</tr>";
+		} else {
+?>
+			<tr>
+				<td>
+					<?php echo $MSGSW03_Database; ?>: 
+				</td>
+				<td>
+					<input type="text" size="30" name="dbname" 
+						value="<?php echo (strlen($d) > 0) ? $d : '';?>" 
+							   <?php echo (strlen($d) > 0) ? ' readonly' : '';?> 
+					/>
+				</td>
+			</tr>
+<?php
+			echo "<tr>";
+			echo "<td>$MSGSW04_Viewer:</td>";
+			echo "<td>";
+			if(strlen($v) > 0) {
+?>
+				<input type="text" size="30" name="xmlfile" value="<?php echo $v;?>" readonly />
+<?php
+			} 
+			echo "</td>";
+			echo "</tr>";
 		}
-		echo "</td>";
-		echo "</tr>";	
-	} //c=''
 ?>
       <tr>
         <td>

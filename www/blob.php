@@ -3,7 +3,7 @@
 /**
  * Display BLOB content
  *
- * @author    Boris Domajnko <boris.domajnko@gov.si
+ * @author     Boris Domajnko
  *
  */
 

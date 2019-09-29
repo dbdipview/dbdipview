@@ -1,0 +1,16 @@
+<dbrequest>
+	<order>Order_test_3</order>
+	<reference>TestDemo2</reference>
+	<title>Test and demo for two SIARD packages and their related DDV viewer</title>
+	<dbcontainer>DBC3</dbcontainer>
+	<siards>
+		<siard>TestAndDemo3_A.siard</siard>
+		<siard>TestAndDemo3_B.siard</siard>
+	</siards>
+	<viewers_extended>
+		<viewer_extended></viewer_extended>
+	</viewers_extended>
+	<viewer>TestAndDemo3.zip</viewer>
+	<access>public</access>
+</dbrequest>
+

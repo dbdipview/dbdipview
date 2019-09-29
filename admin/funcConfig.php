@@ -226,7 +226,7 @@ function config_code2database($token) {
  * Show only public elements
  *
  */
-function config_get_options() {
+function config_get_options_xml() {
 	global $SERVERCONFIGJSON;
 		
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
@@ -234,7 +234,26 @@ function config_get_options() {
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('access', $line) && 0==strcmp($line['access'],"public")) {
 			print '<option value="' . $line['queriesfile'] . '">' . 
-			$line['ddv'] . " (" . $line['dbc'] . ") - " . $line['ref'] . " " . $line['title'] . 
+			$line['ddv'] . " - " . $line['ref'] . " " . $line['title'] . 
+			'</option>' . PHP_EOL;
+		} 
+	} 
+}
+
+/**
+ * Display configuration information (as OPTION elements for the selection html form)
+ * Show only public elements
+ *
+ */
+function config_get_options_token() {
+	global $SERVERCONFIGJSON;
+		
+	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
+
+	foreach ($array as $index=>$line) {
+		if ( array_key_exists('access', $line) && 0==strcmp($line['access'],"public")) {
+			print '<option value="' . $line['token'] . '">' . 
+			$line['ref'] . " (DBC=" . $line['dbc'] . ", DDV=" . $line['ddv'] . ") - " . $line['title'] . 
 			'</option>' . PHP_EOL;
 		} 
 	} 
