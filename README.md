@@ -50,56 +50,6 @@ If this is a topic of your interest, you are probably already familiar with some
 * Administration tool (creation of an empty database and restoration of its content, access activation)
 * Browser access for users (selection of a desired database and schema, execution of the available queries)
 
-### First Installation
-The environment uses Linux (Ubuntu 18.04 LTS) with PostgreSQL, and the dbDIPview code is installed on the same server. First, we set up the configuration.
-
-```
-# downloaded from github, move the dbdipview to the target server...
-# in postgres create two accounts: admin user and a read-only access user...
-#   copy the installation package...
-#   on the server, choose the direcory, e.g. cd ~
-# take care about apache DocumentRoot (dbdipview/www)...
-# in dbdipview/admin and dbdipview/www rename the *.txt.template files to *.txt...
-# edit the configuarion settings in both folders... 
-# run the administration tool to check and create the missing folders
-cd dbdipview/admin
-php menu.php
-```
-
-### Creation of a dbDIPview package
-* One viewer configuration package will be created for one database. Nevertheless, we can use it with all databases with the same structure.
-* Create an XML file with your first query. The XML template is in the folder ```dbdipview/doc```.
-* Build the dbDIPview package. Note that the package can optionally include the complete database content (CSV). With data in the work folder ```dbdipview/records``` use this command:
-
-```
-cd dbdipview/packager
-chmod +x createPackage.sh
-./createPackage.sh
-```
-
-### Deployment of a single database
-Here we use the administration menu that allows us to do step by step operations like:
-* Define the target database.
-* Select the desired package.
-* Restore the database content (using the SIARD package or CSV, or dedicated external tool). 
-* Unpack and activate the corresponding dbDIPview viewer package for this schema. 
-
-```
-cd dbdipview/admin
-php menu.php
-```
-We execute the menu options following their typical order:
-
-***![Alt text](docs/images/adminmenu1.png?raw=true "adminmenu")
-
-The user can now use the browser to access the information in the database. Similarly, the access can be deactivated and the restored copy of the database deleted.
-
-### User Access
-The entry point is the address http://yourHostName/dbdipview/login.htm. The user's redirection from the archive finding aid or ordering system to the dbDIPview server can be implemented in different ways:
-* URL parameter is a unique target database id,
-* URL parameters are database and schema names, or
-* URL redirects to the selection menu.
-
 ## Versioning
 For the archiving purpose, backward compatibility needs to be maintained at least on the level of XML schema.
 
