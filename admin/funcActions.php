@@ -148,7 +148,7 @@ function actions_Order_process($orderInfo) {
  *
  */
 function actions_Order_remove($orderInfo) {
-	global $MSG17_FILE_NOT_FOUND, $MSG26_DELETED;
+	global $MSG17_FILE_NOT_FOUND, $MSG26_DELETED, $MSG26_DELETING;
 	global $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR;
 	global $OK,$NOK;
 	
@@ -165,7 +165,7 @@ function actions_Order_remove($orderInfo) {
 	
 	$BFILES_DIR_TARGET = $BFILES_DIR . $ddv;   //location for all external files as LOBs
 	if (is_dir("$BFILES_DIR_TARGET")) {
-		debug("Removing $BFILES_DIR_TARGET");
+		msgCyan("$MSG26_DELETING $BFILES_DIR_TARGET...");
 		$out = passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
 		echo $out . PHP_EOL;
 		msgCyan($MSG26_DELETED . ": " . $BFILES_DIR_TARGET);
@@ -178,6 +178,7 @@ function actions_Order_remove($orderInfo) {
 			$ddvext = substr($file, 0, -7);          //filename w/o .tar.gz
 			$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $ddvext;
 			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+			msgCyan($MSG26_DELETING . " " . $ddvext . "...");
 			actions_schema_drop($DBC, $ddvext, $listfile);
 			actions_remove_folders($ddvext, $DDV_DIR_EXTRACTED, "");
 		} else {
@@ -190,6 +191,7 @@ function actions_Order_remove($orderInfo) {
 		$DDV = substr($value, 0, -4);               //filename  w/o .zip
 		$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
 		$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+		msgCyan($MSG26_DELETING . " " . $DDV . "...");
 		actions_schema_drop($DBC, $DDV, $LISTFILE);
 		actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, "");
 	}
@@ -218,7 +220,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	}
 
 	if (! empty($cmd)) {
-		msgCyan($MSG29_EXECUTING . "...");
+		msgCyan($MSG29_EXECUTING . " " . basename($packagefile) . "...");
 		debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $cmd);
 		$rv = 0;
 		$out = passthru($cmd, $rv);
@@ -273,6 +275,7 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 	}
 	
 	if ( is_file($listfile)) {
+		msgCyan($MSG29_EXECUTING . " " . $listfile . "...");
 		if (($handleList = fopen($listfile, "r")) !== FALSE) {
 			while (($line = fgets($handleList)) !== false) {
 				$line = rtrim($line);
@@ -289,13 +292,13 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 					if ( $rv != 0 )
 						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 
-					echo $MSG29_EXECUTING . " " . $CREATEDB0 . PHP_EOL;
+					msgCyan(" " . $MSG29_EXECUTING . " " . $CREATEDB0);
 					$rv = dbf_run_sql($DBC, $CREATEDB0);
 					if ( $rv != 0 )
 						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 
 					if (is_file($CREATEDB1)) {
-						echo $MSG29_EXECUTING . " " . $CREATEDB1 . PHP_EOL;
+						msgCyan(" " . $MSG29_EXECUTING . " " . $CREATEDB1);
 						$rv = dbf_run_sql($DBC, $CREATEDB1);
 						if ( $rv != 0 )
 							err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -319,7 +322,7 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
  * @return $OK or $NOK    
  */
 function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
-	global $MSG_ERROR, $MSG29_EXECUTING, $MSG45_COPYBFILES, $MSG31_NOSCHEMA, $MSG33_SKIPPING;
+	global $MSG_ERROR, $MSG29_EXECUTING, $MSG5_MOVEDATA, $MSG45_COPYBFILES, $MSG31_NOSCHEMA, $MSG33_SKIPPING;
 	global $OK, $NOK;
 	global $DBC, $DBGUEST;
 	global $PROGDIR;
@@ -327,6 +330,7 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 	$ret = $NOK;
 	debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $listfile);
 	if (($handleList = fopen($listfile, "r")) !== FALSE) {
+		msgCyan($MSG5_MOVEDATA . " " . basename($packagefile) . "...");
 		while (($line = fgets($handleList)) !== false) {
 			$line = rtrim($line);
 			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
@@ -402,7 +406,8 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 				}
 
 				if ( !empty($cmd) ) {
-					msgCyan($MSG45_COPYBFILES . " $SRCFILE -> $BFILES_DIR_TARGET");
+					msgCyan($MSG45_COPYBFILES . " -> $BFILES_DIR_TARGET");
+					debug(" $SRCFILE...");
 					if (!file_exists($BFILES_DIR_TARGET)) {
 						debug("Creating folder " . $BFILES_DIR_TARGET);
 						mkdir($BFILES_DIR_TARGET, 0777, true);
@@ -440,7 +445,7 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	global $PROGDIR;
 	global $OK, $NOK;
 
-	msgCyan($MSG29_EXECUTING);
+	msgCyan($MSG29_EXECUTING . " " . basename($packagefile) . "...");
 	$ret = $NOK;
 	
 	if ( !is_dir($DDV_DIR_EXTRACTED) )
@@ -485,11 +490,13 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
  * @return $OK or $NOK    
  */
 function actions_SIARD_install($siardFile) {
+	global $MSG29_EXECUTING;
 	global $DBC;
 	global $OK, $NOK;
 
 	$ret = $NOK;
 
+	msgCyan($MSG29_EXECUTING . " " .  basename($siardFile) . "...");
 	if (installSIARD($DBC, $siardFile)) {
 		$ret = $OK;
 	}
@@ -507,7 +514,7 @@ function actions_SIARD_grant($listfile) {
 
 	$ret = $NOK;
 
-	echo "$MSG3_ENABLEACCESS:" . PHP_EOL;
+	msgCyan($MSG3_ENABLEACCESS . " " . $listfile . "...");
 	if ( is_file($listfile)) {
 		if (($handleList = fopen($listfile, "r")) !== FALSE) {
 			while (($line = fgets($handleList)) !== false) {
@@ -540,13 +547,14 @@ function actions_SIARD_grant($listfile) {
  */
 function actions_access_on($orderInfo, $ddv) {
 	global $MSG18_DDV_NOT_SELECTED, $MSG15_DDV_IS_NOT_UNPACKED, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG16_FOLDER_NOT_FOUND;
-	global $MSG17_FILE_NOT_FOUND, $MSG30_ALREADY_ACTIVATED, $MSG27_ACTIVATED;
+	global $MSG17_FILE_NOT_FOUND, $MSG30_ALREADY_ACTIVATED, $MSG27_ACTIVATED, $MSG6_ACTIVATEDIP;
 	global $SERVERDATADIR,$DDV_DIR_EXTRACTED;
 	global $DBC;
 
 	$token = "";
 	$XMLFILESRC = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 
+	msgCyan($MSG6_ACTIVATEDIP . " " . $ddv . "...");
 	if (notSet($ddv))
 		err_msg($MSG18_DDV_NOT_SELECTED);
 	else if ( !is_dir($DDV_DIR_EXTRACTED))
@@ -579,7 +587,7 @@ function actions_access_on($orderInfo, $ddv) {
 		$configItemInfo['ref']         = $orderInfo['reference'];
 		$configItemInfo['title']       = $orderInfo['title'];
 		config_json_add_item($configItemInfo);
-		msgCyan($MSG27_ACTIVATED);
+		msgCyan($MSG27_ACTIVATED . ".");
 		config_show();
 	}
 	
