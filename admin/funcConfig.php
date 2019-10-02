@@ -253,7 +253,7 @@ function config_get_options_token() {
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('access', $line) && 0==strcmp($line['access'],"public")) {
 			print '<option value="' . $line['token'] . '">' . 
-			$line['ref'] . " (DBC=" . $line['dbc'] . ", DDV=" . $line['ddv'] . ") - " . $line['title'] . 
+			$line['ref'] . " (" . $line['dbc'] . "&#x27a4;" . $line['ddv'] . ") - " . $line['title'] . 
 			'</option>' . PHP_EOL;
 		} 
 	} 
