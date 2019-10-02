@@ -34,6 +34,7 @@ function enter() {
 
 $TXT_RED=  chr(27).'[31m'; 
 $TXT_GREEN=chr(27).'[32m';
+$TXT_BLUE=chr(27).'[34m';
 $TXT_CYAN= chr(27).'[36m';
 $TXT_RESET=chr(27).'[0m';
 
@@ -44,9 +45,9 @@ function msgCyan($p1) {
 
 function debug($p1) {
 	global $debug; 
-	global $TXT_GREEN, $TXT_RESET; 
+	global $TXT_BLUE, $TXT_RESET; 
 	if ($debug)
-		echo $TXT_GREEN . $p1 . $TXT_RESET . PHP_EOL;
+		echo $TXT_BLUE . $p1 . $TXT_RESET . PHP_EOL;
 }
 
 function err_msg($p1, $p2="") {
