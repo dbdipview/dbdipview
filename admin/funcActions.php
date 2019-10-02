@@ -220,7 +220,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	}
 
 	if (! empty($cmd)) {
-		msgCyan($MSG29_EXECUTING . " " . basename($packagefile) . "...");
+		msgCyan($MSG29_EXECUTING . " " . basename($packageFile) . "...");
 		debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $cmd);
 		$rv = 0;
 		$out = passthru($cmd, $rv);
