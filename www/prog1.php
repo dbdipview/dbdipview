@@ -48,7 +48,7 @@ switch ($submit_cycle) {
 		$_SESSION['myXMLfile'] = $myXMLfile;
 		$_SESSION['myDBname'] = $myDBname;
 		$_SESSION['myLang'] = $myLang;
-		$_SESSION['title'] = $recordsInfo['title'];
+		$_SESSION['title'] = $recordsInfo['ref'] . " " . $recordsInfo['title'];
 		$_SESSION['mydebug'] = $mydebug;
 		
 		break;
@@ -73,7 +73,7 @@ switch ($submit_cycle) {
 $myXMLpath="data/";
 $myXMLfilePath=$myXMLpath . $myXMLfile;
 
-include "blob.php";
+include "utils/downlds.php";
 
 switch ($submit_cycle) {
 	case "showBlob":
@@ -82,6 +82,13 @@ switch ($submit_cycle) {
 		$id  = pg_escape_string($_GET['id']); 
 		$val = pg_escape_string($_GET['val']); 
 		showBlobRaw($id, $val);
+		break;
+	case "showCsv":
+		//no error messages here, just output
+		$sql  =     pg_escape_string($_GET['s']); 
+		$filename = pg_escape_string($_GET['f']); 
+		$title =    pg_escape_string($_GET['t']); 
+		showCsv($sql, $filename, $title);
 		break;
 }
 
@@ -128,7 +135,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 			</td>
 			<td align="right">
 <?php
-			echo $myDBname . "(" . $myXMLfile . ")&nbsp;&nbsp;";
+			echo $myDBname . "&#x27a4;" . $myXMLfile . "&nbsp;&nbsp;";
 			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . 
 				"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a></abbr>" .
 				"&nbsp;&nbsp;&nbsp;";
@@ -156,7 +163,7 @@ if(strlen($myXMLfile)==0 ||
 $filespath="files/".str_replace(".xml", "", $myXMLfile)."/";  //area for attachments/BLOB content
 
 $PARAMS = $_GET;
-echo  "<h3>$MSGSW17_Records: " . $_SESSION['title'] . "</h3>";
+echo "<h3>$MSGSW17_Records: " . $_SESSION['title'] . "</h3>";
 echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
 
 $targetQueryNum = pg_escape_string($_GET['targetQueryNum']); 

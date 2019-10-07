@@ -63,7 +63,9 @@ text-decoration:underline;
 a:hover {
 color:#003559;
 }
-
+hr {
+border-color: lightgray; background-color: lightgray;
+}
 
 table.mydbtable {
 color:#4D4D4D;

@@ -5,19 +5,21 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>Regression test viewer TestAndDemo3: query contents of the two SIARD packages</name>
+		<name>TestAndDemo3 regression test viewer: query contents of the two SIARD packages</name>
 		<revisions>
 			<revision date="2019-09-16" version="0.8">Sample XML for regression test and demonstration of functionality</revision>
-			<revision date="2019-09-28" version="1.0">Tow siard packages</revision>
+			<revision date="2019-09-28" version="1.0">Two siard packages</revision>
+			<revision date="2019-10-06" version="1.1">Improved comments</revision>
 		</revisions>
-		<ref_number>v02</ref_number>
+		<ref_number>1.1</ref_number>
 		<screens>
+
 			<screen>
 				<id>1</id>
 				<selectDescription>A simple report, no search parameters</selectDescription>
-				<title>Employees</title>
-				<subtitle>Optional subtitle</subtitle>   
-				<query>SELECT * 			
+				<title>Title: Employees</title>
+				<subtitle>Subtitle, also optional. This is a basic report. Just for a quick start.</subtitle>   
+				<query>SELECT * 
 					FROM "HR members"."HR employees"
 				</query>
 			</screen>
@@ -25,29 +27,29 @@
 			<screen>
 				<id>2</id>
 				<selectDescription>Use of search; use of link to next screen with forwarded parameters</selectDescription>
-				<title>Employees again</title>
-				<subtitle>A link is made to another report, with a columns as a source value from the target report to be searched as field that is described in the &lt;link&gt; element. Use of ORDER.</subtitle> 
+				<title>Employees again, Html formating of the text - bold and new line</title>
+				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report, with &lt;BR /&gt;- column ID as a source value &lt;BR /&gt; - to be searched as &lt;B&gt;HR employees-Id&lt;/B&gt; in the linked report. &lt;BR /&gt;- Use of ORDER.</subtitle> 
 				<param size='15'>
 					<name>ID</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>Id</dbcolumn>
 					<type>integer</type>
 				</param>
-					<param>
-					<name>employee name</name>
+				<param>
+					<name>Employee name</name>
 					<dbtable>HR employees</dbtable>
-					<dbcolumn>The name</dbcolumn>
+					<dbcolumn>"Employee Name</dbcolumn>
 					<type>textlike</type>
 				</param>
 				<query>SELECT 
-                    "HR employees"."Id", 
+                    "HR employees"."Id" AS "ID", 
                     "HR employees"."Employee Name" AS "The name" 				
 						FROM "HR members"."HR employees"
 				</query>
-				<selectOrder>"The name", "Id"</selectOrder>
+				<selectOrder>"The name", "ID"</selectOrder>
 				<links_to_next_screen>
 					<link>
-						<dbcolumnname>Id</dbcolumnname>
+						<dbcolumnname>ID</dbcolumnname>
 						<next_screen_id>2a</next_screen_id>
 						<dbtable>HR employees</dbtable>
 						<dbcolumn>Id</dbcolumn>
@@ -59,6 +61,7 @@
 			<screen>
 				<id hide='true'>2a</id>
 				<selectDescription>Hidden report, called from another report, with parameter; use of parameter in subselect reports</selectDescription>
+				<title>This report was not in the list</title>   
 				<subtitle/>   
 				<param>
 					<name>ID</name>
@@ -74,11 +77,12 @@
 				</query>
 
 				<subselect>
-					<title>Subselect 1, called with a forwarded parameter from the main screen</title>
+					<title>Subselect 1, use of a forwarded parameter from the main report above</title>
 					<query>SELECT 
                     "HR employees"."Id", 
                     "HR employees"."Employee Name" AS "The name" 				
-						FROM "HR members"."HR employees"</query>
+						FROM "HR members"."HR employees"
+					</query>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>HR employees</dbtable>
@@ -87,7 +91,8 @@
 				</subselect>
 
 				<subselect>
-					<title>Subselect 2, called with a forwarded parameter from the main screen</title>
+					<title>Subselect 2, use of a forwarded parameter; link to the connected screen</title>
+					<subtitle>The value of the parameter param1 from the previous report was used as a search criteria in this report. There is a also a further connection to the report No. 3 using the value of column id_emp</subtitle>   
 					<query>SELECT 
                     "Arrivals"."id_emp", 
                     "Arrivals"."arrival" 				
@@ -113,9 +118,9 @@
 			<screen>
 				<id>3</id>
 				<selectDescription>Search parameters; infotip</selectDescription>
-				<title>use of infotip, attribute: size, skipNewLine</title>
-				<subtitle>use of infotip, attribute: size, skipNewLine</subtitle>    
-				<param size='15'>
+				<title>Use of infotip, attributes: size, hr, skipNewLine</title>
+				<subtitle>Search screen: see infotip at ID field; skipped new line at end of param, and a horizontal line</subtitle>    
+				<param size='20'>
 					<name>ID</name>
 					<infotip>This is a sample help text for this field. &lt;br /&gt;
 					Some basic html formatting is &lt;b&gt;possible&lt;/b&gt;</infotip>
@@ -123,8 +128,8 @@
 					<dbcolumn>Id</dbcolumn>
 					<type>integer</type>
 				</param>
-				<param skipNewLine="1">
-					<name>Name of the employee</name>
+				<param hr="1" skipNewLine="1">
+					<name>Employee name</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>Employee Name</dbcolumn>
 					<type>textlike</type>
@@ -149,7 +154,8 @@
 			<screen>
 				<id>4</id>
 				<selectDescription>Use of SELECT, example 1</selectDescription>
-				<subtitle>use of dropdownselection</subtitle>   
+				<title>Example 1</title>   
+				<subtitle>Use of dropdown selection, values are prepared with another SELECT</subtitle>   
 				<param>
 					<name>Department</name>
 					<dbtable>Departments</dbtable>
@@ -175,7 +181,8 @@
 			<screen>
 				<id>5</id>
 				<selectDescription>Use of SELECT, example 2</selectDescription>
-				<subtitle>use of dropdownselection</subtitle>   
+				<title>Example 2</title>   
+				<subtitle>Use of dropdown selection, see alias</subtitle>   
 				<param>
 					<name>Department</name>
 					<dbtable>dE</dbtable>
@@ -206,7 +213,8 @@
 		<screen>
 				<id>11</id>
 				<selectDescription>Use of BLOBS (note: using content of the 2nd SIARD package)</selectDescription>
-				<subtitle>Integration of RTF, JPG, PDF</subtitle>   
+				<title>Integration of RTF, JPG, PDF</title>   
+				<subtitle>Different examples. LOB value is not displayed, it is just detected and then a link is created with record id</subtitle>   
                 <param>
 					<name>ID</name>
 					<dbtable>table10</dbtable>

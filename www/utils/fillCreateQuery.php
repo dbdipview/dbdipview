@@ -25,6 +25,37 @@ $(document).ready(function() {
 </script>
 
 <?php
+
+
+function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $ufilename) {
+	global $MSGSW17_Records, $MSGSW18_ReportDescription, $MSGSW19_ReportTitle, $MSGSW20_ReportSubTitle;
+
+	$csvtitle = "";
+	if(isset($_SESSION['title']))
+		$csvtitle .= '"' . $MSGSW17_Records .           ": " . $_SESSION['title'] .   '"' . ";\n";
+		
+	if($selectdescription && strlen($selectdescription) > 0 )
+		$csvtitle .= '"' . $MSGSW18_ReportDescription . ": " .  $selectdescription  . '"' . ";\n";
+
+	if($title && strlen($title) > 0 )
+		$csvtitle .= '"' . $MSGSW19_ReportTitle .       ": " .  $title .              '"' . ";\n";
+
+	if($subtitle && strlen($subtitle) > 0 )
+		$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  $subtitle .           '"' . ";\n"; 
+
+	$csvtitle = htmlspecialchars_decode($csvtitle);
+	$csvtitle = str_ireplace('<B>',    "",   $csvtitle);  //ignore for csv ouput
+	$csvtitle = str_ireplace('</B>',   "",   $csvtitle);
+	$csvtitle = str_ireplace('<BR />', "\n", $csvtitle);
+	$csvtitle = str_ireplace('<BR>',   "\n", $csvtitle);
+
+	$sql =   base64_encode($csvquery);
+	$title = base64_encode($csvtitle);
+	$filename = "export.csv";
+	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv&s=$sql&f=$filename&t=$title'><span style='text-decoration:underline;'>&#129123;</span></a><br />\n");
+}
+
+
 //  operator = "||" or "&&"
 // 'aaa || bbb || ccc' -> (x='%aaa%' OR x='%bbb%' OR x='%ccc%')
 // 'aaa || bbb || !ccc' is also allowed
@@ -58,7 +89,7 @@ function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote
 	return "(" . $text . ")";
 }
 
-					
+
 function fillCreateQuery() {
 global $xml;
 global $targetQueryNum;
@@ -383,12 +414,15 @@ foreach ($xml->database->screens->screen as $screen) {
 			$sqindex  += 1;
 		} //for each subselect
 
+		
 		//continue with main select query, add missing parts
 		$group=chop($screen->selectGroup);   //remove white space characters
 		if (strlen($group)>0) {
 			debug("fillCreateQuery: subselect GROUP=$group");
 			$query = $query . " GROUP BY " . $group ;
 		}
+
+		$csvquery = $query;
 		$order=chop($screen->selectOrder);   //remove white space characters
 		if (strlen($order)>0 && strrchr($text, '"')==0) {    //ignore,if " is already in xml, even though this is not expected
 				debug("fillCreateQuery: select ORDER=$order");
@@ -402,7 +436,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		if (isset($_GET['maxcount'])) {   
 			$maxcount = pg_escape_string($_GET['maxcount']);
 			if ($maxcount != 0) {
-				$query = $query . " LIMIT " . $maxcount;
+				$query = $query . " LIMIT " . $maxcount;    //limit only for main query
 			}
 		}
 
@@ -428,9 +462,16 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			if($screen->title && strlen($screen->title)>0 )
 				print ("<h4>" . $screen->title . "</h4>");
-			if($subTitle && strlen($subTitle)>0 ) 
-				print("<h5>".$subTitle."</h5>");
+			if($subTitle && strlen($subTitle)>0 )
+				print("<h5>" . $subTitle . "</h5>");	
 
+			$csvfilename = "export.csv";
+			createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
+							$screen->title,
+							$subTitle,
+							$csvquery,
+							$csvfilename);
+			
 			$newlist=qToTableWithLink($query, 
 									$linknextscreen_columns,
 									$images_image_style,
@@ -448,6 +489,13 @@ foreach ($xml->database->screens->screen as $screen) {
 				if($subqueriesSubTitle[$sqindexLoop] && strlen($subqueriesSubTitle[$sqindexLoop])>0 )
 					print("<h5>".$subqueriesSubTitle[$sqindexLoop]."</h5>");
 
+				$csvfilename = "export.csv";
+				createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription, 
+								$subqueriesTitle[$sqindexLoop],
+								$subqueriesSubTitle[$sqindexLoop],
+								$subqueries[$sqindexLoop],
+								$csvfilename);
+			
 				$newlist=qToTableWithLink($subqueries[$sqindexLoop], 
 										$subqueries_linknextscreen_columns[$sqindexLoop],
 										$subqueries_images_image_style[$sqindexLoop],

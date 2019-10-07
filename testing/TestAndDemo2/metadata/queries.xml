@@ -5,18 +5,19 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>Regression test viewer TestAndDemo2: query contents of DDV EXTended package with external LOBs</name>
+		<name>TestAndDemo2 regression test viewer: query contents of DDV EXTended package with external LOBs</name>
 		<revisions>
 			<revision date="2019-09-23" version="0.1">Test file ready</revision>
+			<revision date="2019-10-05" version="1.0">Improved comments</revision>
 		</revisions>
-		<ref_number>v01</ref_number>
-
+		<ref_number>1.0</ref_number>
 		<screens>
 		
 			<screen>
 				<id>5</id>
-				<selectDescription>External LOBs - files on file-system, RC airplane pictures</selectDescription>
-				<subtitle>display images as thumbnails or as links</subtitle>
+				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
+				<title>TITLE: RC airplane pictures</title>   
+				<subtitle>SUBTITLE: Note images as thumbnails and as links to the files (results pane)</subtitle>
 				
 				<param>
 					<name>Name</name>
@@ -54,7 +55,8 @@
 					</image>
 				</images>
 				<subselect>
-					<title>Changed thumbnail size</title>
+					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>   
+					<subtitle>This is a simplified version of the previous report above. No forarded parameters has been conf</subtitle>
 					<query>SELECT id, name, 
 							"picture" AS image, 
 							"picture" AS link
@@ -78,7 +80,8 @@
 			<screen>
 				<id>6</id>
 				<selectDescription>Display data from a view</selectDescription>
-				<subtitle>see queries01.sql</subtitle>   
+				<title>Test of access to the data created as a VIEW</title>   
+				<subtitle>Note: The view was created in queries01.sql</subtitle>   
 				<query>SELECT *					
 						FROM "AirplanesLinks"."my_view"
 				</query>
