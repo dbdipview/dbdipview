@@ -1,6 +1,6 @@
 <?php
 
-if ( "$myLang" == "sl" ){
+if ( "$myLang" == "sl" ) {
 $MSGSW01_MainSubTitle="Dostop do gradiva: vsebina podatkovnih zbirk";
 $MSGSW02_Code="Koda za dostop";
 $MSGSW03_Database="Vsebnik za podatkovne zbirke";
@@ -18,6 +18,9 @@ $MSGSW14_NextPage="Naslednja stran";
 $MSGSW15_Close="Zapri";
 $MSGSW16_Display="Prikaži";
 $MSGSW17_Records="Arhivsko gradivo";
+$MSGSW18_ReportDescription="Izpis";
+$MSGSW19_ReportTitle="Naslov izpisa";
+$MSGSW20_ReportSubTitle="Podnaslov";
 $MHLP00="Kako iskati?";
 $MHLP01="vneseni izraz je del iskanega pojma, primer:";
 $MHLP02="novo mest";
@@ -49,6 +52,9 @@ $MSGSW14_NextPage="Next page";
 $MSGSW15_Close="Close"; 
 $MSGSW16_Display="Show results";
 $MSGSW17_Records="Archival records";
+$MSGSW18_ReportDescription="Report";
+$MSGSW19_ReportTitle="Report title";
+$MSGSW20_ReportSubTitle="Subtitle";
 $MHLP00="How to search?";
 $MHLP01="a phrase is part of the searched term, e.g.";
 $MHLP02="new yor";

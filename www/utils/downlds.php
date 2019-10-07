@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Display BLOB content
+ * BLOB and CSV downloads
  *
  * @author     Boris Domajnko
  *
@@ -71,3 +71,43 @@ include "config.txt";
 	}
 	exit();
 }
+
+
+function showCsv($usql, $filename, $utitle) {
+	global $myDBname;
+	
+include "config.txt";
+
+	$delimiter = ";";
+
+	try {
+		$db = new PDO('pgsql:dbname=' . $myDBname . ' host=' . $serverName, $userName, $password);
+	} catch (PDOException $e) {
+		print "Error!: " . $e->getMessage() . "<br/>";
+	}
+
+	$sql = base64_decode($usql);
+	$stm = $db->query($sql);
+	$rows = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+	header( 'Content-Type: text/csv;charset=utf-8' );
+	header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
+
+	$handle = fopen( 'php://output', 'w' );
+
+	$title = base64_decode($utitle);
+	
+	fwrite( $handle, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF) ));
+	fwrite( $handle, $title . $delimiter );
+	echo("\n");
+	fputcsv( $handle, array_keys( $rows['0']), $delimiter );
+
+	foreach ( $rows as $row ) {
+		fputcsv( $handle, $row, $delimiter );
+	}
+
+	fclose( $handle );
+	ob_flush();
+	exit();
+}
+
