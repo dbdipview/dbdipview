@@ -49,10 +49,11 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $ufile
 	$csvtitle = str_ireplace('<BR />', "\n", $csvtitle);
 	$csvtitle = str_ireplace('<BR>',   "\n", $csvtitle);
 
-	$sql =   base64_encode($csvquery);
-	$title = base64_encode($csvtitle);
+	$title = str_replace(['+','/','='], ['-','_',''], base64_encode($csvtitle));
+	$sql =   str_replace(['+','/','='], ['-','_',''], base64_encode($csvquery));
+
 	$filename = "export.csv";
-	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv&s=$sql&f=$filename&t=$title'><span style='text-decoration:underline;'>&#129123;</span></a><br />\n");
+	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv&s=$sql&f=$filename&t=$title'><span style='text-decoration:underline;'>&#129123;</span></a>&nbsp;");
 }
 
 
@@ -100,7 +101,7 @@ $paramForwardNum = array();
 
 foreach ($xml->database->screens->screen as $screen) {
 	$where="";
-	
+	$attrSkipCSVsave = false;
 	$f_ahrefs=false;
 	$ahref_columns=array();
 	
@@ -114,6 +115,7 @@ foreach ($xml->database->screens->screen as $screen) {
 	$linknextscreen_columns=array();
 	
 	if($screen->id  == $targetQueryNum) {
+		$attrSkipCSVsave = get_bool($screen->attributes()->skipCSVsave);
 		$subTitle=$screen->subtitle;
 		foreach ($screen->param as $param) {
 
@@ -461,16 +463,20 @@ foreach ($xml->database->screens->screen as $screen) {
 		if( strcmp($tablelist, "table") == 0) {
 
 			if($screen->title && strlen($screen->title)>0 )
-				print ("<h4>" . $screen->title . "</h4>");
-			if($subTitle && strlen($subTitle)>0 )
-				print("<h5>" . $subTitle . "</h5>");	
+				print ("<h4>" . $screen->title . "</h4>");	
 
-			$csvfilename = "export.csv";
-			createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
-							$screen->title,
-							$subTitle,
-							$csvquery,
-							$csvfilename);
+			if($attrSkipCSVsave != true) {
+				$csvfilename = "export.csv";
+				createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
+								$screen->title,
+								$subTitle,
+								$csvquery,
+								$csvfilename);
+			}
+
+			if(isset($subTitle) && strlen($subTitle)>0 )
+				print($subTitle . "</h5>");
+			print("<br/>");
 			
 			$newlist=qToTableWithLink($query, 
 									$linknextscreen_columns,
@@ -486,16 +492,20 @@ foreach ($xml->database->screens->screen as $screen) {
 			$sqindexLoop=0;
 			while ($sqindexLoop < $sqindex) {
 				print("<h4>" . $subqueriesTitle[$sqindexLoop] . "</h4>");
-				if($subqueriesSubTitle[$sqindexLoop] && strlen($subqueriesSubTitle[$sqindexLoop])>0 )
-					print("<h5>".$subqueriesSubTitle[$sqindexLoop]."</h5>");
 
-				$csvfilename = "export.csv";
-				createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription, 
-								$subqueriesTitle[$sqindexLoop],
-								$subqueriesSubTitle[$sqindexLoop],
-								$subqueries[$sqindexLoop],
-								$csvfilename);
-			
+				if($attrSkipCSVsave != true) {
+					$csvfilename = "export.csv";
+					createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription, 
+									$subqueriesTitle[$sqindexLoop],
+									$subqueriesSubTitle[$sqindexLoop],
+									$subqueries[$sqindexLoop],
+									$csvfilename);
+				}
+
+				if($subqueriesSubTitle[$sqindexLoop] && strlen($subqueriesSubTitle[$sqindexLoop])>0 )
+					print("$subqueriesSubTitle[$sqindexLoop]");
+				print("<br/>");
+
 				$newlist=qToTableWithLink($subqueries[$sqindexLoop], 
 										$subqueries_linknextscreen_columns[$sqindexLoop],
 										$subqueries_images_image_style[$sqindexLoop],

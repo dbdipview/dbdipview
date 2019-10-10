@@ -3,7 +3,7 @@
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
            vc:minVersion="2.0">
-	<!-- dbDIPview schema for queries.xml -->
+	<!-- dbDIPview schema for queries.xml, 2019-10-09-->
 	<xs:complexType name="revisions">
 		<xs:sequence>
 			<xs:element name="revision" type="revision" minOccurs="0" maxOccurs="unbounded" />
@@ -62,7 +62,8 @@
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="textOnly" type="xs:boolean" use="optional" />
+		<xs:attribute name="textOnly"    type="xs:boolean" use="optional" />
+		<xs:attribute name="skipCSVsave" type="xs:boolean" use="optional" />
 	</xs:complexType>
 
 	<xs:complexType name="id" >

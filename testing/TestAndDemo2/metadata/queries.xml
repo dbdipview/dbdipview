@@ -77,10 +77,10 @@
 				</subselect>
 			</screen>
 			
-			<screen>
+			<screen skipCSVsave="1">
 				<id>6</id>
 				<selectDescription>Display data from a view</selectDescription>
-				<title>Test of access to the data created as a VIEW</title>   
+				<title>Test of access to the data created as a VIEW; Test of attribute skip CSV save - disabled save</title>   
 				<subtitle>Note: The view was created in queries01.sql</subtitle>   
 				<query>SELECT *					
 						FROM "AirplanesLinks"."my_view"
