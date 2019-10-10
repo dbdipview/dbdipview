@@ -210,9 +210,8 @@ while ( "$answer" != "q" ) {
 				
 				msgCyan("Current package in SERVERCONFIGJSON" . ":");
 				$x=configGetInfo($DDV, $DBC);
-				print_r($x);
 			}
-			config_get_options_token();
+
 			msgCyan($MSG3_CHECKDB . ":");
 			dbf_list_databases();
 

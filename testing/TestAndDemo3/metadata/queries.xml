@@ -214,7 +214,7 @@
 				<id>11</id>
 				<selectDescription>Use of BLOBS (note: using content of the 2nd SIARD package)</selectDescription>
 				<title>Integration of RTF, JPG, PDF</title>   
-				<subtitle>Different examples. LOB value is not displayed, it is just detected and then a link is created with record id</subtitle>   
+				<subtitle>Some examples. Note: LOB value is not displayed, it is just detected and then a link is displayed with record id</subtitle>   
                 <param>
 					<name>ID</name>
 					<dbtable>table10</dbtable>

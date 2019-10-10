@@ -79,23 +79,21 @@ function showCsv($usql, $filename, $utitle) {
 include "config.txt";
 
 	$delimiter = ";";
-
+	$sql =   base64_decode(str_replace(['-','_'], ['+','/'], $usql));
+	$title = base64_decode(str_replace(['-','_'], ['+','/'], $utitle));
+	
 	try {
 		$db = new PDO('pgsql:dbname=' . $myDBname . ' host=' . $serverName, $userName, $password);
+		$rows = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 	} catch (PDOException $e) {
 		print "Error!: " . $e->getMessage() . "<br/>";
-	}
-
-	$sql = base64_decode($usql);
-	$stm = $db->query($sql);
-	$rows = $stm->fetchAll(PDO::FETCH_ASSOC);
+        exit();
+    }
 
 	header( 'Content-Type: text/csv;charset=utf-8' );
 	header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
 
 	$handle = fopen( 'php://output', 'w' );
-
-	$title = base64_decode($utitle);
 	
 	fwrite( $handle, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 	fwrite( $handle, $title . $delimiter );

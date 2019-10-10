@@ -1,6 +1,6 @@
 <dbrequest>
-	<order>Order_test_2</order>
-	<reference>TD/2</reference>
+	<order>Order_test_TD2</order>
+	<reference>TEST TD/2</reference>
 	<title>Test and demo for DDV EXTended package with external files (TestAndDemo2)</title>
 	<dbcontainer>DBC2</dbcontainer>
 	<viewers_extended>

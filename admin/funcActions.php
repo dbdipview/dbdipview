@@ -445,7 +445,7 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	global $PROGDIR;
 	global $OK, $NOK;
 
-	msgCyan($MSG29_EXECUTING . " " . basename($packagefile) . "...");
+	msgCyan($MSG29_EXECUTING . " " . basename($packageFile) . "...");
 	$ret = $NOK;
 	
 	if ( !is_dir($DDV_DIR_EXTRACTED) )

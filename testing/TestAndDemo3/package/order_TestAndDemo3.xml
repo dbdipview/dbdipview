@@ -1,6 +1,6 @@
 <dbrequest>
-	<order>Order_test_3</order>
-	<reference>TD/2</reference>
+	<order>Order_test_TD3</order>
+	<reference>TEST TD/3</reference>
 	<title>Test and demo for two SIARD packages and their related DDV viewer (TestAndDemo3)</title>
 	<dbcontainer>DBC3</dbcontainer>
 	<siards>
