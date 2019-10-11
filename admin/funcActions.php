@@ -330,7 +330,7 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 	$ret = $NOK;
 	debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $listfile);
 	if (($handleList = fopen($listfile, "r")) !== FALSE) {
-		msgCyan($MSG5_MOVEDATA . " " . basename($packagefile) . "...");
+		msgCyan($MSG5_MOVEDATA . "...");
 		while (($line = fgets($handleList)) !== false) {
 			$line = rtrim($line);
 			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
