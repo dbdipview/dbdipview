@@ -163,8 +163,6 @@ if(strlen($myXMLfile)==0 ||
 $filespath="files/".str_replace(".xml", "", $myXMLfile)."/";  //area for attachments/BLOB content
 
 $PARAMS = $_GET;
-echo "<h3>$MSGSW17_Records: " . $_SESSION['title'] . "</h3>";
-echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
 
 $targetQueryNum = pg_escape_string($_GET['targetQueryNum']); 
 
@@ -173,9 +171,13 @@ date_default_timezone_set($timezone);
 switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
+	echo "<h3>$MSGSW17_Records: " . $_SESSION['title'] . "</h3>";
+	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
 	getQueryNumber();
 	break;
 case "querySelected":
+	echo "<h3>$MSGSW17_Records: " . $_SESSION['title'] . "</h3>";
+	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
 	?>
 	<table>
 		<tr>
