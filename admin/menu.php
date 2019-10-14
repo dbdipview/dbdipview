@@ -9,10 +9,6 @@
  */
 
 $PROGDIR=__DIR__;  //getcwd();  //`pwd` , e.g. /home/dbdipview/admin
-if ( ! is_file($PROGDIR . "/menu.php")) {
-	echo "Wrong start directory: $PROGDIR " . PHP_EOL;
-	exit(1);
-}
 
 set_include_path($PROGDIR);
 
@@ -36,6 +32,10 @@ if ( !is_file($PROGDIR . '/../www/config.txt')) {
 }
 
 include 'configa.txt';
+
+include $PROGDIR . '/../www/config.txt';
+$DBGUEST = $userName;
+
 include 'messagesm.php';
 include 'funcConfig.php';
 include 'funcDb.php';
@@ -99,12 +99,12 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 
 $options = getopt("hoesp:da");
 if (count($options) == 0 || array_key_exists('h', $options)) {
-	echo "Usage: php menu.php OPTIONS" . PHP_EOL;
+	echo "Usage: php menu.php [OPTIONS]" . PHP_EOL;
 	echo "   -h         this help" . PHP_EOL;
 	echo "   -o         show order related options" . PHP_EOL;
 	echo "   -e         show options for extended DDV package" . PHP_EOL;
 	echo "   -s         show SIARD related options" . PHP_EOL;
-	echo "   -p <file>  immediately process order xml file" . PHP_EOL;
+	echo "   -p <file>  deploy an order XML file" . PHP_EOL;
 	echo "   -d         debug mode" . PHP_EOL;
 	echo "   -a         show all options" . PHP_EOL;
 	exit;

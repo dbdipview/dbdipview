@@ -2,9 +2,7 @@
 $ENVLANG="LANG=sl_SI.UTF-8";
 
 $DBADMINUSER='postgres';  //user with admin rights to create schemas
-$PGPASSWORD='mypassword'; //admin password
-
-$DBGUEST='ddvreader';    //database user for end user access
+$DBADMINPASS='mypassword'; //admin password
 
 $MYLANG="en";
 

@@ -3,12 +3,12 @@
 
 function installSIARD($database, $siardfile) {
 	global $MSG17_FILE_NOT_FOUND;
-	global $DBADMINUSER, $PGPASSWORD, $JAR, $JAVA;
+	global $DBADMINUSER, $DBADMINPASS, $JAR, $JAVA;
 	global $MEM, $DBTYPE, $HOST;
 	
 	$ENCODING = "-Dfile.encoding=UTF-8";
 	$SIARDUSER = $DBADMINUSER;
-	$SIARDPASS = $PGPASSWORD;
+	$SIARDPASS = $DBADMINPASS;
 
 	if (!file_exists($JAR)) {
 		err_msg($MSG17_FILE_NOT_FOUND, $JAR);
