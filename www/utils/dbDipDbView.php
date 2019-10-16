@@ -316,7 +316,7 @@ function qToTableWithLink($query,
 						$link= $val;
 						$link= str_replace("\\", "/", $link);   //folder path
 						$link= $filespath . $link;
-						$output .= "  <td><img src='$link' alt='$val' style='".$images_image_style[$col]."' /></td>\n";
+						$output .= "  <td style='text-align: center;'><img src='$link' alt='$val' style='".$images_image_style[$col]."' /></td>\n";
 					}
 					continue;
 				}
