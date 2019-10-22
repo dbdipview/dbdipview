@@ -6,7 +6,7 @@
 	<database>
 		<name>Register XYZ</name>
 		<revisions>
-			<revision date="2019-06-12" version="0.1">draft version during ingest</revision>
+			<revision date="2019-06-12" version="0.1">draft version of reports during ingest of XYZ</revision>
 		</revisions>
 		<ref_number></ref_number>
 		<screens>

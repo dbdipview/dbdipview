@@ -108,8 +108,10 @@ function actions_Order_process($orderInfo) {
 	debug("__install SIARD...");
 	foreach ($orderInfo['siardFiles'] as $file) {
 		$siardFile = $DDV_DIR_PACKED . $file; 
-		actions_SIARD_install($siardFile);
-		$fsiard = true;
+		if($OK == actions_SIARD_install($siardFile))
+			$fsiard = true;
+		else
+			return($NOK);
 	}
 
 	debug("__install DDV EXT");
@@ -211,7 +213,10 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	global $OK, $NOK;
 	
 	if ( !is_dir($DDV_DIR_EXTRACTED) )
-		mkdir($DDV_DIR_EXTRACTED, 0777, true);
+		if (!mkdir($DDV_DIR_EXTRACTED, 0777, true)) {
+			err_msg(__FUNCTION__ . ": " . "Error - mkdir $DDV_DIR_EXTRACTED");
+			return($NOK);
+		};
 	if (isAtype($packageFile, "tar.gz"))
 		$cmd="tar -xvzf " . $packageFile . " -C " . $DDV_DIR_EXTRACTED;
 	else {
