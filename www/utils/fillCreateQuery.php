@@ -26,28 +26,31 @@ $(document).ready(function() {
 
 <?php
 
+function fbr($in) {
+	$out = htmlspecialchars_decode($in);
+	$out = str_ireplace('<B>',    "",   $out);  //ignore for csv ouput
+	$out = str_ireplace('</B>',   "",   $out);
+	$out = str_ireplace('"',      "",   $out);
+	$out = str_ireplace('<BR />', "\n", $out);
+	$out = str_ireplace('<BR>',   "\n", $out);
+	return($out);
+}
 
 function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $ufilename) {
 	global $MSGSW17_Records, $MSGSW18_ReportDescription, $MSGSW19_ReportTitle, $MSGSW20_ReportSubTitle;
 
 	$csvtitle = "";
 	if(isset($_SESSION['title']))
-		$csvtitle .= '"' . $MSGSW17_Records .           ": " . $_SESSION['title'] .   '"' . ";\n";
+		$csvtitle .= '"' . $MSGSW17_Records .           ": " .  fbr($_SESSION['title']) .  '"' . ";\n";
 		
 	if($selectdescription && strlen($selectdescription) > 0 )
-		$csvtitle .= '"' . $MSGSW18_ReportDescription . ": " .  $selectdescription  . '"' . ";\n";
+		$csvtitle .= '"' . $MSGSW18_ReportDescription . ": " .  fbr($selectdescription)  . '"' . ";\n";
 
 	if($title && strlen($title) > 0 )
-		$csvtitle .= '"' . $MSGSW19_ReportTitle .       ": " .  $title .              '"' . ";\n";
+		$csvtitle .= '"' . $MSGSW19_ReportTitle .       ": " .  fbr($title) .              '"' . ";\n";
 
 	if($subtitle && strlen($subtitle) > 0 )
-		$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  $subtitle .           '"' . ";\n"; 
-
-	$csvtitle = htmlspecialchars_decode($csvtitle);
-	$csvtitle = str_ireplace('<B>',    "",   $csvtitle);  //ignore for csv ouput
-	$csvtitle = str_ireplace('</B>',   "",   $csvtitle);
-	$csvtitle = str_ireplace('<BR />', "\n", $csvtitle);
-	$csvtitle = str_ireplace('<BR>',   "\n", $csvtitle);
+		$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  fbr($subtitle) .           '"' . ";\n"; 
 
 	$title = str_replace(['+','/','='], ['-','_',''], base64_encode($csvtitle));
 	$sql =   str_replace(['+','/','='], ['-','_',''], base64_encode($csvquery));
@@ -96,6 +99,7 @@ global $xml;
 global $targetQueryNum;
 global $PARAMS;
 global $MSGSW12_HitsOnPage, $MSGSW13_PreviousPage, $MSGSW14_NextPage, $MSGSW15_Close;
+global $MSGSW18_ReportDescription;
 
 $paramForwardNum = array();
 
@@ -462,6 +466,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		$hits=0;
 		if( strcmp($tablelist, "table") == 0) {
 
+			print ("<h4>" . $MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h4>");
 			if($screen->title && strlen($screen->title)>0 )
 				print ("<h4>" . $screen->title . "</h4>");	
 
@@ -475,7 +480,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 
 			if(isset($subTitle) && strlen($subTitle)>0 )
-				print($subTitle . "</h5>");
+				print($subTitle);
 			print("<br/>");
 			
 			$newlist=qToTableWithLink($query, 
@@ -491,11 +496,12 @@ foreach ($xml->database->screens->screen as $screen) {
 			//display subqueries
 			$sqindexLoop=0;
 			while ($sqindexLoop < $sqindex) {
+				print("<br/>");
 				print("<h4>" . $subqueriesTitle[$sqindexLoop] . "</h4>");
 
 				if($attrSkipCSVsave != true) {
 					$csvfilename = "export.csv";
-					createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription, 
+					createAhrefCSV("(" . $targetQueryNum . ") " . $screen->selectDescription, 
 									$subqueriesTitle[$sqindexLoop],
 									$subqueriesSubTitle[$sqindexLoop],
 									$subqueries[$sqindexLoop],
@@ -523,14 +529,13 @@ foreach ($xml->database->screens->screen as $screen) {
 		if( strcmp($tablelist, "list") == 0) {
 			print "<table class=\"mydbtable\">" . PHP_EOL;   // force mydb color
 			print "<tr><td>" . PHP_EOL;
-			print ("<h3>".$screen->selectDescription."</h3>");
+			print ("<h3>" . $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h3>");
 			if($screen->title && strlen($screen->title)>0 )
 				print ("<h4>" . $screen->title . "</h4>");
 			if($screen->subtitle && strlen($screen->subtitle)>0 )
 				print ("<h5>".$screen->subtitle."</h5>");
 			print ("<br/>");
 
-			////if($f_links_to_next_screen || $f_images || $f_ahrefs)
 			$newlist=qToListWithLink($query, 
 									$linknextscreen_columns,
 									$images_image_style,

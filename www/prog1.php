@@ -1,8 +1,8 @@
 <?php
 
 /**
- * dbDIPview main program
- *
+ * dbDIPview main loop
+ * Author: Boris Domajnko
  */
 ini_set( 'session.cookie_httponly', 1 );
 session_start();
@@ -50,7 +50,6 @@ switch ($submit_cycle) {
 		$_SESSION['myLang'] = $myLang;
 		$_SESSION['title'] = $recordsInfo['ref'] . " " . $recordsInfo['title'];
 		$_SESSION['mydebug'] = $mydebug;
-		
 		break;
 	case "Logout":
 		$_SESSION = array();
@@ -68,7 +67,7 @@ switch ($submit_cycle) {
 		if (isset       ($_SESSION['myLang']))
 			$myLang=     $_SESSION['myLang'];
 		break;
-} // switch
+}
 
 $myXMLpath="data/";
 $myXMLfilePath=$myXMLpath . $myXMLfile;
@@ -77,14 +76,12 @@ include "utils/downlds.php";
 
 switch ($submit_cycle) {
 	case "showBlob":
-		//no error messages here, just output
 		$xml = simplexml_load_file($myXMLfilePath);
 		$id  = pg_escape_string($_GET['id']); 
 		$val = pg_escape_string($_GET['val']); 
 		showBlobRaw($id, $val);
 		break;
 	case "showCsv":
-		//no error messages here, just output
 		$sql  =     pg_escape_string($_GET['s']); 
 		$filename = pg_escape_string($_GET['f']); 
 		$title =    pg_escape_string($_GET['t']); 
@@ -171,12 +168,12 @@ date_default_timezone_set($timezone);
 switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
-	echo "<h3>$MSGSW17_Records: " . $_SESSION['title'] . "</h3>";
+	echo "<h4>$MSGSW17_Records: " . $_SESSION['title'] . "</h4>";
 	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
 	getQueryNumber();
 	break;
 case "querySelected":
-	echo "<h3>$MSGSW17_Records: " . $_SESSION['title'] . "</h3>";
+	echo "<h4>$MSGSW17_Records: " . $_SESSION['title'] . "</h4>";
 	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
 	?>
 	<table>
@@ -185,14 +182,14 @@ case "querySelected":
 			<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' > 
 				<input type="hidden" name="submit_cycle" value="ShowMenu"/>
 				<input type="hidden" name="targetQueryNum" value=<?php echo "\"$targetQueryNum\""; ?>/>
-				<input type="submit" value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" class='button' />
+				<input type="submit" value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" />
 			</form>
 		</td>
 		<td>
 		<?php
 		foreach ($xml->database->screens->screen as $screen) {
 			if($screen->id == $targetQueryNum)
-				echo "<h4>Izpis: $targetQueryNum - $screen->selectDescription </h4>";
+				echo "<h4>$MSGSW18_ReportDescription $targetQueryNum: $screen->selectDescription</h4>";
 		}
 	?>
 		</td>
@@ -207,9 +204,7 @@ case "searchParametersReady":
 default:
 	die("Wrong submit cycle:" . $submit_cycle);
 	break;
-} // switch
-
-
+}
 
 
 function debug($mytxt) {
