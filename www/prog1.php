@@ -24,7 +24,7 @@ switch ($submit_cycle) {
 			list($myDBname, $myXMLfile) = config_code2database($code);
 		} else {
 			if (array_key_exists("xmlfile", $_GET))
-				$myXMLfile = trim($_GET['xmlfile']);
+				$myXMLfile = trim($_GET['xmlfile'] . ".xml");
 			else
 				$myXMLfile="not_set";
 				
