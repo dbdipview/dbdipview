@@ -35,8 +35,8 @@ function loadOrder($xmlinput) {
 		}
 	$orderInfo['ddvExtFiles'] =  $aextfiles;
 	
-	$orderInfo['ddvFile'] =       "" . $xml->viewer;
-	$orderInfo['access'] =    "" . $xml->access;
+	$orderInfo['ddvFile'] = "" . $xml->viewer;
+	$orderInfo['access'] =  "" . $xml->access;
 	
 	return($orderInfo);
 }

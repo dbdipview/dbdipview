@@ -445,11 +445,25 @@ while ( "$answer" != "q" ) {
 			if ( empty($orderInfo['access']) )  {
 				echo "$MSG3_ENABLEACCESS [public]:";
 				$answer = fgets($handleKbd);
-				$answer=trim($answer);
+				$answer = trim($answer);
 				if ( empty($answer) )
 					$orderInfo['access'] = 'public';
 				else
 					$orderInfo['access'] = $answer;
+			} 
+			if ( empty($orderInfo['reference']) )  {
+				echo "$MSGO_REF:";
+				$answer = fgets($handleKbd);
+				$answer = trim($answer);
+				if ( !empty($answer) )
+					$orderInfo['reference'] = $answer;
+			}
+			if ( empty($orderInfo['title']) )  {
+				echo "$MSGO_TITLE:";
+				$answer = fgets($handleKbd);
+				$answer = trim($answer);
+				if ( !empty($answer) )
+					$orderInfo['title'] = $answer;
 			} 
 			if ($OK == actions_access_on($orderInfo, $DDV)) {
 				$X6='X';

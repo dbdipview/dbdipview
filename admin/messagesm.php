@@ -3,11 +3,13 @@
 
 if ( "$MYLANG" == "sl" ){
 $MSG_TITLE="dbDIPview konfigurator";
-$MSG0_LISTDIRS="prikaz trenutne konfiguracije";	
-$MSGO_ORDER="Naročilo";	
-$MSGO_SELECT="izberi";	
-$MSGO_DEPLOY="inštaliraj";	
-$MSGO_DELETE="izbriši";	
+$MSG0_LISTDIRS="prikaz trenutne konfiguracije";
+$MSGO_ORDER="Naročilo";
+$MSGO_SELECT="izberi";
+$MSGO_DEPLOY="inštaliraj";
+$MSGO_DELETE="izbriši";
+$MSGO_TITLE="naslov";
+$MSGO_REF="signatura";
 $MSGR_SELECT_DB="ime vsebnika za podatkovne zbirke";
 $MSGB_RMDB="izbriši vsebnik za podatkovne zbirke";
 $MSG3_CHECKDB="izpis vsebnikov podatkovnih zbirk";
@@ -71,10 +73,12 @@ $MSG_YESNO="d/n";
 } else { 
 $MSG_TITLE="dbDIPview administration tool";
 $MSG0_LISTDIRS="Show current configuration";
-$MSGO_ORDER="Order";	
-$MSGO_SELECT="select";	
-$MSGO_DEPLOY="deploy";	
+$MSGO_ORDER="Order";
+$MSGO_SELECT="select";
+$MSGO_DEPLOY="deploy";
 $MSGO_DELETE="remove";
+$MSGO_TITLE="Title";
+$MSGO_REF="Reference";
 $MSGR_SELECT_DB="Enter database container name";
 $MSGB_RMDB="Remove database container";
 $MSG3_CHECKDB="Show existing database containers";
