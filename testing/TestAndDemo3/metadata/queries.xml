@@ -60,8 +60,8 @@
 
 			<screen>
 				<id hide='true'>2a</id>
-				<selectDescription>Hidden report, called from another report, with parameter; use of parameter in subselect reports</selectDescription>
-				<title>This report was not in the list of reports</title>   
+				<selectDescription>A hidden report, only called from another report, with parameter; use of parameter in subselect reports</selectDescription>
+				<title>Note, this report was not in the list of reports</title>   
 				<subtitle/>   
 				<param>
 					<name>ID</name>
@@ -117,9 +117,9 @@
 
 			<screen>
 				<id>3</id>
-				<selectDescription>Search parameters, infotip, date, etc.</selectDescription>
-				<title>Use of infotip, attributes: size, hr, skipNewLine</title>
-				<subtitle>See the search screen: see infotip at ID field; skipped new line at end of param, and a horizontal line</subtitle>    
+				<selectDescription>Search parameters, infotip, date</selectDescription>
+				<title>Use of infotip, attributes: size, hr, skipNewLine; dates</title>
+				<subtitle>See the search screen: infotip at ID field, a horizontal line and skipped new line after first date</subtitle>    
 				<param size='20'>
 					<name>ID</name>
 					<infotip>This is a sample help text for this field. &lt;br /&gt;
@@ -128,17 +128,23 @@
 					<dbcolumn>Id</dbcolumn>
 					<type>integer</type>
 				</param>
-				<param hr="1" skipNewLine="1">
+				<param hr="1">
 					<name>Employee name</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>Employee Name</dbcolumn>
 					<type>textlike</type>
 				</param>
-				<param>
-					<name>Name</name>
+				<param skipNewLine="1">
+					<name>Date hired (from)</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>date Hired /hq</dbcolumn>
 					<type>date_ge</type>
+				</param>
+				<param>
+					<name>Date hired (before)</name>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>date Hired /hq</dbcolumn>
+					<type>date_lt</type>
 				</param>
 				<query>SELECT
 				*
@@ -155,7 +161,7 @@
 				<id>4</id>
 				<selectDescription>Use of SELECT, example 1</selectDescription>
 				<title>Example 1</title>   
-				<subtitle>Use of dropdown selection, values are prepared with another SELECT</subtitle>   
+				<subtitle>Use of dropdown selection with values from a SELECT</subtitle>   
 				<param>
 					<name>Department</name>
 					<dbtable>Departments</dbtable>
