@@ -39,15 +39,15 @@ $TXT_CYAN= chr(27).'[36m';
 $TXT_RESET=chr(27).'[0m';
 
 function msgCyan($p1) {
-	global $TXT_CYAN, $TXT_RESET; 
-	echo $TXT_CYAN . $p1 . $TXT_RESET . PHP_EOL;
+	global $TXT_BLUE, $TXT_RESET; 
+	echo $TXT_BLUE . $p1 . $TXT_RESET . PHP_EOL;
 }
 
 function debug($p1) {
 	global $debug; 
-	global $TXT_BLUE, $TXT_RESET; 
+	global $TXT_CYAN, $TXT_RESET; 
 	if ($debug)
-		echo $TXT_BLUE . $p1 . $TXT_RESET . PHP_EOL;
+		echo $TXT_CYAN . $p1 . $TXT_RESET . PHP_EOL;
 }
 
 function err_msg($p1, $p2="") {
@@ -78,7 +78,7 @@ function notSet($var) {
  *
  * @param string $outname       package name
  * @param string $outfilename   filename
- * @param string $extension     filename extension for search criteria
+ * @param string $extension     filename extension for search criteria, e.g. "siard"
  */
 function getPackageName(&$outname, &$outfilename, $extension) {
 	global $MSG19_DDV_PACKAGES, $MSG21_SELECT_DDV, $MSG36_NOPACKAGE;
@@ -106,18 +106,19 @@ function getPackageName(&$outname, &$outfilename, $extension) {
 	foreach($out as $key => $value) {
 		
 		if (isAtype($value, "siard")) {
-			$description="database structure and content package (SIARD)";
+			$description = "database structure and content package (SIARD)";
 			$val1 = substr($value, 0, -6);
 		} else if (isAtype($value, "zip")) {
-			$description="dbdipview viewer configuration file (.zip)";
+			$description = "dbdipview viewer configuration file (.zip)";
 			$val1 = substr($value, 0, -4);
 		} else if (isAtype($value, "xml")) {
-			$description="order file with a list of packages (.xml)";
+			$description = "order file with a list of packages (.xml)";
 			$val1 = substr($value, 0, -4);
 		} else if (isAtype($value, "tar.gz")) {
-			$description="dbdipview extended viewer configuration file (.tar.gz)";
+			$description = "dbdipview extended viewer configuration file (.tar.gz)";
 			$val1 = substr($value, 0, -7);
 		} else {
+			$description = "ERROR: unknown type!";
 			$val1 = $value;
 		}
 
@@ -134,7 +135,7 @@ function getPackageName(&$outname, &$outfilename, $extension) {
 		$name = trim(fgets($handleKbd));
 		if (is_numeric($name) && $name < $i) {
 			$outname = $arrPkgName[intval($name)];
-			$outfilename= $arrFilename[intval($name)];
+			$outfilename = $arrFilename[intval($name)];
 		}
 	} else
 		err_msg($MSG36_NOPACKAGE);
@@ -154,9 +155,11 @@ function showFilesInFolder($dir) {
 	}
 }
 
-//set quotes to schema or table name
-//example: bb.aa -> "bb"."aa"
-//do not add quotes if they already exsits, e.g. "aaa.bbb"."cc"
+/**
+ * Set quotes to schema or table name
+ * example: bb.aa -> "bb"."aa"
+ * do not add quotes if they already exist, e.g. "aaa.bbb"."cc"
+ */
 function addQuotes($word) {
 	if ($word[0] == '"') {
 		$line = str_replace('"', '\"', $word);
@@ -169,15 +172,21 @@ function addQuotes($word) {
 	return $line;
 }
 
-//check file type
-//example: x.zip, .zip =>true
-function isAtype($name, $ending) {
-	$endingLength=strlen(".".$ending);
-	if (strlen($name) <= (1+$endingLength))
+/**
+ * Check file type
+ * example: x.zip, .zip =>true
+ *
+ * @param string $name       package name
+ * @param string $ending     filename, e.g. "siard"
+ */
+function isAtype($name, $end) {
+	$ending = "." . $end;
+	$endingLength = strlen($ending);
+	if (strlen($name) <= $endingLength)
 		return(false);
-		
-	$ret=substr($name, -$endingLength);
-	if (strcasecmp ($ret, "." . $ending) == 0)
+	
+	$ret = substr($name, -$endingLength);
+	if (strcasecmp ($ret, $ending) == 0)
 		return(true);
 	else
 		return(false);
