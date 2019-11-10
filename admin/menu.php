@@ -98,7 +98,8 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 
 
 $options = getopt("hoesp:da");
-if (count($options) == 0 || array_key_exists('h', $options)) {
+if ( count($options) == 0 || array_key_exists('h', $options) ||
+    (count($options) == 1 && array_key_exists('d', $options)) ) {
 	echo "Usage: php menu.php [OPTIONS]" . PHP_EOL;
 	echo "   -h         this help" . PHP_EOL;
 	echo "   -o         show order related options" . PHP_EOL;

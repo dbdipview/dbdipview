@@ -119,8 +119,10 @@ function input_date_rw ($field, $default, $form, $rw) {
 }
 
 function input_date($field, $default, $form) {
+	global $MSGSW21_YYYYMMDD;
 ?>
-	<input type="text" maxlength="10" placeholder="LLLL-MM-DD" size="10" name="<?php echo "$field"; ?>" value="<?php echo "$default"; ?>" />
+	<input type="text" maxlength="10" placeholder="<?php echo "$MSGSW21_YYYYMMDD"; ?>" 
+	       size="10" name="<?php echo "$field"; ?>" value="<?php echo "$default"; ?>" />
 		<script language="JavaScript">
 			new tcal ({
 			'formname':    '<?php echo "$form"; ?>',

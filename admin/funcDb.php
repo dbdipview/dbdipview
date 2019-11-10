@@ -39,7 +39,7 @@ function dbf_create_dbc($DBC) {
 			$retval = $OK;
 		} else {
 			passthru("PGPASSWORD=$DBADMINPASS createdb " . $DBC . 
-					" -U ". $DBADMINUSER . " -E UTF8 --locale=sl_SI.UTF-8 --template=template0", $rv);
+					" -U ". $DBADMINUSER . " -E UTF8 --template=template0", $rv);
 			if ( $rv == 0 ) {
 				passthru("PGPASSWORD=$DBADMINPASS psql -P pager=off -l -U " . $DBADMINUSER . 
 					"| grep " . $DBC, $rv);

@@ -3,7 +3,7 @@
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
            vc:minVersion="2.0">
-	<!-- dbDIPview schema for queries.xml, 2019-10-09-->
+	<!-- dbDIPview schema for queries.xml, 2019-11-10-->
 	<xs:complexType name="revisions">
 		<xs:sequence>
 			<xs:element name="revision" type="revision" minOccurs="0" maxOccurs="unbounded" />
@@ -137,7 +137,7 @@
 			<xs:element name="dbtable"  type="xs:string"              minOccurs="0" maxOccurs="1" />
 			<xs:element name="dbcolumn" type="xs:string"              minOccurs="0" maxOccurs="1" />
 			<xs:element name="select"   type="xs:string"              minOccurs="0" maxOccurs="1" />
-			<xs:element name="type"     type="xs:string"              minOccurs="0" maxOccurs="1" />
+			<xs:element name="type"     type="paramType"              minOccurs="0" maxOccurs="1" />
 			<xs:element name="forwardToSubqueryName" type="xs:string" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 		<xs:attribute name="skipNewLine" type="xs:boolean" use="optional" />
@@ -152,6 +152,18 @@
 			<xs:element name="dbcolumn"           type="xs:string" minOccurs="1" maxOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:simpleType name="paramType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="text" />
+			<xs:enumeration value="textlike" />
+			<xs:enumeration value="integer" />
+			<xs:enumeration value="combotext" />
+			<xs:enumeration value="date" />
+			<xs:enumeration value="date_ge" />
+			<xs:enumeration value="date_lt" />
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:element name="dbDIPview">
 		<xs:complexType>

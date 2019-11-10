@@ -27,7 +27,7 @@
 			<screen>
 				<id>2</id>
 				<selectDescription>Use of search; use of link to next screen with forwarded parameters</selectDescription>
-				<title>Employees again, Html formating of the text - bold and new line</title>
+				<title>Employees again, html formating of the text - bold and new line</title>
 				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report, with &lt;BR /&gt;- column ID as a source value &lt;BR /&gt; - to be searched as &lt;B&gt;HR employees-Id&lt;/B&gt; in the linked report. &lt;BR /&gt;- Use of ORDER.</subtitle> 
 				<param size='15'>
 					<name>ID</name>
@@ -61,7 +61,7 @@
 			<screen>
 				<id hide='true'>2a</id>
 				<selectDescription>Hidden report, called from another report, with parameter; use of parameter in subselect reports</selectDescription>
-				<title>This report was not in the list</title>   
+				<title>This report was not in the list of reports</title>   
 				<subtitle/>   
 				<param>
 					<name>ID</name>
@@ -117,9 +117,9 @@
 
 			<screen>
 				<id>3</id>
-				<selectDescription>Search parameters; infotip</selectDescription>
+				<selectDescription>Search parameters, infotip, date, etc.</selectDescription>
 				<title>Use of infotip, attributes: size, hr, skipNewLine</title>
-				<subtitle>Search screen: see infotip at ID field; skipped new line at end of param, and a horizontal line</subtitle>    
+				<subtitle>See the search screen: see infotip at ID field; skipped new line at end of param, and a horizontal line</subtitle>    
 				<param size='20'>
 					<name>ID</name>
 					<infotip>This is a sample help text for this field. &lt;br /&gt;

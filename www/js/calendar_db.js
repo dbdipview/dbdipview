@@ -7,7 +7,7 @@
 // default settins
 var A_TCALDEF = {
 //	'months' : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-	'months' : ['januar', 'februar', 'marec', 'april', 'maj', 'junij', 'julij', 'avgust', 'september', 'oktober', 'november', 'december'],
+	'months' : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
 //	'weekdays' : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
 	'weekdays' : ['ne', 'po', 'to', 'sr', 'če', 'pe', 'so'],
 	'yearscroll': true, // show year scroller
@@ -20,7 +20,7 @@ function f_tcalParseDate (s_date) {
 
 	var re_date = /^\s*(\d{2,4})\-(\d{1,2})\-(\d{1,2})\s*$/;
 	if (!re_date.exec(s_date))
-		return alert ("Napačen datum: '" + s_date + "'.\nPravilen format je LLLL-MM-DD.")
+		return alert (s_date + ": ?")
 	var n_day = Number(RegExp.$3),
 		n_month = Number(RegExp.$2),
 		n_year = Number(RegExp.$1);
@@ -28,10 +28,10 @@ function f_tcalParseDate (s_date) {
 	if (n_year < 100)
 		n_year += (n_year < this.a_tpl.centyear ? 2000 : 1900);
 	if (n_month < 1 || n_month > 12)
-		return alert ("Napačen mesec: '" + n_month + "'.\nPravilen razpon je 01-12.");
+		return alert (s_date + ": ?");
 	var d_numdays = new Date(n_year, n_month, 0);
 	if (n_day > d_numdays.getDate())
-		return alert("Napačen dan v mesecu: '" + n_day + "'.\nPravilen razpon za izbrani mesec je 01 - " + d_numdays.getDate() + ".");
+		return alert(s_date + ": ?");
 
 	return new Date (n_year, n_month - 1, n_day);
 }
@@ -204,19 +204,20 @@ function f_tcalUpdate (d_date) {
 		+ this.a_tpl.months[d_date.getMonth()] + ' ' + d_date.getFullYear()
 			+ '</th><td' + this.f_relDate(d_date, 1) + ' title="Naslednji mesec"><img src="' + this.a_tpl.imgpath + 'next_mon.gif" /></td>'
 		+ (this.a_tpl.yearscroll ? '<td' + this.f_relDate(d_date, 1, 'y') + ' title="Naslednje leto"><img src="' + this.a_tpl.imgpath + 'next_year.gif" /></td></td>' : '')
-		+ '</tr></tbody></table><table><tbody><tr class="wd">';
+		+ '</tr></tbody></table><table><tbody>';
 
 	// print weekdays titles
-	for (var i = 0; i < 7; i++)
-		s_html += '<th>' + this.a_tpl.weekdays[(this.a_tpl.weekstart + i) % 7] + '</th>';
-	s_html += '</tr>' ;
+	//s_html += '<tr class="wd">';
+	//for (var i = 0; i < 7; i++)
+	//	s_html += '<th>' + this.a_tpl.weekdays[(this.a_tpl.weekstart + i) % 7] + '</th>';
+	//s_html += '</tr>' ;
 
 	// print calendar table
 	var d_current = new Date(d_firstday);
 	while (d_current.getMonth() == d_date.getMonth() ||
 		d_current.getMonth() == d_firstday.getMonth()) {
 	
-		// print row heder
+		// print row header
 		s_html +='<tr>';
 		for (var n_wday = 0; n_wday < 7; n_wday++) {
 
@@ -257,9 +258,9 @@ function f_tcalUpdate (d_date) {
 	this.e_shade.style.width = (n_width + 8) + 'px';
 	this.e_shade.style.left = (n_left - 1) + 'px';
 	this.e_shade.style.top = (n_top - 1) + 'px';
-	this.e_shade.innerHTML = b_ieFix
-		? '<table><tbody><tr><td rowspan="2" colspan="2" width="6"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td width="7" height="7" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_tr.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tr><td height="' + (n_height - 7) + '" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_mr.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tr><td width="7" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_bl.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_bm.png\', sizingMethod=\'scale\');" height="7" align="left"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_br.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tbody></table>'
-		: '<table><tbody><tr><td rowspan="2" width="6"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td rowspan="2"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td width="7" height="7"><img src="' + this.a_tpl.imgpath + 'shade_tr.png"></td></tr><tr><td background="' + this.a_tpl.imgpath + 'shade_mr.png" height="' + (n_height - 7) + '"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tr><td><img src="' + this.a_tpl.imgpath + 'shade_bl.png"></td><td background="' + this.a_tpl.imgpath + 'shade_bm.png" height="7" align="left"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td><img src="' + this.a_tpl.imgpath + 'shade_br.png"></td></tr><tbody></table>';
+	//this.e_shade.innerHTML = b_ieFix
+	//	? '<table><tbody><tr><td rowspan="2" colspan="2" width="6"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td width="7" height="7" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_tr.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tr><td height="' + (n_height - 7) + '" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_mr.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tr><td width="7" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_bl.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_bm.png\', sizingMethod=\'scale\');" height="7" align="left"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_br.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tbody></table>'
+	//	: '<table><tbody><tr><td rowspan="2" width="6"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td rowspan="2"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td width="7" height="7"><img src="' + this.a_tpl.imgpath + 'shade_tr.png"></td></tr><tr><td background="' + this.a_tpl.imgpath + 'shade_mr.png" height="' + (n_height - 7) + '"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tr><td><img src="' + this.a_tpl.imgpath + 'shade_bl.png"></td><td background="' + this.a_tpl.imgpath + 'shade_bm.png" height="7" align="left"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td><img src="' + this.a_tpl.imgpath + 'shade_br.png"></td></tr><tbody></table>';
 	
 	if (this.e_iframe) {
 		this.e_iframe.style.left = n_left + 'px';
