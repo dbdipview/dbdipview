@@ -9,10 +9,9 @@ var A_TCALDEF = {
 //	'months' : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
 	'months' : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
 //	'weekdays' : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-	'weekdays' : ['ne', 'po', 'to', 'sr', 'če', 'pe', 'so'],
 	'yearscroll': true, // show year scroller
 	'weekstart': 1, // first day of week: 0-Su or 1-Mo
-	'centyear'  : 70, // 2 digit years less than 'centyear' are in 20xx, othewise in 19xx.
+	'centyear' : 70, // 2 digit years less than 'centyear' are in 20xx, othewise in 19xx.
 	'imgpath' : 'img/' // directory with calendar images
 }
 // date parsing function
@@ -258,10 +257,7 @@ function f_tcalUpdate (d_date) {
 	this.e_shade.style.width = (n_width + 8) + 'px';
 	this.e_shade.style.left = (n_left - 1) + 'px';
 	this.e_shade.style.top = (n_top - 1) + 'px';
-	//this.e_shade.innerHTML = b_ieFix
-	//	? '<table><tbody><tr><td rowspan="2" colspan="2" width="6"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td width="7" height="7" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_tr.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tr><td height="' + (n_height - 7) + '" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_mr.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tr><td width="7" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_bl.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_bm.png\', sizingMethod=\'scale\');" height="7" align="left"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + this.a_tpl.imgpath + 'shade_br.png\', sizingMethod=\'scale\');"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tbody></table>'
-	//	: '<table><tbody><tr><td rowspan="2" width="6"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td rowspan="2"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td width="7" height="7"><img src="' + this.a_tpl.imgpath + 'shade_tr.png"></td></tr><tr><td background="' + this.a_tpl.imgpath + 'shade_mr.png" height="' + (n_height - 7) + '"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td></tr><tr><td><img src="' + this.a_tpl.imgpath + 'shade_bl.png"></td><td background="' + this.a_tpl.imgpath + 'shade_bm.png" height="7" align="left"><img src="' + this.a_tpl.imgpath + 'pixel.gif"></td><td><img src="' + this.a_tpl.imgpath + 'shade_br.png"></td></tr><tbody></table>';
-	
+
 	if (this.e_iframe) {
 		this.e_iframe.style.left = n_left + 'px';
 		this.e_iframe.style.top  = n_top + 'px';
