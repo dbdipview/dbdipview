@@ -24,7 +24,7 @@ function getSQLfromXML($id, &$sql, &$mode) {
 
 function showBlobRaw($id, $val) {
 	global $myDBname;
-	
+
 include "config.txt";
 
 	$sql=""; 
@@ -73,23 +73,15 @@ include "config.txt";
 }
 
 
-function showCsv($usql, $filename, $utitle) {
+function showCsv($usql64, $filename, $utitle64) {
 	global $myDBname;
 	
 include "config.txt";
 
 	$delimiter = ";";
-	$sql =   base64_decode(str_replace(['-','_'], ['+','/'], $usql));
-	$title = base64_decode(str_replace(['-','_'], ['+','/'], $utitle));
+	$sql =   base64_decode(urldecode($usql64));
+	$title = base64_decode(urldecode($utitle64));
 	
-	try {
-		$db = new PDO('pgsql:dbname=' . $myDBname . ' host=' . $serverName, $userName, $password);
-		$rows = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-	} catch (PDOException $e) {
-		print "Error!: " . $e->getMessage() . "<br/>";
-        exit();
-    }
-
 	header( 'Content-Type: text/csv;charset=utf-8' );
 	header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
 
@@ -97,11 +89,24 @@ include "config.txt";
 	
 	fwrite( $handle, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 	fwrite( $handle, $title . $delimiter );
-	echo("\n");
-	fputcsv( $handle, array_keys( $rows['0']), $delimiter );
 
-	foreach ( $rows as $row ) {
-		fputcsv( $handle, $row, $delimiter );
+	echo("\n");
+
+	$first = true;
+	try {
+		$db = new PDO('pgsql:dbname=' . $myDBname . ' host=' . $serverName, $userName, $password);
+		$stmt = $db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+		$stmt->execute();
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT)) {
+			if($first) {
+				fputcsv( $handle, array_keys($row), $delimiter );
+				$first = false;
+			}
+			fputcsv( $handle, $row, $delimiter );
+		}
+		$stmt = null;
+	} catch (PDOException $e) {
+		fwrite( $handle, "Error!: " . $e->getMessage()  );
 	}
 
 	fclose( $handle );
