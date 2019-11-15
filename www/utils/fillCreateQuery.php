@@ -5,6 +5,7 @@
  * - build the SELECT statements (i.e. main query and optional subqueries), 
  * - execute them, 
  * - display the results.
+ * Boris Domajnko
  */
 
 ?>
@@ -36,7 +37,7 @@ function fbr($in) {
 	return($out);
 }
 
-function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $ufilename) {
+function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filename) {
 	global $MSGSW17_Records, $MSGSW18_ReportDescription, $MSGSW19_ReportTitle, $MSGSW20_ReportSubTitle;
 
 	$csvtitle = "";
@@ -52,11 +53,13 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $ufile
 	if($subtitle && strlen($subtitle) > 0 )
 		$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  fbr($subtitle) .           '"' . ";\n"; 
 
-	$title = str_replace(['+','/','='], ['-','_',''], base64_encode($csvtitle));
-	$sql =   str_replace(['+','/','='], ['-','_',''], base64_encode($csvquery));
+	$title64 = urlencode(base64_encode($csvtitle));
+	$sql64 =   urlencode(base64_encode($csvquery));
 
-	$filename = "export.csv";
-	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv&s=$sql&f=$filename&t=$title'><span style='text-decoration:underline;'>&#129123;</span></a>&nbsp;");
+	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv&s=" . 
+		$sql64 . "&f=" .
+		$filename . "&t=" . 
+		$title64 . "'><span style='text-decoration:underline;'>&#129123;</span></a>&nbsp;");
 }
 
 
@@ -471,7 +474,7 @@ foreach ($xml->database->screens->screen as $screen) {
 				print ("<h4>" . $screen->title . "</h4>");	
 
 			if($attrSkipCSVsave != true) {
-				$csvfilename = "export.csv";
+				$csvfilename = "export" . $targetQueryNum . ".csv";
 				createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
 								$screen->title,
 								$subTitle,
@@ -500,8 +503,8 @@ foreach ($xml->database->screens->screen as $screen) {
 				print("<h4>" . $subqueriesTitle[$sqindexLoop] . "</h4>");
 
 				if($attrSkipCSVsave != true) {
-					$csvfilename = "export.csv";
-					createAhrefCSV("(" . $targetQueryNum . ") " . $screen->selectDescription, 
+					$csvfilename = "export" . $targetQueryNum . "_" . $sqindexLoop . ".csv";
+					createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription, 
 									$subqueriesTitle[$sqindexLoop],
 									$subqueriesSubTitle[$sqindexLoop],
 									$subqueries[$sqindexLoop],
@@ -645,7 +648,7 @@ if ($maxcount == $hits && $hits > 0) {
 function is_where_already_here($selectStmnt) {
 	//if there is a WHERE part at the end, skip it now
 	//do not count WHERE in situations like SELECT ... (SELECT COUNT(*) WHERE ...)
-	$levi =  preg_replace("/\([^)]+\)/"," ",$selectStmnt);      // remove anything between ( and )
+	$levi =   preg_replace("/\([^)]+\)/"," ",$selectStmnt);     // remove anything between ( and )
 	$desni =  preg_replace("/\([^)]+\(/"," ",$levi);            // remove anything between ( and (
 	$no_wrong_where = preg_replace("/\([^)]+\)/"," ",$desni);   // remove anything between ( and )
 
