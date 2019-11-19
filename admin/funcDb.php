@@ -171,12 +171,12 @@ function dbf_delete_dbc($DBC) {
  *  Load data into table from TAB delimited file
  *
  */
- function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER) {
+ function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $HEADER) {
 	global $DBADMINPASS, $DBADMINUSER;
 	
 	$rv = ""; 
 	passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-		"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' $HEADER WITH NULL AS \'\'" . 
+		"COPY " . $TABLE . " FROM \'$SRCFILE\' $HEADER WITH NULL AS \'\'" . 
 		" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER);
 	return($rv);
  }
@@ -190,7 +190,7 @@ function dbf_delete_dbc($DBC) {
 	global $DBADMINPASS, $DBADMINUSER; 
 	
 	$rv = "";
-	passthru("cat ".$SQL."| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER, $rv);
+	passthru("cat " . $SQL . "| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 	return($rv);
  }
  
