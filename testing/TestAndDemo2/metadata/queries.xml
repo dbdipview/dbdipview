@@ -17,12 +17,15 @@
 				<id>5</id>
 				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
 				<title>TITLE: RC airplane pictures</title>   
-				<subtitle>SUBTITLE: Note images as thumbnails and as links to the files (results pane)</subtitle>
+				<subtitle>SUBTITLE: Note use of images as thumbnails and as links to the files (results pane).
+				If a parameter Name is set, it is also propagated to the subselects.
+				</subtitle>
 				<param>
 					<name>Name</name>
 					<dbtable>models</dbtable>
 					<dbcolumn>name</dbcolumn>
 					<type>textlike</type>
+					<forwardToSubqueryName>param1</forwardToSubqueryName>
 				</param>			
 				<query>SELECT id, 
 						name, 
@@ -60,6 +63,11 @@
 							"picture" AS link
 							FROM "AirplanesLinks"."models"
 					</query>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>models</dbtable>
+						<dbcolumn>name</dbcolumn>
+					</param> 
 					<ahrefs>
 						<ahref>
 							<dbcolumnname>link</dbcolumnname>
