@@ -1,8 +1,13 @@
-VERSION	2019-09-24
+VERSION	2019-11-18
 SCHEMA	AirplanesLinks
-COMMENT	table	file	format	date_format	delimiter	encoding	header	TBD
-TABLE	"AirplanesLinks"."models"	models.csv	CSV	YMD	,	UTF8	y	TBD
+SCHEMA	TestCSV
+COMMENT	table	file	format	date_format	delimiter	encoding	headerBD
+TABLE	"AirplanesLinks"."models"	models.csv	CSV	YMD	,	UTF8	y
 VIEW	"AirplanesLinks"."my_view"
+TABLE	"TestCSV"."test1"	Keys semicolon.csv	CSV	YMD	;	UTF8	y
+TABLE	"TestCSV"."test2"	Keys comma.csv	CSV	YMD	,	UTF8	n
+TABLE	"TestCSV"."test3"	Keys tab.csv	CSV	YMD	\\t	UTF8	n
+TABLE	"TestCSV"."test4"	Keys tab.txt	TSV	YMD		UTF8	n
 BFILES	filesInTar.tar
 BFILES	filesInTarGz.tar.gz
 BFILES	filesInTgz.tgz
