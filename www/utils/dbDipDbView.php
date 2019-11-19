@@ -5,7 +5,7 @@
  * functions that execute a query and return result
  */
  
-//given a query, makes an array from the first line of result
+//given a query, returns an array from the first line of result
 function qRowToArray($query){
 	global $dbConn;
 	$result = pg_query($dbConn, $query );
@@ -37,7 +37,7 @@ function qRowsToArray($query){
 } // end qRowToArray
 
 
-//given a query, makes an array with results of first column
+//given a query, returns an array with results of first column
 function qColToArray($query){
 	global $dbConn;
 	$outarray = array();
@@ -127,7 +127,8 @@ function qToListWithLink($query,
 
 		while ($row = pg_fetch_assoc($result)) {
 			
-			foreach ($row as $col=>$val) {
+			foreach ($row as $col=>$valnl) {
+				$val = nl2br($valnl);
 				$output .= "<b>$col:</b> ";
 
 				$column = $linknextscreen_columns[$col];
@@ -222,10 +223,11 @@ function qToTable($query){
 		$output .= "</tr></thead>\n\n";
 
 		$output .= "<tbody>\n";
-		//get row data as an associative array
+
 		while ($row = pg_fetch_assoc($result)) {
 			$output .= "<tr>\n";
-			foreach ($row as $col=>$val){
+			foreach ($row as $col=>$valnl){
+				$val = nl2br($valnl);
 				$output .= "  <td>$val</td>\n";
 			}
 				$output .= "</tr>\n";
@@ -274,10 +276,11 @@ function qToTableWithLink($query,
 		$output .= "</tr></thead>\n\n";
 
 		$output .= "<tbody>\n";
-		//get row data as an associative array
+
 		while ($row = pg_fetch_assoc($result)) {
 			$output .= "<tr>\n";
-			foreach ($row as $col=>$val) {
+			foreach ($row as $col=>$valnl) {
+				$val = nl2br($valnl);
 				
 				$column = $linknextscreen_columns[$col];
 				if (!is_null($column) && $column["dbtable"]!="") { 

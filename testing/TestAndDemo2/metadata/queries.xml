@@ -18,14 +18,12 @@
 				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
 				<title>TITLE: RC airplane pictures</title>   
 				<subtitle>SUBTITLE: Note images as thumbnails and as links to the files (results pane)</subtitle>
-				
 				<param>
 					<name>Name</name>
 					<dbtable>models</dbtable>
 					<dbcolumn>name</dbcolumn>
 					<type>textlike</type>
 				</param>			
-				
 				<query>SELECT id, 
 						name, 
 						"picture" AS pictureimg, 
@@ -56,7 +54,7 @@
 				</images>
 				<subselect>
 					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>   
-					<subtitle>This is a simplified version of the previous report above. No forarded parameters has been conf</subtitle>
+					<subtitle>This is a simplified version of the previous report above. No forwarded parameters has been configured.</subtitle>
 					<query>SELECT id, name, 
 							"picture" AS image, 
 							"picture" AS link
@@ -80,11 +78,40 @@
 			<screen skipCSVsave="1">
 				<id>6</id>
 				<selectDescription>Display data from a view</selectDescription>
-				<title>Test of access to the data created as a VIEW; Test of attribute skip CSV save - disabled save</title>   
-				<subtitle>Note: The view was created in queries01.sql</subtitle>   
+				<title>Test of access to the VIEW; Test of attribute skip CSV save - disabled save.</title>   
+				<subtitle>Note: This view was created in queries01.sql</subtitle>   
 				<query>SELECT *					
 						FROM "AirplanesLinks"."my_view"
 				</query>
+			</screen>
+			
+			<screen skipCSVsave="1">
+				<id>7</id>
+				<selectDescription>Display tables that were loaded from CSV</selectDescription>
+				<title>Test of table upload. These tables were uploaded from CSV files with 4 data lines.</title>   
+				<subtitle>Loaded from Keys comma.csv:</subtitle>   
+				<query>SELECT *			
+					FROM "TestCSV"."test1"
+				</query>
+				
+				<subselect>
+					<subtitle>Loaded from Keys semicolon.csv (this one also includes a header line):</subtitle>   
+					<query>SELECT *			
+						FROM "TestCSV"."test2"
+					</query>
+				</subselect>		
+				<subselect>
+					<subtitle>Loaded from Keys tab.csv (in CSV mode):</subtitle>   
+					<query>SELECT *			
+						FROM "TestCSV"."test3"
+					</query>
+				</subselect>	
+				<subselect>
+					<subtitle>Loaded from Keys tab.csv (in TSV mode):</subtitle>   
+					<query>SELECT *			
+						FROM "TestCSV"."test4"
+					</query>
+				</subselect>
 			</screen>
 			
 		</screens>
