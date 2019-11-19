@@ -108,10 +108,8 @@ function actions_Order_process($orderInfo) {
 	debug("__install SIARD...");
 	foreach ($orderInfo['siardFiles'] as $file) {
 		$siardFile = $DDV_DIR_PACKED . $file; 
-		if($OK == actions_SIARD_install($siardFile))
-			$fsiard = true;
-		else
-			return($NOK);
+		actions_SIARD_install($siardFile);
+		$fsiard = true;
 	}
 
 	debug("__install DDV EXT");
@@ -213,10 +211,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	global $OK, $NOK;
 	
 	if ( !is_dir($DDV_DIR_EXTRACTED) )
-		if (!mkdir($DDV_DIR_EXTRACTED, 0777, true)) {
-			err_msg(__FUNCTION__ . ": " . "Error - mkdir $DDV_DIR_EXTRACTED");
-			return($NOK);
-		};
+		mkdir($DDV_DIR_EXTRACTED, 0777, true);
 	if (isAtype($packageFile, "tar.gz"))
 		$cmd="tar -xvzf " . $packageFile . " -C " . $DDV_DIR_EXTRACTED;
 	else {
@@ -229,7 +224,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 		debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $cmd);
 		$rv = 0;
 		$out = passthru($cmd, $rv);
-		echo $out . PHP_EOL;
+		echo $out;
 
 		$files = glob($DDV_DIR_EXTRACTED . "/data/" . "*.csv");
 		if ($files) {
@@ -296,23 +291,23 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 					$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA, $DBGUEST);
 					if ( $rv != 0 )
 						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-
-					msgCyan(" " . $MSG29_EXECUTING . " " . $CREATEDB0);
-					$rv = dbf_run_sql($DBC, $CREATEDB0);
-					if ( $rv != 0 )
-						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-
-					if (is_file($CREATEDB1)) {
-						msgCyan(" " . $MSG29_EXECUTING . " " . $CREATEDB1);
-						$rv = dbf_run_sql($DBC, $CREATEDB1);
-						if ( $rv != 0 )
-							err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-					}
-					msgCyan($MSG25_EMPTY_TABLES_CREATED);
-					$ret = $OK;
 				} //SCHEMA
 			} //while
 			fclose($handleList);
+			
+			msgCyan($MSG29_EXECUTING . " " . $CREATEDB0);
+			$rv = dbf_run_sql($DBC, $CREATEDB0);
+			if ( $rv != 0 )
+				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+
+			if (is_file($CREATEDB1)) {
+				msgCyan($MSG29_EXECUTING . " " . $CREATEDB1 . "...");
+				$rv = dbf_run_sql($DBC, $CREATEDB1);
+				if ( $rv != 0 )
+					err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+			}
+			msgCyan($MSG25_EMPTY_TABLES_CREATED);
+			$ret = $OK;
 		} 
 	} else
 		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ":", $listfile);
@@ -371,11 +366,11 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 					passthru("$PROGDIR/removeBOM $SRCFILE $SRCFILE" . "_noBOM");
 					$SRCFILE= $SRCFILE."_noBOM";
 				}
-				passthru("chmod o+r $SRCFILE");
+				passthru("chmod o+r '$SRCFILE'");
 				if ( "$CSVMODE" == "CSV" ) {
 					$rv = dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER);
-				} else if ( "$CSVMODE" == "TAB" ) {
-					$rv = dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER);
+				} else if ( "$CSVMODE" == "TSV" ) {
+					$rv = dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE,             $HEADER);
 				} else
 					err_msg(__FUNCTION__ . ": " . "Error, wrong CSVMODE:", $CSVMODE);
 
