@@ -79,8 +79,8 @@ function showCsv($usql64, $filename, $utitle64) {
 include "config.txt";
 
 	$delimiter = ";";
-	$sql =   base64_decode(urldecode($usql64));
-	$title = base64_decode(urldecode($utitle64));
+	$sql =   base64_decode(rawurldecode($usql64));
+	$title = base64_decode(rawurldecode($utitle64));
 	
 	header( 'Content-Type: text/csv;charset=utf-8' );
 	header( 'Content-Disposition: attachment; filename="' . $filename . '";' );

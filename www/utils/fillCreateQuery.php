@@ -53,17 +53,15 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 	if($subtitle && strlen($subtitle) > 0 )
 		$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  fbr($subtitle) .           '"' . ";\n"; 
 
-	$title64 = urlencode(base64_encode($csvtitle));
-	$sql64 =   urlencode(base64_encode($csvquery));
-
-	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv&s=" . 
-		$sql64 . "&f=" .
-		$filename . "&t=" . 
-		$title64 . "'><span style='text-decoration:underline;'>&#129123;</span></a>&nbsp;");
+	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv" . 
+		"&s=" . rawurlencode(base64_encode($csvquery)) .
+		"&f=" . $filename . 
+		"&t=" . rawurlencode(base64_encode($csvtitle)) .
+		"'><span style='text-decoration:underline;'>&#129123;</span></a>&nbsp;");
 }
 
 
-//  operator = "||" or "&&"
+// operator = "||" or "&&"
 // 'aaa || bbb || ccc' -> (x='%aaa%' OR x='%bbb%' OR x='%ccc%')
 // 'aaa || bbb || !ccc' is also allowed
 // textlike
