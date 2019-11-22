@@ -48,7 +48,7 @@ $DDV_DIR_PACKED   = str_replace("admin/../", "", "$DDV_DIR_PACKED");
 $DDV_DIR_UNPACKED = str_replace("admin/../", "", "$DDV_DIR_UNPACKED");
 $BFILES_DIR       = str_replace("admin/../", "", "$BFILES_DIR");
 
-$XB=" ";$XC=" ";$XD=" ";$X0=" ";$X1=" ";$X2=" ";$XP=' ';$XS=' ';$X3=" ";$X6=" ";$X7=" ";$X8=" ";$X9=" ";
+$XB=" ";$XC=" ";$XD=" ";$X0=" ";$X1=" ";$X2=" ";$XP=' ';$XS=' ';$X3=" ";$X5=" ";$X6=" ";$X7=" ";$X8=" ";$X9=" ";
 $XOS=" ";$XOI=" ";$XOD=" ";
 $V1=" ";$V2=" ";$V3=" ";$V4=" ";
 
@@ -173,6 +173,9 @@ while ( "$answer" != "q" ) {
 					echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
 					echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD [$SIARDNAME]" . PHP_EOL;
 					//echo "${X3}3  (SIARD) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
+		}
+		if(!empty($all) || empty($om))  {
+					echo "${X5}5  $MSG46_REDACT [$DBC][$DDV] " . PHP_EOL;
 		}
 		if(!empty($all) || empty($om))  {
 					echo "${X6}6  $MSG6_ACTIVATEDIP [$DBC][$DDV] " . PHP_EOL;
@@ -438,6 +441,18 @@ while ( "$answer" != "q" ) {
 			else if ($OK == actions_SIARD_install($SIARDFILE)) {
 				actions_SIARD_grant($LISTFILE);
 				$XS='X';
+			}
+			enter();
+			break;
+
+		case "5": $X5=' ';
+			if (notSet($DDV))
+				err_msg($MSG18_DDV_NOT_SELECTED);
+			else if ( !is_dir($DDV_DIR_EXTRACTED))
+				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
+			else {
+				actions_schema_redact($DDV_DIR_EXTRACTED);
+				$X5='X';
 			}
 			enter();
 			break;

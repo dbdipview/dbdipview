@@ -78,30 +78,30 @@
 
 				<subselect>
 					<title>Subselect 1, use of a forwarded parameter from the main report above</title>
-					<query>SELECT 
-                    "HR employees"."Id", 
-                    "HR employees"."Employee Name" AS "The name" 				
-						FROM "HR members"."HR employees"
-					</query>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>HR employees</dbtable>
 						<dbcolumn>Id</dbcolumn>
 					</param>
+					<query>SELECT 
+                    "HR employees"."Id", 
+                    "HR employees"."Employee Name" AS "The name" 				
+						FROM "HR members"."HR employees"
+					</query>
 				</subselect>
 
 				<subselect>
 					<title>Subselect 2, use of a forwarded parameter; link to the connected screen</title>
-					<subtitle>The value of the parameter param1 from the previous report was used as a search criteria in this report. There is a also a further connection to the report No. 3 using the value of column id_emp</subtitle>   
-					<query>SELECT 
-                    "Arrivals"."id_emp", 
-                    "Arrivals"."arrival" 				
-						FROM "HR members"."Arrivals"</query>
+					<subtitle>The value of the parameter param1 from the previous report was used as a search criteria in this report. There is a also a further connection to the report No. 3 using the value of column id_emp</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>Arrivals</dbtable>
 						<dbcolumn>id_emp</dbcolumn>
 					</param>
+					<query>SELECT 
+                    "Arrivals"."id_emp", 
+                    "Arrivals"."arrival" 				
+						FROM "HR members"."Arrivals"</query>
 					<links_to_next_screen>
 						<link>
 							<dbcolumnname>id_emp</dbcolumnname>

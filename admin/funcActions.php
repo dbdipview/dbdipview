@@ -595,6 +595,42 @@ function actions_access_on($orderInfo, $ddv) {
 }
 
 /**
+ * If redact.sql and redact01.sql exist, run the sql to redact the tables
+ * The tables must be already populated at this stage.
+ * @return $OK or $NOK    
+ */
+function actions_schema_redact($DDV_DIR_EXTRACTED) {
+	global $MSG_ERROR, $MSG29_EXECUTING, $MSG47_REDACTCOMPLETED, $MSG17_FILE_NOT_FOUND;
+	global $OK, $NOK;
+	global $DBC;
+	
+	$ret = $NOK;
+	$REDACTDB0 = $DDV_DIR_EXTRACTED . "/metadata/redactdb.sql";
+	$REDACTDB1 = $DDV_DIR_EXTRACTED . "/metadata/redactdb01.sql";
+	
+	if ( !is_file($REDACTDB0)) {
+		err_msg($MSG17_FILE_NOT_FOUND . ":", $REDACTDB0);
+		return($NOK);
+	} else {
+		msgCyan($MSG29_EXECUTING . " " . $REDACTDB0);
+		$rv = dbf_run_sql($DBC, $REDACTDB0);
+		if ( $rv != 0 )
+			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+
+		if (is_file($REDACTDB1)) {
+			msgCyan($MSG29_EXECUTING . " " . $REDACTDB1 . "...");
+			$rv = dbf_run_sql($DBC, $REDACTDB1);
+			if ( $rv != 0 )
+				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		}
+		msgCyan($MSG47_REDACTCOMPLETED);
+		$ret = $OK;
+	} 
+
+	return($ret);
+}
+
+/**
  * Drop the schema
  *
  */

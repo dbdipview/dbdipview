@@ -77,7 +77,13 @@ else
 	if [ -f ${SOURCE}/metadata/createdb01.sql ] ; then
 		ALLMETADATA="$ALLMETADATA metadata/createdb01.sql"
 	fi
-    echo "Creating package ${OUTFILE_TAR}..."
+	if [ -f ${SOURCE}/metadata/redactdb.sql ] ; then
+		ALLMETADATA="$ALLMETADATA metadata/redactdb.sql"
+	fi
+	if [ -f ${SOURCE}/metadata/redactdb01.sql ] ; then
+		ALLMETADATA="$ALLMETADATA metadata/redactdb01.sql"
+	fi
+    echo "Creating package ${OUTFILE_TAR} with $ALLMETADATA..."
 	cd  ${SOURCE} && \
 	tar cf ${OUTFILE_TAR} $ALLMETADATA $ALLDATA && \
 	gzip ${OUTFILE_TAR} && \
