@@ -595,7 +595,7 @@ function actions_access_on($orderInfo, $ddv) {
 }
 
 /**
- * If redact.sql and recat01.sql exist, run the sql to redact the tables
+ * If redact.sql and redact01.sql exist, run the sql to redact the tables
  * The tables must be already populated at this stage.
  * @return $OK or $NOK    
  */
