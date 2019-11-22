@@ -17,12 +17,15 @@
 				<id>5</id>
 				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
 				<title>TITLE: RC airplane pictures</title>   
-				<subtitle>SUBTITLE: Note images as thumbnails and as links to the files (results pane)</subtitle>
+				<subtitle>SUBTITLE: Note use of images as thumbnails and as links to the files (results pane).
+				If a parameter Name is set, it is also propagated to the subselects.
+				</subtitle>
 				<param>
 					<name>Name</name>
 					<dbtable>models</dbtable>
 					<dbcolumn>name</dbcolumn>
 					<type>textlike</type>
+					<forwardToSubqueryName>param1</forwardToSubqueryName>
 				</param>			
 				<query>SELECT id, 
 						name, 
@@ -55,6 +58,11 @@
 				<subselect>
 					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>   
 					<subtitle>This is a simplified version of the previous report above. No forwarded parameters has been configured.</subtitle>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>models</dbtable>
+						<dbcolumn>name</dbcolumn>
+					</param> 
 					<query>SELECT id, name, 
 							"picture" AS image, 
 							"picture" AS link
@@ -87,7 +95,7 @@
 			
 			<screen skipCSVsave="1">
 				<id>7</id>
-				<selectDescription>Display tables that were loaded from CSV</selectDescription>
+				<selectDescription>Display tables that were loaded from sample CSV files. Test of redaction.</selectDescription>
 				<title>Test of table upload. These tables were uploaded from CSV files with 4 data lines.</title>   
 				<subtitle>Loaded from Keys comma.csv:</subtitle>   
 				<query>SELECT *			
@@ -95,7 +103,7 @@
 				</query>
 				
 				<subselect>
-					<subtitle>Loaded from Keys semicolon.csv (this one also includes a header line):</subtitle>   
+					<subtitle>Loaded from Keys semicolon.csv (this one also includes a header line).</subtitle>   
 					<query>SELECT *			
 						FROM "TestCSV"."test2"
 					</query>
@@ -107,7 +115,7 @@
 					</query>
 				</subselect>	
 				<subselect>
-					<subtitle>Loaded from Keys tab.csv (in TSV mode):</subtitle>   
+					<subtitle>Loaded from Keys tab.csv (in TSV mode). If you chose redaction then note column with X:</subtitle>   
 					<query>SELECT *			
 						FROM "TestCSV"."test4"
 					</query>

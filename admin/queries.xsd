@@ -3,7 +3,7 @@
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
            vc:minVersion="2.0">
-	<!-- dbDIPview schema for queries.xml, 2019-11-10-->
+	<!-- dbDIPview schema for queries.xml, 2019-11-21-->
 	<xs:complexType name="revisions">
 		<xs:sequence>
 			<xs:element name="revision" type="revision" minOccurs="0" maxOccurs="unbounded" />
@@ -50,13 +50,13 @@
 					<xs:sequence>
 						<xs:element name="title"       type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="subtitle"    type="xs:string"      minOccurs="0" maxOccurs="1" />
+						<xs:element name="param"       type="paramSubselect" minOccurs="0" maxOccurs="unbounded" />
 						<xs:element name="query"       type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="selectGroup" type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="selectOrder" type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="ahrefs"      type="ahrefs"         minOccurs="0" maxOccurs="1" />
 						<xs:element name="images"      type="images"         minOccurs="0" maxOccurs="1" />
 						<xs:element name="blobs"       type="blobs"          minOccurs="0" maxOccurs="1" />
-						<xs:element name="param"       type="paramSubselect" minOccurs="0" maxOccurs="unbounded" />
 						<xs:element name="links_to_next_screen" type="linkstns" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
