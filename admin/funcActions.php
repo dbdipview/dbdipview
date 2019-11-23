@@ -136,6 +136,10 @@ function actions_Order_process($orderInfo) {
 		actions_SIARD_grant($LISTFILE);            //DDV info for SIARD grant
 	}
 
+	if($orderInfo['redact'])						//redaction must be done
+		if ( $OK != actions_schema_redact($DDV_DIR_EXTRACTED))
+			return($NOK);
+
 	$token = actions_access_on($orderInfo, $ddv);  //DDV enable
 	if( $token != "" )
 		echo "TOKEN: " . $token . PHP_EOL;
@@ -614,14 +618,18 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
 	} else {
 		msgCyan($MSG29_EXECUTING . " " . $REDACTDB0);
 		$rv = dbf_run_sql($DBC, $REDACTDB0);
-		if ( $rv != 0 )
+		if ( $rv != 0 ) {
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+			return($NOK);
+		}
 
 		if (is_file($REDACTDB1)) {
 			msgCyan($MSG29_EXECUTING . " " . $REDACTDB1 . "...");
 			$rv = dbf_run_sql($DBC, $REDACTDB1);
-			if ( $rv != 0 )
+			if ( $rv != 0 ){
 				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+				return($NOK);
+			}
 		}
 		msgCyan($MSG47_REDACTCOMPLETED);
 		$ret = $OK;

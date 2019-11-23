@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <!-- dbDIPview, schema for order xml, v2019-09-30-->
+  <!-- dbDIPview, schema for order xml, v2019-11-23-->
+
   <xs:element name="dbrequest">
     <xs:complexType>
       <xs:sequence>
+
         <xs:element name="order" >
           <xs:complexType>
             <xs:simpleContent>
@@ -13,9 +15,21 @@
             </xs:simpleContent>
           </xs:complexType>
         </xs:element>
+
         <xs:element name="reference"   type="xs:string" />
+
         <xs:element name="title"       type="xs:string" />
-        <xs:element name="dbcontainer" type="xs:string" />
+
+        <xs:element name="dbcontainer" >
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="redact" type="xs:boolean" use="optional" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+
         <xs:element name="siards" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
@@ -23,6 +37,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+
         <xs:element name="viewers_extended" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
@@ -30,9 +45,13 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+
         <xs:element name="viewer" type="xs:string" minOccurs="0" maxOccurs="1"/>
+
         <xs:element name="access" type="xs:string" />
+
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
 </xs:schema>
