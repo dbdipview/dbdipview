@@ -451,8 +451,8 @@ while ( "$answer" != "q" ) {
 			else if ( !is_dir($DDV_DIR_EXTRACTED))
 				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 			else {
-				actions_schema_redact($DDV_DIR_EXTRACTED);
-				$X5='X';
+				if ($OK == actions_schema_redact($DDV_DIR_EXTRACTED))
+					$X5='X';
 			}
 			enter();
 			break;

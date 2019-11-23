@@ -1,6 +1,14 @@
 <?php
 
 
+function getbool($value){
+	switch( strtolower($value) ){
+		case '1': 
+		case 'true': return true;
+	}
+	return false;
+}
+
 /**
  * Parse XML Order file
  * 
@@ -16,6 +24,7 @@ function loadOrder($xmlinput) {
 	$orderInfo['reference'] = "" . $xml->reference;
 	$orderInfo['title'] =     "" . $xml->title;
 	$orderInfo['dbc'] =       "" . $xml->dbcontainer;
+	$orderInfo['redact'] =    "" . getbool($xml->dbcontainer->attributes()->redact);
 	
 	if(isset    ($xml->siards)) 
 		foreach ($xml->siards->siard as $s) {
