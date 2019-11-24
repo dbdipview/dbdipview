@@ -29,7 +29,7 @@
 				<selectDescription>Use of search; use of link to next screen with forwarded parameters</selectDescription>
 				<title>Employees again, html formating of the text - bold and new line</title>
 				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report, with &lt;BR /&gt;- column ID as a source value &lt;BR /&gt; - to be searched as &lt;B&gt;HR employees-Id&lt;/B&gt; in the linked report. &lt;BR /&gt;- Use of ORDER.</subtitle> 
-				<param size='15'>
+				<param size='4'>
 					<name>ID</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>Id</dbcolumn>
@@ -120,7 +120,7 @@
 				<selectDescription>Search parameters, infotip, date</selectDescription>
 				<title>Use of infotip, attributes: size, hr, skipNewLine; dates</title>
 				<subtitle>See the search screen: infotip at ID field, a horizontal line and skipped new line after first date</subtitle>    
-				<param size='20'>
+				<param size='4'>
 					<name>ID</name>
 					<infotip>This is a sample help text for this field. &lt;br /&gt;
 					Some basic html formatting is &lt;b&gt;possible&lt;/b&gt;</infotip>
