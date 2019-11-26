@@ -1,6 +1,6 @@
 <?php
 /**
- * createPackage.sh
+ * createPackage.php
  * creates a package for dbDIPview
  * Package content:
  * DDV package (file extension: .zip) - to accompany SIARD or EXT DDV packages
@@ -76,7 +76,7 @@ echo "Validating xml..." . PHP_EOL;
 require $PROGDIR . "/../admin/funcXml.php";
 
 $file = $SOURCE . "/metadata/queries.xml";
-$schema = $PROGDIR . "/../admin/queries.xsd";
+$schema = $PROGDIR . "/queries.xsd";
 
 validateXML($file, $schema);
 
