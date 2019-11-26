@@ -214,8 +214,12 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	global $PROGDIR;
 	global $OK, $NOK;
 	
-	if ( !is_dir($DDV_DIR_EXTRACTED) )
-		mkdir($DDV_DIR_EXTRACTED, 0777, true);
+	clearstatcache();
+	if ( !is_dir($DDV_DIR_EXTRACTED) ) {
+		debug(__FUNCTION__ . ": mkdir " . $DDV_DIR_EXTRACTED);
+		mkdir($DDV_DIR_EXTRACTED, 0755, true);
+	} 
+
 	if (isAtype($packageFile, "tar.gz"))
 		$cmd="tar -xvzf " . $packageFile . " -C " . $DDV_DIR_EXTRACTED;
 	else {
@@ -242,7 +246,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 		}
 
 		$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
-		$schema = "$PROGDIR/queries.xsd";
+		$schema = "$PROGDIR/../packager/queries.xsd";
 
 		msgCyan($MSG35_CHECKXML);
 		validateXML($file, $schema);
@@ -359,12 +363,9 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 
 				$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
 
-				debug("LTYPE=" . $tok[0]);
-				debug("TABLE=" . $TABLE);
+				debug("LTYPE=" . $tok[0] . "  TABLE=" . $TABLE);
 				debug("FILE=" . $FILE);
-				debug("CSVMODE=" . $CSVMODE);
-				debug("DELIMITER=" . $DELIMITER);
-				debug("codeset:" . $CODESET);
+				debug("CSVMODE=" . $CSVMODE . "  DELIMITER=" . $DELIMITER . "  codeset:" . $CODESET);
 				
 				if ("$CODESET" == "UTF8BOM") { 
 					passthru("$PROGDIR/removeBOM $SRCFILE $SRCFILE" . "_noBOM");
@@ -452,8 +453,11 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	msgCyan($MSG29_EXECUTING . " " . basename($packageFile) . "...");
 	$ret = $NOK;
 	
-	if ( !is_dir($DDV_DIR_EXTRACTED) )
-		mkdir($DDV_DIR_EXTRACTED, 0777, true);
+	clearstatcache();
+	if ( !is_dir($DDV_DIR_EXTRACTED) ) {
+		debug(__FUNCTION__ . ": mkdir " . $DDV_DIR_EXTRACTED);
+		mkdir($DDV_DIR_EXTRACTED, 0755, true);
+	} 
 
 	if (isAtype($packageFile, "zip")) 
 		$cmd="unzip -o " . $packageFile . " -d " . $DDV_DIR_EXTRACTED;
@@ -473,7 +477,7 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 			debug(__FUNCTION__ . ": " . $DDV_DIR_EXTRACTED);
 
 			$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
-			$schema = "$PROGDIR/queries.xsd";
+			$schema = "$PROGDIR/../packager/queries.xsd";
 
 			msgCyan($MSG35_CHECKXML);
 			msg_red_on();
@@ -561,13 +565,13 @@ function actions_access_on($orderInfo, $ddv) {
 	msgCyan($MSG6_ACTIVATEDIP . " " . $ddv . "...");
 	if (notSet($ddv))
 		err_msg($MSG18_DDV_NOT_SELECTED);
-	else if ( !is_dir($DDV_DIR_EXTRACTED))
+	else if ( !is_dir($DDV_DIR_EXTRACTED) )
 		err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 	else if (notSet($DBC))
 		err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
-	else if ( !is_dir("$SERVERDATADIR"))
+	else if ( !is_dir("$SERVERDATADIR") )
 		err_msg($MSG16_FOLDER_NOT_FOUND . ":", $SERVERDATADIR);
-	else if ( !is_file("$XMLFILESRC"))
+	else if ( !is_file("$XMLFILESRC") )
 		err_msg($MSG17_FILE_NOT_FOUND . ":", $XMLFILESRC);
 	else if (config_isPackageActivated($ddv, $DBC) > 0) 
 			err_msg($MSG30_ALREADY_ACTIVATED, "$ddv ($DBC)");

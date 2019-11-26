@@ -71,13 +71,13 @@ $rv = ''; //return value for passthru()
 //after installation?
 if (!is_dir($SERVERDATADIR)) {
 	msgCyan($MSG43_INITCONFIG . ": " . $SERVERDATADIR);
-	if (!mkdir($SERVERDATADIR, 0777, true))
+	if (!mkdir($SERVERDATADIR, 0755, true))
 		die($MSG_ERROR);
 }
 
 if (!is_dir($PROGDIR . "/siard/")) {
 	msgCyan($MSG43_INITCONFIG . ": " . $PROGDIR . "/siard");
-	if (!mkdir($PROGDIR . "/siard", 0777, true))
+	if (!mkdir($PROGDIR . "/siard", 0755, true))
 		die($MSG_ERROR);
 }
 
@@ -86,13 +86,13 @@ config_migrate();  //migration of obsolete format?
 
 if (!is_dir($DDV_DIR_PACKED)) {
 	msgCyan($MSG43_INITCONFIG . ": " . $DDV_DIR_PACKED);
-	if (!mkdir($DDV_DIR_PACKED, 0777, true))
+	if (!mkdir($DDV_DIR_PACKED, 0755, true))
 		die($MSG_ERROR);
 }
 
 if (!is_dir($DDV_DIR_UNPACKED)) {
 	msgCyan($MSG43_INITCONFIG . ": " . $DDV_DIR_UNPACKED);
-	if (!mkdir($DDV_DIR_UNPACKED, 0777, true))
+	if (!mkdir($DDV_DIR_UNPACKED, 0755, true))
 		die($MSG_ERROR);
 }
 
@@ -497,6 +497,7 @@ while ( "$answer" != "q" ) {
 			else {
 				actions_schema_drop($DBC, $DDV, $LISTFILE);
 				config_json_remove_item($DDV, $DBC);
+				clearstatcache();
 				$X7='X';
 			}
 			enter();
