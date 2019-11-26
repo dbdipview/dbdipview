@@ -33,19 +33,27 @@ function dbf_create_dbc($DBC) {
 	if (notSet($DBC)) 
 		err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 	else {
-		passthru("PGPASSWORD=$DBADMINPASS psql -P pager=off -q -l -U " . $DBADMINUSER . " -d " . $DBC, $rv);
-		if ( $rv == 0 ) {
+		exec('PGPASSWORD=' . $DBADMINPASS . ' psql -U postgres -c "select  datname from pg_database where datname = \'' . $DBC . '\' " ;', $rv);
+		$rvdb = trim($rv[2]);
+
+		if ( $rvdb == $DBC ) {
 			err_msg("$MSG11_DB_ALREADY_EXISTS:", $DBC);
 			$retval = $OK;
 		} else {
 			passthru("PGPASSWORD=$DBADMINPASS createdb " . $DBC . 
 					" -U ". $DBADMINUSER . " -E UTF8 --template=template0", $rv);
 			if ( $rv == 0 ) {
-				passthru("PGPASSWORD=$DBADMINPASS psql -P pager=off -l -U " . $DBADMINUSER . 
-					"| grep " . $DBC, $rv);
-				if ( $rv == 0 ) 
-					msgCyan($MSG22_DB_CREATED . ": " . $DBC);
-				$retval = $OK;
+				exec("PGPASSWORD=$DBADMINPASS psql -P pager=off -l -U " . $DBADMINUSER . ' \'' . $DBC . '\' ;', $rv);
+				foreach ($rv as $index=>$line) {
+					if($index > 2) {
+						$pos = strpos(trim($line), "|");
+						$word = substr($line, 0, $pos);
+						if(trim($word) == $DBC) {
+							msgCyan($MSG22_DB_CREATED . ": " . $DBC);
+							$retval = $OK;
+						}
+					}
+				}
 			}
 		}
 	}
