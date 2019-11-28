@@ -1,7 +1,8 @@
-VERSION	2019-11-18
+VERSION	2019-11-28
+COMMENT	TestAndDemo2
 SCHEMA	AirplanesLinks
 SCHEMA	TestCSV
-COMMENT	table	file	format	date_format	delimiter	encoding	headerBD
+#table columns: 	table	file	format	date_format	delimiter	encoding	header
 TABLE	"AirplanesLinks"."models"	models.csv	CSV	YMD	,	UTF8	y
 VIEW	"AirplanesLinks"."my_view"
 TABLE	"TestCSV"."test1"	Keys semicolon.csv	CSV	YMD	;	UTF8	y
