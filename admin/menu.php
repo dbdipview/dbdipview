@@ -1,9 +1,11 @@
 <?php
 
 /**
+ * menu.php
+ *
  * Administration tool for dbDIPview.
- * Interactive menu: installs or deinstalls packages, shows status.
- * Uses folder as configured in configa.txt.
+ * Interactive menu allows user to install or deinstall packages and check the status.
+ * Folder names are configured in configa.txt.
  *
  * @author     Boris Domajnko
  */

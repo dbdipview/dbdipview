@@ -1,7 +1,12 @@
 <?php
 /**
+ * funcDb.php
+ * 
  * Functions for configuring the database
+ * PostgreSQL concept of database and schema
+ * A user will have access to a database
  *
+ * @author     Boris Domajnko
  */
  
  
@@ -9,6 +14,7 @@
  /**
  *  List all available databases, then exit.
  *
+ * @return void
  */
  function dbf_list_databases() {
 	global $DBADMINPASS, $DBADMINUSER;
@@ -34,7 +40,7 @@ function dbf_create_dbc($DBC) {
 		err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 	else {
 		exec('PGPASSWORD=' . $DBADMINPASS . ' psql -U postgres -c "select  datname from pg_database where datname = \'' . $DBC . '\' " ;', $rv);
-		$rvdb = trim($rv[2]);
+		$rvdb = empty($rv) ? "" : trim($rv[2]);
 
 		if ( $rvdb == $DBC ) {
 			err_msg("$MSG11_DB_ALREADY_EXISTS:", $DBC);
@@ -49,6 +55,8 @@ function dbf_create_dbc($DBC) {
 						$pos = strpos(trim($line), "|");
 						$word = substr($line, 0, $pos);
 						if(trim($word) == $DBC) {
+							echo $rv[1] . PHP_EOL;   //header line
+							echo $line  . PHP_EOL;
 							msgCyan($MSG22_DB_CREATED . ": " . $DBC);
 							$retval = $OK;
 						}

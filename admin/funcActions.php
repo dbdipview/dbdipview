@@ -427,8 +427,16 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 				err_msg(__FUNCTION__ . ": " . $MSG31_NOSCHEMA);
 			} //NOSCHEMA
 
+			else if ( "$LTYPE" == "COMMENT" ) {
+				echo $line . PHP_EOL;
+			} //COMMENT
+
+			else if (strpos($line, '#') === 0 || strpos($line, '//') === 0){
+				;
+			} //commented out
+
 			else {
-				debug("$MSG33_SKIPPING $LTYPE");
+				debug("$MSG33_SKIPPING $line");
 			} //UNKNOWN
 
 		} //while
