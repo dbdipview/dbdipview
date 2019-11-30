@@ -68,11 +68,6 @@
 							"picture" AS link
 							FROM "AirplanesLinks"."models"
 					</query>
-					<param>
-						<forwardedParamName>param1</forwardedParamName>
-						<dbtable>models</dbtable>
-						<dbcolumn>name</dbcolumn>
-					</param> 
 					<ahrefs>
 						<ahref>
 							<dbcolumnname>link</dbcolumnname>
