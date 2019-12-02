@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * funcActions.php
+ * 
+ * Functions for work with orders packages (SIARD, EXT DDV, DDV)
+ *
+ * @author     Boris Domajnko
+ */
 
 
 /**
@@ -14,7 +20,7 @@ function get_last_ddv($orderInfo) {
 		$ddv = substr($file, 0, -4);               //filename  w/o .zip
 		debug(__FUNCTION__ . ": DDV found:" . $ddv);
 	} else if ( isset($orderInfo['ddvExtFiles']) ) {
-		debug("__no DDV found, check EXT...");
+		debug(__FUNCTION__ . ": DDV not found, will check EXT...");
 		foreach ($orderInfo['ddvExtFiles'] as $file) {  //nod ddv, therefore take the last ddvext
 			$ddv = substr($file, 0, -7);            //filename w/o .tar.gz
 		}
@@ -89,30 +95,18 @@ function actions_Order_process($orderInfo) {
 		return($NOK);
 	}
 			
-	debug("__create DBC:");
+	debug(__FUNCTION__ . ": create DBC:");
 	if ( $OK != dbf_create_dbc($DBC) )
 		return($NOK);
 	
-	if ( isset($orderInfo['ddvFile'] ) && $orderInfo['ddvFile'] != "" ) {
-		debug("__unpack DDV...");
-		$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . substr($orderInfo['ddvFile'], 0, -4);  
-		if( $OK != actions_DDV_unpack($DDV_DIR_PACKED . $orderInfo['ddvFile'], $DDV_DIR_EXTRACTED) )
-			return($NOK);
-	} else if ( isset($orderInfo['ddvExtFiles']) ) {
-		debug("__no DDV found, check EXT...");
-		foreach ($orderInfo['ddvExtFiles'] as $file) {  //nod ddv, therefore take the last ddvext
-			$ddv = substr($file, 0, -7);                //filename w/o .tar.gz
-		}
-	}
-		
-	debug("__install SIARD...");
+	debug(__FUNCTION__ . ": install SIARD...");
 	foreach ($orderInfo['siardFiles'] as $file) {
 		$siardFile = $DDV_DIR_PACKED . $file; 
 		actions_SIARD_install($siardFile);
 		$fsiard = true;
 	}
 
-	debug("__install DDV EXT");
+	debug(__FUNCTION__ . ": install DDV EXT");
 	foreach ($orderInfo['ddvExtFiles'] as $file) {
 		$filepath = $DDV_DIR_PACKED . $file;
 		debug("DDVEXT=" . $file);
@@ -127,6 +121,19 @@ function actions_Order_process($orderInfo) {
 		} else {
 			err_msg($MSG17_FILE_NOT_FOUND . ":", $filepath);
 			return($NOK);
+		}
+	}
+
+	debug(__FUNCTION__ . ": install DDV");
+	if ( isset($orderInfo['ddvFile'] ) && $orderInfo['ddvFile'] != "" ) {
+		debug(__FUNCTION__ . ": unpack DDV...");
+		$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . substr($orderInfo['ddvFile'], 0, -4);  
+		if( $OK != actions_DDV_unpack($DDV_DIR_PACKED . $orderInfo['ddvFile'], $DDV_DIR_EXTRACTED) )
+			return($NOK);
+	} else if ( isset($orderInfo['ddvExtFiles']) ) {
+		debug(__FUNCTION__ . ": DDV not found, will check EXT...");
+		foreach ($orderInfo['ddvExtFiles'] as $file) {  //nod ddv, therefore take the last ddvext
+			$ddv = substr($file, 0, -7);                //filename w/o .tar.gz
 		}
 	}
 
@@ -154,7 +161,7 @@ function actions_Order_process($orderInfo) {
 function actions_Order_remove($orderInfo) {
 	global $MSG17_FILE_NOT_FOUND, $MSG26_DELETED, $MSG26_DELETING;
 	global $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR;
-	global $OK,$NOK;
+	global $OK, $NOK;
 	
 	debug(__FUNCTION__ . "..."); 
 	
@@ -164,20 +171,21 @@ function actions_Order_remove($orderInfo) {
 	$DBC = $orderInfo['dbc'];
 	$ddv = get_last_ddv($orderInfo);
 
-	debug("Remove DBC=$DBC DDV=$ddv");
+	debug(__FUNCTION__ . ": DBC=$DBC with master DDV=$ddv");
 	config_json_remove_item($ddv, $DBC);
+	actions_access_off($ddv);
 	
 	$BFILES_DIR_TARGET = $BFILES_DIR . $ddv;   //location for all external files as LOBs
 	if (is_dir("$BFILES_DIR_TARGET")) {
 		msgCyan("$MSG26_DELETING $BFILES_DIR_TARGET...");
-		$out = passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
+		$out = passthru("rm -r " . $BFILES_DIR_TARGET, $rv);
 		echo $out . PHP_EOL;
 		msgCyan($MSG26_DELETED . ": " . $BFILES_DIR_TARGET);
 	}
 
 	foreach ($orderInfo['ddvExtFiles'] as $file) {
 		$filepath = $DDV_DIR_PACKED . $file;
-		debug("DDVEXT=" . $file);
+		debug(__FUNCTION__ . ": DDVEXT=" . $file);
 		if ( is_file($filepath) ) {
 			$ddvext = substr($file, 0, -7);          //filename w/o .tar.gz
 			$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $ddvext;
@@ -248,8 +256,10 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 		$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 		$schema = "$PROGDIR/../packager/queries.xsd";
 
-		msgCyan($MSG35_CHECKXML);
+		msgCyan($MSG35_CHECKXML . "...");
+		msg_red_on();
 		validateXML($file, $schema);
+		msg_colour_reset();
 
 		# for i in *.csv; do
 		# file $i | grep "with BOM" --> clearBOM
@@ -303,7 +313,7 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 			} //while
 			fclose($handleList);
 			
-			msgCyan($MSG29_EXECUTING . " " . $CREATEDB0);
+			msgCyan($MSG29_EXECUTING . " " . $CREATEDB0 . "...");
 			$rv = dbf_run_sql($DBC, $CREATEDB0);
 			if ( $rv != 0 )
 				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -411,10 +421,10 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 				}
 
 				if ( !empty($cmd) ) {
-					msgCyan($MSG45_COPYBFILES . " -> $BFILES_DIR_TARGET");
-					debug(" $SRCFILE...");
+					msgCyan($MSG45_COPYBFILES . " -> $BFILES_DIR_TARGET" . "...");
+					debug(__FUNCTION__ . ": $SRCFILE...");
 					if (!file_exists($BFILES_DIR_TARGET)) {
-						debug("Creating folder " . $BFILES_DIR_TARGET);
+						debug(__FUNCTION__ . ": Creating folder " . $BFILES_DIR_TARGET);
 						mkdir($BFILES_DIR_TARGET, 0777, true);
 					}
 					$out = passthru($cmd);
@@ -436,7 +446,7 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 			} //commented out
 
 			else {
-				debug("$MSG33_SKIPPING $line");
+				debug(__FUNCTION__ . ": $MSG33_SKIPPING $line");
 			} //UNKNOWN
 
 		} //while
@@ -487,7 +497,7 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 			$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 			$schema = "$PROGDIR/../packager/queries.xsd";
 
-			msgCyan($MSG35_CHECKXML);
+			msgCyan($MSG35_CHECKXML . "...");
 			msg_red_on();
 			validateXML($file, $schema);
 			msg_colour_reset();
@@ -530,6 +540,7 @@ function actions_SIARD_grant($listfile) {
 
 	$ret = $NOK;
 
+	debug(__FUNCTION__ . ": " . $listfile);
 	msgCyan($MSG3_ENABLEACCESS . " " . $listfile . "...");
 	if ( is_file($listfile)) {
 		if (($handleList = fopen($listfile, "r")) !== FALSE) {
@@ -584,14 +595,14 @@ function actions_access_on($orderInfo, $ddv) {
 	else if (config_isPackageActivated($ddv, $DBC) > 0) 
 			err_msg($MSG30_ALREADY_ACTIVATED, "$ddv ($DBC)");
 	else {
-		$targetFile= $SERVERDATADIR . $ddv . ".xml";
+		$targetFile = $SERVERDATADIR . $ddv . ".xml";
 		if ( !is_file($targetFile))  //copy to be sure
 			if (! copy($XMLFILESRC, $targetFile))
-				err_msg("Error:" . $ddv . ".xml");
+				err_msg(__FUNCTION__ . ": Copy error:" . $ddv . ".xml");
 			else
-				debug("COPIED $SERVERDATADIR" . $ddv . ".xml");
+				debug(__FUNCTION__ . ": Created $targetFile");
 		else
-			debug("ALREADY EXISTS $targetFile");
+			debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
 
 		$configItemInfo['dbc']         = $DBC;
 		$configItemInfo['ddv']         = $ddv;
@@ -611,6 +622,25 @@ function actions_access_on($orderInfo, $ddv) {
 }
 
 /**
+ * Remove the XMLfile with queries
+ * Should be called after config_json_remove_item() so that we can check if the file is still in use
+ *
+ * @return    
+ */
+function actions_access_off($ddv) {
+	global $MSG37_MOREACTIVE, $MSG26_DELETED;
+	global $SERVERDATADIR;
+
+	if (config_isPackageActivated($ddv) > 0)
+		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE . " (" . $ddv . ".xml)");
+	else {
+		$file="$SERVERDATADIR" . $ddv . ".xml";
+		if (is_file($file))
+			if (unlink($file))
+				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".xml");
+	}	
+}
+/**
  * If redact.sql and redact01.sql exist, run the sql to redact the tables
  * The tables must be already populated at this stage.
  * @return $OK or $NOK    
@@ -628,7 +658,7 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
 		err_msg($MSG17_FILE_NOT_FOUND . ":", $REDACTDB0);
 		return($NOK);
 	} else {
-		msgCyan($MSG29_EXECUTING . " " . $REDACTDB0);
+		msgCyan($MSG29_EXECUTING . " " . $REDACTDB0 . "...");
 		$rv = dbf_run_sql($DBC, $REDACTDB0);
 		if ( $rv != 0 ) {
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -651,14 +681,14 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
 }
 
 /**
- * Drop the schema
+ * Drop the schemas
  *
  */
 function actions_schema_drop($DBC, $DDV, $listfile) {
-	global $MSG24_NO_SCHEMA, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG37_MOREACTIVE, $MSG26_DELETED, $MSG17_FILE_NOT_FOUND;
+	global $MSG24_NO_SCHEMA, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG26_DELETED, $MSG17_FILE_NOT_FOUND;
 	global $SERVERDATADIR;
 
-	debug(__FUNCTION__ . "(DBC=$DBC DDV=$DDV)...");
+	debug(__FUNCTION__ . ": DBC=$DBC, DDV=$DDV...");
 	if ( is_file($listfile)) {
 		if (($handleList = fopen($listfile, "r")) !== FALSE) {
 			while (($line = fgets($handleList)) !== false) {
@@ -677,15 +707,6 @@ function actions_schema_drop($DBC, $DDV, $listfile) {
 				}
 			} //while
 			fclose($handleList);
-			
-			if (config_isPackageActivated($DDV) > 1)
-				err_msg($MSG37_MOREACTIVE);
-			else {
-				$file="$SERVERDATADIR" . $DDV . ".xml";
-				if (is_file($file))
-					if (unlink($file))
-						debug("$MSG26_DELETED: $DDV" . ".xml");
-			}	
 		}
 	} else
 		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ":", $listfile);
@@ -698,21 +719,21 @@ function actions_schema_drop($DBC, $DDV, $listfile) {
 function actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 	global $MSG37_MOREACTIVE, $MSG26_DELETED, $MSG16_FOLDER_NOT_FOUND;
 	
-	debug(__FUNCTION__ . ": " . $DDV . " " . $DDV_DIR_EXTRACTED . " " . $BFILES_DIR_TARGET);
+	debug(__FUNCTION__ . ": " . $DDV . ", " . $DDV_DIR_EXTRACTED . ", " . $BFILES_DIR_TARGET);
 	if (config_isPackageActivated($DDV) > 0)
-		err_msg($MSG37_MOREACTIVE .  " ($DDV)");
+		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE .  " ($DDV)");
 	else if (is_dir("$DDV_DIR_EXTRACTED")) {
 		$out = passthru("rm -r " . $DDV_DIR_EXTRACTED, $rv);
 		echo $out . PHP_EOL;
 		msgCyan($MSG26_DELETED . ": " . $DDV_DIR_EXTRACTED);
 		
-		if (!empty($BFILES_DIR_TARGET) && is_dir("$BFILES_DIR_TARGET")) {
-			debug("Removing " . $BFILES_DIR_TARGET);
+		if (!empty($BFILES_DIR_TARGET) && is_dir($BFILES_DIR_TARGET)) {
+			debug(__FUNCTION__ . ": Removing " . $BFILES_DIR_TARGET . "...");
 			$out = passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
-			echo $out . PHP_EOL;
+			echo "XXX" . $out . PHP_EOL;
 			msgCyan($MSG26_DELETED . ": " . $BFILES_DIR_TARGET);
 		} 
 	} else
-		debug(__FUNCTION__ . ": " . $MSG16_FOLDER_NOT_FOUND . ":" . $DDV_DIR_EXTRACTED);
+		debug(__FUNCTION__ . ": " . $MSG16_FOLDER_NOT_FOUND . ": " . $DDV_DIR_EXTRACTED);
 }
 ?>
