@@ -1,0 +1,1 @@
+-- No action needed, empty tables will be created from a SIARD file
