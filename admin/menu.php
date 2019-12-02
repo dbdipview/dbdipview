@@ -50,9 +50,11 @@ $DDV_DIR_PACKED   = str_replace("admin/../", "", "$DDV_DIR_PACKED");
 $DDV_DIR_UNPACKED = str_replace("admin/../", "", "$DDV_DIR_UNPACKED");
 $BFILES_DIR       = str_replace("admin/../", "", "$BFILES_DIR");
 
-$XB=" ";$XC=" ";$XD=" ";$X0=" ";$X1=" ";$X2=" ";$XP=' ';$XS=' ';$X3=" ";$X5=" ";$X6=" ";$X7=" ";$X8=" ";$X9=" ";
-$XOS=" ";$XOI=" ";$XOD=" ";
-$V1=" ";$V2=" ";$V3=" ";$V4=" ";
+$XB=' ';$XC=' ';$XD=' ';$X0=' ';$X1=' ';$X2=' ';
+$XP=' ';$XS=' ';
+$X3=' ';$X5=' ';$X6=' ';$X7=' ';$X8=' ';$X9=' ';
+$XOS=' ';$XOI=' ';$XOD=' ';
+$V1=' ';$V2=' ';$V3=' ';$V4=' ';
 
 $SCHEMA = "";
 $debug = false;
@@ -104,9 +106,9 @@ if ( count($options) == 0 || array_key_exists('h', $options) ||
     (count($options) == 1 && array_key_exists('d', $options)) ) {
 	echo "Usage: php menu.php [OPTIONS]" . PHP_EOL;
 	echo "   -h         this help" . PHP_EOL;
-	echo "   -o         show order related options" . PHP_EOL;
-	echo "   -e         show options for extended DDV package" . PHP_EOL;
-	echo "   -s         show SIARD related options" . PHP_EOL;
+	echo "   -o         order workflow" . PHP_EOL;
+	echo "   -e         extended DDV package workflow" . PHP_EOL;
+	echo "   -s         SIARD workflow" . PHP_EOL;
 	echo "   -p <file>  deploy an order XML file" . PHP_EOL;
 	echo "   -d         debug mode" . PHP_EOL;
 	echo "   -a         show all options" . PHP_EOL;
@@ -161,31 +163,36 @@ while ( "$answer" != "q" ) {
 	}
 	if(!empty($all) || !empty($ext)) {
 					echo "${V1}V1 (EXT) $MSG1_SELECTPKG" . PHP_EOL;
-					echo "${V2}V2 (EXT) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
-					echo "${V3}V3 (EXT) $MSG4_CREATEAPL" . PHP_EOL;
-					echo "${V4}V4 (EXT) $MSG5_MOVEDATA" . PHP_EOL;
+					if(!empty($DDV)) {
+						echo "${V2}V2 (EXT) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
+						echo "${V3}V3 (EXT) $MSG4_CREATEAPL" . PHP_EOL;
+						echo "${V4}V4 (EXT) $MSG5_MOVEDATA" . PHP_EOL;
+					}
 	}
 	if(!empty($all) || empty($om))
-					echo "${X1}1  (dbDIPview) $MSG1_SELECTPKG" . PHP_EOL;
-	if(!empty($all))  {
-					echo "${X2}2  (dbDIPview) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
-					echo "${X2}2o (dbDIPview) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
+					echo "${X1}1  (DDV) $MSG1_SELECTPKG" . PHP_EOL;
+	if(!empty($all) || ($X1 == 'X')) {
+					echo "${X2}2  (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
+					//echo "${X2}2o (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 	}
-		if(!empty($all) || !empty($srd))  {
+	if(!empty($all) || !empty($srd))  {
 					echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
-					echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD [$SIARDNAME]" . PHP_EOL;
+					if(!empty($SIARDNAME))
+						echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD [$SIARDNAME]" . PHP_EOL;
 					//echo "${X3}3  (SIARD) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
-		}
-		if(!empty($all) || empty($om))  {
+	}
+	if(!empty($all) || empty($om))  {
 					echo "${X5}5  $MSG46_REDACT [$DBC][$DDV] " . PHP_EOL;
-		}
-		if(!empty($all) || empty($om))  {
+	}
+	if(!empty($all) || empty($om))  {
 					echo "${X6}6  $MSG6_ACTIVATEDIP [$DBC][$DDV] " . PHP_EOL;
-		}
+	}
+	if(!empty($all) || empty($om))  {
 					echo "${X7}7  $MSG7_DEACTAPL [$DBC][$DDV]" . PHP_EOL;
 					echo "${X8}8  $MSG8_RM_UNPACKED_DDV [$DDV]" . PHP_EOL;
 					echo "${X9}9  $MSG9_RMDDV" . PHP_EOL;
 					echo "${XB}B  $MSGB_RMDB [$DBC]" . PHP_EOL;
+	}
 	if($debug)		echo " debug  toggle debug" . PHP_EOL;
 					echo " q  $MSG_EXIT" . PHP_EOL;
 					echo "$MSG_CMD";
@@ -247,24 +254,33 @@ while ( "$answer" != "q" ) {
 				$XOS = ' ';
 			} else if ($OK == actions_Order_read($name, $file, $orderInfo)) {
 				echo $ORDER . PHP_EOL;
-				$XOS='X';
+				$XOS='X';$XOI=' ';$XOD=' ';
 			}
             enter();
             break;
 
-		case "oi": $XOI='X';
-			actions_Order_process($orderInfo);
+		case "oi": 
+			if($XOS == 'X') {
+				actions_Order_process($orderInfo);
+				$XOI='X';
+			}
 			break;
 			
-		case "od": $XOD='X';
-			actions_Order_remove($orderInfo);
+		case "od": 
+			if($XOS == 'X') {
+				actions_Order_remove($orderInfo);
+				$XOD='X';
+			}
 			break;
 			
-		case "d": $XD='X';
+		case "d": $XD=' ';
+			$DBC = "";
 			echo "$MSG_ACCESSDB: ";
 			$name = trim(fgets($handleKbd));
-			if (strlen($name) > 0)
+			if (strlen($name) > 0) {
+				$XD='X';$X0=' ';
 				$DBC = $name;
+			}
 			break;
 
 		case "0": $X0=' ';
@@ -287,7 +303,7 @@ while ( "$answer" != "q" ) {
 				enter();
 				break;
 			} else {
-				$V1 = 'X';
+				$V1 = 'X';$V2=' ';$V3=' ';$V4=' ';
 				$DDV = $name;
 				$PACKAGEFILE = $file;
 				$PKGFILEPATH = $DDV_DIR_PACKED . $file;
@@ -295,8 +311,10 @@ while ( "$answer" != "q" ) {
 				$BFILES_DIR_TARGET = $BFILES_DIR . $DDV;
 				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
 				echo $DDV . PHP_EOL;
-				enter();
-				break;
+				if (stopHere($MSG2_UNPACKDDV)) {
+					enter();
+					break;
+				}
 			}
 
 		case "V2": $V2=' ';
@@ -324,8 +342,10 @@ while ( "$answer" != "q" ) {
 				err_msg("SIARD!");
 			else if ( !is_file($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
-			else if ($OK == actions_DDVEXT_create_schema($LISTFILE, $DDV_DIR_EXTRACTED)) {
+			else if ($OK == actions_DDVEXT_create_schema($LISTFILE, $DDV_DIR_EXTRACTED)) 
 				$V3='X';
+
+			if($V3 == 'X') {
 				if (stopHere($MSG5_MOVEDATA)) {
 					enter();
 					break;
@@ -340,6 +360,8 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if ( !is_dir($DDV_DIR_EXTRACTED))
 				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
+			else if (notSet($DBC))
+				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else if (isAtype($PACKAGEFILE, "siard"))
 				err_msg("SIARD!");
 			else if ( !is_dir($DDV_DIR_EXTRACTED))
@@ -386,7 +408,7 @@ while ( "$answer" != "q" ) {
 				break;
 			} 
 		
-		case "2o": $X2=' ';                         //overwrite the folder
+		case "2o": $X2=' ';                         //overwrite the folder, needed for automated mode
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if (!file_exists($PKGFILEPATH))
@@ -409,7 +431,7 @@ while ( "$answer" != "q" ) {
 				enter();
 				break;
 			} else {
-				$XP = 'X';
+				$XP = 'X';$XS=' ';
 				$SIARDNAME = $name;
 				$SIARDFILE = $DDV_DIR_PACKED . $file; 
 				echo $SIARDNAME . PHP_EOL;
@@ -499,6 +521,7 @@ while ( "$answer" != "q" ) {
 			else {
 				actions_schema_drop($DBC, $DDV, $LISTFILE);
 				config_json_remove_item($DDV, $DBC);
+				actions_access_off($DDV);
 				clearstatcache();
 				$X7='X';
 			}

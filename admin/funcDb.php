@@ -39,7 +39,7 @@ function dbf_create_dbc($DBC) {
 	if (notSet($DBC)) 
 		err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 	else {
-		exec('PGPASSWORD=' . $DBADMINPASS . ' psql -U postgres -c "select  datname from pg_database where datname = \'' . $DBC . '\' " ;', $rv);
+		exec("PGPASSWORD=$DBADMINPASS psql -U " . $DBADMINUSER . ' -d postgres -c "SELECT datname FROM pg_database WHERE datname = \'' . $DBC . '\' ;" ', $rv);
 		$rvdb = empty($rv) ? "" : trim($rv[2]);
 
 		if ( $rvdb == $DBC ) {
@@ -95,14 +95,16 @@ function dbf_delete_dbc($DBC) {
 
 
  /**
- *  Create schema 
+ * Create schema
+ * The existence of the schema is not checked as it might have been created fro a SIARD package
  *
  */
  function  dbf_create_schema($DBC, $SCHEMA) {
 	global $DBADMINPASS, $DBADMINUSER;
 	
 	$rv = "";
-	passthru("echo CREATE SCHEMA " . $SCHEMA . " AUTHORIZATION " . $DBADMINUSER . 
+	debug(        "CREATE SCHEMA IF NOT EXISTS " . $SCHEMA . " AUTHORIZATION " . $DBADMINUSER);
+	passthru("echo CREATE SCHEMA IF NOT EXISTS " . $SCHEMA . " AUTHORIZATION " . $DBADMINUSER . 
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 	return($rv);
  }
@@ -115,6 +117,7 @@ function dbf_delete_dbc($DBC) {
 	global $DBADMINPASS, $DBADMINUSER;
 	
 	$rv = "";
+	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST);
 	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 	return($rv);
@@ -128,6 +131,7 @@ function dbf_delete_dbc($DBC) {
 	global $DBADMINPASS, $DBADMINUSER;
 	
 	$rv = "";
+	debug(        "DROP SCHEMA " . $SCHEMA);
 	passthru("echo DROP SCHEMA " . $SCHEMA . 
 		" CASCADE | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 	return($rv);
@@ -142,6 +146,7 @@ function dbf_delete_dbc($DBC) {
 	global $DBADMINPASS, $DBADMINUSER;
 	
 	$rv = "";
+	debug(        "GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST);
 	passthru("echo GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST . 
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER);
 	return($rv);
@@ -155,9 +160,11 @@ function dbf_delete_dbc($DBC) {
 	global $DBADMINPASS, $DBADMINUSER;
 	
 	$rv = "";
+	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST);
 	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER, $rv);
-		
+	
+	debug(        "GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA);
 	passthru("echo GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER, $rv);
 	return($rv);

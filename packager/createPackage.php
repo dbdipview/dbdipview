@@ -22,11 +22,14 @@
 $PROGDIR=__DIR__;
 set_include_path($PROGDIR);
 
+
+require $PROGDIR . "/../admin/funcXml.php";
+require $PROGDIR . "/../admin/funcMenu.php";
+
 $options = getopt("s:t:n:h");
 if ( count($options) != 3 || array_key_exists('h', $options)  ) {
   echo "Usage:   php " . basename(__FILE__) . " -s <source_dir> -t <target_dir> -n <package_name>" . PHP_EOL;
-  echo "Example: php " . basename(__FILE__) . " -s /home/dbdipview/records/SIP/GZS  -t /home/dbdipview/records/DIP0  -n GZSP" . PHP_EOL;
-  echo "         php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS  -t ~/dbdipview/records/DIP0   -n GZSP" . PHP_EOL;
+  echo "Example: php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS  -t ~/dbdipview/records/DIP0   -n GZSP" . PHP_EOL;
   exit -2;
 } 
 
@@ -73,12 +76,12 @@ if ( is_file($OUTFILE_ZIP) ) {
 }
 
 echo "Validating xml..." . PHP_EOL;
-require $PROGDIR . "/../admin/funcXml.php";
-
 $file = $SOURCE . "/metadata/queries.xml";
 $schema = $PROGDIR . "/queries.xsd";
 
+msg_red_on();
 validateXML($file, $schema);
+msg_colour_reset();
 
 $ALLMETADATA="metadata/queries.xml metadata/list.txt metadata/info.txt";
 if ( is_file($SOURCE . "/metadata/redactdb.sql") ) {
@@ -102,6 +105,7 @@ if ( $count ===  0 ) {
     echo "Creating DDV package $OUTFILE_ZIP...". PHP_EOL;
 	$out = passthru("cd  $SOURCE && " .
 		"zip -r $OUTFILE_ZIP $ALLMETADATA");
+	$pkgtype=".zip";
 } else {
 	$ALLDATA='data/*';
 	$ALLMETADATA="$ALLMETADATA metadata/createdb.sql";
@@ -112,10 +116,11 @@ if ( $count ===  0 ) {
 	$out = passthru("cd  $SOURCE && " .
 		"tar vcf $OUTFILE_TAR $ALLMETADATA $ALLDATA && " .
 		"gzip $OUTFILE_TAR");
+	$pkgtype=".tar.gz";
 }
 
 $out = passthru("echo Done. Result directory $OUTDIR: && " .
-	"ls -lrt $OUTDIR");
+	"ls -lrt $OUTDIR/*" . $pkgtype);
 
 
 

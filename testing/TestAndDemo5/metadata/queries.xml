@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dbDIPview 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
+	schemaMajorVersion="2" >
+
+	<database>
+		<name>TestAndDemo5 regression test viewer with three packages: SIARD package with configuration, EXT DDV with table CSV table data, and DDV with this viewer</name>
+		<revisions>
+			<revision date="2019-12-01" version="0.1">First test</revision>
+		</revisions>
+		<ref_number>1.1</ref_number>
+		<screens>
+
+			<screen>
+				<id>1</id>
+				<selectDescription>Simple report</selectDescription>
+				<title>Employees</title>
+				<subtitle>Check if tables were correctly created from a SIARD package with configuration and populated from EXT DDV with CSV content. The DDV package contains this viewer and commands for redaction</subtitle>  
+				<param size='4'>
+					<name>Date hired</name>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>date Hired /hq</dbcolumn>
+					<type>date_ge</type>
+				</param>
+				<param>
+					<name>Employee name</name>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>Employee Name</dbcolumn>
+					<type>textlike</type>
+				</param>
+				<query>SELECT
+					"HR employees"."Id" AS "ID",
+					"HR employees"."Employee Name" AS "Name",
+					"HR employees"."date Hired /hq" AS "Hired"
+						FROM "HR members"."HR employees"
+				</query>
+			</screen>
+            
+		</screens>
+	</database>
+</dbDIPview>

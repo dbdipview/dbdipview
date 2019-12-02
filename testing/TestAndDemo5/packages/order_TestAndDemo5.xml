@@ -1,0 +1,15 @@
+<dbrequest>
+	<order>Order_test_TD5</order>
+	<reference>TEST TD/5</reference>
+	<title>Test and demo for a SIARD package with tables structure and EXT DDV package with table data, and DDV package with a new viewer (TestAndDemo5)</title>
+	<dbcontainer redact="1">DBC5</dbcontainer>
+	<siards>
+		<siard>TestAndDemo4.siard</siard>
+	</siards>
+	<viewers_extended>
+		<viewer_extended>TestAndDemo4.tar.gz</viewer_extended>
+	</viewers_extended>
+	<viewer>TestAndDemo5.zip</viewer>
+	<access>public</access>
+</dbrequest>
+
