@@ -9,10 +9,11 @@
 		<revisions>
 			<revision date="2019-09-23" version="0.1">Test file ready</revision>
 			<revision date="2019-10-05" version="1.0">Improved comments</revision>
+			<revision date="2019-12-05" version="1.0">Added param for 7</revision>
 		</revisions>
 		<ref_number>1.0</ref_number>
 		<screens>
-		
+
 			<screen>
 				<id>5</id>
 				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
@@ -26,13 +27,13 @@
 					<dbcolumn>name</dbcolumn>
 					<type>textlike</type>
 					<forwardToSubqueryName>param1</forwardToSubqueryName>
-				</param>			
+				</param>
 				<query>SELECT id, 
 						name, 
 						"picture" AS pictureimg, 
 						"picture" AS pictureslink,
 						"picture" AS pictureimg1, 
-						"picture" AS pictureslink1 						
+						"picture" AS pictureslink1 
 						FROM "AirplanesLinks"."models"
 				</query>
 				<ahrefs>
@@ -62,7 +63,7 @@
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>models</dbtable>
 						<dbcolumn>name</dbcolumn>
-					</param> 
+					</param>
 					<query>SELECT id, name, 
 							"picture" AS image, 
 							"picture" AS link
@@ -82,13 +83,13 @@
 					</images>
 				</subselect>
 			</screen>
-			
+
 			<screen skipCSVsave="1">
 				<id>6</id>
 				<selectDescription>Display data from a view</selectDescription>
-				<title>Test of access to the VIEW; Test of attribute skip CSV save - disabled save.</title>   
-				<subtitle>Note: This view was created in queries01.sql</subtitle>   
-				<query>SELECT *					
+				<title>Test of access to the VIEW; Test of attribute skip CSV save - disabled save.</title>
+				<subtitle>Note: This view was created in queries01.sql</subtitle>
+				<query>SELECT *	
 						FROM "AirplanesLinks"."my_view"
 				</query>
 			</screen>
@@ -97,31 +98,55 @@
 				<id>7</id>
 				<selectDescription>Display tables that were loaded from sample CSV files. Test of redaction.</selectDescription>
 				<title>Test of table upload. These tables were uploaded from CSV files with 4 data lines.</title>   
-				<subtitle>Loaded from Keys comma.csv:</subtitle>   
-				<query>SELECT *			
+				<subtitle>Loaded from Keys comma.csv:</subtitle>
+				<param  size='2'>
+					<name>Id</name>
+					<dbtable>test1</dbtable>
+					<dbcolumn>id</dbcolumn>
+					<type>text</type>
+					<forwardToSubqueryName>param1</forwardToSubqueryName>
+				</param>
+				<query>SELECT *	
 					FROM "TestCSV"."test1"
 				</query>
 				
 				<subselect>
-					<subtitle>Loaded from Keys semicolon.csv (this one also includes a header line).</subtitle>   
-					<query>SELECT *			
+					<subtitle>Loaded from Keys semicolon.csv (this one also includes a header line).</subtitle>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>test2</dbtable>
+						<dbcolumn>id</dbcolumn>
+					</param> 
+					<query>SELECT *	
 						FROM "TestCSV"."test2"
 					</query>
-				</subselect>		
+				</subselect>
+
 				<subselect>
-					<subtitle>Loaded from Keys tab.csv (in CSV mode):</subtitle>   
+					<subtitle>Loaded from Keys tab.csv (in CSV mode):</subtitle>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>test3</dbtable>
+						<dbcolumn>id</dbcolumn>
+					</param>   
 					<query>SELECT *			
 						FROM "TestCSV"."test3"
 					</query>
-				</subselect>	
+				</subselect>
+
 				<subselect>
-					<subtitle>Loaded from Keys tab.csv (in TSV mode). If you chose redaction then note column with X:</subtitle>   
-					<query>SELECT *			
+					<subtitle>Loaded from Keys tab.csv (in TSV mode). If you chose redaction then note column with X:</subtitle>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>test4</dbtable>
+						<dbcolumn>id</dbcolumn>
+					</param>  
+					<query>SELECT *	
 						FROM "TestCSV"."test4"
 					</query>
 				</subselect>
 			</screen>
-			
+
 		</screens>
 	</database>
 </dbDIPview>
