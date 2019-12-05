@@ -1,5 +1,5 @@
 VERSION	2019-12-01
 COMMENT	TestAndDemo4, tables are created from a SIARD file!
-SCHEMA	"HR members"
+SCHEMA	HR members
 #table columns: 	table	file	format	date_format	delimiter	encoding	header
 TABLE	"HR members"."HR employees"	HRemployees.csv	CSV	YMD	,	UTF8	n
