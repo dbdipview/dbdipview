@@ -38,7 +38,7 @@
 				<param>
 					<name>Employee name</name>
 					<dbtable>HR employees</dbtable>
-					<dbcolumn>"Employee Name</dbcolumn>
+					<dbcolumn>Employee Name</dbcolumn>
 					<type>textlike</type>
 				</param>
 				<query>SELECT 
