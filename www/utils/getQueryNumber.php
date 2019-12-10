@@ -15,13 +15,13 @@ function get_bool($value){
 
 
 function getQueryNumber() { 
-global $xml;
+global $xml, $MSGSW22_REPORTS;
 
 ?>
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' >      
 <table border = 1>
 <tr>
-	<td><center><h4>Izbira izpisa</h4></center>
+	<td><center><h4><?php echo $MSGSW22_REPORTS; ?></h4></center>
 	</td>
 </tr>
 

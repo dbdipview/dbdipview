@@ -99,7 +99,7 @@ function fillCreateQuery() {
 global $xml;
 global $targetQueryNum;
 global $PARAMS;
-global $MSGSW12_HitsOnPage, $MSGSW13_PreviousPage, $MSGSW14_NextPage, $MSGSW15_Close;
+global $MSGSW12_HitsOnPage, $MSGSW13_PreviousPage, $MSGSW14_NextPage, $MSGSW23_PAGE, $MSGSW15_Close;
 global $MSGSW18_ReportDescription;
 
 $paramForwardNum = array();
@@ -578,7 +578,7 @@ foreach ( $PARAMS as $key=>$value ){
 	if ( gettype( $value ) != "array" ){
 		if($key == "__page") {
 			if($sqindex == 0)    //do not show on a page with subqueires
-				echo "Stran: $page";
+				echo "$MSGSW23_PAGE: $page";
 			$page_next = $page + 1;
 			if ($page > 0) 
 				$page_previous = $page - 1;
