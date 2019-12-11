@@ -63,7 +63,7 @@
 				<selectDescription>A hidden report, only called from another report, with parameter; use of parameter in subselect reports</selectDescription>
 				<title>Note, this report was not in the list of reports</title>   
 				<subtitle/>   
-				<param>
+				<param mandatory="1">
 					<name>ID</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>Id</dbcolumn>
@@ -161,7 +161,7 @@
 				<id>4</id>
 				<selectDescription>Use of SELECT, example 1</selectDescription>
 				<title>Example 1</title>   
-				<subtitle>Use of dropdown selection with values from a SELECT</subtitle>   
+				<subtitle>Use of dropdown selection with values from a SELECT; compare SQL code with Example 2 below</subtitle>   
 				<param>
 					<name>Department</name>
 					<dbtable>Departments</dbtable>
@@ -188,8 +188,8 @@
 				<id>5</id>
 				<selectDescription>Use of SELECT, example 2</selectDescription>
 				<title>Example 2</title>   
-				<subtitle>Use of dropdown selection, see alias</subtitle>   
-				<param>
+				<subtitle>Mandatory parameter; use of dropdown selection; use of SQL alias in the query</subtitle>   
+				<param  mandatory="1">
 					<name>Department</name>
 					<dbtable>dE</dbtable>
 					<dbcolumn>Id</dbcolumn>

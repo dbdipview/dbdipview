@@ -3,7 +3,7 @@
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
            vc:minVersion="2.0">
-	<!-- dbDIPview schema for queries.xml, 2019-11-21-->
+	<!-- dbDIPview schema for queries.xml, 2019-12-10 -->
 	<xs:complexType name="revisions">
 		<xs:sequence>
 			<xs:element name="revision" type="revision" minOccurs="0" maxOccurs="unbounded" />
@@ -141,6 +141,7 @@
 			<xs:element name="forwardToSubqueryName" type="xs:string" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 		<xs:attribute name="skipNewLine" type="xs:boolean" use="optional" />
+		<xs:attribute name="mandatory"   type="xs:boolean" use="optional" />
 		<xs:attribute name="size"        type="xs:integer" use="optional" />
 		<xs:attribute name="hr"          type="xs:boolean" use="optional" />
 	</xs:complexType>
