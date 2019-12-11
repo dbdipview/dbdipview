@@ -99,22 +99,23 @@ function fillCreateQuery() {
 global $xml;
 global $targetQueryNum;
 global $PARAMS;
-global $MSGSW12_HitsOnPage, $MSGSW13_PreviousPage, $MSGSW14_NextPage, $MSGSW23_PAGE, $MSGSW15_Close;
-global $MSGSW18_ReportDescription;
+global $MSGSW12_HitsOnPage, $MSGSW13_PreviousPage, $MSGSW14_NextPage, $MSGSW15_Close;
+global $MSGSW18_ReportDescription, $MSGSW23_PAGE, $MSGSW24_NOPARAMETER;
 
 $paramForwardNum = array();
 
 foreach ($xml->database->screens->screen as $screen) {
-	$where="";
+	$where = "";
+	$mandatory = "";
 	$attrSkipCSVsave = false;
-	$f_ahrefs=false;
-	$ahref_columns=array();
+	$f_ahrefs = false;
+	$ahref_columns = array();
 	
-	$f_images=false;
-	$images_image_style=array();
+	$f_images = false;
+	$images_image_style = array();
 	
-	$f_blobs=false;
-	$blob_columns=array();
+	$f_blobs = false;
+	$blob_columns = array();
 
 	$f_links_to_next_screen=false;
 	$linknextscreen_columns=array();
@@ -124,6 +125,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		$subTitle=$screen->subtitle;
 		foreach ($screen->param as $param) {
 
+			$attrParamMandatory = get_bool($param->attributes()->mandatory);
 			$field=            $param->dbtable.TABLECOLUMN.$param->dbcolumn;                  //cities.id -> cities_id
 			$fieldType=        $param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
 			$fieldParamForward=$param->forwardToSubqueryName;                                 //to be used in subquery
@@ -135,13 +137,20 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			foreach($_GET as $key => $value){
 				$x=$field . $param->type;
-				if(0 == strcmp($key, $field . $param->type)) 
-					if(!empty($value)) {
+				if(0 == strcmp($key, $field . $param->type)) {
+					if(empty($value)) {
+						if($attrParamMandatory)
+							if( empty($mandatory) )
+								$mandatory = $param->name;
+							else
+								$mandatory .= ", " . $param->name;
+					} else {
 						if(is_array($value)) 
 							debug("&nbsp;&nbsp;" . $key . ": " . $value[0] . "...\r\n");
 						else
 							debug("&nbsp;&nbsp;" . $key . ": " . $value . "\r\n");
 					}
+				}
 			}
 			
 			$quote=QUOTE_WHERE;   //since postgresql 8.4 no more '';
@@ -228,6 +237,11 @@ foreach ($xml->database->screens->screen as $screen) {
 			else
 				debug("fillCreateQuery: param field NOT SET: $field");
 		} //for each param
+
+		if( !empty($mandatory) ) {
+			echo "$MSGSW24_NOPARAMETER: " . $mandatory;
+			return;
+		}
 
 		//----------------------
 		foreach ($screen->ahrefs as $ahrefs) {
