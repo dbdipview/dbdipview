@@ -101,7 +101,7 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 }
 
 
-$options = getopt("hoesp:da");
+$options = getopt("hoesp:r:da");
 if ( count($options) == 0 || array_key_exists('h', $options) ||
     (count($options) == 1 && array_key_exists('d', $options)) ) {
 	echo "Usage: php menu.php [OPTIONS]" . PHP_EOL;
@@ -109,7 +109,8 @@ if ( count($options) == 0 || array_key_exists('h', $options) ||
 	echo "   -o         order workflow" . PHP_EOL;
 	echo "   -e         extended DDV package workflow" . PHP_EOL;
 	echo "   -s         SIARD workflow" . PHP_EOL;
-	echo "   -p <file>  deploy an order XML file" . PHP_EOL;
+	echo "   -p <file>  deploy an order" . PHP_EOL;
+	echo "   -r <file>  remove an order" . PHP_EOL;
 	echo "   -d         debug mode" . PHP_EOL;
 	echo "   -a         show all options" . PHP_EOL;
 	exit;
@@ -140,12 +141,16 @@ if (array_key_exists('d', $options))
 if (array_key_exists('p', $options)) {
 	$name = "";
 	$file = $options['p'];
-	// if (!file_exists($file)) {
-		// err_msg($MSG17_FILE_NOT_FOUND . ":", $file);
-		// exit(1);
-	// }
 	if ($OK == actions_Order_read($name, $file, $orderInfo))
 		actions_Order_process($orderInfo);
+	exit(0);
+}
+
+if (array_key_exists('r', $options)) {
+	$name = "";
+	$file = $options['r'];
+	if ($OK == actions_Order_read($name, $file, $orderInfo))
+		actions_Order_remove($orderInfo);
 	exit(0);
 }
 
