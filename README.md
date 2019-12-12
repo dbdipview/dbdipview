@@ -19,8 +19,7 @@ If this is a topic of your interest, you are probably already familiar with some
 * Browser access for users (selection of a desired database and schema, execution of the available queries)
 
 ## Versioning
-For the archiving purpose, backward compatibility needs to be maintained at least on the level of XML schema.
+The master tree is a stable version. No versions are defined at the current state.
 
 ## Authors
-
 * Boris Domajnko - *Initial work and maintenance*, [Archives of the Republic of Slovenia](http://www.arhiv.gov.si/en/)
