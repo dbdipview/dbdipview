@@ -19,7 +19,7 @@ If this is a topic of your interest, you are probably already familiar with some
 * Browser access for users (selection of a desired database and schema, execution of the available queries)
 
 ## Versioning
-The master tree is a stable version. No versions are defined at the current state.
+The master tree is a stable version. No specific version numbers are used for the time being. To upgrade to the latest version with new functionality from the master branch, unpack the zip file over the current installation. In this way, your configuration files will remain unchanged.
 
 ## Authors
 * Boris Domajnko - *Initial work and maintenance*, [Archives of the Republic of Slovenia](http://www.arhiv.gov.si/en/)
