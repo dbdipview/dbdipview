@@ -3,7 +3,7 @@
 	<reference>TEST TD/3</reference>
 	<title>Test and demo for two SIARD packages and their related DDV viewer (TestAndDemo3)</title>
 	<dbcontainer redact="0">DBC3</dbcontainer>
-	<siards>
+	<siards tool="DBPTK">
 		<siard>TestAndDemo3_A.siard</siard>
 		<siard>TestAndDemo3_B.siard</siard>
 	</siards>

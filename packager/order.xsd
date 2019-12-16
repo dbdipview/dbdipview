@@ -35,6 +35,14 @@
             <xs:sequence>
               <xs:element maxOccurs="unbounded" name="siard" type="xs:string" />
             </xs:sequence>
+            <xs:attribute name="tool" use="optional">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="DBPTK" />
+                  <xs:enumeration value="SIARDSUITE" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
           </xs:complexType>
         </xs:element>
 

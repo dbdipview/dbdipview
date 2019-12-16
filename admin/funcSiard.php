@@ -1,22 +1,54 @@
 <?php
 
 
-function installSIARD($database, $siardfile) {
-	global $MSG17_FILE_NOT_FOUND;
-	global $DBADMINUSER, $DBADMINPASS, $JAR, $JAVA;
-	global $MEM, $DBTYPE, $HOST;
+function installSIARD($database, $siardfile, $tool) {
+	global $MSG17_FILE_NOT_FOUND, $MSG48_NOTCONFIGURED;
+	global $DBADMINUSER, $DBADMINPASS, $DBPTKJAR, $SIARDSUITECMDJAR, $JAVA;
+	global $MEM, $HOST, $DBTYPE, $DBPORT;
 	
 	$ENCODING = "-Dfile.encoding=UTF-8";
 	$SIARDUSER = $DBADMINUSER;
 	$SIARDPASS = $DBADMINPASS;
-
-	if (!file_exists($JAR)) {
-		err_msg($MSG17_FILE_NOT_FOUND, $JAR);
+	
+	if ( empty($HOST) ) {
+		err_msg("HOST " . $MSG48_NOTCONFIGURED . " configa.txt, configa.txt.template");
 		return(false);
 	}
-	debug(   "$JAVA $MEM $ENCODING -jar $JAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn 5432 -i siard-2 -if $siardfile");
-	passthru("$JAVA $MEM $ENCODING -jar $JAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn 5432 -i siard-2 -if $siardfile");
-	return(true);
+	if ( empty($DBTYPE) ) {
+		err_msg("DBTYPE " . $MSG48_NOTCONFIGURED . " configa.txt, configa.txt.template");
+		return(false);
+	}
+	if ( empty($DBPORT) ) {
+		err_msg("DBPORT " . $MSG48_NOTCONFIGURED . " configa.txt, configa.txt.template");
+		return(false);
+	}
+
+	if( $tool == "DBPTK" ) {
+		if ( empty($DBPTKJAR) ) {
+			err_msg("DBPTKJAR " . $MSG48_NOTCONFIGURED . " configa.txt, configa.txt.template");
+			return(false);
+		}
+		if ( !file_exists($DBPTKJAR) ) {
+			err_msg($MSG17_FILE_NOT_FOUND . "DBPTKJAR=", $DBPTKJAR);
+			return(false);
+		}
+		debug(   "$JAVA $MEM $ENCODING -jar $DBPTKJAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn $DBPORT -i siard-2 -if $siardfile");
+		passthru("$JAVA $MEM $ENCODING -jar $DBPTKJAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn $DBPORT -i siard-2 -if $siardfile");
+		return(true);
+	} else {
+		if ( empty($SIARDSUITECMDJAR) ) {
+			err_msg("SIARDSUITECMDJAR " . $MSG48_NOTCONFIGURED . " configa.txt, configa.txt.template");
+			return(false);
+		}
+		if ( !file_exists($SIARDSUITECMDJAR) ) {
+			err_msg($MSG17_FILE_NOT_FOUND . " SIARDSUITECMDJAR=" . $SIARDSUITECMDJAR);
+			return(false);
+		}
+		$JDBC="jdbc:" . $DBTYPE . "://" . $HOST . ":" . $DBPORT . "/" . $database;  //postgresql
+		debug(   "java -cp $SIARDSUITECMDJAR ch.admin.bar.siard2.cmd.SiardToDb -l=10 -s=$siardfile -j=$JDBC -u=$DBADMINUSER -p=$DBADMINPASS ");
+		passthru("java -cp $SIARDSUITECMDJAR ch.admin.bar.siard2.cmd.SiardToDb -l=10 -s=$siardfile -j=$JDBC -u=$DBADMINUSER -p=$DBADMINPASS ");
+		return(true);
+	}
 }
 
 

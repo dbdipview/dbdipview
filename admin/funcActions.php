@@ -15,6 +15,7 @@
  * @return $ddv    Last in a row ddv in XML file
  */
 function get_last_ddv($orderInfo) {
+	$ddv="";
 	if ( isset($orderInfo['ddvFile'] ) && $orderInfo['ddvFile'] != "" ) {
 		$file = $orderInfo['ddvFile'];             //filename.zip
 		$ddv = substr($file, 0, -4);               //filename  w/o .zip
@@ -102,7 +103,7 @@ function actions_Order_process($orderInfo) {
 	debug(__FUNCTION__ . ": install SIARD...");
 	foreach ($orderInfo['siardFiles'] as $file) {
 		$siardFile = $DDV_DIR_PACKED . $file; 
-		actions_SIARD_install($siardFile);
+		actions_SIARD_install($siardFile, $orderInfo['siardTool']);
 		$fsiard = true;
 	}
 
@@ -515,15 +516,18 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
  *
  * @return $OK or $NOK    
  */
-function actions_SIARD_install($siardFile) {
+function actions_SIARD_install($siardFile, $tool) {
 	global $MSG29_EXECUTING;
-	global $DBC;
+	global $DBC, $SIARDTOOLDEFAULT;
 	global $OK, $NOK;
 
 	$ret = $NOK;
 
-	msgCyan($MSG29_EXECUTING . " " .  basename($siardFile) . "...");
-	if (installSIARD($DBC, $siardFile)) {
+	if ( empty($tool) )
+		$tool = $SIARDTOOLDEFAULT;
+		
+	msgCyan($MSG29_EXECUTING . " " .  basename($siardFile) . " ($tool) ...");
+	if (installSIARD($DBC, $siardFile, $tool)) {
 		$ret = $OK;
 	}
 	return($ret);

@@ -14,10 +14,19 @@ function getbool($value){
  * 
  */
 function loadOrder($xmlinput) {
-	
+	global $PROGDIR, $MSG35_CHECKXML;
 	$asiardfiles = array();
+	$siardTool="";
 	$aextfiles = array();
 	
+	debug(__FUNCTION__ . "...");
+
+	$schema = "$PROGDIR/../packager/order.xsd";
+	msgCyan($MSG35_CHECKXML . "...");
+	msg_red_on();
+	validateXML($xmlinput, $schema);
+	msg_colour_reset();
+
 	$xml=simplexml_load_file($xmlinput);
 
 	$orderInfo['order'] =     "" . $xml->order;
@@ -26,19 +35,25 @@ function loadOrder($xmlinput) {
 	$orderInfo['dbc'] =       "" . $xml->dbcontainer;
 	$orderInfo['redact'] =    "" . getbool($xml->dbcontainer->attributes()->redact);
 	
-	if(isset    ($xml->siards)) 
+	if(isset ($xml->siards)) {
+
+		$siardTool = $xml->siards->attributes()->tool;
+		debug(__FUNCTION__ . ": siardTool=" . $siardTool);
+
 		foreach ($xml->siards->siard as $s) {
 			if ( !empty($s) ) {
-				debug("siard=" . $s);
+				debug(__FUNCTION__ . ": siard=" . $s);
 				array_push($asiardfiles, $s);
 			}
 		}
+	}
 	$orderInfo['siardFiles'] = $asiardfiles;
+	$orderInfo['siardTool'] = $siardTool;
 	
 	if(isset    ($xml->viewers_extended)) 
 		foreach ($xml->viewers_extended->viewer_extended as $v) {
 			if ( !empty($v) ) {
-				debug("viewer_extended=" . $v);
+				debug(__FUNCTION__ . ": viewer_extended=" . $v);
 				array_push($aextfiles, $v);
 			}
 		}
