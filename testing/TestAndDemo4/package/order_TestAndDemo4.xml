@@ -3,7 +3,7 @@
 	<reference>TEST TD/4</reference>
 	<title>(REDACTED) Test and demo for a SIARD package with tables structure and EXT DDV package with table data and a viewer (TestAndDemo4)</title>
 	<dbcontainer redact="1">DBC4</dbcontainer>
-	<siards>
+	<siards tool="DBPTK">
 		<siard>TestAndDemo4.siard</siard>
 	</siards>
 	<viewers_extended>

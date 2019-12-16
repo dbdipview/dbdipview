@@ -51,7 +51,7 @@ $DDV_DIR_UNPACKED = str_replace("admin/../", "", "$DDV_DIR_UNPACKED");
 $BFILES_DIR       = str_replace("admin/../", "", "$BFILES_DIR");
 
 $XB=' ';$XC=' ';$XD=' ';$X0=' ';$X1=' ';$X2=' ';
-$XP=' ';$XS=' ';
+$XP=' ';$XS=' ';$XT=' ';
 $X3=' ';$X5=' ';$X6=' ';$X7=' ';$X8=' ';$X9=' ';
 $XOS=' ';$XOI=' ';$XOD=' ';
 $V1=' ';$V2=' ';$V3=' ';$V4=' ';
@@ -135,8 +135,10 @@ if (array_key_exists('a', $options))
 else
 	$a = "";
 
-if (array_key_exists('d', $options))
+if (array_key_exists('d', $options)) {
 	$debug = true;
+	debug("debug mode");
+}
 
 if (array_key_exists('p', $options)) {
 	$name = "";
@@ -182,8 +184,10 @@ while ( "$answer" != "q" ) {
 	}
 	if(!empty($all) || !empty($srd))  {
 					echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
-					if(!empty($SIARDNAME))
-						echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD [$SIARDNAME]" . PHP_EOL;
+					if(!empty($SIARDNAME)) {
+						echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD - SIARD Suite [$SIARDNAME]" . PHP_EOL;
+						echo "${XT}t  (SIARD) $MSGS_INSTALLSIARD - DBPTK [$SIARDNAME]" . PHP_EOL;
+					}
 					//echo "${X3}3  (SIARD) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
 	}
 	if(!empty($all) || empty($om))  {
@@ -223,7 +227,7 @@ while ( "$answer" != "q" ) {
 				echo "DDV="                  . $DDV . PHP_EOL;
 				echo "PACKAGEFILE="          . $PACKAGEFILE . PHP_EOL;
 				echo "PKGFILEPATH="          . $PKGFILEPATH . PHP_EOL;
-			
+				echo "SIARDTOOLDEFAULT="     . $SIARDTOOLDEFAULT . PHP_EOL;
 				config_list();
 				
 				msgCyan("Current package in SERVERCONFIGJSON" . ":");
@@ -433,8 +437,6 @@ while ( "$answer" != "q" ) {
 				$XP = ' ';
 				$SIARDNAME = "";
 				$SIARDFILE = "";
-				enter();
-				break;
 			} else {
 				$XP = 'X';$XS=' ';
 				$SIARDNAME = $name;
@@ -447,13 +449,29 @@ while ( "$answer" != "q" ) {
 				echo "   SIARD->description: $text" . PHP_EOL;
 				$text = get_SIARD_header_element($SIARDFILE, "lobFolder");
 				echo "   SIARD->lobFolder:   $text" . PHP_EOL;
-
-				if (stopHere($MSGS_INSTALLSIARD)) {
-					enter();
-					break;
-				}
 			}
+			enter();
+			break;
 
+		case "t": $XT=' ';
+			if (notSet($DBC))
+				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
+			else if (notSet($DDV))
+				err_msg($MSG18_DDV_NOT_SELECTED);
+			else if ( !is_dir($DDV_DIR_EXTRACTED))
+				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
+			else if ( !file_exists($LISTFILE))
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
+			else if ( !file_exists($SIARDFILE))
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $SIARDFILE);
+			else if (!isAtype($SIARDFILE, "siard")) 
+				err_msg($MSG42_NOTSIARD . ":", $SIARDFILE);
+			else if ($OK == actions_SIARD_install($SIARDFILE, "DBPTK")) {
+				actions_SIARD_grant($LISTFILE);
+				$XT='X';
+			}
+			enter();
+			break;
 		case "s": $XS=' ';
 			if (notSet($DBC))
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
@@ -467,7 +485,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $SIARDFILE);
 			else if (!isAtype($SIARDFILE, "siard")) 
 				err_msg($MSG42_NOTSIARD . ":", $SIARDFILE);
-			else if ($OK == actions_SIARD_install($SIARDFILE)) {
+			else if ($OK == actions_SIARD_install($SIARDFILE, "SIARDSUITE")) {
 				actions_SIARD_grant($LISTFILE);
 				$XS='X';
 			}
