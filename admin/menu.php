@@ -166,23 +166,25 @@ while ( "$answer" != "q" ) {
 	}
 	if(!empty($all) || empty($om))  {
 					echo "${XD}d  $MSGR_SELECT_DB" . PHP_EOL;
+	}
+	if(!empty($all) || $XD == 'X')  {
 					echo "${X0}0  $MSG0_CREATEDB [$DBC]" . PHP_EOL;
 	}
-	if(!empty($all) || !empty($ext)) {
+	if(!empty($all) || ($XD == 'X' && !empty($ext))) {
 					echo "${V1}V1 (EXT) $MSG1_SELECTPKG" . PHP_EOL;
-					if(!empty($DDV)) {
+	}
+	if(!empty($all) || $V1 == 'X') {
 						echo "${V2}V2 (EXT) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 						echo "${V3}V3 (EXT) $MSG4_CREATEAPL" . PHP_EOL;
 						echo "${V4}V4 (EXT) $MSG5_MOVEDATA" . PHP_EOL;
-					}
 	}
-	if(!empty($all) || empty($om))
+	if(!empty($all) || $XD == 'X')
 					echo "${X1}1  (DDV) $MSG1_SELECTPKG" . PHP_EOL;
 	if(!empty($all) || ($X1 == 'X')) {
 					echo "${X2}2  (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 					//echo "${X2}2o (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 	}
-	if(!empty($all) || !empty($srd))  {
+	if(!empty($all) || (!empty($srd) && $XD == 'X'))  {
 					echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
 					if(!empty($SIARDNAME)) {
 						echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD - SIARD Suite [$SIARDNAME]" . PHP_EOL;
@@ -190,16 +192,18 @@ while ( "$answer" != "q" ) {
 					}
 					//echo "${X3}3  (SIARD) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
 	}
-	if(!empty($all) || empty($om))  {
+	if(!empty($all) || ($XD == 'X' && !empty($DDV) ))  {
 					echo "${X5}5  $MSG46_REDACT [$DBC][$DDV] " . PHP_EOL;
-	}
-	if(!empty($all) || empty($om))  {
 					echo "${X6}6  $MSG6_ACTIVATEDIP [$DBC][$DDV] " . PHP_EOL;
-	}
-	if(!empty($all) || empty($om))  {
 					echo "${X7}7  $MSG7_DEACTAPL [$DBC][$DDV]" . PHP_EOL;
+	}
+	if(!empty($all) || (empty($om) && !empty($DDV)) ) {
 					echo "${X8}8  $MSG8_RM_UNPACKED_DDV [$DDV]" . PHP_EOL;
+	}
+	if(!empty($all) || (empty($om) && !empty($DDV)) ) {
 					echo "${X9}9  $MSG9_RMDDV" . PHP_EOL;
+	}
+	if(!empty($all) || $XD == 'X')  {
 					echo "${XB}B  $MSGB_RMDB [$DBC]" . PHP_EOL;
 	}
 	if($debug)		echo " debug  toggle debug" . PHP_EOL;
@@ -438,17 +442,26 @@ while ( "$answer" != "q" ) {
 				$SIARDNAME = "";
 				$SIARDFILE = "";
 			} else {
-				$XP = 'X';$XS=' ';
+				$XP = 'X';$XS=' ';$XT=' ';
 				$SIARDNAME = $name;
 				$SIARDFILE = $DDV_DIR_PACKED . $file; 
 				echo $SIARDNAME . PHP_EOL;
 
 				$text = get_SIARD_header_element($SIARDFILE, "dbname");
-				echo "   SIARD->dbname:      $text" . PHP_EOL;
+				if(!empty($text))
+					echo "   SIARD->dbname:              " . $text . PHP_EOL;
+
 				$text = get_SIARD_header_element($SIARDFILE, "description");
-				echo "   SIARD->description: $text" . PHP_EOL;
+				if(!empty($text))
+					echo "   SIARD->description:         " . $text . PHP_EOL;
+
+				$text = get_SIARD_header_element($SIARDFILE, "producerApplication");
+				if(!empty($text))
+					echo "   SIARD->producerApplication: " . $text . PHP_EOL;
+
 				$text = get_SIARD_header_element($SIARDFILE, "lobFolder");
-				echo "   SIARD->lobFolder:   $text" . PHP_EOL;
+				if(!empty($text))
+					echo "   SIARD->lobFolder:           " . $text . PHP_EOL;
 			}
 			enter();
 			break;

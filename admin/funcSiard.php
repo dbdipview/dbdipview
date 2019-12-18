@@ -53,12 +53,12 @@ function installSIARD($database, $siardfile, $tool) {
 
 
 /**
- * Get a value of a siard header element in header\metadata.xml
+ * Get a value of a siard header element in header/metadata.xml
  */
 function get_SIARD_header_element($path, $xml_element) {
-	$xmlstart="<" . $xml_element . ">";
-	$xmlend= "</" . $xml_element . ">";
-	$text="error";
+	$xmlstart = "<" . $xml_element . ">";
+	$xmlend = "</" . $xml_element . ">";
+	$text = "";
 
 	$zip = zip_open($path);
 	if (is_resource($zip)) {
@@ -72,11 +72,13 @@ function get_SIARD_header_element($path, $xml_element) {
 		$text_open_pos  = strpos($entry_content, $xmlstart);
 		$text_close_pos = strpos($entry_content, $xmlend, $text_open_pos);
 
-		$text = substr(
-			$entry_content,
-			$text_open_pos + strlen($xmlstart),
-			$text_close_pos - ($text_open_pos + strlen($xmlstart))
-		);
+		if(!empty($text_open_pos)) {
+			 $text = substr(
+					 $entry_content,
+					 $text_open_pos + strlen($xmlstart),
+					 $text_close_pos - ($text_open_pos + strlen($xmlstart))
+			 );
+		}
 
 		zip_entry_close($entry);
 		zip_close($zip);
