@@ -517,6 +517,31 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 }
 
 
+
+/**
+ * In the menu mode, read the queries.xml file to get default values for activation
+ *
+ */
+function actions_DDV_getInfo(&$orderInfo) {
+	global $DDV_DIR_EXTRACTED;
+	$xmlFile = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
+	if (file_exists($xmlFile)) {
+		$xml = simplexml_load_file($xmlFile);
+		$orderInfo['title'] =     $xml->database->name;
+		$orderInfo['reference'] = $xml->database->ref_number;
+	}
+}
+
+function actions_DDV_showInfo() {
+	global $DDV_DIR_EXTRACTED;
+	$xmlFile = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
+	if (file_exists($xmlFile)) {
+		$xml = simplexml_load_file($xmlFile);
+		echo "   DDV->name:      " . $xml->database->name . PHP_EOL;
+		echo "   DDV->reference: " . $xml->database->ref_number . PHP_EOL;
+	}
+}
+
 /**
  * Export a SIARD package contents to a database
  *
