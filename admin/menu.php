@@ -4,13 +4,16 @@
  * menu.php
  *
  * Administration tool for dbDIPview.
- * Interactive menu allows user to install or deinstall packages and check the status.
- * Folder names are configured in configa.txt.
+ * Allows user to install or deinstall packages and check the status.
+ *
+ * Order processing can be done via CLI.
+ * Mostly for testing of new packages, interactive menu can be used where the
+ * displaying of menu options depends on the context.
  *
  * @author     Boris Domajnko
  */
 
-$PROGDIR=__DIR__;  //getcwd();  //`pwd` , e.g. /home/dbdipview/admin
+$PROGDIR=__DIR__;  //e.g. /home/me/dbdipview/admin
 
 set_include_path($PROGDIR);
 
@@ -157,54 +160,56 @@ if (array_key_exists('r', $options)) {
 while ( "$answer" != "q" ) { 
 					echo "$TXT_CYAN $MSG_TITLE $TXT_RESET" . PHP_EOL;
 					echo "${XC}c  $MSG0_LISTDIRS" . PHP_EOL;
-	if(!empty($all) || !empty($om))  {
+	if ( !empty($all) || !empty($om) )  {
 					echo "${XOS}os ($MSGO_ORDER) $MSGO_SELECT" . PHP_EOL;
 					echo "${XOI}oi ($MSGO_ORDER) $MSGO_DEPLOY [$ORDER]" . PHP_EOL;
 					echo "${XOD}od ($MSGO_ORDER) $MSGO_DELETE [$ORDER]" . PHP_EOL;
 	}
-	if(!empty($all) || empty($om))  {
+	if ( !empty($all) || empty($om) )  {
 					echo "${XD}d  $MSGR_SELECT_DB" . PHP_EOL;
 	}
-	if(!empty($all) || $XD == 'X')  {
+	if ( !empty($all) || $XD == 'X' )  {
 					echo "${X0}0  $MSG0_CREATEDB [$DBC]" . PHP_EOL;
 	}
-	if(!empty($all) || ($XD == 'X' && !empty($ext))) {
+	if ( !empty($all) || ($XD == 'X' && !empty($ext)) ) {
 					echo "${V1}V1 (EXT) $MSG1_SELECTPKG" . PHP_EOL;
 	}
-	if(!empty($all) || $V1 == 'X') {
-						echo "${V2}V2 (EXT) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
-						echo "${V3}V3 (EXT) $MSG4_CREATEAPL" . PHP_EOL;
-						echo "${V4}V4 (EXT) $MSG5_MOVEDATA" . PHP_EOL;
+	if ( !empty($all) || $V1 == 'X' ) {
+					echo "${V2}V2 (EXT) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
+					echo "${V3}V3 (EXT) $MSG4_CREATEAPL" . PHP_EOL;
+					echo "${V4}V4 (EXT) $MSG5_MOVEDATA" . PHP_EOL;
 	}
-	if(!empty($all) || $XD == 'X')
+	if ( !empty($all) || $XD == 'X' )
 					echo "${X1}1  (DDV) $MSG1_SELECTPKG" . PHP_EOL;
-	if(!empty($all) || ($X1 == 'X')) {
+	if ( !empty($all) || ($X1 == 'X')) {
 					echo "${X2}2  (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 					//echo "${X2}2o (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 	}
-	if(!empty($all) || (!empty($srd) && $XD == 'X'))  {
+	if ( !empty($all) || (!empty($srd) && $XD == 'X') )  {
 					echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
-					if(!empty($SIARDNAME)) {
+					if( !empty($SIARDNAME) ) {
 						echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD - SIARD Suite [$SIARDNAME]" . PHP_EOL;
 						echo "${XT}t  (SIARD) $MSGS_INSTALLSIARD - DBPTK [$SIARDNAME]" . PHP_EOL;
 					}
 					//echo "${X3}3  (SIARD) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
 	}
-	if(!empty($all) || ($XD == 'X' && !empty($DDV) ))  {
-					echo "${X5}5  $MSG46_REDACT [$DBC][$DDV] " . PHP_EOL;
+	if ( !empty($all) || ($XD == 'X' && !empty($DDV)) )  {
+					if ( file_exists($DDV_DIR_EXTRACTED . "/metadata/redactdb.sql") )
+						echo "${X5}5  $MSG46_REDACT [$DBC][$DDV] " . PHP_EOL;
 					echo "${X6}6  $MSG6_ACTIVATEDIP [$DBC][$DDV] " . PHP_EOL;
 					echo "${X7}7  $MSG7_DEACTAPL [$DBC][$DDV]" . PHP_EOL;
 	}
-	if(!empty($all) || (empty($om) && !empty($DDV)) ) {
+	if ( !empty($all) || (empty($om) && !empty($DDV)) ) {
 					echo "${X8}8  $MSG8_RM_UNPACKED_DDV [$DDV]" . PHP_EOL;
 	}
-	if(!empty($all) || (empty($om) && !empty($DDV)) ) {
+	if ( !empty($all) || (empty($om) && !empty($DDV)) ) {
 					echo "${X9}9  $MSG9_RMDDV" . PHP_EOL;
 	}
-	if(!empty($all) || $XD == 'X')  {
+	if ( !empty($all) || $XD == 'X' )  {
 					echo "${XB}B  $MSGB_RMDB [$DBC]" . PHP_EOL;
 	}
-	if($debug)		echo " debug  toggle debug" . PHP_EOL;
+	if ( !empty($all) || $debug )
+					echo " debug  toggle debug" . PHP_EOL;
 					echo " q  $MSG_EXIT" . PHP_EOL;
 					echo "$MSG_CMD";
 	$answer = fgets($handleKbd);
@@ -271,14 +276,14 @@ while ( "$answer" != "q" ) {
             break;
 
 		case "oi": 
-			if($XOS == 'X') {
+			if ($XOS == 'X') {
 				actions_Order_process($orderInfo);
 				$XOI='X';
 			}
 			break;
 			
 		case "od": 
-			if($XOS == 'X') {
+			if ($XOS == 'X') {
 				actions_Order_remove($orderInfo);
 				$XOD='X';
 			}
@@ -337,6 +342,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG13_DDV_FOLDER_EXISTS . ":", $DDV);
 				$V2='X';
 			} else if ($OK == actions_DDVEXT_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED)) {
+				actions_DDV_showInfo();
 				$V2='X';
 			}
 			enter();
@@ -425,6 +431,7 @@ while ( "$answer" != "q" ) {
 			else if (!file_exists($PKGFILEPATH))
 				err_msg($MSG12_ERR_DDV_NOT_AVAILABLE . ":", $PKGFILEPATH);
 			else if ($OK == actions_DDV_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED)) {
+				actions_DDV_showInfo();
 				$X2='X';
 			}
 			
@@ -446,19 +453,19 @@ while ( "$answer" != "q" ) {
 				echo $SIARDNAME . PHP_EOL;
 
 				$text = get_SIARD_header_element($SIARDFILE, "dbname");
-				if(!empty($text))
+				if (!empty($text))
 					echo "   SIARD->dbname:              " . $text . PHP_EOL;
 
 				$text = get_SIARD_header_element($SIARDFILE, "description");
-				if(!empty($text))
+				if (!empty($text))
 					echo "   SIARD->description:         " . $text . PHP_EOL;
 
 				$text = get_SIARD_header_element($SIARDFILE, "producerApplication");
-				if(!empty($text))
+				if (!empty($text))
 					echo "   SIARD->producerApplication: " . $text . PHP_EOL;
 
 				$text = get_SIARD_header_element($SIARDFILE, "lobFolder");
-				if(!empty($text))
+				if (!empty($text))
 					echo "   SIARD->lobFolder:           " . $text . PHP_EOL;
 			}
 			enter();
@@ -516,7 +523,10 @@ while ( "$answer" != "q" ) {
 			break;
 
 		case "6": $X6=' ';
-			if ( empty($orderInfo['access']) )  {
+			if ( $X1 == 'X' || $V1 == 'X' )
+				actions_DDV_getInfo($orderInfo); //read defaults
+				
+			if ( $XOS == ' ' )  {
 				echo "$MSG3_ENABLEACCESS [public]:";
 				$answer = fgets($handleKbd);
 				$answer = trim($answer);
@@ -525,15 +535,15 @@ while ( "$answer" != "q" ) {
 				else
 					$orderInfo['access'] = $answer;
 			} 
-			if ( empty($orderInfo['reference']) )  {
-				echo "$MSGO_REF:";
+			if ( $XOS == ' ' )  {
+				echo "$MSGO_REF [" . $orderInfo['reference'] . "]:";
 				$answer = fgets($handleKbd);
 				$answer = trim($answer);
 				if ( !empty($answer) )
 					$orderInfo['reference'] = $answer;
 			}
-			if ( empty($orderInfo['title']) )  {
-				echo "$MSGO_TITLE:";
+			if ( $XOS == ' ' )  {
+				echo "$MSGO_TITLE [" . $orderInfo['title'] . "]:";
 				$answer = fgets($handleKbd);
 				$answer = trim($answer);
 				if ( !empty($answer) )
