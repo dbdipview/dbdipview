@@ -66,8 +66,6 @@ $PKGFILEPATH = "";
 $DDV = "";
 $DBC = "";
 
-//[ ! -x $PROGDIR/removeBOM ] && echo No executable $PROGDIR/removeBOM found. && exit -1
-
 $handleKbd = fopen ("php://stdin","r");
 $answer = "X";
 $rv = ''; //return value for passthru()

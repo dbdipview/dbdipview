@@ -379,8 +379,14 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 				debug("CSVMODE=" . $CSVMODE . "  DELIMITER=" . $DELIMITER . "  codeset:" . $CODESET);
 				
 				if ("$CODESET" == "UTF8BOM") { 
-					passthru("$PROGDIR/removeBOM $SRCFILE $SRCFILE" . "_noBOM");
-					$SRCFILE= $SRCFILE."_noBOM";
+					if( !is_executable("$PROGDIR/removeBOM") ){
+						err_msg("ERROR: $PROGDIR/removeBOM executable binary is needed. ");
+						err_msg("       Please create it with command: cc removeBOM.c -o removeBOM");
+						fclose($handleList);
+						return($NOK);
+					}
+					passthru("$PROGDIR/removeBOM $SRCFILE " . $SRCFILE . "_noBOM");
+					$SRCFILE =                                $SRCFILE . "_noBOM";
 				}
 				passthru("chmod o+r '$SRCFILE'");
 				if ( "$CSVMODE" == "CSV" ) {
