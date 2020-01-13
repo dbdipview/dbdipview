@@ -18,7 +18,7 @@
 				<id>5</id>
 				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
 				<title>TITLE: RC airplane pictures</title>   
-				<subtitle>SUBTITLE: Note use of images as thumbnails and as links to the files (results pane).
+				<subtitle>SUBTITLE: Images as thumbnails and as links to the files (see the results pane).
 				If a parameter Name is set, it is also propagated to the subselects.
 				</subtitle>
 				<param>
@@ -58,7 +58,7 @@
 				</images>
 				<subselect>
 					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>   
-					<subtitle>This is a simplified version of the previous report above. No forwarded parameters has been configured.</subtitle>
+					<subtitle>This is a simplified version of the previous report above. No forwarded parameters have been configured.</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>models</dbtable>
@@ -94,7 +94,7 @@
 				</query>
 			</screen>
 			
-			<screen skipCSVsave="1">
+			<screen skipCSVsave="0">
 				<id>7</id>
 				<selectDescription>Display tables that were loaded from sample CSV files. Test of redaction.</selectDescription>
 				<title>Test of table upload. These tables were uploaded from CSV files with 4 data lines.</title>   
@@ -135,7 +135,7 @@
 				</subselect>
 
 				<subselect>
-					<subtitle>Loaded from Keys tab.csv (in TSV mode). If you chose redaction then note column with X:</subtitle>
+					<subtitle>Loaded from Keys tab.csv (in TSV mode). If you chose redaction then the column is overwritten with X.</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>test4</dbtable>

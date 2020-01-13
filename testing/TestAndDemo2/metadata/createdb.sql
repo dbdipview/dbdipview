@@ -13,7 +13,8 @@ CREATE TABLE "TestCSV"."test1" (
    "val"    VARCHAR(1),
    "value"  VARCHAR(100),
    "dateX"  DATE,
-   "dateY"  TIMESTAMP
+   "dateY"  TIMESTAMP,
+   wingspan DECIMAL(7, 2)
 );
 
 CREATE TABLE "TestCSV"."test2" (
@@ -21,7 +22,8 @@ CREATE TABLE "TestCSV"."test2" (
    "val"    VARCHAR(1),
    "value"  VARCHAR(100),
    "dateX"  DATE,
-   "dateY"  TIMESTAMP
+   "dateY"  TIMESTAMP,
+   wingspan DECIMAL(7, 2)
 );
 
 CREATE TABLE "TestCSV"."test3" (
@@ -29,7 +31,8 @@ CREATE TABLE "TestCSV"."test3" (
    "val"    VARCHAR(1),
    "value"  VARCHAR(100),
    "dateX"  DATE,
-   "dateY"  TIMESTAMP
+   "dateY"  TIMESTAMP,
+   wingspan DECIMAL(7, 2)
 );
 
 CREATE TABLE "TestCSV"."test4" (
@@ -37,5 +40,6 @@ CREATE TABLE "TestCSV"."test4" (
    "val"    VARCHAR(1),
    "value"  VARCHAR(100),
    "dateX"  DATE,
-   "dateY"  TIMESTAMP
+   "dateY"  TIMESTAMP,
+   wingspan DECIMAL(7, 2)
 );
