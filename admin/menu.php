@@ -568,6 +568,7 @@ while ( "$answer" != "q" ) {
 				actions_access_off($DDV);
 				clearstatcache();
 				$X7='X';
+				$V3=' ';$V4=' ';   //for quick test cycle
 			}
 			enter();
 			break;
@@ -583,7 +584,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG38_SIARDNORM);
 			else {
 				actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
-				$X8='X';
+				$X8='X';$X2=' ';$V2=' ';
 			}
 			enter();
 			break;
