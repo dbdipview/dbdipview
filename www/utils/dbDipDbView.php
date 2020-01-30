@@ -10,6 +10,7 @@ function qRowToArray($query){
 	global $dbConn;
 	$result = pg_query($dbConn, $query );
 	if (!$result) {
+		debug(pg_last_error($dbConn));
 		return(array("ERROR: qRowToArray<br/>"));
 	}
 	return(pg_fetch_assoc($result)) ;
@@ -22,6 +23,7 @@ function qRowsToArray($query){
 	$outarray = array();
 	$result = pg_query($dbConn, $query );
 	if (!$result) {
+		debug(pg_last_error($dbConn));
 		return(array(array("ERROR: qRowsToArray<br/>")));
 	} else {
 		$rows = pg_num_rows($result);
@@ -43,6 +45,7 @@ function qColToArray($query){
 	$outarray = array();
 	$result = pg_query($dbConn, $query );
 	if (!$result) {
+		debug(pg_last_error($dbConn));
 		return(array("ERROR: qColToArray<br/>"));
 	} else {
 		$rows = pg_num_rows($result);
@@ -63,20 +66,20 @@ function qToValue($query){
 	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
 	$result = pg_query($dbConn, $query );
 	if (!$result) {
-		return("ERROR: qToValue<br/>");
-	}
-	
-	if (pg_num_rows($result) != 1) {//more than one row?
-		$rows = pg_num_rows($result);
-		for ($i = 0; $i < $rows; $i++) {
-			$row = pg_fetch_row($result, $i);
-			$output .= "$row[0]<br/>";   
-		}
+		$output = "ERROR: qToValue<br />";
+		debug(pg_last_error($dbConn));
 	} else {
-		$row = pg_fetch_row($result);
-		$output .= $row[0];   
+		if (pg_num_rows($result) != 1) {//more than one row?
+			$rows = pg_num_rows($result);
+			for ($i = 0; $i < $rows; $i++) {
+				$row = pg_fetch_row($result, $i);
+				$output .= "$row[0]<br/>";   
+			}
+		} else {
+			$row = pg_fetch_row($result);
+			$output .= $row[0];   
+		}
 	}
-
 	return $output;
 } // end qToValue
 
@@ -88,24 +91,24 @@ function qToPrepValue($query, $params){
 	$result = pg_prepare($dbConn, "my_query", $query );
 	$result = pg_execute($dbConn, "my_query", $params);
 	if (!$result) {
-		return("ERROR: qToPrepValue<br/>");
-	}
-	
-	if (pg_num_rows($result) != 1) {//more than one row?
-		$rows = pg_num_rows($result);
-		for ($i = 0; $i < $rows; $i++) {
-			$row = pg_fetch_row($result, $i);
-			$output .= "$row[0]<br/>";   
-		}
+		$output = "ERROR: qToPrepValue<br />";
+		debug(pg_last_error($dbConn));
 	} else {
-		$row = pg_fetch_row($result);
-		$output .= $row[0];   
+		if (pg_num_rows($result) != 1) {//more than one row?
+			$rows = pg_num_rows($result);
+			for ($i = 0; $i < $rows; $i++) {
+				$row = pg_fetch_row($result, $i);
+				$output .= "$row[0]<br/>";   
+			}
+		} else {
+			$row = pg_fetch_row($result);
+			$output .= $row[0];   
+		}
+
+		$result = pg_query($dbConn, "DEALLOCATE "."\"my_query\"");
+		if (!$result)
+			return "Error in deallocate: " . pg_last_error($dbConnection) . "<br/>";
 	}
-
-	$result = pg_query($dbConn, "DEALLOCATE "."\"my_query\"");
-	if (!$result)
-		return "Error in deallocate: " . pg_last_error($dbConnection) . "<br/>";
-
 	return $output;
 	
 } // end qToPrepValue
@@ -122,7 +125,8 @@ function qToListWithLink($query,
 	$output = "";
 	$result = pg_query($dbConn, $query);
 	if (!$result) {
-		$output="qToListWithLink: error.\nQuery=$query";
+		$output = "ERROR: qToListWithLink<br />";
+		debug(pg_last_error($dbConn));
 	} else {
 
 		while ($row = pg_fetch_assoc($result)) {
@@ -210,7 +214,8 @@ function qToTable($query){
 	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
 	$result = pg_query($dbConn, $query );
 	if (!$result) {
-		$output="ERROR: qToTable<br />";
+		$output = "ERROR: qToTable<br />";
+		debug(pg_last_error($dbConn));
 	} else {
 		$output .= "<br />\n<table class=\"sortable\">\n"; //mydbtable
 
@@ -258,7 +263,8 @@ function qToTableWithLink($query,
 	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
 	$result = pg_query($dbConn, $query );
 	if (!$result) {
-		$output="ERROR: qToTableWithLink<br />";
+		$output = "ERROR: qToTableWithLink<br />";
+		debug(pg_last_error($dbConn));
 	} else {
 		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">\n";  
 

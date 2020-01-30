@@ -190,6 +190,7 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 			$result = pg_query($dbConnection, $paramselect);
 			if (!$result) {
 				echo "Error in query for: $fieldname ";
+				debug(pg_last_error($dbConnection));
 				pg_close($dbConnection);
 				return;
 			}
