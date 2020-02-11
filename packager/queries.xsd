@@ -3,7 +3,7 @@
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
            vc:minVersion="2.0">
-	<!-- dbDIPview schema for queries.xml, 2020-01-30 -->
+	<!-- dbDIPview schema for queries.xml, 2020-02-07 -->
 	<xs:complexType name="revisions">
 		<xs:sequence>
 			<xs:element name="revision" type="revision" minOccurs="0" maxOccurs="unbounded" />
@@ -82,6 +82,7 @@
 					<xs:sequence>
 						<xs:element name="dbcolumnname" type="xs:string" minOccurs="1" maxOccurs="1" />
 						<xs:element name="atext"        type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="URLprefix"    type="xs:string" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

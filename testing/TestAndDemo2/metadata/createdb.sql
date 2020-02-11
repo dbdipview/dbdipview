@@ -1,8 +1,10 @@
 CREATE TABLE "AirplanesLinks"."models"
 (
-    id integer NOT NULL,
-    name character varying(50),
-    picture character varying(100)
+    "id" integer NOT NULL,
+    "height"    decimal,
+    "name"      character varying(50),
+    "picture"   character varying(100),
+    "ext_link"  VARCHAR(100)
 );
 
 CREATE INDEX models_id ON "AirplanesLinks"."models"(id);
@@ -14,7 +16,7 @@ CREATE TABLE "TestCSV"."test1" (
    "value"  VARCHAR(100),
    "dateX"  DATE,
    "dateY"  TIMESTAMP,
-   wingspan DECIMAL(7, 2)
+   "wingspan" DECIMAL(7, 2)
 );
 
 CREATE TABLE "TestCSV"."test2" (
@@ -23,7 +25,7 @@ CREATE TABLE "TestCSV"."test2" (
    "value"  VARCHAR(100),
    "dateX"  DATE,
    "dateY"  TIMESTAMP,
-   wingspan DECIMAL(7, 2)
+   "wingspan" DECIMAL(7, 2)
 );
 
 CREATE TABLE "TestCSV"."test3" (
@@ -32,7 +34,7 @@ CREATE TABLE "TestCSV"."test3" (
    "value"  VARCHAR(100),
    "dateX"  DATE,
    "dateY"  TIMESTAMP,
-   wingspan DECIMAL(7, 2)
+   "wingspan" DECIMAL(7, 2)
 );
 
 CREATE TABLE "TestCSV"."test4" (
@@ -41,5 +43,5 @@ CREATE TABLE "TestCSV"."test4" (
    "value"  VARCHAR(100),
    "dateX"  DATE,
    "dateY"  TIMESTAMP,
-   wingspan DECIMAL(7, 2)
+   "wingspan" DECIMAL(7, 2)
 );

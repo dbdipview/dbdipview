@@ -148,11 +148,15 @@ function qToListWithLink($query,
 				}
 
 				$column = $ahref_columns[$col];
-				if (!is_null($column)) { 
-					$link= $val;
-					$link= str_replace("\\", "/", $link);   //folder path
-					$link= $filespath . $link;
-					$text=$column["atext"];
+				if ( !is_null($column) ) { 
+					$link = $val;
+					$link = str_replace("\\", "/", $link);   //folder path
+					if ( array_key_exists('URLprefix', $column) )
+						$link = $column["URLprefix"] . $link;
+					else
+						$link = $filespath . $link;
+
+					$text = $column["atext"];
 					if (strlen((string)$text)==0)
 						$text = $val;   //if no text
 					if (strlen((string)$val)==0)
@@ -302,11 +306,15 @@ function qToTableWithLink($query,
 				} 
 
 				$column = $ahref_columns[$col];
-				if (!is_null($column)) { 
-					$link= $val;
-					$link= str_replace("\\", "/", $link);   //folder path
-					$link= $filespath . $link;
-					$text=$column["atext"];
+				if ( !is_null($column) ) { 
+					$link = $val;
+					$link = str_replace("\\", "/", $link);   //folder path
+					if ( array_key_exists('URLprefix', $column) )
+						$link = $column["URLprefix"] . $link;
+					else
+						$link = $filespath . $link;
+
+					$text = $column["atext"];
 					if (strlen((string)$text)==0)
 						$text = $val;
 					if (strlen((string)$val)==0)
