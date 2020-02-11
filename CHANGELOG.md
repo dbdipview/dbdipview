@@ -7,6 +7,7 @@ Generally, the master branch is always stable. You can use it for installation o
 ### Added
 - TestAndDemo2: added a column with decimal values
 - small improvements for testing (debug messages for DDV queries)
+- allow definition of URL prefix in the queries.xml if a certain column contains addresses
 
 ## [2.0.0] - 2019-12-26
 ### Added
