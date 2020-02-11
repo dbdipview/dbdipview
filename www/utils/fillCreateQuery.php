@@ -248,11 +248,13 @@ foreach ($xml->database->screens->screen as $screen) {
 			foreach ($ahrefs->ahref as $ahref) {
 				$f_ahrefs = true;
 				$ahref_column = array();
-
 				debug("fillCreateQuery: AHREF dbcolumnname: $ahref->dbcolumnname");
-				debug("fillCreateQuery: AHREF atext:        $ahref->atext");
-
+				debug("fillCreateQuery:   AHREF atext:      $ahref->atext");
 				$ahref_column["atext"] = $ahref->atext;
+				if ( isset($ahref->URLprefix) ) {
+					debug("fillCreateQuery:   AHREF URLprefix:  $ahref->URLprefix");
+					$ahref_column["URLprefix"] = $ahref->URLprefix;
+				}
 				$ahref_columns[(string)$ahref->dbcolumnname] = $ahref_column;
 			}
 		} //for each link to ahrefs
@@ -382,9 +384,11 @@ foreach ($xml->database->screens->screen as $screen) {
 					$ahref_column = array();
 					debug("fillCreateQuery: subselect AHREF dbcolumnname: $ahref->dbcolumnname");
 					debug("fillCreateQuery: subselect AHREF atext:        $ahref->atext");
-
+					if ( isset($ahref->URLprefix) ) {
+						debug("fillCreateQuery:   AHREF URLprefix:  $ahref->URLprefix");
+						$ahref_column["URLprefix"] = $ahref->URLprefix;
+					}
 					$ahref_column["atext"] = $ahref->atext;
-
 					$subqueries_ahref_columns [$sqindex][(string)$ahref->dbcolumnname] = $ahref_column;  
 				}
 			}

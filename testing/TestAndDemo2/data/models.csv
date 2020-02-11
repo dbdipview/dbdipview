@@ -1,8 +1,8 @@
-id,name,picture
-239,,
-237,first,
-238,second,
-235,The Stick model,pictures\fileFromTarGz.jpg
-236,The Pitts model,pictures/file From Tar.jpg
-234,What time is it?,fileFromZip.jpg
-240,Last one,pictures/fileFromTgz.jpg 
+id,height,name,picture,ext_link
+239,11.10,,,
+237,10.20,first,,silver
+238,11.00,second,,mercury
+235,10.80,The Stick model,pictures\fileFromTarGz.jpg,gold
+236,16.20,The Pitts model,pictures/file From Tar.jpg,lithium
+234,11.70,What time is it?,fileFromZip.jpg,caesium
+240,,Last one,pictures/fileFromTgz.jpg,rubidium

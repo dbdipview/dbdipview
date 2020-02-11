@@ -10,6 +10,7 @@
 			<revision date="2019-09-23" version="0.1">Test file ready</revision>
 			<revision date="2019-10-05" version="1.0">Improved comments</revision>
 			<revision date="2019-12-05" version="1.0">Added param for 7</revision>
+			<revision date="2020-02-07" version="1.1">Added URLprefix</revision>
 		</revisions>
 		<ref_number>1.0</ref_number>
 		<screens>
@@ -18,7 +19,7 @@
 				<id>5</id>
 				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
 				<title>TITLE: RC airplane pictures</title>   
-				<subtitle>SUBTITLE: Images as thumbnails and as links to the files (see the results pane).
+				<subtitle>SUBTITLE: Use of images as thumbnails and as links to the files (results pane). Example for external link.
 				If a parameter Name is set, it is also propagated to the subselects.
 				</subtitle>
 				<param>
@@ -31,9 +32,10 @@
 				<query>SELECT id, 
 						name, 
 						"picture" AS pictureimg, 
-						"picture" AS pictureslink,
+						"picture" AS pictureslink, 
 						"picture" AS pictureimg1, 
-						"picture" AS pictureslink1 
+						"picture" AS pictureslink1, 
+						"ext_link"
 						FROM "AirplanesLinks"."models"
 				</query>
 				<ahrefs>
@@ -44,6 +46,11 @@
 					<ahref>
 						<dbcolumnname>pictureslink1</dbcolumnname>
 						<atext>picture1</atext>
+					</ahref>
+					<ahref>
+						<dbcolumnname>ext_link</dbcolumnname>
+						<atext/>
+						<URLprefix>https://en.wikipedia.org/wiki/</URLprefix>
 					</ahref>
 				</ahrefs>
 				<images>
@@ -58,7 +65,9 @@
 				</images>
 				<subselect>
 					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>   
-					<subtitle>This is a simplified version of the previous report above. No forwarded parameters have been configured.</subtitle>
+					<subtitle>This is a simplified version of the previous report above. 
+					In the ext_link column the link text is now different.
+					</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>models</dbtable>
@@ -66,13 +75,19 @@
 					</param>
 					<query>SELECT id, name, 
 							"picture" AS image, 
-							"picture" AS link
+							"picture" AS link, 
+							"ext_link"
 							FROM "AirplanesLinks"."models"
 					</query>
 					<ahrefs>
 						<ahref>
 							<dbcolumnname>link</dbcolumnname>
 							<atext>pic</atext>
+						</ahref>
+						<ahref>
+							<dbcolumnname>ext_link</dbcolumnname>
+							<atext>wikipedia</atext>
+							<URLprefix>https://en.wikipedia.org/wiki/</URLprefix>
 						</ahref>
 					</ahrefs>
 					<images>
@@ -94,7 +109,7 @@
 				</query>
 			</screen>
 			
-			<screen skipCSVsave="0">
+			<screen skipCSVsave="1">
 				<id>7</id>
 				<selectDescription>Display tables that were loaded from sample CSV files. Test of redaction.</selectDescription>
 				<title>Test of table upload. These tables were uploaded from CSV files with 4 data lines.</title>   
@@ -135,7 +150,7 @@
 				</subselect>
 
 				<subselect>
-					<subtitle>Loaded from Keys tab.csv (in TSV mode). If you chose redaction then the column is overwritten with X.</subtitle>
+					<subtitle>Loaded from Keys tab.csv (in TSV mode). If you chose redaction then note column with X:</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>test4</dbtable>
