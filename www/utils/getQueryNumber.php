@@ -1,6 +1,6 @@
 <?php
 /**
- * fillCreateQuery.php
+ * getQueryNumber.php
  * Display available queries and select one
  *
  */
@@ -15,7 +15,7 @@ function get_bool($value){
 
 
 function getQueryNumber() { 
-global $xml, $MSGSW22_REPORTS;
+global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue;
 
 ?>
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' >      
@@ -57,8 +57,13 @@ global $xml, $MSGSW22_REPORTS;
 
 	<td colspan = 2 valign="top">
 		<input type="hidden" name="submit_cycle" value="querySelected"/>
-		<input type = "submit" value = "&#x27a4;" alt="Naprej" class='button' />
-	</td>
+		<div>
+			<label for="but1"><?php echo ''; ?>
+				<abbr title="<?php echo $MSGSW08_Continue; ?>" 
+					><input id="but1" type="submit" value="&#x27a4;" alt="<?php echo $MSGSW08_Continue; ?>" class='button'/>
+			</label>
+		</div>
+</td>
 </tr>
 </table>
 

@@ -475,12 +475,6 @@ foreach ($xml->database->screens->screen as $screen) {
 
 		debug("fillCreateQuery <b>query</b>=$query");
 
-		//_______
-		$dbConnection = connectToDB();
-		if(!$dbConnection) {
-			die("ERROR: " . pg_last_error($dbConnection));
-		}
-
 		$tablelist = $_GET['tablelist'];
 		$hits=0;
 		if( strcmp($tablelist, "table") == 0) {

@@ -127,10 +127,12 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 ?>
 	<table border="0" color="white" width="100%">
 		<tr>
-			<td align="left">
-				<abbr title="<?php echo $MSGSW11_Reports; ?>"><a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) .'?submit_cycle=Logout';?>" ><img src="img/gnome_go_home.png" height="18" width="18" alt="Home"></a></abbr>&nbsp;
+			<td style="text-align: left;">
+				<abbr title="<?php echo $MSGSW27_HOME; ?>"
+				><a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) .'?submit_cycle=Logout';?>" 
+				><img src="img/gnome_go_home.png" height="18" width="18" alt="<?php echo $MSGSW27_HOME; ?>" /></a></abbr>&nbsp;
 			</td>
-			<td align="right">
+			<td style="text-align: right;">
 <?php
 			echo $myDBname . "&#x27a4;" . $myXMLfile . "&nbsp;&nbsp;";
 			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . 
@@ -151,7 +153,7 @@ if (file_exists($myXMLfilePath)) {
 }
 
 if(strlen($myXMLfile)==0 || 
-	strlen($myDBname)==0 ||
+	strlen($myDBname)==0 || 
 	config_isPackageActivated(substr($myXMLfile, 0, -4), $myDBname) == 0) {
 		echo "</BR><h2>$MSGSW07_ErrorNoSuchCombination.</h2></BR>";
 		die("");
@@ -165,6 +167,8 @@ $targetQueryNum = pg_escape_string($_GET['targetQueryNum']);
 
 date_default_timezone_set($timezone);
 
+connectToDB();
+	  
 switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
@@ -182,7 +186,11 @@ case "querySelected":
 			<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' > 
 				<input type="hidden" name="submit_cycle" value="ShowMenu"/>
 				<input type="hidden" name="targetQueryNum" value=<?php echo "\"$targetQueryNum\""; ?>/>
-				<input type="submit" value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" />
+				<div>
+					<label for="but1"><?php echo ''; ?><abbr title="<?php echo $MSGSW10_Back; ?>"
+						><input type="submit" value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" /></abbr>
+					</label>
+				</div>
 			</form>
 		</td>
 		<td>

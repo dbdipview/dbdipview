@@ -243,15 +243,15 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 		$out = passthru($cmd, $rv);
 		echo $out;
 
-		$files = glob($DDV_DIR_EXTRACTED . "/data/" . "*.csv");
+		$files = glob($DDV_DIR_EXTRACTED . "/data/" . "*.*");
 		if ($files) {
 			$filecount = count($files);
 			if ($filecount > 0) {
-				$out = passthru("chmod o+r " . $DDV_DIR_EXTRACTED . "/data/*.csv", $rv);
+				$out = passthru("chmod o+r " . $DDV_DIR_EXTRACTED . "/data/*.*", $rv);
 				echo $out . PHP_EOL;
 			} 
 		} else {
-			echo "???" . PHP_EOL;
+			echo "__FUNCTION__" . ": empty data folder?" . PHP_EOL;
 		}
 
 		$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
