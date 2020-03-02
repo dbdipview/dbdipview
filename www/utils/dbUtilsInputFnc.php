@@ -136,9 +136,9 @@ function input_date($field, $default, $form) {
 function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true) {
 ?>
 	<button 
-				  type="button" 
-				  style="padding: 0; border: none;border-radius: 40%;" 
-				  onclick="ToggleCombo('<?php echo "$fieldname"; ?>',this)">+
+		type="button" 
+		style="padding: 0; border: none;border-radius: 40%;" 
+		onclick="ToggleCombo('<?php echo "$fieldname"; ?>',this)">+
 	</button>
 	<div id="<?php echo "$fieldname"; ?>" style="display: inline-block">
 <?php
@@ -177,25 +177,16 @@ function ToggleCombo(value1,value2, object){
 
 //creates select form
 function input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true, $multiple="") {
-		$dbConnection = connectToDB();
-		if(!$dbConnection) {
-			die("ERROR: " . pg_last_error($dbConnection));
-		}
+
 		if($writable)
 			$disabler = "";
 		else
 			$disabler = "disabled";
 
 		if ($paramselect != "") {  //fill the drop-down values
-			$result = pg_query($dbConnection, $paramselect);
-			if (!$result) {
-				echo "Error in query for: $fieldname ";
-				debug(pg_last_error($dbConnection));
-				pg_close($dbConnection);
-				return;
-			}
-			$rows = pg_num_rows($result);
-			
+			$result = qRowsToArray($paramselect);
+			$rows = count($result);
+
 			if($multiple != "") {
 				if($rows < 4)
 					$rowlines=$rows;
@@ -217,20 +208,23 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 				input_select("", "", "");  //allow empty string
 			if ($rows > 0) {
 				for ($i=0; $i<$rows; $i++) {
-					$row = pg_fetch_row($result, $i);
+					$row = $result[$i];
 					input_select($row[0], $row[1], $default, $writable);
 				}
 			} else {
 ?>
-				<font size="-1">ERROR: No data found with this query</font>
+				<font size="-1">ERROR: No data found with this query<font size="-1">
 <?php
 			}
-			pg_close($dbConnection);
+
 ?>
 			</select>
 <?php
-		} else
-			exit("\n\nERROR: Empty select statement for $paramname");
+		} else {
+?>
+			<font size="-1">ERROR: Empty select statement<font size="-1">
+<?php
+			}
 
 } //input_combotext_db
 

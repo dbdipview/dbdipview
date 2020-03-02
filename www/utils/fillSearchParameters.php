@@ -11,7 +11,7 @@
 function fillSearchParameters() {
 global $xml;
 global $targetQueryNum;
-global $MSGSW16_Display;
+global $MSGSW16_Display, $MSGSW25_TABLEVIEW, $MSGSW26_LISTVIEW, $MSGSW12_RecordsPerPage;
 global $MHLP00,$MHLP01,$MHLP02,$MHLP03,$MHLP04,$MHLP05,$MHLP06,$MHLP07,$MHLP08,$MHLP09;
 global $MHLP10,$MHLP11,$MHLP12;
 ?>
@@ -106,48 +106,54 @@ if($screenFields == 0)
 ?>
 		</left>
 	</td>
-  
+
 	<td>
 
-		<label><input type="radio" name="tablelist" value="table" checked /><img src="img/table.png" alt="table view"</img></label>
-		<label><input type="radio" name="tablelist" value="list" /><img src="img/list.png" alt="list view"</img></label>
-		<br /><br />
+		<abbr title="<?php echo $MSGSW25_TABLEVIEW; ?>">
+			<label><input type="radio" name="tablelist" value="table" checked /><img src="img/table.png" alt="<?php echo $MSGSW25_TABLEVIEW; ?>"></img></label></abbr>
+
+		<abbr title="<?php echo $MSGSW26_LISTVIEW; ?>">
+			<label><input type="radio" name="tablelist" value="list" /><img src="img/list.png"  alt="<?php echo $MSGSW26_LISTVIEW; ?>"></img></label></abbr>
+
+		&nbsp;<br /><br />
+		<abbr title="<?php echo $MSGSW12_RecordsPerPage; ?>">
+			<img src="img/linesperpage.png" alt="<?php echo $MSGSW12_RecordsPerPage; ?>" style="vertical-align:sub"></img></abbr>
 		<select name="maxcount" size="1">
 			<option value="10">10</option>
 			<option value="100" selected="selected" >100</option>
 			<option value="1000">1000</option>
 			<option value="5000">5000</option>
-		</select>&nbsp;&nbsp;<img src="img/linesperpage.png" alt="Zapisov na stran" style="vertical-align:sub"</img>
-		<br /><br />
+		</select>
+
+		<br />
 		<center>
 			<input type="hidden" name="submit_cycle" value="searchParametersReady"/>
 			<input type="hidden" name="__page" value="1"/>
-			<input type="hidden" name="targetQueryNum" value=<?php echo "\"$targetQueryNum\""; ?>/>
-			<!--<input type="submit" value ="<?php echo (isset($MSGSW16_Display) ? $MSGSW16_Display : "Prikaži"); ?>" class='button'/> -->
-			<abbr title="<?php echo (isset($MSGSW16_Display) ? $MSGSW16_Display : "Prikaži"); ?>">
-				<input type="image" src="img/go.png" alt="Go" />
-			</abbr>
+			<input type="hidden" name="targetQueryNum" value="<?php echo $targetQueryNum; ?>" />
+			<!--<input type="submit" value=<?php echo "\"$MSGSW16_Display\""; ?> class='button'/> -->
+			<abbr title="<?php echo $MSGSW16_Display; ?>"><br />
+				<input type="image" src="img/go.png" alt="<?php echo $MSGSW16_Display; ?>" /></abbr>
 		</center>
 
 	</td>
 <?php if($screenFields > 0) { ?>
 	<td style="vertical-align:top">
 		<button type="button" class='button' onclick="FunctionHelpToggle()">
-			<?php echo (isset($MHLP00) ? $MHLP00 : "Kako iskati?"); ?> &darr;
+			<?php echo $MHLP00; ?> &darr;
 		</button>
 	<div id="SearchHelp" style="display: none; line-height:0.31"><br />
-			<?php echo (isset($MHLP01) ? $MHLP01 : "vneseni izraz je del iskanega pojma, primer:"); ?>
-<pre>&nbsp; <?php echo (isset($MHLP02) ? $MHLP02 : "novo mest"); ?></pre>
-			<?php echo (isset($MHLP03) ? $MHLP03 : "iskanje po več izrazih (&& pomeni in), primer:"); ?>
-<pre>&nbsp; <?php echo (isset($MHLP04) ? $MHLP04 : "krajevna && pri Ormožu"); ?></pre>
-			<?php echo (isset($MHLP05) ? $MHLP05 : "iskanje z več možnostmi (|| pomeni ali), primer:"); ?>
-<pre>&nbsp; <?php echo (isset($MHLP06) ? $MHLP06 : "novo mest || ptuj"); ?></pre>
-			<?php echo (isset($MHLP07) ? $MHLP07 : "iskanje z izključitvijo (! pomeni ne), primer:"); ?>
-<pre>&nbsp; <?php echo (isset($MHLP08) ? $MHLP08 : "bolnišnica && !splošna"); ?></pre>
-			<?php echo (isset($MHLP09) ? $MHLP09 : "iskanje pojma z izrazom na začeteku, na koncu, primer:"); ?>
-<pre>&nbsp; <?php echo (isset($MHLP10) ? $MHLP10 : "Dom% && %Kamnik"); ?></pre>
-			<?php echo (isset($MHLP11) ? $MHLP11 : "spustni seznam z večkratno izbiro (ali):"); ?><pre></pre>
-&nbsp;&nbsp;<?php echo (isset($MHLP12) ? $MHLP12 : "preklopite s + ter ob pritisnjeni tipki Ctrl dodajajte vrednosti"); ?><pre></pre>
+			<?php echo $MHLP01; ?>
+<pre>&nbsp; <?php echo $MHLP02; ?></pre>
+			<?php echo $MHLP03; ?>
+<pre>&nbsp; <?php echo $MHLP04; ?></pre>
+			<?php echo $MHLP05; ?>
+<pre>&nbsp; <?php echo $MHLP06; ?></pre>
+			<?php echo $MHLP07; ?>
+<pre>&nbsp; <?php echo $MHLP08; ?></pre>
+			<?php echo $MHLP09; ?>
+<pre>&nbsp; <?php echo $MHLP10; ?></pre>
+			<?php echo $MHLP11; ?><pre></pre>
+&nbsp;&nbsp;<?php echo $MHLP12; ?><pre></pre>
 
 		<div style="font-family: Comic Sans MS, cursive, sans-serif; 
 			font-size: 70%;text-align:right;
