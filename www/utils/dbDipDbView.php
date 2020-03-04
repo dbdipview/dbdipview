@@ -107,7 +107,7 @@ function qToPrepValue($query, $params){
 
 		$result = pg_query($dbConn, "DEALLOCATE "."\"my_query\"");
 		if (!$result)
-			return "Error in deallocate: " . pg_last_error($dbConnection) . "<br/>";
+			return "Error in deallocate: " . pg_last_error($dbConn) . "<br/>";
 	}
 	return $output;
 	
