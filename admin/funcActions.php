@@ -2,7 +2,7 @@
 /**
  * funcActions.php
  * 
- * Functions for work with orders packages (SIARD, EXT DDV, DDV)
+ * Functions for handling order packages (SIARD, EXT DDV, DDV)
  *
  * @author     Boris Domajnko
  */
@@ -179,8 +179,7 @@ function actions_Order_remove($orderInfo) {
 	$BFILES_DIR_TARGET = $BFILES_DIR . $ddv;   //location for all external files as LOBs
 	if (is_dir("$BFILES_DIR_TARGET")) {
 		msgCyan("$MSG26_DELETING $BFILES_DIR_TARGET...");
-		$out = passthru("rm -r " . $BFILES_DIR_TARGET, $rv);
-		echo $out . PHP_EOL;
+		passthru("rm -r " . $BFILES_DIR_TARGET, $rv);
 		msgCyan($MSG26_DELETED . ": " . $BFILES_DIR_TARGET);
 	}
 
@@ -240,15 +239,13 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 		msgCyan($MSG29_EXECUTING . " " . basename($packageFile) . "...");
 		debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $cmd);
 		$rv = 0;
-		$out = passthru($cmd, $rv);
-		echo $out;
+		passthru($cmd, $rv);
 
 		$files = glob($DDV_DIR_EXTRACTED . "/data/" . "*.*");
 		if ($files) {
 			$filecount = count($files);
 			if ($filecount > 0) {
-				$out = passthru("chmod o+r " . $DDV_DIR_EXTRACTED . "/data/*.*", $rv);
-				echo $out . PHP_EOL;
+				passthru("chmod o+r " . $DDV_DIR_EXTRACTED . "/data/*.*", $rv);
 			} 
 		} else {
 			echo "__FUNCTION__" . ": empty data folder?" . PHP_EOL;
@@ -434,8 +431,7 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 						debug(__FUNCTION__ . ": Creating folder " . $BFILES_DIR_TARGET);
 						mkdir($BFILES_DIR_TARGET, 0777, true);
 					}
-					$out = passthru($cmd);
-					echo $out . PHP_EOL;
+					passthru($cmd);
 				}
 
 			} //BFILES
@@ -494,8 +490,7 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	if (! empty($cmd)) {
 		debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $cmd);
 		$rv = 0;
-		$out = passthru($cmd, $rv);
-		echo $out . PHP_EOL;
+		passthru($cmd, $rv);
 
 		if ( $rv == 0 ) {
 			msgCyan($MSG14_DDV_UNPACKED);
@@ -758,14 +753,12 @@ function actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 	if (config_isPackageActivated($DDV) > 0)
 		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE .  " ($DDV)");
 	else if (is_dir("$DDV_DIR_EXTRACTED")) {
-		$out = passthru("rm -r " . $DDV_DIR_EXTRACTED, $rv);
-		echo $out . PHP_EOL;
+		passthru("rm -r " . $DDV_DIR_EXTRACTED, $rv);
 		msgCyan($MSG26_DELETED . ": " . $DDV_DIR_EXTRACTED);
 		
 		if (!empty($BFILES_DIR_TARGET) && is_dir($BFILES_DIR_TARGET)) {
 			debug(__FUNCTION__ . ": Removing " . $BFILES_DIR_TARGET . "...");
-			$out = passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
-			echo "XXX" . $out . PHP_EOL;
+			passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
 			msgCyan($MSG26_DELETED . ": " . $BFILES_DIR_TARGET);
 		} 
 	} else
