@@ -134,12 +134,17 @@ function input_date($field, $default, $form) {
 
 //creates select form
 function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true) {
+	global $MSGSW29_MULTIPLESELECT;
 ?>
-	<button 
-		type="button" 
-		style="padding: 0; border: none;border-radius: 40%;" 
-		onclick="ToggleCombo('<?php echo "$fieldname"; ?>',this)">+
-	</button>
+	<label for="<?php echo "$fieldname"; ?>">
+		<abbr title="<?php echo $MSGSW29_MULTIPLESELECT; ?>"
+			><button 
+			id="<?php echo "$fieldname"; ?>"
+			type="button" 
+			style="padding: 0; border: none;border-radius: 40%;" 
+			onclick="ToggleCombo('<?php echo "$fieldname"; ?>',this)">+
+		</button></abbr>
+	</label>
 	<div id="<?php echo "$fieldname"; ?>" style="display: inline-block">
 <?php
 		input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable, "");
@@ -196,12 +201,15 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 					$rowlines=7;
 			} else
 				$rowlines=1;
-					
+				
+			$fieldId = "$fieldname" . ($multiple != "" ? "M" : "") . "sel";
 			?>
-			<select 
+			<label for="<?php echo $fieldId; ?>"><?php echo ''; ?>
+				<abbr title="<?php echo $paramname; ?>" 
+					><select 
 				name="<?php echo "$fieldname". ($multiple != "" ? "[]" : ""); ?>" 
-				id= "<?php echo "$fieldname" . ($multiple != "" ? "M" : "") . "sel"; ?>" 
-				<?php echo "$multiple"; ?> 
+				id=  "<?php echo "$fieldId"; ?>" 
+				      <?php echo "$multiple"; ?> 
 				size="<?php echo "$rowlines"; ?>">
 <?php
 			if($allowEmptyString && $writable)
@@ -219,6 +227,7 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 
 ?>
 			</select>
+			</abbr></label>
 <?php
 		} else {
 ?>

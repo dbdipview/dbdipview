@@ -60,7 +60,7 @@ global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue;
 		<div>
 			<label for="but1"><?php echo ''; ?>
 				<abbr title="<?php echo $MSGSW08_Continue; ?>" 
-					><input id="but1" type="submit" value="&#x27a4;" alt="<?php echo $MSGSW08_Continue; ?>" class='button'/>
+					><input id="but1" type="submit" value="&#x27a4;" alt="<?php echo $MSGSW08_Continue; ?>" class='button'/></abbr>
 			</label>
 		</div>
 </td>

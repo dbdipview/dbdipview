@@ -187,8 +187,9 @@ case "querySelected":
 				<input type="hidden" name="submit_cycle" value="ShowMenu"/>
 				<input type="hidden" name="targetQueryNum" value=<?php echo "\"$targetQueryNum\""; ?>/>
 				<div>
-					<label for="but1"><?php echo ''; ?><abbr title="<?php echo $MSGSW10_Back; ?>"
-						><input type="submit" value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" /></abbr>
+					<label for="idback"><?php echo ''; ?>
+						<abbr title="<?php echo $MSGSW10_Back; ?>"
+							><input id="idback" type="submit" value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" /></abbr>
 					</label>
 				</div>
 			</form>

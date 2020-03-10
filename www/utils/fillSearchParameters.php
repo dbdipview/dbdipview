@@ -84,7 +84,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 
 			if(0==strcmp("combotext", $param->type)) {
-				input_combotext_db_multi($field, $param->name, $param->select, "", TRUE);   // default=""
+				input_combotext_db_multi($field, $param->name, $param->select, "", TRUE, $param->name);
 			}
 			
 			if( (0==strcmp("date",    $param->type)) ||
