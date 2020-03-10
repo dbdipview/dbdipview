@@ -6,8 +6,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 Generally, the master branch is always stable. You can use it for installation or updating.
 ### Added
 - TestAndDemo2: added a column with decimal values
-- small improvements for testing (debug messages for DDV queries)
 - allow definition of URL prefix in the queries.xml if a certain column contains addresses
+### Changed
+- small improvements for testing (debug messages for DDV queries)
+- some modifications for visually impaired users
 
 ## [2.0.0] - 2019-12-26
 ### Added
