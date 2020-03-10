@@ -39,6 +39,7 @@ function fbr($in) {
 
 function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filename) {
 	global $MSGSW17_Records, $MSGSW18_ReportDescription, $MSGSW19_ReportTitle, $MSGSW20_ReportSubTitle;
+	global $MSGSW28_SAVESASCSV;
 
 	$csvtitle = "";
 	if(isset($_SESSION['title']))
@@ -57,9 +58,8 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 		"&s=" . rawurlencode(base64_encode($csvquery)) .
 		"&f=" . $filename . 
 		"&t=" . rawurlencode(base64_encode($csvtitle)) .
-		"'><span style='text-decoration:underline;'>&#129123;</span></a>&nbsp;");
+		"' aria-label='" . $MSGSW28_SAVESASCSV . "'><span style='text-decoration:underline;'>&#129123;</span></a>&nbsp;");
 }
-
 
 // operator = "||" or "&&"
 // 'aaa || bbb || ccc' -> (x='%aaa%' OR x='%bbb%' OR x='%ccc%')
