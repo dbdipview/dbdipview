@@ -113,7 +113,7 @@ if ( count($options) == 0 || array_key_exists('h', $options) ||
 	echo "   -p <file>  deploy an order" . PHP_EOL;
 	echo "   -r <file>  remove an order" . PHP_EOL;
 	echo "   -d         debug mode" . PHP_EOL;
-	echo "   -a         show all options" . PHP_EOL;
+	echo "   -a         show all options (for information only)" . PHP_EOL;
 	exit;
 } 
 if (array_key_exists('o', $options))
