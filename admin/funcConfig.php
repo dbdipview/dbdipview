@@ -1,7 +1,7 @@
 <?php
 /**
  * Functions for handling of configuration information in JSON
- *
+ * about deployed and activated packages
  */
 
 if(! isset($SERVERDATADIR))
@@ -48,6 +48,7 @@ function config_migrate() {
 				$configItemInfo['access'] = $myaccess;
 				$configItemInfo['ref'] = "";
 				$configItemInfo['title'] = "";
+				$configItemInfo['order'] = "";
 				config_json_add_item($configItemInfo);
 			}
 		}
@@ -92,9 +93,10 @@ function config_json_add_item($configItemInfo) {
 	$newjson .= '"token":"' .      $configItemInfo['token']        . '",';
 	$newjson .= '"access":"' .     $configItemInfo['access']       . '",';
 	$newjson .= '"ref":"' .        $configItemInfo['ref']          . '",';
-	$newjson .= '"title":"' .      $configItemInfo['title']        . '"}';
+	$newjson .= '"title":"' .      $configItemInfo['title']        . '",';
+	$newjson .= '"order":"' .      $configItemInfo['order']        . '"}';
 
-	$i=0;
+	$i = 0;
 	$json = "["; 
 	if (($handleWrite = fopen("$SERVERCONFIGJSON.tmp", "w")) !== FALSE) {
         
@@ -129,7 +131,7 @@ function config_json_remove_item($DDV, $DBC) {
 		
 		$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 		
-		$i=0;
+		$i = 0;
 		$json = "["; 
 		foreach ($array as $index=>$line) {
 			if ( array_key_exists('ddv', $line) && (0==strcmp($line['ddv'], $DDV)) && (0==strcmp($line['dbc'],$DBC)) ) {
@@ -159,7 +161,7 @@ function config_json_remove_item($DDV, $DBC) {
 function config_isDBCactive($DBC) {
 	global $SERVERCONFIGJSON;
 	
-	$found=0;
+	$found = 0;
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 	
 	foreach ($array as $index=>$line) {
@@ -183,7 +185,7 @@ function config_isDBCactive($DBC) {
 function config_isPackageActivated($ddv, $DBC="") {
 	global $SERVERCONFIGJSON;
 
-	$found=0;
+	$found = 0;
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 
 	foreach ($array as $index=>$line) {
@@ -207,15 +209,15 @@ function config_isPackageActivated($ddv, $DBC="") {
 function config_code2database($token) {
 	global $SERVERCONFIGJSON;
 	
-	$database="_not_set";
-	$xmlfile="_not_set";
+	$database = "_not_set";
+	$xmlfile =  "_not_set";
 
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('token', $line) && 0==strcmp($line['token'],$token)) {
-			$database=$line['dbc'];
-			$xmlfile=$line['queriesfile'];
+			$database = $line['dbc'];
+			$xmlfile =  $line['queriesfile'];
 		} 
 	} 
 	return(array($database, $xmlfile));
@@ -265,7 +267,13 @@ function config_get_options_token() {
 function config_show() {
 	global $SERVERCONFIGJSON, $TXT_GREEN,$TXT_RESET;
 	global $MSG34_NOACTIVEDB, $MSG_ACCESSDB, $MSG40_ACTIVATEDPKGS;
-	$length0=$length1=$length2=$length3=$length4=$length5=5;
+	$length0 = strlen("DBC");
+	$length1 = strlen("DDV");
+	$length2 = strlen("ACCESS");
+	$length3 = strlen("TOKEN");
+	$length4 = strlen("REF");
+	$length5 = strlen("TITLE");
+	$length6 = strlen("ORDER");
 
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 		
@@ -282,17 +290,35 @@ function config_show() {
 			$length4 = strlen($line['ref']);
 		if (strlen($line['title'])       > $length5)
 			$length5 = strlen($line['title']);
+		
+		if( isset($line['order']) || array_key_exists('order', $line) ) {
+			if (strlen($line['order'])   > $length6)
+				$length6 = strlen($line['order']);
+		}
 	}
 
 	msgCyan($MSG40_ACTIVATEDPKGS . ":");
+	echo str_pad("DBC",    $length0) . "|";
+	echo str_pad("DDV",    $length1) . "|";
+	echo str_pad("ACCESS", $length2) . "|";
+	echo str_pad("TOKEN",  $length3) . "|";
+	echo str_pad("REF",    $length4) . "|";
+	echo str_pad("TITLE",  $length5) . "|";
+	echo str_pad("ORDER",  $length6) . "|" .  PHP_EOL;
+		
 	$i=0;
 	foreach ($array as $index=>$line) {
-		echo str_pad($line['dbc'],        $length0) . "|";
-		echo str_pad($line['ddv'],        $length1) . "|";
-		echo str_pad($line['access'],     $length2) . "|";
-		echo str_pad($line['token'],      $length3) . "|";
-		echo str_pad($line['ref'],        $length4) . "|";
-		echo str_pad($line['title'],      $length5) . "|" .  PHP_EOL;
+		echo str_pad($line['dbc'],    $length0) . "|";
+		echo str_pad($line['ddv'],    $length1) . "|";
+		echo str_pad($line['access'], $length2) . "|";
+		echo str_pad($line['token'],  $length3) . "|";
+		echo str_pad($line['ref'],    $length4) . "|";
+		echo str_pad($line['title'],  $length5) . "|";
+
+		if( isset($line['order']) || array_key_exists('order', $line) )
+			echo str_pad($line['order'],  $length6) . "|" .  PHP_EOL;
+		else
+			echo str_pad("",  $length6) . "|" .  PHP_EOL;
 		$i++;
 	}
 	if ($i == 0)
@@ -319,6 +345,7 @@ function configGetInfo($ddv, $DBC) {
 			$configItemInfo['access']      = $line['access'];
 			$configItemInfo['ref']         = $line['ref'];
 			$configItemInfo['title']       = $line['title'];
+			$configItemInfo['order']       = $line['order'];
 		}
 	}
 	return($configItemInfo);

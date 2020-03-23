@@ -524,6 +524,7 @@ function actions_DDV_getInfo(&$orderInfo) {
 		$xml = simplexml_load_file($xmlFile);
 		$orderInfo['title'] =     $xml->database->name;
 		$orderInfo['reference'] = $xml->database->ref_number;
+		$orderInfo['order'] = "";
 	}
 }
 
@@ -643,6 +644,7 @@ function actions_access_on($orderInfo, $ddv) {
 		$configItemInfo['access']      = $orderInfo['access'];
 		$configItemInfo['ref']         = $orderInfo['reference'];
 		$configItemInfo['title']       = $orderInfo['title'];
+		$configItemInfo['order']       = $orderInfo['order'];
 		config_json_add_item($configItemInfo);
 		msgCyan($MSG27_ACTIVATED . ".");
 		config_show();

@@ -54,11 +54,13 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 	if($subtitle && strlen($subtitle) > 0 )
 		$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  fbr($subtitle) .           '"' . ";\n"; 
 
-	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv" . 
+    
+	print("<abbr title='" . $MSGSW28_SAVESASCSV . "'>" . 
+		"<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv" . 
 		"&s=" . rawurlencode(base64_encode($csvquery)) .
 		"&f=" . $filename . 
 		"&t=" . rawurlencode(base64_encode($csvtitle)) .
-		"' aria-label='" . $MSGSW28_SAVESASCSV . "'><span style='text-decoration:underline;'>&#129123;</span></a>&nbsp;");
+		"' aria-label='" . $MSGSW28_SAVESASCSV . "'><span style='text-decoration:underline;'>&#129123;</span></a></abbr>&nbsp;");
 }
 
 // operator = "||" or "&&"
