@@ -298,13 +298,13 @@ function config_show() {
 	}
 
 	msgCyan($MSG40_ACTIVATEDPKGS . ":");
-	echo str_pad("DBC",    $length0) . "|";
-	echo str_pad("DDV",    $length1) . "|";
-	echo str_pad("ACCESS", $length2) . "|";
-	echo str_pad("TOKEN",  $length3) . "|";
-	echo str_pad("REF",    $length4) . "|";
-	echo str_pad("TITLE",  $length5) . "|";
-	echo str_pad("ORDER",  $length6) . "|" .  PHP_EOL;
+	echo str_pad("DBC",    $length0, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("DDV",    $length1, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("ACCESS", $length2, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("TOKEN",  $length3, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("REF",    $length4, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("TITLE",  $length5, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("ORDER",  $length6, "_", STR_PAD_BOTH) . "|" .  PHP_EOL;
 		
 	$i=0;
 	foreach ($array as $index=>$line) {
