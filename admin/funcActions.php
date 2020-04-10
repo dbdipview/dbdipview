@@ -357,7 +357,7 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 			if ( "$LTYPE" == "SCHEMA" ) 
 				$SCHEMA = addQuotes($tok[1]);
 
-			else if ("$LTYPE" == "TABLE") {
+			elseif ("$LTYPE" == "TABLE") {
 				$TABLE = addQuotes($tok[1]);
 				$FILE = $tok[2];
 				$CSVMODE = $tok[3];
@@ -399,15 +399,15 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 				$cmd="";
 				$rv = dbf_grant_select_on_table($DBC, $TABLE, $DBGUEST);
 				$ret = $OK;
-			} //TABLE
+			}
 
-			else if ("$LTYPE" == "VIEW") {
+			elseif ("$LTYPE" == "VIEW") {
 				$view = addQuotes($tok[1]);
 				$rv = dbf_grant_select_on_table($DBC, $view, $DBGUEST);
 				$ret = $OK;
-			} //VIEW
+			}
 			
-			else if ("$LTYPE" == "BFILES") {
+			elseif ("$LTYPE" == "BFILES") {
 				$FILE = $tok[1];
 				$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
 
@@ -434,17 +434,17 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 					passthru($cmd);
 				}
 
-			} //BFILES
+			}
 
-			else if ( "$LTYPE" == "NOSCHEMA" ) {
+			elseif ( "$LTYPE" == "NOSCHEMA" ) {
 				err_msg(__FUNCTION__ . ": " . $MSG31_NOSCHEMA);
-			} //NOSCHEMA
+			}
 
-			else if ( "$LTYPE" == "COMMENT" ) {
+			elseif ( "$LTYPE" == "COMMENT" ) {
 				echo $line . PHP_EOL;
-			} //COMMENT
+			}
 
-			else if (strpos($line, '#') === 0 || strpos($line, '//') === 0){
+			elseif (strpos($line, '#') === 0 || strpos($line, '//') === 0){
 				;
 			} //commented out
 
@@ -460,6 +460,124 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 	return($ret);
 }
 
+/**
+ * Will check the contents of list file for basic errors
+ * To be used by packager
+ *
+ * @return number of errors   
+ */
+function checkListFile($folder) {
+
+	$listfile = $folder . "/metadata/list.txt";
+	$df = $folder . "/data/";
+	
+	$retErrors = 0;
+	$lineNum = 0;
+	$filesMentioned = array();
+    echo "Validating the list.txt..." . PHP_EOL;
+	if ( file_exists($listfile) && (($handleList = fopen($listfile, "r")) !== FALSE) ) {
+		while ( ($line = fgets($handleList)) !== false ) {
+			$lineNum++;
+			$line = rtrim($line);
+			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
+			$LTYPE = $tok[0];
+			//LTYPE TABLE FILE CSVMODE DATEMODE DELIMITER CODESET HEADER TBD
+			//0		1		2	3		4		5			6		7		8
+
+			if ( "$LTYPE" == "SCHEMA" ) {
+				if ( count($tok) != 2 || empty($tok[1]) ) {
+					checkShowError($lineNum, "ERROR, no SCHEMA");
+					$retErrors++;
+				}
+			} elseif ("$LTYPE" == "TABLE") {
+				if ( count($tok) < 8 ) {
+					checkShowError($lineNum, "ERROR, not enough elements for TABLE");
+					$retErrors++;
+				} else {
+					$TABLE = $tok[1];
+
+					$FILE = $tok[2];
+					checkIsFile($lineNum, $df, $FILE);
+					$filesMentioned[] = $FILE;
+
+					$CSVMODE = $tok[3];
+					checkIsInArray($lineNum, "CSVMODE", $CSVMODE, array("CSV", "TSV") );
+					$DATEMODE = $tok[4];
+					checkIsInArray($lineNum, "DATEMODE", $DATEMODE, array("YMD") );
+					$DELIMITER = $tok[5];
+					checkIsInArray($lineNum, "DELIMITER", $DELIMITER, array(",", ";", "tab", "\\\\t") );
+					$CODESET = $tok[6];
+					checkIsInArray($lineNum, "CODESET", $CODESET, array("UTF8", "UTF8BOM") );
+					$HEADER = $tok[7];
+					checkIsInArray($lineNum, "HEADER", $HEADER, array("y", "n") );
+				}
+			} elseif ("$LTYPE" == "VIEW") {
+				if ( count($tok) != 2 || empty($tok[1]) ) {
+					checkShowError($lineNum, "ERROR, no VIEW");
+					$retErrors++;
+				}
+			} elseif ("$LTYPE" == "BFILES") {
+				if ( count($tok) != 2 || empty($tok[1]) ) {
+					checkShowError($lineNum, "ERROR, missing filename");
+					$retErrors++;
+				} else {
+					checkIsFile($lineNum, $df, $tok[1]);
+					$filesMentioned[] = $tok[1];
+				}
+			} elseif ( "$LTYPE" == "NOSCHEMA" ) {
+				//-print("NOSCHEMA . PHP_EOL");
+			} elseif ( "$LTYPE" == "COMMENT" ) {
+				//-print($line . PHP_EOL);
+			} elseif ( "$LTYPE" == "VERSION" ) {
+				//-print($line . PHP_EOL);
+			} elseif (strpos($line, '#') === 0 || strpos($line, '//') === 0){
+				//-print($line . PHP_EOL);
+			} else {
+				checkShowError($lineNum, "ERROR: unexpected start of line with: ");
+			}
+
+		} //while
+		fclose($handleList);
+		
+		//check for superfluous files
+		if ( is_dir($df) && ($handle = opendir($df)) ) {
+			while (false !== ($entry = readdir($handle))) {
+				if ($entry != "." && $entry != "..") {
+					if ( !in_array("$entry", $filesMentioned) ) {
+						print("ERROR, file exists, but is not mentioned in list.txt: ". $entry . PHP_EOL);
+						$retErrors++;
+					}
+				}
+			}
+			closedir($handle);
+		}
+
+	} else {
+		print("ERROR: cannot open " . $listfile . PHP_EOL);
+		$retErrors++;
+	}
+
+	return($retErrors);
+}
+
+function checkIsInArray($lineNum, $s, $val, $a) {
+	if ( !in_array($val, $a ) ) {
+		$allowed = "";
+		foreach ($a as $item) {
+			$allowed .= " " . $item;
+		}
+		checkShowError($lineNum, "ERROR, " . $s . " (" . $val . "), allowed values are:" . $allowed);
+	}
+}
+
+function checkIsFile($lineNum, $dir, $f) {
+	if ( !is_file($dir . $f) )
+		checkShowError($lineNum, "ERROR, a reference to a non-existent file: " . $f);
+}
+
+function checkShowError($lineNum, $s) {
+	print("line " . $lineNum . ": " . $s . PHP_EOL);
+}
 
 /**
  * Unpack a DDV package

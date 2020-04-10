@@ -25,14 +25,15 @@ set_include_path($PROGDIR);
 
 require $PROGDIR . "/../admin/funcXml.php";
 require $PROGDIR . "/../admin/funcMenu.php";
+require $PROGDIR . "/../admin/funcActions.php";
 
 $options = getopt("s:t:n:h");
 if ( array_key_exists('h', $options) || !(count($options) == 3 || array_key_exists('s', $options)) ) {
   echo "Usage: php " . basename(__FILE__) . " -s <source_dir> -t <target_dir> -n <target_package_name>" . PHP_EOL;
   echo "Examples:" . PHP_EOL;
-  echo "  Validate:" . PHP_EOL;
+  echo "  Validate input:" . PHP_EOL;
   echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS" . PHP_EOL;
-  echo "  Create package:" . PHP_EOL;
+  echo "  Validate input and create package:" . PHP_EOL;
   echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS -t ~/dbdipview/records/DIP0 -n GZSP" . PHP_EOL;
   exit -2;
 } 
@@ -66,7 +67,10 @@ $file = $SOURCE . "/metadata/queries.xml";
 $schema = $PROGDIR . "/queries.xsd";
 
 msg_red_on();
-validateXML($file, $schema);
+if (is_file($file))
+	validateXML($file, $schema);
+else
+	 echo "ERROR: file not found: " . $file . PHP_EOL;
 msg_colour_reset();
 
 $ALLMETADATA="metadata/queries.xml metadata/list.txt metadata/info.txt";
@@ -85,6 +89,12 @@ if ( !is_dir($datadir) ) {
 	$count = count(scandir($datadir));
 	if ( $count ===  0 )
 		echo "No files in $datadir/" . PHP_EOL;
+}
+
+$errors = checkListFile($SOURCE);
+if ( $errors > 0 ) {
+	echo "    Number of errors: " . $errors . PHP_EOL;
+	exit -1;
 }
 
 if ( !(array_key_exists('t', $options)) && !(array_key_exists('n', $options))) {
@@ -131,7 +141,3 @@ if ( $count ===  0 ) {
 
 $out = passthru("echo Done. Result directory $OUTDIR: && " .
 	"ls -lrt $OUTDIR/*" . $pkgtype);
-
-
-
-

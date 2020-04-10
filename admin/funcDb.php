@@ -176,11 +176,16 @@ function dbf_delete_dbc($DBC) {
  */
  function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER) {
 	global $DBADMINPASS, $DBADMINUSER;
-	
+
 	$rv = "";
 	if ($DELIMITER == ";")
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
 			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\;\' CSV $HEADER" . 
+			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER);
+
+	elseif ($DELIMITER == "tab")
+		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'\\\t\' CSV $HEADER" . 
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER);
 
 	else
