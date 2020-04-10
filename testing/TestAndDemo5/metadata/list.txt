@@ -1,3 +1,4 @@
-VERSION	2019-12-01
+VERSION	2020-04-10
 COMMENT	TestAndDemo5, no SCHEMA and TABLE in this package
-
+COMMENT	Use with TestAndDemo4.siard and CSV table data in TestAndDemo4 EXT DDV
+COMMENT	See order_TestAndDemo5.xml

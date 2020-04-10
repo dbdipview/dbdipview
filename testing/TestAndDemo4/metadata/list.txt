@@ -1,5 +1,6 @@
-VERSION	2019-12-01
-COMMENT	TestAndDemo4, tables are created from a SIARD file!
+VERSION	2020-02-10
+COMMENT	TestAndDemo4, the tables are created from a SIARD file, deploy it first!
+COMMENT	See order_TestAndDemo4.xml
 SCHEMA	HR members
-#table columns: 	table	file	format	date_format	delimiter	encoding	header
+#TABLE	table	file	format	date_format	delimiter	encoding	header
 TABLE	"HR members"."HR employees"	HRemployees.csv	CSV	YMD	,	UTF8	n
