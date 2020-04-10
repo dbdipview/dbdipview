@@ -6,7 +6,7 @@ A viewer solution for long-term digital preservation of databases.
 The databases can quickly be made available for access on user request or kept up and running as persistent (reusable) DIP-s. dbDIPview can run on a dedicated server with a DBMS. For a start, we use the administration menu to deploy two packages: the Archival Information Package (AIP) with database content, and the corresponding access enabling information package. Both packages need to be delivered to or kept available in the defined dbDIPview folder.
 
 ## Technology
-The tool is based Linux, Apache, PostgreSQL and PHP.
+The tool is based on Linux, Apache, PostgreSQL,and PHP.
 
 ## The Modules
 * Packager (creation of a package with or without database content as CSV data, XML schema validation of the viewer)
