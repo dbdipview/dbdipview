@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * funcSiard.php
+ * 
+ * Functions for handling SIARD packages
+ *
+ * @author     Boris Domajnko
+ */
 
 function installSIARD($database, $siardfile, $tool) {
 	global $MSG17_FILE_NOT_FOUND, $MSG48_NOTCONFIGURED;
@@ -23,13 +29,21 @@ function installSIARD($database, $siardfile, $tool) {
 		return(false);
 	}
 
+	$ret = 0;
+	$out = array();
+	exec ( $JAVA . " -version", $out, $ret);
+	if ( $ret != 0 ) {
+		err_msg("JAVA " . $MSG48_NOTCONFIGURED . " configa.txt", $JAVA);
+		return(false);
+	}
+
 	if( $tool == "DBPTK" ) {
 		if ( empty($DBPTKJAR) ) {
 			err_msg("DBPTKJAR " . $MSG48_NOTCONFIGURED . " configa.txt, configa.txt.template");
 			return(false);
 		}
 		if ( !file_exists($DBPTKJAR) ) {
-			err_msg($MSG17_FILE_NOT_FOUND . "DBPTKJAR=", $DBPTKJAR);
+			err_msg($MSG17_FILE_NOT_FOUND . " (DBPTKJAR):", $DBPTKJAR);
 			return(false);
 		}
 		debug(   "$JAVA $MEM $ENCODING -jar $DBPTKJAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn $DBPORT -i siard-2 -if $siardfile");
@@ -41,12 +55,12 @@ function installSIARD($database, $siardfile, $tool) {
 			return(false);
 		}
 		if ( !file_exists($SIARDSUITECMDJAR) ) {
-			err_msg($MSG17_FILE_NOT_FOUND . " SIARDSUITECMDJAR=" . $SIARDSUITECMDJAR);
+			err_msg($MSG17_FILE_NOT_FOUND . " (SIARDSUITECMDJAR):" . $SIARDSUITECMDJAR);
 			return(false);
 		}
 		$JDBC="jdbc:" . $DBTYPE . "://" . $HOST . ":" . $DBPORT . "/" . $database;  //postgresql
-		debug(   "java -cp $SIARDSUITECMDJAR ch.admin.bar.siard2.cmd.SiardToDb -l=10 -s=$siardfile -j=$JDBC -u=$DBADMINUSER -p=$DBADMINPASS ");
-		passthru("java -cp $SIARDSUITECMDJAR ch.admin.bar.siard2.cmd.SiardToDb -l=10 -s=$siardfile -j=$JDBC -u=$DBADMINUSER -p=$DBADMINPASS ");
+		debug(   "$JAVA -cp $SIARDSUITECMDJAR ch.admin.bar.siard2.cmd.SiardToDb -l=10 -s=$siardfile -j=$JDBC -u=$DBADMINUSER -p=$DBADMINPASS ");
+		passthru("$JAVA -cp $SIARDSUITECMDJAR ch.admin.bar.siard2.cmd.SiardToDb -l=10 -s=$siardfile -j=$JDBC -u=$DBADMINUSER -p=$DBADMINPASS ");
 		return(true);
 	}
 }
