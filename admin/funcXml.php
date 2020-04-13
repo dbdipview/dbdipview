@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * funcXml.php
+ * 
+ * Some functions for handling XML files
+ *
+ * @author     Boris Domajnko
+ */
 
 function getbool($value){
 	switch( strtolower($value) ){
@@ -22,7 +28,7 @@ function loadOrder($xmlinput) {
 	debug(__FUNCTION__ . "...");
 
 	$schema = "$PROGDIR/../packager/order.xsd";
-	msgCyan($MSG35_CHECKXML . "...");
+	debug(__FUNCTION__ . ": " . $MSG35_CHECKXML . " " . $xmlinput);
 	msg_red_on();
 	validateXML($xmlinput, $schema);
 	msg_colour_reset();

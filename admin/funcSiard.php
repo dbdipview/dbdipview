@@ -31,7 +31,7 @@ function installSIARD($database, $siardfile, $tool) {
 
 	$ret = 0;
 	$out = array();
-	exec ( $JAVA . " -version", $out, $ret);
+	exec ( $JAVA . " -version 2> /dev/null", $out, $ret);
 	if ( $ret != 0 ) {
 		err_msg("JAVA " . $MSG48_NOTCONFIGURED . " configa.txt", $JAVA);
 		return(false);
