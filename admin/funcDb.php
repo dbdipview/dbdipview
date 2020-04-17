@@ -3,8 +3,7 @@
  * funcDb.php
  * 
  * Functions for configuring the database
- * PostgreSQL concept of database and schema
- * A user will have access to a database
+ * PostgreSQL concept of database and schema is used
  *
  * @author     Boris Domajnko
  */
@@ -21,7 +20,6 @@
 	
 	passthru("PGPASSWORD=$DBADMINPASS psql -P pager=off -l -U $DBADMINUSER");
  }
- 
  
 /**
  * Create a database container
@@ -93,7 +91,6 @@ function dbf_delete_dbc($DBC) {
 	return($retval);
 }
 
-
  /**
  * Create schema
  * The existence of the schema is not checked as it might have been created fro a SIARD package
@@ -137,7 +134,6 @@ function dbf_delete_dbc($DBC) {
 	return($rv);
  }
  
- 
   /**
  *  Grant select on table
  *
@@ -171,27 +167,34 @@ function dbf_delete_dbc($DBC) {
  }
 
  /**
- *  Load data into table from CSV delimited file
- *
+ *  Load data into table from a CSV file
+ *  header line, delimiter, and encoding are parameters
  */
- function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER) {
+ function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER, $ENCODING) {
 	global $DBADMINPASS, $DBADMINUSER;
 
 	$rv = "";
+	debug("Copy table data from CSV $SRCFILE to $TABLE...");
 	if ($DELIMITER == ";")
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\;\' CSV $HEADER" . 
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\;\' CSV $HEADER ENCODING \'$ENCODING\' " . 
+			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER);
+
+	elseif ($DELIMITER == "|")
+		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\|\' CSV $HEADER ENCODING \'$ENCODING\' " . 
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER);
 
 	elseif ($DELIMITER == "tab")
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'\\\t\' CSV $HEADER" . 
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'\\\t\' CSV $HEADER ENCODING \'$ENCODING\' " . 
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER);
 
 	else
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' CSV $HEADER" . 
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' CSV $HEADER ENCODING \'$ENCODING\' " . 
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER);
+		debug("Copy done.");
 	return($rv);
  }
 
@@ -199,17 +202,87 @@ function dbf_delete_dbc($DBC) {
  *  Load data into table from TAB delimited file
  *
  */
- function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $HEADER) {
+ function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $HEADER, $ENCODING) {
 	global $DBADMINPASS, $DBADMINUSER;
 	
 	$rv = ""; 
+	debug("Copy table data from $SRCFILE to $TABLE...");
 	passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-		"COPY " . $TABLE . " FROM \'$SRCFILE\' $HEADER WITH NULL AS \'\'" . 
+		"COPY " . $TABLE . " FROM \'$SRCFILE\' $HEADER WITH NULL AS \'\'  ENCODING \'$ENCODING\' " . 
 		" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER);
 	return($rv);
  }
  
-										
+/**
+ * Translate CSV encoding name in the list.txt into target database parameter. 
+ * Currently only some values for PostgreSQL are listed, all are not tested as
+ * UTF8 is suggested for AIP.
+ *
+ * @return encoding
+ */
+function dbf_encoding_param($input) {
+	$output = "UTF8";               //default
+
+	if ( $input == "UTF8" )
+		$output = "UTF8 ";
+	elseif ( $input == "UTF8BOM" )  //already dealt with
+		$output = "UTF8";
+	elseif ( $input == "ISO_8859_1" )
+		$output = "LATIN1";
+	elseif ( $input == "ISO_8859_2" )
+		$output = "LATIN2";
+	elseif ( $input == "ISO_8859_3" )
+		$output = "LATIN3";
+	elseif ( $input == "ISO_8859_4" )
+		$output = "LATIN4";
+	elseif ( $input == "ISO_8859_5" )
+		$output = "ISO_8859_5";
+	elseif ( $input == "ISO_8859_6" )
+		$output = "ISO_8859_6";
+	elseif ( $input == "ISO_8859_7" )
+		$output = "ISO_8859_7";
+	elseif ( $input == "ISO_8859_8" )
+		$output = "ISO_8859_8";
+	elseif ( $input == "ISO_8859_9" )
+		$output = "LATIN5";
+	elseif ( $input == "ISO_8859_13" )
+		$output = "LATIN6";
+	elseif ( $input == "ISO_8859_14" )
+		$output = "LATIN7";
+	elseif ( $input == "ISO_8859_15" )
+		$output = "LATIN8";
+	elseif ( $input == "ISO_8859_16" )
+		$output = "LATIN9";
+	elseif ( $input == "ISO_8859_17" )
+		$output = "LATIN10";
+	elseif ( $input == "cp-866" )
+		$output = "WIN866";
+	elseif ( $input == "windows-1250" )
+		$output = "WIN1250";
+	elseif ( $input == "windows-1251" )
+		$output = "WIN1251";
+	elseif ( $input == "windows-1252" )
+		$output = "WIN1252";
+	else
+		err_msg(__FUNCTION__ . ": unexpected encoding: ". $input);
+
+	return($output);
+}
+
+/**
+ * Returns the list of possible CSV file encodings for the list.txt
+ *
+ * @return encoding
+ */
+function dbf_encoding_params_get() {		
+
+	return array("UTF8", "UTF8BOM",
+		"ISO_8859_1", "ISO_8859_2", "ISO_8859_3", "ISO_8859_4", "ISO_8859_5", "ISO_8859_6", "ISO_8859_7", "ISO_8859_8", "ISO_8859_9",
+		"ISO_8859_13", "ISO_8859_14", "ISO_8859_15", "ISO_8859_16", "ISO_8859_17",
+		"cp-866",
+		"windows-1250", "windows-1251", "windows-1252" );
+}
+
  /**
  *  Run script 
  *
@@ -222,4 +295,3 @@ function dbf_delete_dbc($DBC) {
 	return($rv);
  }
  
-	

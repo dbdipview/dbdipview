@@ -42,7 +42,7 @@ function checkRemove($s) {
 }
 
 function showOptions() {
-	echo "Usage: php " . basename(__FILE__) . " -s <source_dir> -t <target_dir> -n <target_package_name>" . PHP_EOL;
+	echo "Usage: php " . basename(__FILE__) . " -s <source_dir> [-t <target_dir> -n <target_package_name>] [-y]" . PHP_EOL;
 	echo "Examples:" . PHP_EOL;
 	echo "  Validate input:" . PHP_EOL;
 	echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS" . PHP_EOL;
@@ -54,6 +54,7 @@ function showOptions() {
 require $PROGDIR . "/../admin/funcXml.php";
 require $PROGDIR . "/../admin/funcMenu.php";
 require $PROGDIR . "/../admin/funcActions.php";
+require $PROGDIR . "/../admin/funcDb.php";
 
 $options = getopt("s:t:n:yh");
 if ( array_key_exists('h', $options) || !array_key_exists('s', $options) )
@@ -82,7 +83,7 @@ if (array_key_exists('n', $options)) {
 
 if (!is_dir($SOURCE)) {
 	echo "ERROR: Source directory $SOURCE does not exist." . PHP_EOL;
-	exit -1;
+	exit(1);
 }
 echo "Validating xml..." . PHP_EOL;
 $file = $SOURCE . "/metadata/queries.xml";
@@ -114,8 +115,8 @@ if ( !is_dir($datadir) ) {
 
 $errors = checkListFile($SOURCE);
 if ( $errors > 0 ) {
-	echo "    Number of errors: " . $errors . PHP_EOL;
-	exit -1;
+	echo "    Aborted. Number of errors: " . $errors . PHP_EOL;
+	exit(1);
 }
 
 if ( !(array_key_exists('t', $options)) && !(array_key_exists('n', $options))) {
@@ -124,14 +125,14 @@ if ( !(array_key_exists('t', $options)) && !(array_key_exists('n', $options))) {
 
 if (empty($OUTDIR) || !is_dir($OUTDIR)) {
 	echo "ERROR: Target directory $OUTDIR does not exist.". PHP_EOL;
-	exit -1;
+	exit(1);
 }
 if (empty($NAME)) {
 	echo "ERROR: Target package name not defined.". PHP_EOL;
 	showOptions();
 }
 if ( is_file($OUTFILE_TAR) ) {
-	if(checkRemove("Target package file $OUTFILE_TAR exists.?")) {
+	if(checkRemove("Target package file $OUTFILE_TAR exists.")) {
 		unlink($OUTFILE_TAR);
 		echo "Removed." . PHP_EOL;
 	}

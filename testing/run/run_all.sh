@@ -18,7 +18,10 @@ DBG=
 
 if [ ! -d $DIP0 ]
 then
-	echo "Folder $DIP0 not found! Please check configa.txt for DDV_DIR_PACKED folder or run the menu.php for the first time to complete the installation."
+	echo "Folder $DIP0 not found! Please
+ 	- check configa.txt for DDV_DIR_PACKED folder or
+	- run the menu.php for the first time to complete the installation or
+	- check the MH variable in this file."
 else
 
 	for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5

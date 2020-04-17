@@ -5,7 +5,7 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo5 regression test viewer with three packages: SIARD package with configuration, EXT DDV with table CSV table data, and DDV with this viewer</name>
+		<name>TestAndDemo5 regression test viewer: SIARD, EXT DDV, and DDV package</name>
 		<revisions>
 			<revision date="2019-12-01" version="0.1">First test</revision>
 		</revisions>
@@ -14,9 +14,10 @@
 
 			<screen>
 				<id>1</id>
-				<selectDescription>Simple report</selectDescription>
-				<title>Employees</title>
-				<subtitle>Check if tables were correctly created from a SIARD package with configuration and populated from EXT DDV with CSV content. The DDV package contains this viewer and commands for redaction</subtitle>  
+				<selectDescription>A simple report</selectDescription>
+				<title>Table created with TestAndDemo4 data (SIARD, EXT DDV), but with a newt viewer (DDV)</title>
+				<subtitle>Check if tables were correctly created from a SIARD package with configuration and populated from EXT DDV with CSV content. 
+				The DDV package contains this viewer and commands for redaction.</subtitle>  
 				<param size='4'>
 					<name>Date hired</name>
 					<dbtable>HR employees</dbtable>

@@ -5,7 +5,7 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo3 regression test viewer: query contents of the two SIARD packages</name>
+		<name>TestAndDemo3 regression test viewer: two SIARD packages and a DDV</name>
 		<revisions>
 			<revision date="2019-09-16" version="0.8">Sample XML for regression test and demonstration of functionality</revision>
 			<revision date="2019-09-28" version="1.0">Two siard packages</revision>
@@ -186,7 +186,7 @@
 
 			<screen>
 				<id>5</id>
-				<selectDescription>Use of SELECT, example 2</selectDescription>
+				<selectDescription>Use of SELECT, example 2, mandatory parameter</selectDescription>
 				<title>Example 2</title>   
 				<subtitle>Mandatory parameter; use of dropdown selection; use of SQL alias in the query</subtitle>   
 				<param  mandatory="1">

@@ -1,11 +1,11 @@
 VERSION	2020-02-10
-COMMENT	TestAndDemo2
+COMMENT	TestAndDemo2 - dbDIPview regression test
 SCHEMA	AirplanesLinks
 SCHEMA	TestCSV
 #TABLE	table	file	format	date_format	delimiter	encoding	header
-TABLE	"AirplanesLinks"."models"	models.csv	CSV	YMD	,	UTF8	y
-VIEW	"AirplanesLinks"."my_view"
-TABLE	"TestCSV"."test1"	Keys semicolon.csv	CSV	YMD	;	UTF8	y
+TABLE	AirplanesLinks.models	models.csv	CSV	YMD	,	UTF8	y
+VIEW	AirplanesLinks.my_view
+TABLE	TestCSV.test1	Keys semicolon.csv	CSV	YMD	;	UTF8	y
 TABLE	"TestCSV"."test2"	Keys comma.csv	CSV	YMD	,	UTF8	n
 TABLE	"TestCSV"."test3"	Keys tab.csv	CSV	YMD	tab	UTF8	n
 TABLE	"TestCSV"."test4"	Keys tab.txt	TSV	YMD	tab	UTF8	n
