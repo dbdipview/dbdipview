@@ -7,11 +7,12 @@ Generally, the master branch is always stable. You can use it for installation o
 ### Added
 - TestAndDemo2: added a column with decimal values
 - allow definition of URL prefix in the queries.xml if a certain column contains addresses
-- createPackage will now validate the list.txt file and check the existence of all files
+- createPackage will now validate the columns in list.txt file and check the existence of all files
+- createPackage will now accept more encodings for CSV files, not only UTF8
 - Czech translation of the client has been submitted by the National Archives of the Czech Republic
 - run_all.sh option -r added to remove installed TestAndDemo databases
 ### Changed
-- small improvements for testing (debug messages for DDV queries)
+- small improvements for testing (debug messages for queries)
 - some modifications for visually impaired users
 - list.txt allows 'tab' to describe CSV files (previously \\t)
 
