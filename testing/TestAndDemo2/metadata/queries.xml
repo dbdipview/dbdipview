@@ -5,7 +5,7 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo2 regression test viewer: query contents of DDV EXTended package with external LOBs</name>
+		<name>TestAndDemo2 regression test viewer: EXT DDV package, external LOBs</name>
 		<revisions>
 			<revision date="2019-09-23" version="0.1">Test file ready</revision>
 			<revision date="2019-10-05" version="1.0">Improved comments</revision>

@@ -345,8 +345,16 @@ while ( "$answer" != "q" ) {
 				actions_DDV_showInfo();
 				$V2='X';
 			}
-			enter();
-			break;
+			
+			if($V2 == 'X') {
+				if (stopHere($MSG4_CREATEAPL)) {
+					enter();
+					break;
+				}
+			} else {
+				enter();
+				break;
+			}
 
 		case "V3": $V3=' ';
 			if (notSet($DDV))
@@ -420,6 +428,7 @@ while ( "$answer" != "q" ) {
 
 		case "2": $X2=' ';
 			if (file_exists($DDV_DIR_EXTRACTED)) {
+				$X2='X';
 				err_msg($MSG13_DDV_FOLDER_EXISTS . ":", $DDV);
 				enter();
 				break;
@@ -434,7 +443,6 @@ while ( "$answer" != "q" ) {
 				actions_DDV_showInfo();
 				$X2='X';
 			}
-			
 			enter();
 			break;
 
@@ -570,8 +578,15 @@ while ( "$answer" != "q" ) {
 				$X7='X';
 				$V3=' ';$V4=' ';   //for quick test cycle
 			}
-			enter();
-			break;
+			if($X7 == 'X') {
+				if (stopHere($MSG8_RM_UNPACKED_DDV)) {
+					enter();
+					break;
+				}
+			} else {
+				enter();
+				break;
+			}
 
 		case "8": $X8=' ';
 			if (notSet($DDV))

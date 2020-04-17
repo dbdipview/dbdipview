@@ -211,7 +211,6 @@ function actions_Order_remove($orderInfo) {
 	dbf_delete_dbc($DBC);
 }
 
-
 /**
  * Unpack a DDV EXTended package
  *
@@ -278,6 +277,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
  */
 function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 	global $MSG_ERROR, $MSG29_EXECUTING, $MSG25_EMPTY_TABLES_CREATED, $MSG17_FILE_NOT_FOUND;
+	global $MSG49_EMPTY_SCHEMA_CREATED;
 	global $OK, $NOK;
 	global $DBC, $DBGUEST;
 	
@@ -303,12 +303,14 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 					$rv = dbf_create_schema($DBC, $SCHEMA);
 					if ( $rv != 0 )
 						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-
-					$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA, $DBGUEST);
-					if ( $rv != 0 )
-						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-				} //SCHEMA
-			} //while
+					else {
+						msgCyan($MSG49_EMPTY_SCHEMA_CREATED);
+						$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA, $DBGUEST);
+						if ( $rv != 0 )
+							err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+					}
+				}
+			}
 			fclose($handleList);
 			
 			msgCyan($MSG29_EXECUTING . " " . $CREATEDB0 . "...");
@@ -330,7 +332,6 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 
 	return($ret);
 }
-
 
 /**
  * Populate database tables from a DDV EXTended package
@@ -385,11 +386,12 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 					passthru("$PROGDIR/removeBOM $SRCFILE " . $SRCFILE . "_noBOM");
 					$SRCFILE =                                $SRCFILE . "_noBOM";
 				}
+				$encoding = dbf_encoding_param($CODESET);
 				passthru("chmod o+r '$SRCFILE'");
 				if ( "$CSVMODE" == "CSV" ) {
-					$rv = dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER);
+					$rv = dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER, $encoding);
 				} else if ( "$CSVMODE" == "TSV" ) {
-					$rv = dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE,             $HEADER);
+					$rv = dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE,             $HEADER, $encoding);
 				} else
 					err_msg(__FUNCTION__ . ": " . "Error, wrong CSVMODE:", $CSVMODE);
 
@@ -464,17 +466,19 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
  * Will check the contents of list file for basic errors
  * To be used by packager
  *
+ * See also function dbf_encoding_param()
  * @return number of errors   
  */
 function checkListFile($folder) {
 
 	$listfile = $folder . "/metadata/list.txt";
 	$df = $folder . "/data/";
-	
+
 	$retErrors = 0;
 	$lineNum = 0;
 	$filesMentioned = array();
-    echo "Validating the list.txt..." . PHP_EOL;
+	$tablesMentioned = array();
+	print("Validating the list.txt..." . PHP_EOL);
 	if ( file_exists($listfile) && (($handleList = fopen($listfile, "r")) !== FALSE) ) {
 		while ( ($line = fgets($handleList)) !== false ) {
 			$lineNum++;
@@ -495,21 +499,32 @@ function checkListFile($folder) {
 					$retErrors++;
 				} else {
 					$TABLE = $tok[1];
-
+					$retErrors += checkIsTable($lineNum, $TABLE);
+					if (in_array($TABLE, $tablesMentioned)) {
+						checkShowError($lineNum, "ERROR, multiple definitions of a table: " . $TABLE);
+						$retErrors++;
+					}
+					$tablesMentioned[] = $TABLE;
+					
 					$FILE = $tok[2];
-					checkIsFile($lineNum, $df, $FILE);
+					$retErrors += checkIsFile($lineNum, $df, $FILE);
+					if (in_array($FILE, $filesMentioned)) {
+						checkShowError($lineNum, "WARNING, this file is already used: " . $FILE);
+						$retErrors++;
+					}
 					$filesMentioned[] = $FILE;
 
 					$CSVMODE = $tok[3];
-					checkIsInArray($lineNum, "CSVMODE", $CSVMODE, array("CSV", "TSV") );
+					$retErrors += checkIsInArray($lineNum, "CSVMODE", $CSVMODE, array("CSV", "TSV") );
 					$DATEMODE = $tok[4];
-					checkIsInArray($lineNum, "DATEMODE", $DATEMODE, array("YMD") );
+					$retErrors += checkIsInArray($lineNum, "DATEMODE", $DATEMODE, array("YMD") );
 					$DELIMITER = $tok[5];
-					checkIsInArray($lineNum, "DELIMITER", $DELIMITER, array(",", ";", "tab", "\\\\t") );
+					$retErrors += checkIsInArray($lineNum, "DELIMITER", $DELIMITER, array(",", ";", "tab", "|", "\\\\t") );
 					$CODESET = $tok[6];
-					checkIsInArray($lineNum, "CODESET", $CODESET, array("UTF8", "UTF8BOM") );
+					$allEncodings = dbf_encoding_params_get();
+					$retErrors += checkIsInArray($lineNum, "CODESET", $CODESET, $allEncodings );
 					$HEADER = $tok[7];
-					checkIsInArray($lineNum, "HEADER", $HEADER, array("y", "n") );
+					$retErrors += checkIsInArray($lineNum, "HEADER", $HEADER, array("y", "n") );
 				}
 			} elseif ("$LTYPE" == "VIEW") {
 				if ( count($tok) != 2 || empty($tok[1]) ) {
@@ -521,7 +536,7 @@ function checkListFile($folder) {
 					checkShowError($lineNum, "ERROR, missing filename");
 					$retErrors++;
 				} else {
-					checkIsFile($lineNum, $df, $tok[1]);
+					$retErrors += checkIsFile($lineNum, $df, $tok[1]);
 					$filesMentioned[] = $tok[1];
 				}
 			} elseif ( "$LTYPE" == "NOSCHEMA" ) {
@@ -533,7 +548,7 @@ function checkListFile($folder) {
 			} elseif (strpos($line, '#') === 0 || strpos($line, '//') === 0){
 				//-print($line . PHP_EOL);
 			} else {
-				checkShowError($lineNum, "ERROR: unexpected start of line with: ");
+				$retErrors += checkShowError($lineNum, "ERROR: unexpected start of line with: ");
 			}
 
 		} //while
@@ -567,12 +582,26 @@ function checkIsInArray($lineNum, $s, $val, $a) {
 			$allowed .= " " . $item;
 		}
 		checkShowError($lineNum, "ERROR, " . $s . " (" . $val . "), allowed values are:" . $allowed);
-	}
+		return(1);
+	} else 
+		return(0);
+}
+
+function checkIsTable($lineNum, $table) {
+	$pos = strrpos($table, ".");
+	if ( $pos === false || $pos == 0 ) {
+		checkShowError($lineNum, "ERROR, no schema will be assumed, schema name prefix is missing for table: " . $table);
+		return(1);
+	} else
+		return(0);
 }
 
 function checkIsFile($lineNum, $dir, $f) {
-	if ( !is_file($dir . $f) )
-		checkShowError($lineNum, "ERROR, a reference to a non-existent file: " . $f);
+	if ( !is_file($dir . $f) ) {
+		checkShowError($lineNum, "ERROR, missing file: " . $f);
+		return(1);
+	} else
+		return(0);
 }
 
 function checkShowError($lineNum, $s) {
@@ -628,8 +657,6 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	
 	return($ret);
 }
-
-
 
 /**
  * In the menu mode, read the queries.xml file to get default values for activation
@@ -772,7 +799,7 @@ function actions_access_on($orderInfo, $ddv) {
 }
 
 /**
- * Remove the XMLfile with queries
+ * Remove the XML file with queries
  * Should be called after config_json_remove_item() so that we can check if the file is still in use
  *
  * @return    
@@ -782,7 +809,7 @@ function actions_access_off($ddv) {
 	global $SERVERDATADIR;
 
 	if (config_isPackageActivated($ddv) > 0)
-		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE . " (" . $ddv . ".xml)");
+		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE . " (data/" . $ddv . ".xml)");
 	else {
 		$file="$SERVERDATADIR" . $ddv . ".xml";
 		if (is_file($file))
@@ -790,6 +817,7 @@ function actions_access_off($ddv) {
 				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".xml");
 	}	
 }
+
 /**
  * If redact.sql and redact01.sql exist, run the sql to redact the tables
  * The tables must be already populated at this stage.
@@ -867,17 +895,19 @@ function actions_schema_drop($DBC, $DDV, $listfile) {
  * Called as part of database removal.
  */
 function actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
-	global $MSG37_MOREACTIVE, $MSG26_DELETED, $MSG16_FOLDER_NOT_FOUND;
+	global $MSGO_DELETE, $MSG37_MOREACTIVE, $MSG26_DELETED, $MSG16_FOLDER_NOT_FOUND;
 	
 	debug(__FUNCTION__ . ": " . $DDV . ", " . $DDV_DIR_EXTRACTED . ", " . $BFILES_DIR_TARGET);
 	if (config_isPackageActivated($DDV) > 0)
 		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE .  " ($DDV)");
 	else if (is_dir("$DDV_DIR_EXTRACTED")) {
+		msgCyan($MSGO_DELETE . ": " . $DDV_DIR_EXTRACTED . "...");
 		passthru("rm -r " . $DDV_DIR_EXTRACTED, $rv);
 		msgCyan($MSG26_DELETED . ": " . $DDV_DIR_EXTRACTED);
 		
 		if (!empty($BFILES_DIR_TARGET) && is_dir($BFILES_DIR_TARGET)) {
 			debug(__FUNCTION__ . ": Removing " . $BFILES_DIR_TARGET . "...");
+			msgCyan($MSGO_DELETE . ": " . $BFILES_DIR_TARGET . "...");
 			passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
 			msgCyan($MSG26_DELETED . ": " . $BFILES_DIR_TARGET);
 		} 

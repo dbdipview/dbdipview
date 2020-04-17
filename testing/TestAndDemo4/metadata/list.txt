@@ -1,6 +1,7 @@
 VERSION	2020-02-10
-COMMENT	TestAndDemo4, the tables are created from a SIARD file, deploy it first!
-COMMENT	See order_TestAndDemo4.xml
+COMMENT	TestAndDemo4 - dbDIPview regression test
+COMMENT	the tables are created from a SIARD file, deploy it first!
+# See order_TestAndDemo4.xml
 SCHEMA	HR members
 #TABLE	table	file	format	date_format	delimiter	encoding	header
-TABLE	"HR members"."HR employees"	HRemployees.csv	CSV	YMD	,	UTF8	n
+TABLE	HR members.HR employees	HRemployees.csv	CSV	YMD	,	UTF8	n

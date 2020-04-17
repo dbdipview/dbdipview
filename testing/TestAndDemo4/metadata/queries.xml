@@ -5,7 +5,7 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo4 regression test: SIARD for configuration and EXT DDV with CSV table content and redaction information</name>
+		<name>TestAndDemo4 regression test: SIARD, EXT DDV, redaction</name>
 		<revisions>
 			<revision date="2019-12-01" version="0.1">First test</revision>
 		</revisions>
