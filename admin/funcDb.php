@@ -83,7 +83,7 @@ function dbf_delete_dbc($DBC) {
 	else if (config_isDBCactive($DBC) > 0)
 		err_msg($MSG44_ISACTIVEDB . ": " . $DBC);
 	else {
-		msgCyan($MSG26_DELETING . ": " . $DBC);
+		msgCyan($MSG26_DELETING . ": " . $DBC . "...");
 		passthru("PGPASSWORD=$DBADMINPASS dropdb " . $DBC . 
 			" -U ". $DBADMINUSER . " --if-exists", $rv);
 		$retval = $OK;
