@@ -1,15 +1,19 @@
 # dbDIPview regression test
+#
 # For all TestAndDemo test cases these steps will be performed based on the related order XML file:
-#    - uninstall the database from the order
+#    - uninstall the databases if they already exist
 #    - build the DDV (.zip) or EXT DDV (.tar.gz) package
 #    - copy the order and siard files to the DIP0 folder
-#    - install and activate the database from the order
+#    - use the orders and install and activate the databases
+#
 # Run with this command:
 #    .  ~/dbdipview/testing/run/run_all.sh
 # To remove all installed databases:
 #    .  ~/dbdipview/testing/run/run_all.sh -r
+#
 # Boris Domajnko
 #
+
 MH=~/dbdipview
 DIP0=$MH/records/DIP0
 UNPACKED=$MH/records/DIP0unpacked
@@ -24,10 +28,12 @@ then
 	- check the MH variable in this file."
 else
 
+	echo "== removing previously installed databases ==========="
 	for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5
 	do
+		echo "== deleting ${TESTCASE} ============"
 		#skip after first installation
-		if [ -d $UNPACKED/$TESTCASE ] ; then
+		if [ -d $UNPACKED/${TESTCASE} ] ; then
 			php ${MH}/admin/menu.php $DBG -r order_${TESTCASE}.xml
 		fi
 	done
@@ -35,31 +41,33 @@ else
 	if [ "$1" != "-r" ]; then
 		TESTCASE=TestAndDemo2
 		echo "==${TESTCASE}========================================="
-		php ${MH}/packager/createPackage.php -y -s ${MH}/testing/${TESTCASE}  -t $DIP0 -n ${TESTCASE}
+		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y
 		cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 		php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
 
 		TESTCASE=TestAndDemo3
 		echo "==${TESTCASE}========================================="
-		php ${MH}/packager/createPackage.php -y -s ${MH}/testing/${TESTCASE}  -t $DIP0 -n ${TESTCASE}
+		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y
 		cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 		cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
 		php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
 
 		TESTCASE=TestAndDemo4
 		echo "==${TESTCASE}========================================="
-		php ${MH}/packager/createPackage.php -y -s ${MH}/testing/${TESTCASE}  -t $DIP0 -n ${TESTCASE}
+		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y
 		cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 		cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
 		php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
 
 		TESTCASE=TestAndDemo5
 		echo "==${TESTCASE}========================================="
-		php ${MH}/packager/createPackage.php -y -s ${MH}/testing/${TESTCASE}  -t $DIP0 -n ${TESTCASE}
+		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y
 		cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 		php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
 
 		echo "======================================================"
+		echo "Done."
+		echo "You can remove the databases with option -r"
 		xip=`hostname -I`
 		ip=`echo $xip | sed 's/ *$//g'`
 		echo "Now you can check http://$ip/dbdipview/login.htm"

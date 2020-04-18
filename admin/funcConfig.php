@@ -135,7 +135,7 @@ function config_json_remove_item($DDV, $DBC) {
 		$json = "["; 
 		foreach ($array as $index=>$line) {
 			if ( array_key_exists('ddv', $line) && (0==strcmp($line['ddv'], $DDV)) && (0==strcmp($line['dbc'],$DBC)) ) {
-				msgCyan("$MSG28_DEACTIVATED $DBC->$DDV.");
+				msgCyan("$MSG28_DEACTIVATED $DBC->$DDV");
 			} else {
 				$json .= ($i++ > 0 ? ',' : '' );
 				$json .= PHP_EOL . json_encode($line);

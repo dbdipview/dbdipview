@@ -160,7 +160,7 @@ function actions_Order_process($orderInfo) {
  *
  */
 function actions_Order_remove($orderInfo) {
-	global $MSG17_FILE_NOT_FOUND, $MSG26_DELETED, $MSG26_DELETING;
+	global $MSG17_FILE_NOT_FOUND, $MSG26_DELETING;
 	global $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR;
 	global $OK, $NOK;
 	
@@ -180,7 +180,6 @@ function actions_Order_remove($orderInfo) {
 	if (is_dir("$BFILES_DIR_TARGET")) {
 		msgCyan("$MSG26_DELETING $BFILES_DIR_TARGET...");
 		passthru("rm -r " . $BFILES_DIR_TARGET, $rv);
-		msgCyan($MSG26_DELETED . ": " . $BFILES_DIR_TARGET);
 	}
 
 	foreach ($orderInfo['ddvExtFiles'] as $file) {
@@ -277,7 +276,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
  */
 function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 	global $MSG_ERROR, $MSG29_EXECUTING, $MSG25_EMPTY_TABLES_CREATED, $MSG17_FILE_NOT_FOUND;
-	global $MSG49_EMPTY_SCHEMA_CREATED;
+	global $MSG49_CREATINGSCHEMA;
 	global $OK, $NOK;
 	global $DBC, $DBGUEST;
 	
@@ -291,21 +290,21 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 	}
 	
 	if ( is_file($listfile)) {
-		msgCyan($MSG29_EXECUTING . " " . $listfile . "...");
+		msgCyan($MSG29_EXECUTING . " " . basename($listfile) . "...");
 		if (($handleList = fopen($listfile, "r")) !== FALSE) {
 			while (($line = fgets($handleList)) !== false) {
 				$line = rtrim($line);
 				$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
 				$LTYPE = $tok[0];
 				if ( "$LTYPE" == "SCHEMA" ) {
-					$SCHEMA = addQuotes($tok[1]);
-
-					$rv = dbf_create_schema($DBC, $SCHEMA);
+					$SCHEMA = $tok[1];
+					$SCHEMA_Q = addQuotes($SCHEMA);
+					msgCyan($MSG49_CREATINGSCHEMA . " " . $SCHEMA . "...");
+					$rv = dbf_create_schema($DBC, $SCHEMA_Q);
 					if ( $rv != 0 )
 						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 					else {
-						msgCyan($MSG49_EMPTY_SCHEMA_CREATED);
-						$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA, $DBGUEST);
+						$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA_Q, $DBGUEST);
 						if ( $rv != 0 )
 							err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 					}
@@ -313,13 +312,13 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 			}
 			fclose($handleList);
 			
-			msgCyan($MSG29_EXECUTING . " " . $CREATEDB0 . "...");
+			msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . "...");
 			$rv = dbf_run_sql($DBC, $CREATEDB0);
 			if ( $rv != 0 )
 				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 
 			if (is_file($CREATEDB1)) {
-				msgCyan($MSG29_EXECUTING . " " . $CREATEDB1 . "...");
+				msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
 				$rv = dbf_run_sql($DBC, $CREATEDB1);
 				if ( $rv != 0 )
 					err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -698,7 +697,7 @@ function actions_SIARD_install($siardFile, $tool) {
 	if ( empty($tool) )
 		$tool = $SIARDTOOLDEFAULT;
 		
-	msgCyan($MSG29_EXECUTING . " " .  basename($siardFile) . " ($tool) ...");
+	msgCyan($MSG29_EXECUTING . " ($tool): " .  basename($siardFile) . "...");
 	if (installSIARD($DBC, $siardFile, $tool)) {
 		$ret = $OK;
 	}
@@ -717,7 +716,7 @@ function actions_SIARD_grant($listfile) {
 	$ret = $NOK;
 
 	debug(__FUNCTION__ . ": " . $listfile);
-	msgCyan($MSG3_ENABLEACCESS . " " . $listfile . "...");
+	msgCyan($MSG3_ENABLEACCESS . "...");
 	if ( is_file($listfile)) {
 		if (($handleList = fopen($listfile, "r")) !== FALSE) {
 			while (($line = fgets($handleList)) !== false) {
@@ -725,10 +724,10 @@ function actions_SIARD_grant($listfile) {
 				$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
 				$LTYPE = $tok[0];
 				if ( "$LTYPE" == "SCHEMA" ) {
-					$SCHEMA = addQuotes($tok[1]);
+					$SCHEMA = $tok[1];
 					echo $MSG23_SCHEMA_ACCESS . " " . $SCHEMA . PHP_EOL;
-					
-					$rv = dbf_grant_select_all_tables($DBC, $SCHEMA, $DBGUEST);
+					$SCHEMA_Q = addQuotes($SCHEMA);
+					$rv = dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST);
 					if ( $rv != 0 )
 						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 				}
@@ -863,7 +862,7 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
  *
  */
 function actions_schema_drop($DBC, $DDV, $listfile) {
-	global $MSG24_NO_SCHEMA, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG26_DELETED, $MSG17_FILE_NOT_FOUND;
+	global $MSG24_NO_SCHEMA, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG17_FILE_NOT_FOUND;
 	global $SERVERDATADIR;
 
 	debug(__FUNCTION__ . ": DBC=$DBC, DDV=$DDV...");
@@ -895,21 +894,19 @@ function actions_schema_drop($DBC, $DDV, $listfile) {
  * Called as part of database removal.
  */
 function actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
-	global $MSGO_DELETE, $MSG37_MOREACTIVE, $MSG26_DELETED, $MSG16_FOLDER_NOT_FOUND;
+	global $MSG26_DELETING, $MSG37_MOREACTIVE, $MSG16_FOLDER_NOT_FOUND;
 	
 	debug(__FUNCTION__ . ": " . $DDV . ", " . $DDV_DIR_EXTRACTED . ", " . $BFILES_DIR_TARGET);
 	if (config_isPackageActivated($DDV) > 0)
 		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE .  " ($DDV)");
 	else if (is_dir("$DDV_DIR_EXTRACTED")) {
-		msgCyan($MSGO_DELETE . ": " . $DDV_DIR_EXTRACTED . "...");
+		msgCyan($MSG26_DELETING . ": " . $DDV_DIR_EXTRACTED . "...");
 		passthru("rm -r " . $DDV_DIR_EXTRACTED, $rv);
-		msgCyan($MSG26_DELETED . ": " . $DDV_DIR_EXTRACTED);
 		
 		if (!empty($BFILES_DIR_TARGET) && is_dir($BFILES_DIR_TARGET)) {
 			debug(__FUNCTION__ . ": Removing " . $BFILES_DIR_TARGET . "...");
 			msgCyan($MSGO_DELETE . ": " . $BFILES_DIR_TARGET . "...");
 			passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
-			msgCyan($MSG26_DELETED . ": " . $BFILES_DIR_TARGET);
 		} 
 	} else
 		debug(__FUNCTION__ . ": " . $MSG16_FOLDER_NOT_FOUND . ": " . $DDV_DIR_EXTRACTED);
