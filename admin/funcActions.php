@@ -160,7 +160,7 @@ function actions_Order_process($orderInfo) {
  *
  */
 function actions_Order_remove($orderInfo) {
-	global $MSG17_FILE_NOT_FOUND, $MSG26_DELETING;
+	global $MSG17_FILE_NOT_FOUND, $MSG53_DELETINGLOBS;
 	global $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR;
 	global $OK, $NOK;
 	
@@ -178,7 +178,7 @@ function actions_Order_remove($orderInfo) {
 	
 	$BFILES_DIR_TARGET = $BFILES_DIR . $ddv;   //location for all external files as LOBs
 	if (is_dir("$BFILES_DIR_TARGET")) {
-		msgCyan("$MSG26_DELETING $BFILES_DIR_TARGET...");
+		msgCyan("$MSG53_DELETINGLOBS " . basename($BFILES_DIR_TARGET) . "...");
 		passthru("rm -r " . $BFILES_DIR_TARGET, $rv);
 	}
 
@@ -189,7 +189,6 @@ function actions_Order_remove($orderInfo) {
 			$ddvext = substr($file, 0, -7);          //filename w/o .tar.gz
 			$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $ddvext;
 			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
-			msgCyan($MSG26_DELETING . " " . $ddvext . "...");
 			actions_schema_drop($DBC, $ddvext, $listfile);
 			actions_remove_folders($ddvext, $DDV_DIR_EXTRACTED, "");
 		} else {
@@ -202,7 +201,6 @@ function actions_Order_remove($orderInfo) {
 		$DDV = substr($value, 0, -4);               //filename  w/o .zip
 		$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
 		$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
-		msgCyan($MSG26_DELETING . " " . $DDV . "...");
 		actions_schema_drop($DBC, $DDV, $LISTFILE);
 		actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, "");
 	}
@@ -216,7 +214,7 @@ function actions_Order_remove($orderInfo) {
  * @return $OK or $NOK    
  */
 function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
-	global $MSG29_EXECUTING, $MSG14_DDV_UNPACKED, $MSG35_CHECKXML;
+	global $MSG29_EXECUTING, $MSG14_DDV_UNPACKED, $MSG35_CHECKXML, $MSG51_EXTRACTING;
 	global $PROGDIR;
 	global $OK, $NOK;
 	
@@ -227,14 +225,14 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	} 
 
 	if (isAtype($packageFile, "tar.gz"))
-		$cmd="tar -xvzf " . $packageFile . " -C " . $DDV_DIR_EXTRACTED;
+		$cmd="tar -xzf " . $packageFile . " -C " . $DDV_DIR_EXTRACTED;
 	else {
 		err_msg(__FUNCTION__ . ": " . "Error - unknown package type " . $packageFile);
 		$cmd="";
 	}
 
 	if (! empty($cmd)) {
-		msgCyan($MSG29_EXECUTING . " " . basename($packageFile) . "...");
+		msgCyan($MSG51_EXTRACTING . " " . basename($packageFile) . "...");
 		debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $cmd);
 		$rv = 0;
 		passthru($cmd, $rv);
@@ -252,7 +250,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 		$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 		$schema = "$PROGDIR/../packager/queries.xsd";
 
-		msgCyan($MSG35_CHECKXML . "...");
+		msgCyan($MSG35_CHECKXML . " (queries.xml)...");
 		msg_red_on();
 		validateXML($file, $schema);
 		msg_colour_reset();
@@ -338,7 +336,7 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
  * @return $OK or $NOK    
  */
 function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
-	global $MSG_ERROR, $MSG29_EXECUTING, $MSG5_MOVEDATA, $MSG45_COPYBFILES, $MSG31_NOSCHEMA, $MSG33_SKIPPING;
+	global $MSG_ERROR, $MSG29_EXECUTING, $MSG5_MOVEDATA, $MSG45_EXTRACTBFILES, $MSG31_NOSCHEMA, $MSG33_SKIPPING;
 	global $OK, $NOK;
 	global $DBC, $DBGUEST;
 	global $PROGDIR;
@@ -413,20 +411,20 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 				$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
 
 				if (isAtype($SRCFILE, "tar"))
-					$cmd="tar -xvf "  . $SRCFILE . " -C " . $BFILES_DIR_TARGET;
+					$cmd="tar -xf "  . $SRCFILE . " -C " . $BFILES_DIR_TARGET;
 				else 
 				if (isAtype($SRCFILE, "tar.gz") || isAtype($SRCFILE, "tgz"))
-					$cmd="tar -xvzf " . $SRCFILE . " -C " . $BFILES_DIR_TARGET;
+					$cmd="tar -xzf " . $SRCFILE . " -C " . $BFILES_DIR_TARGET;
 				else 
 				if (isAtype($SRCFILE, "zip"))
-					$cmd="unzip -o " .  $SRCFILE . " -d " . $BFILES_DIR_TARGET;
+					$cmd="unzip -q -o " .  $SRCFILE . " -d " . $BFILES_DIR_TARGET;
 				else {
 					err_msg(__FUNCTION__ . ": " . "Error - unknown BFILES file type:" . $SRCFILE);
 					$cmd="";
 				}
 
 				if ( !empty($cmd) ) {
-					msgCyan($MSG45_COPYBFILES . " -> $BFILES_DIR_TARGET" . "...");
+					msgCyan($MSG45_EXTRACTBFILES . " ($FILE)...");
 					debug(__FUNCTION__ . ": $SRCFILE...");
 					if (!file_exists($BFILES_DIR_TARGET)) {
 						debug(__FUNCTION__ . ": Creating folder " . $BFILES_DIR_TARGET);
@@ -613,11 +611,11 @@ function checkShowError($lineNum, $s) {
  * @return $OK or $NOK    
  */
 function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
-	global $MSG_ERROR, $MSG29_EXECUTING, $MSG14_DDV_UNPACKED, $MSG35_CHECKXML;
+	global $MSG_ERROR, $MSG29_EXECUTING, $MSG14_DDV_UNPACKED, $MSG35_CHECKXML, $MSG51_EXTRACTING;
 	global $PROGDIR;
 	global $OK, $NOK;
 
-	msgCyan($MSG29_EXECUTING . " " . basename($packageFile) . "...");
+	msgCyan($MSG51_EXTRACTING . " " . basename($packageFile) . "...");
 	$ret = $NOK;
 	
 	clearstatcache();
@@ -627,7 +625,7 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	} 
 
 	if (isAtype($packageFile, "zip")) 
-		$cmd="unzip -o " . $packageFile . " -d " . $DDV_DIR_EXTRACTED;
+		$cmd="unzip -q -o " . $packageFile . " -d " . $DDV_DIR_EXTRACTED;
 	else {
 		err_msg(__FUNCTION__ . ": " . "Error - unknown package type");
 		$cmd="";
@@ -645,7 +643,7 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 			$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 			$schema = "$PROGDIR/../packager/queries.xsd";
 
-			msgCyan($MSG35_CHECKXML . "...");
+			msgCyan($MSG35_CHECKXML . " (queries.xml)...");
 			msg_red_on();
 			validateXML($file, $schema);
 			msg_colour_reset();
@@ -725,7 +723,7 @@ function actions_SIARD_grant($listfile) {
 				$LTYPE = $tok[0];
 				if ( "$LTYPE" == "SCHEMA" ) {
 					$SCHEMA = $tok[1];
-					echo $MSG23_SCHEMA_ACCESS . " " . $SCHEMA . PHP_EOL;
+					msgCyan($MSG23_SCHEMA_ACCESS . " " . $SCHEMA);
 					$SCHEMA_Q = addQuotes($SCHEMA);
 					$rv = dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST);
 					if ( $rv != 0 )
@@ -835,7 +833,7 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
 		err_msg($MSG17_FILE_NOT_FOUND . ":", $REDACTDB0);
 		return($NOK);
 	} else {
-		msgCyan($MSG29_EXECUTING . " " . $REDACTDB0 . "...");
+		msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB0) . "...");
 		$rv = dbf_run_sql($DBC, $REDACTDB0);
 		if ( $rv != 0 ) {
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -843,7 +841,7 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
 		}
 
 		if (is_file($REDACTDB1)) {
-			msgCyan($MSG29_EXECUTING . " " . $REDACTDB1 . "...");
+			msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB1) . "...");
 			$rv = dbf_run_sql($DBC, $REDACTDB1);
 			if ( $rv != 0 ){
 				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -862,7 +860,7 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
  *
  */
 function actions_schema_drop($DBC, $DDV, $listfile) {
-	global $MSG24_NO_SCHEMA, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG17_FILE_NOT_FOUND;
+	global $MSG24_NO_SCHEMA, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG17_FILE_NOT_FOUND, $MSG26_DELETING;
 	global $SERVERDATADIR;
 
 	debug(__FUNCTION__ . ": DBC=$DBC, DDV=$DDV...");
@@ -873,13 +871,15 @@ function actions_schema_drop($DBC, $DDV, $listfile) {
 				$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
 				$LTYPE = rtrim($tok[0]);
 				if ("$LTYPE" == "SCHEMA" ) {
-					$SCHEMA = addQuotes($tok[1]);
-					if (notSet($SCHEMA))
+					$SCHEMA = $tok[1];
+					$SCHEMA_Q = addQuotes($SCHEMA);
+					if (notSet($SCHEMA_Q))
 						err_msg($MSG24_NO_SCHEMA);
 					else if (notSet($DBC))
 						err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 					else {
-						$rv = dbf_drop_schema($DBC, $SCHEMA);
+						msgCyan($MSG26_DELETING . " SCHEMA " . $SCHEMA . "...");
+						$rv = dbf_drop_schema($DBC, $SCHEMA_Q);
 					}
 				}
 			} //while
@@ -894,18 +894,18 @@ function actions_schema_drop($DBC, $DDV, $listfile) {
  * Called as part of database removal.
  */
 function actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
-	global $MSG26_DELETING, $MSG37_MOREACTIVE, $MSG16_FOLDER_NOT_FOUND;
+	global $MSG53_DELETINGLOBS, $MSG52_DELETINGUPACKED, $MSG37_MOREACTIVE, $MSG16_FOLDER_NOT_FOUND;
 	
 	debug(__FUNCTION__ . ": " . $DDV . ", " . $DDV_DIR_EXTRACTED . ", " . $BFILES_DIR_TARGET);
 	if (config_isPackageActivated($DDV) > 0)
 		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE .  " ($DDV)");
 	else if (is_dir("$DDV_DIR_EXTRACTED")) {
-		msgCyan($MSG26_DELETING . ": " . $DDV_DIR_EXTRACTED . "...");
+		msgCyan($MSG52_DELETINGUPACKED . ": " . basename($DDV_DIR_EXTRACTED) . "...");
 		passthru("rm -r " . $DDV_DIR_EXTRACTED, $rv);
 		
 		if (!empty($BFILES_DIR_TARGET) && is_dir($BFILES_DIR_TARGET)) {
 			debug(__FUNCTION__ . ": Removing " . $BFILES_DIR_TARGET . "...");
-			msgCyan($MSGO_DELETE . ": " . $BFILES_DIR_TARGET . "...");
+			msgCyan($MSG53_DELETINGLOBS . ": " . basename($BFILES_DIR_TARGET) . "...");
 			passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
 		} 
 	} else

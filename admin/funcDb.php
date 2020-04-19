@@ -174,7 +174,7 @@ function dbf_delete_dbc($DBC) {
 	global $DBADMINPASS, $DBADMINUSER;
 
 	$rv = "";
-	debug("Copy table data from CSV $SRCFILE to $TABLE...");
+	debug(__FUNCTION__ . ": Copy table data from CSV $SRCFILE to $TABLE...");
 	if ($DELIMITER == ";")
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
 			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\;\' CSV $HEADER ENCODING \'$ENCODING\' " . 
