@@ -1,6 +1,6 @@
 VERSION	2020-02-10
 COMMENT	TestAndDemo4 - dbDIPview regression test
-COMMENT	the tables are created from a SIARD file, deploy it first!
+COMMENT	Make sure that the tables are created beforehand from a SIARD file!
 # See order_TestAndDemo4.xml
 SCHEMA	HR members
 #TABLE	table	file	format	date_format	delimiter	encoding	header

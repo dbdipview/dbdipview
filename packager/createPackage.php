@@ -25,20 +25,25 @@ set_include_path($PROGDIR);
 
 $YES=false;
 
-function checkRemove($s) {
+function checkRemove($s, $file) {
 	global $YES;
+	$remove = $YES;
 	
-	if($YES)
-		return true;
-
-	print($s . " Remove (y or n)?");
-	$handle = fopen ("php://stdin","r");
-	$line = fgets($handle);
-	fclose($handle);
-	if(trim($line) == 'y')
-		return true;
-	else
-		return false;
+	if ( is_file($file) ) {
+		if(!$YES) {
+			print($s . " Remove (y or n)?");
+			$handle = fopen ("php://stdin","r");
+			$line = fgets($handle);
+			fclose($handle);
+			if(trim($line) == 'y')
+				$remove = true;
+		}
+		if($remove) {
+			unlink($file);
+			if(!$YES)
+				echo "Removed." . PHP_EOL;
+		}
+	}
 }
 
 function showOptions() {
@@ -106,10 +111,10 @@ if ( is_file($SOURCE . "/metadata/redactdb01.sql") )
 $datadir = $SOURCE . "/data";
 if ( !is_dir($datadir) ) {
 	echo "No folder: $datadir". PHP_EOL;
-	$count = 0; 
+	$countDatafiles = 0; 
 } else {
-	$count = count(scandir($datadir));
-	if ( $count ===  0 )
+	$countDatafiles = count(scandir($datadir));
+	if ( $countDatafiles ===  0 )
 		echo "No files in $datadir/" . PHP_EOL;
 }
 
@@ -131,29 +136,14 @@ if (empty($NAME)) {
 	echo "ERROR: Target package name not defined.". PHP_EOL;
 	showOptions();
 }
-if ( is_file($OUTFILE_TAR) ) {
-	if(checkRemove("Target package file $OUTFILE_TAR exists.")) {
-		unlink($OUTFILE_TAR);
-		echo "Removed." . PHP_EOL;
-	}
-}
+checkRemove("Target package file $OUTFILE_TAR exists.", $OUTFILE_TAR);
 
-if ( is_file($OUTFILE_TAR . ".gz") ) {
-	if(checkRemove("Target package file $OUTFILE_TAR" . ".gz exists.")) {
-		unlink(  $OUTFILE_TAR . ".gz");
-		echo "Removed." . PHP_EOL;
-	}
-}
+checkRemove("Target package file $OUTFILE_TAR" . ".gz exists.", $OUTFILE_TAR . ".gz");
 
-if ( is_file($OUTFILE_ZIP) ) {
-	if(checkRemove("Target package file $OUTFILE_ZIP exists.")) {
-		unlink($OUTFILE_ZIP);
-		echo "Removed." . PHP_EOL;
-	}
-}
+checkRemove("Target package file $OUTFILE_ZIP exists.", $OUTFILE_ZIP);
 
-if ( $count ===  0 ) {
-    echo "Creating DDV package $OUTFILE_ZIP...". PHP_EOL;
+if ( $countDatafiles ===  0 ) {
+    echo "Creating DDV package...". PHP_EOL;
 	$out = passthru("cd '" . $SOURCE . "' && " .
 		"zip -r $OUTFILE_ZIP $ALLMETADATA");
 	$pkgtype=".zip";
@@ -163,12 +153,24 @@ if ( $count ===  0 ) {
 	if ( is_file($SOURCE . "/metadata/createdb01.sql") ) {
 		$ALLMETADATA = "$ALLMETADATA metadata/createdb01.sql";
 	}
-	echo "Creating EXT DDV package $OUTFILE_TAR with $ALLMETADATA...". PHP_EOL;
+
+	echo "Creating hashes...". PHP_EOL;
+	$file = "$SOURCE/metadata/manifest-md5.txt"; 
+	if ( is_file($file) )
+			unlink($file);
+	$file = "$SOURCE/metadata/manifest-sha256.txt"; 
+	if ( is_file($file) )
+			unlink($file);
+	$out = passthru("cd " . $SOURCE . " && " .
+		"md5sum data/*    > metadata/manifest-md5.txt" . " && " .
+		"sha256sum data/* > metadata/manifest-sha256.txt" );
+	$ALLMETADATA = "$ALLMETADATA metadata/manifest-md5.txt metadata/manifest-sha256.txt";
+	
+	echo "Creating EXT DDV package...". PHP_EOL;
 	$out = passthru("cd '" . $SOURCE . "' && " .
 		"tar vcf $OUTFILE_TAR $ALLMETADATA $ALLDATA && " .
 		"gzip $OUTFILE_TAR");
 	$pkgtype = ".tar.gz";
 }
 
-$out = passthru("echo Done. Target folder $OUTDIR: && " .
-	"ls -lrt $OUTDIR/*" . $pkgtype);
+$out = passthru("echo Done.  && ls -lrt $OUTDIR/$NAME$pkgtype");

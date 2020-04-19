@@ -15,8 +15,8 @@
 			<screen>
 				<id>1</id>
 				<selectDescription>A simple report</selectDescription>
-				<title>Table created with TestAndDemo4 data (SIARD, EXT DDV), but with a newt viewer (DDV)</title>
-				<subtitle>Check if tables were correctly created from a SIARD package with configuration and populated from EXT DDV with CSV content. 
+				<title>Table created with TestAndDemo4 data (SIARD, EXT DDV), but with a new viewer (DDV)</title>
+				<subtitle>The table was created from a SIARD package with configuration and populated from EXT DDV with CSV content. 
 				The DDV package contains this viewer and commands for redaction.</subtitle>  
 				<param size='4'>
 					<name>Date hired</name>

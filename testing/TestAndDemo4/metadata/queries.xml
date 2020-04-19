@@ -16,7 +16,7 @@
 				<id>1</id>
 				<selectDescription>Simple report</selectDescription>
 				<title>Employees</title>
-				<subtitle>Check if tables were created from a SIARD package and populated from a EXT DDV package; also check redaction.</subtitle>  
+				<subtitle>The table was created from a SIARD package and populated from a EXT DDV package; use of redaction.</subtitle>  
 				<param size='4'>
 					<name>Date hired</name>
 					<dbtable>HR employees</dbtable>
