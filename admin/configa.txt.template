@@ -17,7 +17,7 @@ $DBPORT=5432;
 //$SIARDTOOLDEFAULT="SIARDSUITE";
 
 //Database Preservation Toolkit. Install the latest version.
-$DBPTKJAR="$PROGDIR/siard/dbptk-app-2.6.4.jar";
+$DBPTKJAR="$PROGDIR/siard/dbptk-app-2.8.2.jar";
 $JAVA="java";
 //$JAVA="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/java";
 $MEM="-Xmx1000m";
