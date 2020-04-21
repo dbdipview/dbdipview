@@ -255,7 +255,7 @@ function config_get_options_token() {
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('access', $line) && 0==strcmp($line['access'],"public")) {
 			print '<option value="' . $line['token'] . '">' . 
-			$line['ref'] . " " . $line['title'] . " (" . $line['dbc'] . "&#x27a4;" . $line['ddv'] . ") "  . 
+			$line['ref'] . " " . $line['title'] . " (DBC:" . $line['dbc'] . ") "  . 
 			'</option>' . PHP_EOL;
 		} 
 	} 
@@ -278,22 +278,22 @@ function config_show() {
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 		
 	foreach ($array as $index=>$line) {
-		if (strlen($line['dbc'])         > $length0)
-			$length0 = strlen($line['dbc']);
-		if (strlen($line['ddv'])         > $length1)
-			$length1 = strlen($line['ddv']);
-		if (strlen($line['access'])      > $length2)
-			$length2 = strlen($line['access']);
-		if (strlen($line['token'])       > $length3)
+		if ( mb_strlen($line['dbc'])        > $length0)
+			$length0 = mb_strlen($line['dbc']);
+		if (mb_strlen($line['ddv'])         > $length1)
+			$length1 = mb_strlen($line['ddv']);
+		if (mb_strlen($line['access'])      > $length2)
+			$length2 = mb_strlen($line['access']);
+		if (mb_strlen($line['token'])       > $length3)
 			$length3 = strlen($line['token']);
-		if (strlen($line['ref'])         > $length4)
-			$length4 = strlen($line['ref']);
-		if (strlen($line['title'])       > $length5)
-			$length5 = strlen($line['title']);
+		if (mb_strlen($line['ref'])         > $length4)
+			$length4 = mb_strlen($line['ref']);
+		if (mb_strlen($line['title'])       > $length5)
+			$length5 = mb_strlen($line['title']);
 		
 		if( isset($line['order']) || array_key_exists('order', $line) ) {
-			if (strlen($line['order'])   > $length6)
-				$length6 = strlen($line['order']);
+			if (mb_strlen($line['order'])   > $length6)
+				$length6 = mb_strlen($line['order']);
 		}
 	}
 
