@@ -308,17 +308,17 @@ function config_show() {
 		
 	$i=0;
 	foreach ($array as $index=>$line) {
-		echo str_pad($line['dbc'],    $length0) . "|";
-		echo str_pad($line['ddv'],    $length1) . "|";
-		echo str_pad($line['access'], $length2) . "|";
-		echo str_pad($line['token'],  $length3) . "|";
-		echo str_pad($line['ref'],    $length4) . "|";
-		echo str_pad($line['title'],  $length5) . "|";
+		echo mb_str_pad($line['dbc'],    $length0) . "|";
+		echo mb_str_pad($line['ddv'],    $length1) . "|";
+		echo mb_str_pad($line['access'], $length2) . "|";
+		echo mb_str_pad($line['token'],  $length3) . "|";
+		echo mb_str_pad($line['ref'],    $length4) . "|";
+		echo mb_str_pad($line['title'],  $length5) . "|";
 
 		if( isset($line['order']) || array_key_exists('order', $line) )
-			echo str_pad($line['order'],  $length6) . "|" .  PHP_EOL;
+			echo mb_str_pad($line['order'],  $length6) . "|" .  PHP_EOL;
 		else
-			echo str_pad("",  $length6) . "|" .  PHP_EOL;
+			echo mb_str_pad("",  $length6) . "|" .  PHP_EOL;
 		$i++;
 	}
 	if ($i == 0)
@@ -351,3 +351,7 @@ function configGetInfo($ddv, $DBC) {
 	return($configItemInfo);
 }
 
+function mb_str_pad($input, $pad_length, $pad_char=' ') {
+	$mb_diff = mb_strlen($input) - strlen($input);
+	return str_pad($input, $pad_length - $mb_diff, $pad_char, STR_PAD_RIGHT);
+}
