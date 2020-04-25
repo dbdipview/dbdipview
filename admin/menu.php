@@ -341,10 +341,8 @@ while ( "$answer" != "q" ) {
 			else if (file_exists($DDV_DIR_EXTRACTED)) {
 				err_msg($MSG13_DDV_FOLDER_EXISTS . ":", $DDV);
 				$V2='X';
-			} else if ($OK == actions_DDVEXT_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED)) {
-				actions_DDV_showInfo();
+			} else if ($OK == actions_DDVEXT_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED))
 				$V2='X';
-			}
 			
 			if($V2 == 'X') {
 				if (stopHere($MSG4_CREATEAPL)) {
@@ -439,10 +437,8 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if (!file_exists($PKGFILEPATH))
 				err_msg($MSG12_ERR_DDV_NOT_AVAILABLE . ":", $PKGFILEPATH);
-			else if ($OK == actions_DDV_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED)) {
-				actions_DDV_showInfo();
+			else if ($OK == actions_DDV_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED)) 
 				$X2='X';
-			}
 			enter();
 			break;
 

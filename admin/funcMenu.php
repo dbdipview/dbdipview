@@ -103,6 +103,7 @@ function getPackageName(&$outname, &$outfilename, $extension) {
 		closedir($dh);
 	}
 
+	sort($out, SORT_LOCALE_STRING);
 	foreach($out as $key => $value) {
 		
 		if (isAtype($value, "siard")) {
@@ -190,6 +191,16 @@ function isAtype($name, $end) {
 		return(true);
 	else
 		return(false);
+}
+
+/**
+ * Multibyte string padding
+ * example: "xx"->"xx  "
+ *
+ */
+function mb_str_pad($input, $pad_length, $pad_char=' ') {
+	$mb_diff = mb_strlen($input) - strlen($input);
+	return str_pad($input, $pad_length - $mb_diff, $pad_char, STR_PAD_RIGHT);
 }
 
 ?>

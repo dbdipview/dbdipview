@@ -260,6 +260,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 		#done
 		
 		if ( $rv == 0 ) {
+			actions_DDV_showInfo();
 			msgCyan($MSG14_DDV_UNPACKED);
 		}
 		return($OK);
@@ -637,7 +638,7 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 		passthru($cmd, $rv);
 
 		if ( $rv == 0 ) {
-			msgCyan($MSG14_DDV_UNPACKED);
+			actions_DDV_showInfo();
 			debug(__FUNCTION__ . ": " . $DDV_DIR_EXTRACTED);
 
 			$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
@@ -647,6 +648,8 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 			msg_red_on();
 			validateXML($file, $schema);
 			msg_colour_reset();
+
+			msgCyan($MSG14_DDV_UNPACKED);
 			$ret = $OK;
 		} else
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -672,6 +675,13 @@ function actions_DDV_getInfo(&$orderInfo) {
 
 function actions_DDV_showInfo() {
 	global $DDV_DIR_EXTRACTED;
+	
+	$xmlFile = $DDV_DIR_EXTRACTED . "/about.xml";
+	if (file_exists($xmlFile)) {
+		$xml = simplexml_load_file($xmlFile);
+		echo "   Package info:   " . $xml->info . PHP_EOL;
+	}
+	
 	$xmlFile = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 	if (file_exists($xmlFile)) {
 		$xml = simplexml_load_file($xmlFile);

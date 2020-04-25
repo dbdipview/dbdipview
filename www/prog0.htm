@@ -9,13 +9,14 @@
 <?php
 include "confighdr.txt";
 include "messagesw.php";
-include '../admin/funcConfig.php';
+include "../admin/funcConfig.php";
+include "../admin/version.php";
 ?>
 <body onload="bodyOnLoad()">
 <div style="line-height:0.31"><br />
 	<div style="font-family: Comic Sans MS, cursive, sans-serif; 
 		font-size: 90%;text-align:right;
-		color: #333;background-color:#FFFFFF; ">dbDIPview
+		color: #333;background-color:#FFFFFF; ">dbDIPview <?php print($version); ?>
 	</div>
 </div>
 <br />
@@ -23,12 +24,11 @@ include '../admin/funcConfig.php';
 <h3><?php echo $INSTITUTION; ?></h3>
 <h2><?php echo $MSGSW01_MainSubTitle; ?></h2><br />
 <?php
-	$c=$_GET['c'];          //code
+	$c=$_GET['c'];          //code (token)
 	$d=$_GET['d'];          //dbc
 	$v=$_GET['v'];          //viewer
 	$debug=$_GET['debug'];
 ?>
-
 <br />
 <form name="forma" action="prog1.php" method="get" target='topframe'>
 	<table>

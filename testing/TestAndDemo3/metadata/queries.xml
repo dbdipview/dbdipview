@@ -28,7 +28,8 @@
 				<id>2</id>
 				<selectDescription>Use of search; use of link to next screen with forwarded parameters</selectDescription>
 				<title>Employees again, html formating of the text - bold and new line</title>
-				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report, with &lt;BR /&gt;- column ID as a source value &lt;BR /&gt; - to be searched as &lt;B&gt;HR employees-Id&lt;/B&gt; in the linked report. &lt;BR /&gt;- Use of ORDER.</subtitle> 
+				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report, with &lt;BR /&gt;- column ID as a source 
+				value &lt;BR /&gt; - to be searched as &lt;B&gt;HR employees-Id&lt;/B&gt; in the linked report. &lt;BR /&gt;- Use of ORDER.</subtitle> 
 				<param size='4'>
 					<name>ID</name>
 					<dbtable>HR employees</dbtable>
@@ -45,6 +46,7 @@
                     "HR employees"."Id" AS "ID", 
                     "HR employees"."Employee Name" AS "The name" 				
 						FROM "HR members"."HR employees"
+						WHERE "Id" != '1000'
 				</query>
 				<selectOrder>"The name", "ID"</selectOrder>
 				<links_to_next_screen>
@@ -60,7 +62,8 @@
 
 			<screen>
 				<id hide='true'>2a</id>
-				<selectDescription>A hidden report, only called from another report, with parameter; use of parameter in subselect reports</selectDescription>
+				<selectDescription>A hidden report, only called from another report, with parameter; use of parameter 
+				in subselect reports</selectDescription>
 				<title>Note, this report was not in the list of reports</title>   
 				<subtitle/>   
 				<param mandatory="1">
@@ -92,7 +95,8 @@
 
 				<subselect>
 					<title>Subselect 2, use of a forwarded parameter; link to the connected screen</title>
-					<subtitle>The value of the parameter param1 from the previous report was used as a search criteria in this report. There is a also a further connection to the report No. 3 using the value of column id_emp</subtitle>
+					<subtitle>The value of the parameter param1 from the previous report was used as a search criteria in this report. 
+					There is a also a further connection to the report No. 3 using the value of column id_emp</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>Arrivals</dbtable>
@@ -159,9 +163,10 @@
 
 			<screen>
 				<id>4</id>
-				<selectDescription>Use of SELECT, example 1</selectDescription>
+				<selectDescription>Use of SELECT, dropdown, example 1</selectDescription>
 				<title>Example 1</title>   
-				<subtitle>Use of dropdown selection with values from a SELECT; compare SQL code with Example 2 below</subtitle>   
+				<subtitle>Use of dropdown selection from a separate query returning two columns (value-to-be-searched, combobox-text); 
+				          use of table alias; compare SQL code with report #5</subtitle>   
 				<param>
 					<name>Department</name>
 					<dbtable>Departments</dbtable>
@@ -186,9 +191,9 @@
 
 			<screen>
 				<id>5</id>
-				<selectDescription>Use of SELECT, example 2, mandatory parameter</selectDescription>
+				<selectDescription>Use of SELECT, mandatory parameter, example 2</selectDescription>
 				<title>Example 2</title>   
-				<subtitle>Mandatory parameter; use of dropdown selection; use of SQL alias in the query</subtitle>   
+				<subtitle>Mandatory parameter; use of SQL alias in the query</subtitle>   
 				<param  mandatory="1">
 					<name>Department</name>
 					<dbtable>dE</dbtable>
