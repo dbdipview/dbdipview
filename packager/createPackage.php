@@ -47,21 +47,42 @@ function checkRemove($s, $file) {
 }
 
 function showOptions() {
-	echo "Usage: php " . basename(__FILE__) . " -s <source_dir> [-t <target_dir> -n <target_package_name>] [-y]" . PHP_EOL;
+	echo "Usage: php " . basename(__FILE__) . " -s <source_dir> [-t <target_dir> -n <target_package_name>] [-y] -i [info]" . PHP_EOL;
 	echo "Examples:" . PHP_EOL;
 	echo "  Validate input:" . PHP_EOL;
 	echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS" . PHP_EOL;
 	echo "  Validate input and create package:" . PHP_EOL;
-	echo "       php " . basename(__FILE__) . " -y -s ~/dbdipview/records/SIP/GZS -t ~/dbdipview/records/DIP0 -n GZSP" . PHP_EOL;
+	echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS -t ~/dbdipview/records/DIP0 -n GZSP -y -i 'this is a test package'" . PHP_EOL;
 	exit -2;
+}
+
+function createAboutXML($file) {
+	global $version, $infotext;
+	$date = date('c');
+	if ( is_file($file) )
+		unlink($file);
+	if( $fp=fopen($file,'w+') ) { 
+		fwrite($fp,"<?xml version='1.0' ?>\n");
+		fwrite($fp,"<pkginfo>\n");
+		fwrite($fp,"  <type>dbDIPview</type>\n"); 
+		fwrite($fp,"  <version>$version</version>\n"); 
+		fwrite($fp,"  <created>$date</created>\n");
+		fwrite($fp,"  <info>$infotext</info>\n"); 
+		fwrite($fp,"</pkginfo>\n");
+	} else {
+		echo "ERROR: Cannot create $file". PHP_EOL;
+		exit(1);
+	}
+	fclose($fp); 
 }
 
 require $PROGDIR . "/../admin/funcXml.php";
 require $PROGDIR . "/../admin/funcMenu.php";
 require $PROGDIR . "/../admin/funcActions.php";
 require $PROGDIR . "/../admin/funcDb.php";
+require $PROGDIR . "/../admin/version.php";
 
-$options = getopt("s:t:n:yh");
+$options = getopt("s:t:n:yi:h");
 if ( array_key_exists('h', $options) || !array_key_exists('s', $options) )
 	showOptions();
 
@@ -70,9 +91,13 @@ $OUTDIR = "";
 $NAME = "";
 $OUTFILE_TAR = "";
 $OUTFILE_ZIP = "";
+$infotext="";
 
 if (array_key_exists('y', $options))
 	$YES = true;
+
+if (array_key_exists('i', $options))
+	$infotext = $options['i'];
 
 if (array_key_exists('s', $options))
 	$SOURCE = $options['s'];
@@ -93,6 +118,7 @@ if (!is_dir($SOURCE)) {
 echo "Validating xml..." . PHP_EOL;
 $file = $SOURCE . "/metadata/queries.xml";
 $schema = $PROGDIR . "/queries.xsd";
+$infofile = $SOURCE . "/about.xml";
 
 msg_red_on();
 if (is_file($file))
@@ -101,7 +127,7 @@ else
 	echo "ERROR: file not found: " . $file . PHP_EOL;
 msg_colour_reset();
 
-$ALLMETADATA="metadata/queries.xml metadata/list.txt metadata/info.txt";
+$ALLMETADATA="about.xml metadata/info.txt metadata/queries.xml metadata/list.txt";
 if ( is_file($SOURCE . "/metadata/redactdb.sql") )
 	$ALLMETADATA = "$ALLMETADATA metadata/redactdb.sql";
 
@@ -132,19 +158,20 @@ if (empty($OUTDIR) || !is_dir($OUTDIR)) {
 	echo "ERROR: Target directory $OUTDIR does not exist.". PHP_EOL;
 	exit(1);
 }
+
 if (empty($NAME)) {
 	echo "ERROR: Target package name not defined.". PHP_EOL;
 	showOptions();
 }
+
 checkRemove("Target package file $OUTFILE_TAR exists.", $OUTFILE_TAR);
-
 checkRemove("Target package file $OUTFILE_TAR" . ".gz exists.", $OUTFILE_TAR . ".gz");
-
 checkRemove("Target package file $OUTFILE_ZIP exists.", $OUTFILE_ZIP);
+createAboutXML($infofile);
 
 if ( $countDatafiles ===  0 ) {
     echo "Creating DDV package...". PHP_EOL;
-	$out = passthru("cd '" . $SOURCE . "' && " .
+	passthru("cd '" . $SOURCE . "' && " .
 		"zip -r $OUTFILE_ZIP $ALLMETADATA");
 	$pkgtype=".zip";
 } else {
@@ -155,22 +182,32 @@ if ( $countDatafiles ===  0 ) {
 	}
 
 	echo "Creating hashes...". PHP_EOL;
-	$file = "$SOURCE/metadata/manifest-md5.txt"; 
+
+	$file = "$SOURCE/manifest-md5.txt"; 
 	if ( is_file($file) )
 			unlink($file);
-	$file = "$SOURCE/metadata/manifest-sha256.txt"; 
+
+	$file = "$SOURCE/manifest-sha256.txt"; 
 	if ( is_file($file) )
 			unlink($file);
-	$out = passthru("cd " . $SOURCE . " && " .
-		"md5sum data/*    > metadata/manifest-md5.txt" . " && " .
-		"sha256sum data/* > metadata/manifest-sha256.txt" );
-	$ALLMETADATA = "$ALLMETADATA metadata/manifest-md5.txt metadata/manifest-sha256.txt";
+
+	passthru("cd " . $SOURCE . " && " .
+		"md5sum data/*    > manifest-md5.txt" . " && " .
+		"sha256sum data/* > manifest-sha256.txt" );
+	$ALLMETADATA = "$ALLMETADATA manifest-md5.txt manifest-sha256.txt";
 	
 	echo "Creating EXT DDV package...". PHP_EOL;
-	$out = passthru("cd '" . $SOURCE . "' && " .
+	passthru("cd '" . $SOURCE . "' && " .
 		"tar vcf $OUTFILE_TAR $ALLMETADATA $ALLDATA && " .
 		"gzip $OUTFILE_TAR");
 	$pkgtype = ".tar.gz";
 }
 
-$out = passthru("echo Done.  && ls -lrt $OUTDIR/$NAME$pkgtype");
+unlink($infofile);
+if (is_file("$SOURCE/manifest-md5.txt"))
+	unlink( "$SOURCE/manifest-md5.txt");
+if (is_file("$SOURCE/manifest-sha256.txt"))
+	unlink( "$SOURCE/manifest-sha256.txt");
+
+passthru("echo Done.  && ls -lrt $OUTDIR/$NAME$pkgtype");
+

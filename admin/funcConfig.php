@@ -276,7 +276,8 @@ function config_show() {
 	$length6 = strlen("ORDER");
 
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
-		
+	usort($array, "cmpRef");
+
 	foreach ($array as $index=>$line) {
 		if ( mb_strlen($line['dbc'])        > $length0)
 			$length0 = mb_strlen($line['dbc']);
@@ -325,6 +326,10 @@ function config_show() {
 		err_msg($MSG34_NOACTIVEDB);
 }
 
+function cmpRef($a, $b) {
+	return( strcmp($a['ref'], $b['ref']) );
+}
+
 /**
  * Display configuration information as a table
  */
@@ -351,7 +356,3 @@ function configGetInfo($ddv, $DBC) {
 	return($configItemInfo);
 }
 
-function mb_str_pad($input, $pad_length, $pad_char=' ') {
-	$mb_diff = mb_strlen($input) - strlen($input);
-	return str_pad($input, $pad_length - $mb_diff, $pad_char, STR_PAD_RIGHT);
-}

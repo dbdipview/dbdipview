@@ -16,7 +16,7 @@
 		<screens>
 
 			<screen>
-				<id>5</id>
+				<id>1</id>
 				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
 				<title>TITLE: RC airplane pictures</title>   
 				<subtitle>SUBTITLE: Use of images as thumbnails and as links to the files (results pane). Example for external link.
@@ -36,7 +36,8 @@
 						"picture" AS pictureimg1, 
 						"picture" AS pictureslink1, 
 						"ext_link"
-						FROM "AirplanesLinks"."models"
+						FROM "AirplanesLinks"."models" 
+						WHERE name != 'example'
 				</query>
 				<ahrefs>
 					<ahref>
@@ -100,7 +101,7 @@
 			</screen>
 
 			<screen skipCSVsave="1">
-				<id>6</id>
+				<id>2</id>
 				<selectDescription>Display data from a view</selectDescription>
 				<title>Test of access to the VIEW; Test of attribute skip CSV save - disabled save.</title>
 				<subtitle>Note: This view was created in queries01.sql</subtitle>
@@ -110,7 +111,7 @@
 			</screen>
 			
 			<screen skipCSVsave="1">
-				<id>7</id>
+				<id>3</id>
 				<selectDescription>Display tables that were loaded from sample CSV files. Test of redaction.</selectDescription>
 				<title>Test of table upload. These tables were uploaded from CSV files with 4 data lines.</title>   
 				<subtitle>Loaded from Keys comma.csv:</subtitle>

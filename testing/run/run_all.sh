@@ -17,6 +17,7 @@
 MH=~/dbdipview
 DIP0=$MH/records/DIP0
 UNPACKED=$MH/records/DIP0unpacked
+INFO="Package created by run_all.sh"
 #DBG="-d"
 DBG=
 
@@ -41,33 +42,33 @@ else
 	if [ "$1" != "-r" ]; then
 		TESTCASE=TestAndDemo2
 		echo "==${TESTCASE}========================================="
-		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y
+		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 		cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 		php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
 
 		TESTCASE=TestAndDemo3
 		echo "==${TESTCASE}========================================="
-		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y
+		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 		cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 		cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
 		php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
 
 		TESTCASE=TestAndDemo4
 		echo "==${TESTCASE}========================================="
-		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y
+		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 		cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 		cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
 		php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
 
 		TESTCASE=TestAndDemo5
 		echo "==${TESTCASE}========================================="
-		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y
+		php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 		cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 		php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
 
 		echo "======================================================"
 		echo "Done."
-		echo "You can remove the databases with option -r"
+		echo "To remove the databases run: run_all -r"
 		xip=`hostname -I`
 		ip=`echo $xip | sed 's/ *$//g'`
 		echo "Now you can check http://$ip/dbdipview/login.htm"
