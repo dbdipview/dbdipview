@@ -1,10 +1,12 @@
 CREATE TABLE "AirplanesLinks"."models"
 (
     "id" integer NOT NULL,
-    "height"    decimal,
-    "name"      character varying(50),
-    "picture"   character varying(100),
-    "ext_link"  VARCHAR(100)
+    "height"      decimal,
+    "name"        character varying(50),
+    "picture"     character varying(100),
+    "ext_link"    VARCHAR(100),
+	"motors_code" INTEGER,
+	"motors_text" VARCHAR(100)
 );
 
 CREATE INDEX models_id ON "AirplanesLinks"."models"(id);
@@ -45,3 +47,10 @@ CREATE TABLE "TestCSV"."test4" (
    "dateY"  TIMESTAMP,
    "wingspan" DECIMAL(7, 2)
 );
+
+-- we have to create a special table with codes as it is not available
+CREATE VIEW "AirplanesLinks"."view_codes_NumOfEngines"
+  AS
+  SELECT DISTINCT "motors_code", "motors_text" FROM  "AirplanesLinks"."models" 
+  WHERE "motors_code" IS NOT NULL 
+  ORDER BY "motors_text"
