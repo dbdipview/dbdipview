@@ -101,8 +101,8 @@ function fillCreateQuery() {
 global $xml;
 global $targetQueryNum;
 global $PARAMS;
-global $MSGSW12_HitsOnPage, $MSGSW13_PreviousPage, $MSGSW14_NextPage, $MSGSW15_Close;
-global $MSGSW18_ReportDescription, $MSGSW23_PAGE, $MSGSW24_NOPARAMETER;
+global $MSGSW12_HitsOnPage, $MSGSW12_TotalRecords, $MSGSW13_PreviousPage, $MSGSW14_NextPage;
+global $MSGSW15_Close, $MSGSW18_ReportDescription, $MSGSW23_PAGE, $MSGSW24_NOPARAMETER;
 
 $paramForwardNum = array();
 
@@ -498,7 +498,7 @@ foreach ($xml->database->screens->screen as $screen) {
 				print($subTitle);
 			print("<br/>");
 			
-			$newlist=qToTableWithLink($query, 
+			$newlist = qToTableWithLink($query, 
 									$linknextscreen_columns,
 									$images_image_style,
 									$ahref_columns,
@@ -506,7 +506,8 @@ foreach ($xml->database->screens->screen as $screen) {
 									"M");
 			
 			print $newlist[0];
-			$hits=$newlist[1];
+			$hits = $newlist[1];
+			$totalLines = $newlist[2];
 
 			//display subqueries
 			$sqindexLoop=0;
@@ -537,8 +538,12 @@ foreach ($xml->database->screens->screen as $screen) {
 				print $newlist[0];
 				$sqindexLoop  += 1;
 			}
-			if($sqindex == 0)    //show only when there are no subqueries involved
-				print ("<br/>" . (isset($MSGSW12_HitsOnPage) ? $MSGSW12_HitsOnPage : "Število zadetkov na strani") . ": " . $hits . "<br/>\n"); 
+			if($sqindex == 0) {    //show only when there are no subqueries involved
+				print ("<br/>" . $MSGSW12_HitsOnPage . ": " . $hits); 
+				if ($totalLines > 0)
+					print(" (" . $MSGSW12_TotalRecords . ": " . $totalLines . ")");
+				print("<br/>\n");
+			}
 		}
 
 		if( strcmp($tablelist, "list") == 0) {
@@ -559,6 +564,7 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			print $newlist[0];
 			$hits=$newlist[1];
+			$totalLines = $newlist[2];
 			
 			//display subqueries
 			$sqindexLoop=0;
@@ -578,21 +584,25 @@ foreach ($xml->database->screens->screen as $screen) {
 				$sqindexLoop  += 1;
 			}
 			print "</td></tr></table>" . PHP_EOL;
-			if($sqindex == 0)    //show only when there are no subqueries involved
-				print ("<br/>" . (isset($MSGSW12_HitsOnPage) ? $MSGSW12_HitsOnPage : "Število zadetkov na strani") . ": " . $hits . "<br/>\n"); 
+			if($sqindex == 0) {   //show only when there are no subqueries involved
+				print ("<br/>" . $MSGSW12_HitsOnPage  . ": " . $hits);
+ 				if ($totalLines > 0)
+					print(" (" . $MSGSW12_TotalRecords . ": " . $totalLines . ")");
+				print("<br/>\n");
+			}
 		}
 
 	} //if screen->id
 } //for each screen
 
- 
 //get numbers for paging of output
 $page_previous = 0;
 foreach ( $PARAMS as $key=>$value ){
 	if ( gettype( $value ) != "array" ){
 		if($key == "__page") {
-			if($sqindex == 0)    //do not show on a page with subqueires
-				echo "$MSGSW23_PAGE: $page";
+			if($sqindex == 0) {   //do not show on a page with subqueires
+				print("$MSGSW23_PAGE: $page");
+			}
 			$page_next = $page + 1;
 			if ($page > 0) 
 				$page_previous = $page - 1;
@@ -619,13 +629,13 @@ if ($page_previous > 0) {
 		}
 	}
 ?>
-       <input type="submit" value="<?php echo (isset($MSGSW13_PreviousPage) ? $MSGSW13_PreviousPage : "Prejšnja stran"); ?>" class='button' />
+       <input type="submit" value="<?php echo $MSGSW13_PreviousPage; ?>" class='button' />
       </form>
     </center>
   </td>
 <?php
 } 
-if ($maxcount == $hits && $hits > 0) {
+if ($maxcount == $hits && ($hits > 0) && ! (($page * $hits) == $totalLines) ) {
 ?>
   <td colspan = 2>
     <center>
@@ -640,7 +650,7 @@ if ($maxcount == $hits && $hits > 0) {
 		}
 	}
 ?>
-       <input type="submit" value="<?php echo (isset($MSGSW14_NextPage) ? $MSGSW14_NextPage : "Naslednja stran"); ?>" class='button' />
+       <input type="submit" value="<?php echo $MSGSW14_NextPage; ?>" class='button' />
       </form>
     </center>
   </td>
@@ -648,11 +658,14 @@ if ($maxcount == $hits && $hits > 0) {
 } 
 ?>
 </tr>
+<tr>
+  <td colspan = 2>
+      <form style="display: inline;" action="empty.htm" method='get' >   
+        <input type="submit" value="<?php echo (isset($MSGSW15_Close) ? $MSGSW15_Close : "Zapri"); ?>" class='button' />
+      </form>
+  </td>
+</tr>
 </table>
-
-<form style="display: inline;" action="empty.htm" method='get' >   
-	<input type="submit" value="<?php echo (isset($MSGSW15_Close) ? $MSGSW15_Close : "Zapri"); ?>" class='button' />
-</form>
 <?php
 
 } // function  fillCreateQuery

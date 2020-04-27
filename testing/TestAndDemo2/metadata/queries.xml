@@ -29,13 +29,22 @@
 					<type>textlike</type>
 					<forwardToSubqueryName>param1</forwardToSubqueryName>
 				</param>
+				<param>
+					<name>Number of motors</name>
+					<dbtable>models</dbtable>
+					<dbcolumn>motors_code</dbcolumn>
+					<select>SELECT "motors_code", "motors_text" FROM "AirplanesLinks"."view_codes_NumOfEngines" ORDER BY "motors_text"</select>
+					<type>combotext</type>
+				</param>
 				<query>SELECT id, 
 						name, 
 						"picture" AS pictureimg, 
 						"picture" AS pictureslink, 
 						"picture" AS pictureimg1, 
 						"picture" AS pictureslink1, 
-						"ext_link"
+						"ext_link",
+						"motors_code",
+						"motors_text"
 						FROM "AirplanesLinks"."models" 
 						WHERE name != 'example'
 				</query>
@@ -104,10 +113,20 @@
 				<id>2</id>
 				<selectDescription>Display data from a view</selectDescription>
 				<title>Test of access to the VIEW; Test of attribute skip CSV save - disabled save.</title>
-				<subtitle>Note: This view was created in queries01.sql</subtitle>
+				<subtitle>Note: This view was created in createdb01.sql as a simple example.</subtitle>
 				<query>SELECT *	
 						FROM "AirplanesLinks"."my_view"
 				</query>
+				
+				<subselect>
+					<subtitle>Note: This view was created in createdb.sql.
+					Codes and values were derived from the main table. We need them for dropdown menu in Report 1.
+					</subtitle>
+					<query>SELECT *	
+						FROM "AirplanesLinks"."view_codes_NumOfEngines"
+					</query>
+				</subselect>
+
 			</screen>
 			
 			<screen skipCSVsave="1">

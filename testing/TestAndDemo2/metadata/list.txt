@@ -1,7 +1,8 @@
-VERSION	2020-04-20
+VERSION	2020-04-26
 COMMENT	TestAndDemo2 - dbDIPview regression test
 SCHEMA	AirplanesLinks
 SCHEMA	TestCSV
+VIEW	AirplanesLinks.view_codes_NumOfEngines
 #TABLE	table	file	format	date_format	delimiter	encoding	header
 TABLE	AirplanesLinks.models	models.csv	CSV	YMD	,	UTF8	y
 VIEW	AirplanesLinks.my_view

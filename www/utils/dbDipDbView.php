@@ -5,6 +5,59 @@
  * functions that execute a query and return result
  */
  
+/**
+ * given a SELECT query, adds additional column with total count of hits to be used for pagination
+ * To minimize risks of wrong inserting of COUNT(*) columns, complicated queries will not be changed:
+ *   - WITH ... SELECT
+ *   - ... UNION ...
+ *
+ * Returns: a query with added a column with Total, or ""
+ */
+function addCountTotal($string) {
+	$useCountTotal = true;
+
+	$haystack = preg_replace('~[\r\n\t]+~', ' ', trim($string));
+	if (stripos($haystack, ' COUNT(*) OVER() ') === 0)
+		$useCountTotal = false;
+	if (stripos($haystack, 'SELECT ') === false || stripos($haystack, 'SELECT ') > 0) {
+		$useCountTotal = false;
+	} elseif (stripos($haystack, ' UNION ') !== false) {
+		$useCountTotal = false;
+	} else {
+		$needle = ' FROM ';
+		$replace = ', COUNT(*) OVER() AS "E2F7total7E8D233C" FROM ';  //something reserved
+
+		$pos = findFirstFreeNeedle($haystack, $needle, 0);
+
+		if ($pos > 0)
+			return( substr_replace($haystack, $replace, $pos, strlen($needle)) );
+		else
+			return ("");
+	}
+	return("");
+}
+
+/**
+ * finds a keyword that is not in parenthesis
+ * SELECT a,b,( ... FROM ...   ) FROM ....
+ *
+ * Returns: index or 0
+ */
+function findFirstFreeNeedle($string, $needle, $offset) {
+	
+	$pos = stripos($string, $needle, $offset);
+	if ($pos === false)
+		return( 0 );  //the keyword FROM not found??
+
+	$numOfLeft  = substr_count($string, '(', $pos);
+	$numOfRight = substr_count($string, ')', $pos);
+	if ($numOfLeft == $numOfRight)
+		return($pos);
+	else
+		return( findFirstFreeNeedle($string, $needle, $pos + 1) );
+}
+ 
+ 
 //given a query, returns an array from the first line of result
 function qRowToArray($query){
 	global $dbConn;
@@ -83,6 +136,7 @@ function qToValue($query){
 	return $output;
 } // end qToValue
 
+
 //given a query, returns a string, only one value is expected
 //uses prepared query
 function qToPrepValue($query, $params){
@@ -123,7 +177,14 @@ function qToListWithLink($query,
 	global $dbConn;
 	global $filespath;
 	$output = "";
-	$result = pg_query($dbConn, $query);
+	
+	$totalLines = 0;
+	$queryWithCount = addCountTotal($query); 
+	if(empty($queryWithCount)) 
+		$result = pg_query($dbConn, $query );
+	else
+		$result = pg_query($dbConn, $queryWithCount );
+
 	if (!$result) {
 		$output = "ERROR: qToListWithLink<br />";
 		debug(pg_last_error($dbConn));
@@ -133,6 +194,11 @@ function qToListWithLink($query,
 			
 			foreach ($row as $col=>$valnl) {
 				$val = nl2br($valnl);
+				
+				if ($col == "E2F7total7E8D233C") {
+					$totalLines = $val;
+					continue;     //hide column Total
+				}
 				$output .= "<b>$col:</b> ";
 
 				$column = $linknextscreen_columns[$col];
@@ -204,7 +270,7 @@ function qToListWithLink($query,
 		$output .= "<hr /> \n" ;
 
 	$hits = pg_num_rows($result);
-	$returnarray = array($output, $hits);
+	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
 	
 } // end qToListWithLink
@@ -265,15 +331,29 @@ function qToTableWithLink($query,
 	$output = "";
 	$tableid = "table" . $queryId;
 	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
-	$result = pg_query($dbConn, $query );
+
+	$totalLines = 0;
+	$queryWithCount = addCountTotal($query); 
+	if(empty($queryWithCount)) 
+		$result = pg_query($dbConn, $query );
+	else
+		$result = pg_query($dbConn, $queryWithCount );
+
 	if (!$result) {
-		$output = "ERROR: qToTableWithLink<br />";
+		$output .= "ERROR: qToTableWithLink<br />";
 		debug(pg_last_error($dbConn));
 	} else {
+		//$output .= "Added COUNT():" . $queryWithCount;
 		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">\n";  
 
 		$output .= "<thead><tr>\n";
 		$i = pg_num_fields($result);
+		
+		if( !empty($queryWithCount) )
+			$i -= 1;   //there will be an additional column with with Total, hide it
+
+		$columnsToDisplay = $i;
+
 		for ($j = 0; $j < $i; $j++) {
 			$field = pg_field_name($result, $j);
 			$hcol = $j + 1;
@@ -289,8 +369,15 @@ function qToTableWithLink($query,
 
 		while ($row = pg_fetch_assoc($result)) {
 			$output .= "<tr>\n";
+			$numOfColumns = 0;
 			foreach ($row as $col=>$valnl) {
+				
 				$val = nl2br($valnl);
+
+				if (++$numOfColumns > $columnsToDisplay) {
+					$totalLines = $val;
+					continue;     //hide column Total
+				}
 				
 				$column = $linknextscreen_columns[$col];
 				if (!is_null($column) && $column["dbtable"]!="") { 
@@ -362,7 +449,7 @@ function qToTableWithLink($query,
 	$output .= "</tbody>\n";
 	$output .= "</table>\n";
 	$hits = pg_num_rows($result);
-	$returnarray = array($output, $hits);
+	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
 } // end qToTableWithLink
 

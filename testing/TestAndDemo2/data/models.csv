@@ -1,8 +1,8 @@
-id,height,name,picture,ext_link
-239,11.10,,,
-237,10.20,first,,silver
-238,11.00,second,,mercury
-235,10.80,The Stick model,pictures\fileFromTarGz.jpg,gold
-236,16.20,The Pitts model,pictures/file From Tar.jpg,lithium
-234,11.70,What time is it?,fileFromZip.jpg,caesium
-240,,Last one,pictures/fileFromTgz.jpg,rubidium
+id,height,name,picture,ext_link,motors_code,motors_text
+239,11.10,,,,,
+237,10.20,first,,silver,10,single
+238,11.00,second,,mercury,10,single
+235,10.80,The Stick model,pictures\fileFromTarGz.jpg,gold,20,twin
+236,16.20,The Pitts model,pictures/file From Tar.jpg,lithium,10,single
+234,11.70,What time is it?,fileFromZip.jpg,caesium,10,single
+240,,Last one,pictures/fileFromTgz.jpg,rubidium,20,twin
