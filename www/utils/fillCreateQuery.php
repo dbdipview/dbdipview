@@ -106,6 +106,11 @@ global $MSGSW15_Close, $MSGSW18_ReportDescription, $MSGSW23_PAGE, $MSGSW24_NOPAR
 
 $paramForwardNum = array();
 
+if ( array_key_exists("totalCount", $PARAMS) ) 
+	$totalCount = pg_escape_string($PARAMS['totalCount']);
+else
+	$totalCount = ""; 
+
 foreach ($xml->database->screens->screen as $screen) {
 	$where = "";
 	$mandatory = "";
@@ -503,11 +508,15 @@ foreach ($xml->database->screens->screen as $screen) {
 									$images_image_style,
 									$ahref_columns,
 									$blob_columns,
+									$totalCount,
 									"M");
 			
 			print $newlist[0];
 			$hits = $newlist[1];
-			$totalLines = $newlist[2];
+			if ( empty($totalCount) )
+				$totalLines = $newlist[2];
+			else
+				$totalLines = $totalCount; //already known
 
 			//display subqueries
 			$sqindexLoop=0;
@@ -560,11 +569,15 @@ foreach ($xml->database->screens->screen as $screen) {
 									$linknextscreen_columns,
 									$images_image_style,
 									$ahref_columns,
-									$blob_columns);
+									$blob_columns,
+									$totalCount);
 
 			print $newlist[0];
 			$hits=$newlist[1];
-			$totalLines = $newlist[2];
+			if ( empty($totalCount) )
+				$totalLines = $newlist[2];
+			else
+				$totalLines = $totalCount; //already known
 			
 			//display subqueries
 			$sqindexLoop=0;
@@ -628,6 +641,9 @@ if ($page_previous > 0) {
 			print "       <input type=\"hidden\" name=\"$key\" value=\"$value\" />" . PHP_EOL;
 		}
 	}
+			$key = "totalCount";
+			$value = $totalLines;
+			print "       <input type=\"hidden\" name=\"$key\" value=\"$value\" />" . PHP_EOL;
 ?>
        <input type="submit" value="<?php echo $MSGSW13_PreviousPage; ?>" class='button' />
       </form>
@@ -635,7 +651,7 @@ if ($page_previous > 0) {
   </td>
 <?php
 } 
-if ($maxcount == $hits && ($hits > 0) && ! (($page * $hits) == $totalLines) ) {
+if ($maxcount == $hits && ($hits > 0) && !(($page * $hits) == $totalLines) ) {
 ?>
   <td colspan = 2>
     <center>
@@ -646,9 +662,12 @@ if ($maxcount == $hits && ($hits > 0) && ! (($page * $hits) == $totalLines) ) {
 			if($key == "__page") { 
 				$value = $page_next;
 			}
-			print "       <input type=\"hidden\" name=\"$key\" value=\"$value\" class='button' />" . PHP_EOL;
+			print "       <input type=\"hidden\" name=\"$key\" value=\"$value\" />" . PHP_EOL;
 		}
 	}
+			$key = "totalCount";
+			$value = $totalLines;
+			print "       <input type=\"hidden\" name=\"$key\" value=\"$value\"  />" . PHP_EOL;
 ?>
        <input type="submit" value="<?php echo $MSGSW14_NextPage; ?>" class='button' />
       </form>
@@ -673,9 +692,9 @@ if ($maxcount == $hits && ($hits > 0) && ! (($page * $hits) == $totalLines) ) {
 function is_where_already_here($selectStmnt) {
 	//if there is a WHERE part at the end, skip it now
 	//do not count WHERE in situations like SELECT ... (SELECT COUNT(*) WHERE ...)
-	$levi =   preg_replace("/\([^)]+\)/"," ",$selectStmnt);     // remove anything between ( and )
-	$desni =  preg_replace("/\([^)]+\(/"," ",$levi);            // remove anything between ( and (
-	$no_wrong_where = preg_replace("/\([^)]+\)/"," ",$desni);   // remove anything between ( and )
+	$left =   preg_replace("/\([^)]+\)/"," ",$selectStmnt);     // remove anything between ( and )
+	$right =  preg_replace("/\([^)]+\(/"," ",$left);            // remove anything between ( and (
+	$no_wrong_where = preg_replace("/\([^)]+\)/"," ",$right);   // remove anything between ( and )
 
 	if (substr_count($no_wrong_where, " WHERE ")   > 0 || 
 			substr_count($no_wrong_where, " WHERE\t")  > 0 || 

@@ -173,14 +173,21 @@ function qToListWithLink($query,
 					$linknextscreen_columns, 
 					$images_image_style, 
 					$ahref_columns,
-					$blob_columns) {
+					$blob_columns,
+					$totalCount) {
 	global $dbConn;
 	global $filespath;
 	$output = "";
 	
-	$totalLines = 0;
-	$queryWithCount = addCountTotal($query); 
-	if(empty($queryWithCount)) 
+	if ( empty($totalCount) ) {
+		$totalLines = 0;
+		$queryWithCount = addCountTotal($query);
+	} else {
+		$totalLines = $totalCount;  //was calculated at first page
+		$queryWithCount = "";
+	}
+	
+	if( empty($queryWithCount) ) 
 		$result = pg_query($dbConn, $query );
 	else
 		$result = pg_query($dbConn, $queryWithCount );
@@ -324,7 +331,8 @@ function qToTableWithLink($query,
 					$linknextscreen_columns, 
 					$images_image_style, 
 					$ahref_columns, 
-					$blob_columns, 
+					$blob_columns,
+					$totalCount,
 					$queryId) {
 	global $dbConn;
 	global $filespath;
@@ -333,12 +341,20 @@ function qToTableWithLink($query,
 	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
 
 	$totalLines = 0;
-	$queryWithCount = addCountTotal($query); 
-	if(empty($queryWithCount)) 
+	
+	if ( empty($totalCount) ) {
+		$totalLines = 0;
+		$queryWithCount = addCountTotal($query);
+	} else {
+		$totalLines = $totalCount;  //was calculated at first page
+		$queryWithCount = "";
+	}
+	
+	if( empty($queryWithCount) ) 
 		$result = pg_query($dbConn, $query );
 	else
 		$result = pg_query($dbConn, $queryWithCount );
-
+	
 	if (!$result) {
 		$output .= "ERROR: qToTableWithLink<br />";
 		debug(pg_last_error($dbConn));
