@@ -1,3 +1,4 @@
+#!/bin/bash
 # dbDIPview regression test
 #
 # For all TestAndDemo test cases these steps will be performed based on the related order XML file:
@@ -7,14 +8,15 @@
 #    - use the orders and install and activate the databases
 #
 # Run with this command:
-#    .  ~/dbdipview/testing/run/run_all.sh
+#    ./run_all.sh
 # To remove all installed databases:
-#    .  ~/dbdipview/testing/run/run_all.sh -r
+#    ./run_all.sh -r
 #
 # Boris Domajnko
 #
 
-MH=~/dbdipview
+dir="$(dirname $0)"  #dbdipview/test/run
+MH="$dir/../.."      #dbdipview
 DIP0=$MH/records/DIP0
 UNPACKED=$MH/records/DIP0unpacked
 INFO="Package created by run_all.sh"
@@ -29,7 +31,7 @@ then
 	- check the MH variable in this file."
 else
 
-	echo "== removing previously installed databases ==========="
+	echo "== Removing previously installed databases ==========="
 	for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5
 	do
 		echo "== deleting ${TESTCASE} ============"
