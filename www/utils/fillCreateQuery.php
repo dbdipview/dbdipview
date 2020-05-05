@@ -542,7 +542,8 @@ foreach ($xml->database->screens->screen as $screen) {
 										$subqueries_images_image_style[$sqindexLoop],
 										$subqueries_ahref_columns[$sqindexLoop],
 										$subqueries_blob_columns[$sqindexLoop],
-										$sqindexLoop);
+										$sqindexLoop,
+										0);
 										
 				print $newlist[0];
 				$sqindexLoop  += 1;
@@ -591,7 +592,8 @@ foreach ($xml->database->screens->screen as $screen) {
 										$subqueries_linknextscreen_columns[$sqindexLoop], 
 										$subqueries_images_image_style[$sqindexLoop],
 										$subqueries_ahref_columns[$sqindexLoop],
-										$subqueries_blob_columns[$sqindexLoop]);
+										$subqueries_blob_columns[$sqindexLoop],
+										0);
 
 				print $newlist[0];
 				$sqindexLoop  += 1;
