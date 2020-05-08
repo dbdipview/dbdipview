@@ -547,7 +547,8 @@ function checkListFile($folder) {
 			} elseif (strpos($line, '#') === 0 || strpos($line, '//') === 0){
 				//-print($line . PHP_EOL);
 			} else {
-				$retErrors += checkShowError($lineNum, "ERROR: unexpected start of line with: ");
+				checkShowError($lineNum, "ERROR: unexpected start of line with: " . $LTYPE);
+				$retErrors++; 
 			}
 
 		} //while

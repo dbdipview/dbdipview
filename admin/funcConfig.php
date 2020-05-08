@@ -25,6 +25,12 @@ function config_create() {
 			fclose($handleWrite);
 		}
 	}
+	
+	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
+	if( !is_array($array) ) {
+		err_msg("ERROR: corrupted file: " . $SERVERCONFIGJSON);
+		exit(1);
+	}
 }
 
 /**
@@ -33,7 +39,7 @@ function config_create() {
  *
  */
 function config_migrate() {
-	global $SERVERCONFIGCSV, $SERVERCONFIGJSON;
+	global $SERVERCONFIGCSV;
 	if(file_exists ("$SERVERCONFIGCSV")) {
 		$fh = fopen("$SERVERCONFIGCSV", "r");
 		if(!$fh) {
@@ -86,15 +92,15 @@ function config_json_add_item($configItemInfo) {
 	global $SERVERCONFIGJSON;
 
 	$newjson  = '{';
-	$newjson .= '"dbc":"' .        $configItemInfo['dbc']          . '",';
-	$newjson .= '"ddv":"' .        $configItemInfo['ddv']          . '",';
-	$newjson .= '"queriesfile":"' .$configItemInfo['queriesfile']  . '",';
-	$newjson .= '"ddvtext":"' .    $configItemInfo['ddvtext']      . '",';
-	$newjson .= '"token":"' .      $configItemInfo['token']        . '",';
-	$newjson .= '"access":"' .     $configItemInfo['access']       . '",';
-	$newjson .= '"ref":"' .        $configItemInfo['ref']          . '",';
-	$newjson .= '"title":"' .      $configItemInfo['title']        . '",';
-	$newjson .= '"order":"' .      $configItemInfo['order']        . '"}';
+	$newjson .= '"dbc":"' .                             $configItemInfo['dbc']         . '",';
+	$newjson .= '"ddv":"' .                             $configItemInfo['ddv']         . '",';
+	$newjson .= '"queriesfile":"' .                     $configItemInfo['queriesfile'] . '",';
+	$newjson .= '"ddvtext":"' .    str_replace('"', "", $configItemInfo['ddvtext'])    . '",';
+	$newjson .= '"token":"' .                           $configItemInfo['token']       . '",';
+	$newjson .= '"access":"' .                          $configItemInfo['access']      . '",';
+	$newjson .= '"ref":"' .        str_replace('"', "", $configItemInfo['ref'])        . '",';
+	$newjson .= '"title":"' .      str_replace('"', "", $configItemInfo['title'])      . '",';
+	$newjson .= '"order":"' .                           $configItemInfo['order']       . '"}';
 
 	$i = 0;
 	$json = "["; 
@@ -114,7 +120,7 @@ function config_json_add_item($configItemInfo) {
 	fwrite($handleWrite,$json);
 	fclose($handleWrite);
 	
-	rename("$SERVERCONFIGJSON.tmp", $SERVERCONFIGJSON);  
+	rename("$SERVERCONFIGJSON.tmp", $SERVERCONFIGJSON);
 }
 
 
