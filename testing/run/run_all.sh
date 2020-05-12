@@ -33,7 +33,7 @@ then
 fi
 
 echo "== Removing previously installed databases ==========="
-for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5
+for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5 TestAndDemo6
 do
 	echo "== deleting ${TESTCASE} ============"
 	#skip after first installation
@@ -47,7 +47,7 @@ if [ "$1" == "-r" ]; then
 fi
 	
 echo "== Building or copying packages ==========="
-sleep 3
+sleep 2
 
 TESTCASE=TestAndDemo2
 echo "==${TESTCASE}========================================="
@@ -71,10 +71,15 @@ echo "==${TESTCASE}========================================="
 php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 
-echo "== Instaling ==========="
-sleep 3
+TESTCASE=TestAndDemo6
+echo "==${TESTCASE}========================================="
+php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
+cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 
-for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5
+echo "== Instaling ==========="
+sleep 2
+
+for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5 TestAndDemo6
 do
 	echo "== ${TESTCASE} ============"
 	php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
@@ -82,9 +87,9 @@ done
 
 echo "======================================================"
 echo "Done."
-echo "To remove the databases run: ./run_all.sh -r"
 xip=`hostname -I`
 ip=`echo $xip | sed 's/ *$//g'`
 echo "Now you can check http://$ip/dbdipview/login.htm"
+echo "To remove TestAndDemo databases run: ./run_all.sh -r"
 
 
