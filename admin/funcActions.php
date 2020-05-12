@@ -482,6 +482,8 @@ function checkListFile($folder) {
 		while ( ($line = fgets($handleList)) !== false ) {
 			$lineNum++;
 			$line = rtrim($line);
+			if ( empty($line) )
+				continue;
 			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
 			$LTYPE = $tok[0];
 			//LTYPE TABLE FILE CSVMODE DATEMODE DELIMITER CODESET HEADER TBD
