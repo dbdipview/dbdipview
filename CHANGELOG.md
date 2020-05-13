@@ -4,21 +4,24 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
+
+## [2.1.0] - 2020-05-13
 ### Added
 - allow the definition of URL prefix in the queries.xml if a certain column contains addresses
 - packaging: will now validate the columns in list.txt file and check the existence of all files
 - packaging: will now accept more encodings for CSV files, not only UTF8
-- packaging: will now calculate hash values for files in the data folder, similar to BagIt
-- packaging: creates about.xml with basic information
+- packaging: will now calculate hash values for files in the data folder
+- packaging: creates about.xml with basic information about packaging
+- administration module: output and debug output small improvements
 - access: Czech translation of the client has been provided by the National Archives of the Czech Republic
 - access: product version is now displayed
 - access: total number of records is now displayed at the end of the report
-- test suite: a column added with decimal values, some comments improved for better understandability
+- test suite: TestAndDemo6 added
 - test suite: run_all.sh option -r added to remove installed TestAndDemo databases
 ### Changed
 - packaging: list.txt allows 'tab' to describe CSV files (previously \\t)
 - access: some modifications for visually impaired users
-- test suite: small improvements for testing during ingest process (debug messages for queries)
+- test suite: some textual improvements for better understandability and shorter learning curve
 
 ## [2.0.0] - 2019-12-26
 ### Added
