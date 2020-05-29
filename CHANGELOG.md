@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
+### Added
+- access: logo of the instituition can be displayed on the first page (see local/README.txt)
 
 ## [2.1.0] - 2020-05-13
 ### Added
