@@ -17,6 +17,10 @@ if (array_key_exists("submit_cycle", $_GET))
 else
 	$submit_cycle = "CheckLogin";  //first entry
 
+$myXMLfile="not_set";
+$myDBname="db_not_selected";
+$myLang = "en";
+
 switch ($submit_cycle) {
 	case "CheckLogin":
 		if (array_key_exists("code", $_GET)) {
@@ -25,13 +29,9 @@ switch ($submit_cycle) {
 		} else {
 			if (array_key_exists("xmlfile", $_GET))
 				$myXMLfile = trim($_GET['xmlfile'] . ".xml");
-			else
-				$myXMLfile="not_set";
 				
 			if (array_key_exists("dbname", $_GET))
 				$myDBname = trim($_GET['dbname']);
-			else
-				$myDBname="db_not_selected";
 		}
 		
 		$mydebug="0";
@@ -40,15 +40,16 @@ switch ($submit_cycle) {
 
 		if (array_key_exists("lang", $_GET))
 			$myLang = trim($_GET['lang']);
-		else
-			$myLang = "en";
 
 		$recordsInfo = configGetInfo(substr($myXMLfile, 0, -4), $myDBname);  //filename without .xml
 		session_regenerate_id();
 		$_SESSION['myXMLfile'] = $myXMLfile;
 		$_SESSION['myDBname'] = $myDBname;
 		$_SESSION['myLang'] = $myLang;
-		$_SESSION['title'] = $recordsInfo['ref'] . " " . $recordsInfo['title'];
+		if ( array_key_exists('ref', $recordsInfo) && array_key_exists('title', $recordsInfo) )
+			$_SESSION['title'] = $recordsInfo['ref'] . " " . $recordsInfo['title'];
+		else
+			$_SESSION['title'] = "unknown";
 		$_SESSION['mydebug'] = $mydebug;
 		break;
 	case "Logout":
@@ -163,7 +164,10 @@ $filespath="files/".str_replace(".xml", "", $myXMLfile)."/";  //area for attachm
 
 $PARAMS = $_GET;
 
-$targetQueryNum = pg_escape_string($_GET['targetQueryNum']); 
+if( isset($_GET['targetQueryNum']) )
+	$targetQueryNum = pg_escape_string($_GET['targetQueryNum']); 
+else
+	$targetQueryNum = "";
 
 date_default_timezone_set($timezone);
 

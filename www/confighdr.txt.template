@@ -1,5 +1,7 @@
 <?php
 
-$myLang="en";  //ISO 639-1 language code
+$myLang = "en";  //ISO 639-1 language code
 
-$INSTITUTION="My institution";
+$INSTITUTION = "My institution";
+
+// See local/README.txt how to add your logo.
