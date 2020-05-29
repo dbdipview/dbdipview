@@ -328,13 +328,15 @@ foreach ($xml->database->screens->screen as $screen) {
 		$subqueriesSubTitle = array();
 		
 		$f_subqeries_images = array();
-		$subqueries_images_image = array();
+		$subqueries_images_image_style = array(array());
 
 		$f_subqeries_links_to_next_screen = array();
 		$subqueries_linknextscreen_columns = array(array());
 
 		$f_subqeries_ahrefs = array();
 		$subqueries_ahref_columns = array(array());
+
+		$subqueries_blob_columns  = array(array());
   
 		$sqindex = 0;
 		

@@ -21,13 +21,50 @@ include "../admin/version.php";
 </div>
 <br />
 <center>
-<h3><?php echo $INSTITUTION; ?></h3>
-<h2><?php echo $MSGSW01_MainSubTitle; ?></h2><br />
+
+  <table style="width: 100%" />
+    <colgroup>
+      <col style="width: 25%" />
+      <col style="width: 50%" />
+      <col />
+    </colgroup>
+    <tr>
+<?php 
+	if(file_exists ("local/logo1.png")) 
+		echo '<td style="text-align: left;"  ><img border="0" src="local/logo1.png" alt="logotip" height="65" /></td>';
+	else
+		echo '<td />';
+	if(file_exists ("local/logo2.png")) 
+		echo '<td style="text-align: center;"><img border="0" src="local/logo2.png" alt="logotip" height="65" /></td>';
+	else
+		echo '<td />';
+	if(file_exists ("local/logo3.png")) 
+		echo '<td style="text-align: right;" ><img border="0" src="local/logo3.png" alt="logotip" height="65" /></td>';
+	else
+		echo '<td />';
+?>
+    </tr>
+  </table>
+ 
+<h2><?php echo $INSTITUTION; ?></h2>
+<h2><?php echo $MSGSW01_MainSubTitle; ?></h2>
 <?php
-	$c=$_GET['c'];          //code (token)
-	$d=$_GET['d'];          //dbc
-	$v=$_GET['v'];          //viewer
-	$debug=$_GET['debug'];
+	$c = "";          //code (token)
+	$d = "";          //dbc
+	$v = "";          //viewer
+	$debug = "";
+	
+	if(isset($_GET['c']))
+		$c = $_GET['c'];   //remove GET for production
+	
+	if(isset($_GET['d']))
+		$d = $_GET['d'];
+
+	if(isset($_GET['v']))
+		$v = $_GET['v'];
+
+	if(isset($_GET['debug']))
+		$debug = $_GET['debug'];
 ?>
 <br />
 <form name="forma" action="prog1.php" method="get" target='topframe'>
@@ -46,8 +83,8 @@ include "../admin/version.php";
 <?php
 		} else if( !strlen($v) > 0 ) {
 			echo "<tr>";
-			echo "<td>$MSGSW17_Records</td>";
-			echo "<td>";
+			echo '<td style="text-align: right;">' . $MSGSW17_Records . '</td>';
+			echo '<td style="text-align: center;" cellpadding="0" cellspacing="0">';
 			if(file_exists ("data/config.json")) {
 				echo '<select name="code"> ';
 				print '<option value="c5d903dedce4f8" selected="selected"> </option>' . PHP_EOL;
@@ -55,6 +92,10 @@ include "../admin/version.php";
 				print '</select>';
 			} else
 				echo "<h2>$MSGSW05_ErrorNoConfiguration.</h2>";
+			echo "</td>";
+			echo "<td>";
+			$len = strlen($MSGSW17_Records) + 1;
+			echo str_repeat("&nbsp;", $len);
 			echo "</td>";
 			echo "</tr>";
 		} else {
@@ -83,13 +124,17 @@ include "../admin/version.php";
 			echo "</tr>";
 		}
 ?>
+	</tbody>
+	</table>
+
+	<input type="hidden" name="submit_cycle" value="CheckLogin" /><br />
+	<input type="hidden" name="lang"         value="<?php echo $myLang; ?>" />
+	<input type="hidden" name="debug"        value="<?php echo $debug; ?>" readonly />
+			
+	<table>
+	<tbody>
 	<tr>
-		<td>
-		</td>
 		<td style="text-align:center">
-			<input type="hidden" name="submit_cycle" value="CheckLogin" /><br />
-			<input type="hidden" name="lang"         value="<?php echo $myLang; ?>" />
-			<input type="hidden" name="debug"        value="<?php echo $debug; ?>" readonly />
 			<div>
 				<label for="but1"><?php echo ''; ?>
 					<abbr title="<?php echo $MSGSW08_Continue; ?>" 

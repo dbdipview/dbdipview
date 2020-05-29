@@ -208,35 +208,39 @@ function qToListWithLink($query,
 				}
 				$output .= "<b>$col:</b> ";
 
-				$column = $linknextscreen_columns[$col];
-				if (!is_null($column) && $column["dbtable"]!="") { 
-					$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
-					$link= str_replace(" ", "__20__", $link);   //temporarily replace space  
-					$output .= "  <a href='?tablelist=list&submit_cycle=".
-						$column["linkaction"].
-						"&targetQueryNum=".$column["next_screen_id"].
-						"&".$link."=".$val.
-						"'>$val</a><br />\n";
-					continue;
+				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
+					$column = $linknextscreen_columns[$col];
+					if ( !is_null($column) && $column["dbtable"]!="" ) { 
+						$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
+						$link= str_replace(" ", "__20__", $link);   //temporarily replace space  
+						$output .= "  <a href='?tablelist=list&submit_cycle=".
+							$column["linkaction"].
+							"&targetQueryNum=".$column["next_screen_id"].
+							"&".$link."=".$val.
+							"'>$val</a><br />\n";
+						continue;
+					}
 				}
 
-				$column = $ahref_columns[$col];
-				if ( !is_null($column) ) { 
-					$link = $val;
-					$link = str_replace("\\", "/", $link);   //folder path
-					if ( array_key_exists('URLprefix', $column) )
-						$link = $column["URLprefix"] . $link;
-					else
-						$link = $filespath . $link;
+				if ( !is_null($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
+					$column = $ahref_columns[$col];
+					if ( !is_null($column) ) { 
+						$link = $val;
+						$link = str_replace("\\", "/", $link);   //folder path
+						if ( array_key_exists('URLprefix', $column) )
+							$link = $column["URLprefix"] . $link;
+						else
+							$link = $filespath . $link;
 
-					$text = $column["atext"];
-					if (strlen((string)$text)==0)
-						$text = $val;   //if no text
-					if (strlen((string)$val)==0)
-						$output .= "<br />\n";
-					else
-						$output .= "  <a href='$link' target='_blank'>$text</a><br />\n";
-					continue;
+						$text = $column["atext"];
+						if (strlen((string)$text)==0)
+							$text = $val;   //if no text
+						if (strlen((string)$val)==0)
+							$output .= "<br />\n";
+						else
+							$output .= "  <a href='$link' target='_blank'>$text</a><br />\n";
+						continue;
+					}
 				}
 				
 				if (!is_null($images_image_style) && 
@@ -254,15 +258,17 @@ function qToListWithLink($query,
 					continue;
 				} 
 
-				$column = $blob_columns[$col];
-				if (!is_null($column) && $column["id"]!="") {
- 					if (strlen((string)$val)==0)
-						$output .= "<br />\n";
-					else {
-						$id=$column["id"];
-						$output .= "<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showBlob&id=$id&val=$val'><span style='text-decoration:underline;'>&#129123;</span></a><br />\n";
+				if ( isset($blob_columns) && array_key_exists($col, $blob_columns) ) {
+					$column = $blob_columns[$col];
+					if ( !is_null($column) && $column["id"]!="" ) {
+						if (strlen((string)$val)==0)
+							$output .= "<br />\n";
+						else {
+							$id=$column["id"];
+							$output .= "<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showBlob&id=$id&val=$val'><span style='text-decoration:underline;'>&#129123;</span></a><br />\n";
+						}
+						continue;
 					}
-					continue;
 				}
 				
 				$output .= "  $val<br />\n";
@@ -395,37 +401,41 @@ function qToTableWithLink($query,
 					continue;     //hide column Total
 				}
 				
-				$column = $linknextscreen_columns[$col];
-				if (!is_null($column) && $column["dbtable"]!="") { 
-					$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
-					$link= str_replace(" ", "__20__", $link);   //temporarily replace space 
-					$output .= "  <td><a href='?tablelist=table&submit_cycle=".
-						$column["linkaction"].
-						"&targetQueryNum=".
-						$column["next_screen_id"].
-						"&".$link."=".$val.
-						"'>$val</a></td>\n";
-					continue;
-				} 
+				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
+					$column = $linknextscreen_columns[$col];
+					if ( !is_null($column) && $column["dbtable"]!="" ) { 
+						$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
+						$link= str_replace(" ", "__20__", $link);   //temporarily replace space 
+						$output .= "  <td><a href='?tablelist=table&submit_cycle=".
+							$column["linkaction"].
+							"&targetQueryNum=".
+							$column["next_screen_id"].
+							"&".$link."=".$val.
+							"'>$val</a></td>\n";
+						continue;
+					}
+				}
 
-				$column = $ahref_columns[$col];
-				if ( !is_null($column) ) { 
-					$link = $val;
-					$link = str_replace("\\", "/", $link);   //folder path
-					if ( array_key_exists('URLprefix', $column) )
-						$link = $column["URLprefix"] . $link;
-					else
-						$link = $filespath . $link;
+				if ( !is_null($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
+					$column = $ahref_columns[$col];
+					if ( !is_null($column) ) { 
+						$link = $val;
+						$link = str_replace("\\", "/", $link);   //folder path
+						if ( array_key_exists('URLprefix', $column) )
+							$link = $column["URLprefix"] . $link;
+						else
+							$link = $filespath . $link;
 
-					$text = $column["atext"];
-					if (strlen((string)$text)==0)
-						$text = $val;
-					if (strlen((string)$val)==0)
-						$output .= "<td></td>\n";
-					else
-						$output .= "  <td><a href='".$link."' target='_blank'>".$text."</a></td>\n";
-					continue;
-				} 
+						$text = $column["atext"];
+						if (strlen((string)$text)==0)
+							$text = $val;
+						if (strlen((string)$val)==0)
+							$output .= "<td></td>\n";
+						else
+							$output .= "  <td><a href='".$link."' target='_blank'>".$text."</a></td>\n";
+						continue;
+					}
+				}
 				
 				if (!is_null($images_image_style) && 
 								array_key_exists("$col", $images_image_style) && 
@@ -441,17 +451,19 @@ function qToTableWithLink($query,
 					continue;
 				}
 
-				$column = $blob_columns[$col];
-				if (!is_null($column) && $column["id"]!="") {
-					if (strlen((string)$val)==0)
-						$output .= "  <td></td>\n";
-					else {
-						$id=$column["id"];
-						$output .= "  <td>" .
-						"<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showBlob&id=$id&val=$val' target='_blank'><div style='text-decoration:underline;text-align:center;'>&#129123;</div></a>" .
-						"</td>\n";
+				if ( isset($blob_columns) && array_key_exists($col, $blob_columns) ) {
+					$column = $blob_columns[$col];
+					if ( !is_null($column) && $column["id"]!="" ) {
+						if (strlen((string)$val)==0)
+							$output .= "  <td></td>\n";
+						else {
+							$id=$column["id"];
+							$output .= "  <td>" .
+							"<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showBlob&id=$id&val=$val' target='_blank'><div style='text-decoration:underline;text-align:center;'>&#129123;</div></a>" .
+							"</td>\n";
+						}
+						continue;
 					}
-					continue;
 				}
 
 				$output .= "  <td>$val</td>\n";
