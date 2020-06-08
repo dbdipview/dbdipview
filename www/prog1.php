@@ -135,7 +135,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 			</td>
 			<td style="text-align: right;">
 <?php
-			echo $myDBname . "&#x27a4;" . $myXMLfile . "&nbsp;&nbsp;";
+			echo $myDBname . "&#x27a4;" . substr($myXMLfile, 0, -4) . "&nbsp;&nbsp;";
 			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . 
 				"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a></abbr>" .
 				"&nbsp;&nbsp;&nbsp;";

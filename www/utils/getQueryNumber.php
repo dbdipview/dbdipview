@@ -17,21 +17,31 @@ function get_bool($value){
 function getQueryNumber() { 
 global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue;
 
+	$lines = 0;
+	foreach ($xml->database->screens->screen as $screen) {
+		$attributeHide = get_bool($screen->id->attributes()->hide);
+		if($attributeHide != true)
+			$lines +=1;
+	}
+
 ?>
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' >      
 <table border = 1>
 <tr>
-	<td><center><h4><?php echo $MSGSW22_REPORTS; ?></h4></center>
-	</td>
+	<td style="text-align:center"><h4><?php echo $MSGSW22_REPORTS; ?></h4></td>
 </tr>
 
 <tr>
 	<td colspan = 2>
-		<left>
 <?php
-	$screenCounter=0;
+	if ($lines > 10)
+		echo '<div style="text-align:left; height:300px; overflow-y:scroll;">';
+	else
+		echo '<div style="text-align:left;">';
+
+	$screenCounter = 0;
 	foreach ($xml->database->screens->screen as $screen) {
-		$fshow=false;
+		$fshow = false;
 		$attributeHide =     get_bool($screen->id->attributes()->hide);
 		$attributeTextOnly = get_bool($screen->attributes()->textOnly);
 
@@ -44,15 +54,14 @@ global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue;
 					input_radiocheck_checked('radio','targetQueryNum', $screen->id);
 				else
 					input_radiocheck        ('radio','targetQueryNum', $_GET, $screen->id);
-				$screenCounter +=1;
+				$screenCounter += 1;
 				echo "$screen->id - $screen->selectDescription" . "&nbsp;<br />";
 				echo "</label>" . PHP_EOL;
 			}
 		}
 	} 
-	//</select>
 ?>
-		</left>
+		</div>
 	</td>
 
 	<td colspan = 2 valign="top">
@@ -63,7 +72,7 @@ global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue;
 					><input id="but1" type="submit" value="&#x27a4;" alt="<?php echo $MSGSW08_Continue; ?>" class='button'/></abbr>
 			</label>
 		</div>
-</td>
+	</td>
 </tr>
 </table>
 
