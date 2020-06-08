@@ -83,19 +83,14 @@ include "../admin/version.php";
 <?php
 		} else if( !strlen($v) > 0 ) {
 			echo "<tr>";
-			echo '<td style="text-align: right;">' . $MSGSW17_Records . '</td>';
 			echo '<td style="text-align: center;" cellpadding="0" cellspacing="0">';
 			if(file_exists ("data/config.json")) {
-				echo '<select name="code"> ';
-				print '<option value="c5d903dedce4f8" selected="selected"> </option>' . PHP_EOL;
+				echo '<select name="code" required> ';
+				echo '<option value="" disabled selected hidden>' . $MSGSW17_Records . '</option>';
 				config_get_options_token();
 				print '</select>';
 			} else
 				echo "<h2>$MSGSW05_ErrorNoConfiguration.</h2>";
-			echo "</td>";
-			echo "<td>";
-			$len = strlen($MSGSW17_Records) + 1;
-			echo str_repeat("&nbsp;", $len);
 			echo "</td>";
 			echo "</tr>";
 		} else {
