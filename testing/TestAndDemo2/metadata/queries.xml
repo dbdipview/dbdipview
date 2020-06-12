@@ -5,14 +5,16 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo2 regression test viewer: EXT DDV package, external LOBs</name>
+		<name>TestAndDemo2 regression test viewer</name>
+		<overview>OVERVIEW: test and demo #2 (various test cases and demonstration examples)</overview>
 		<revisions>
 			<revision date="2019-09-23" version="0.1">Test file ready</revision>
 			<revision date="2019-10-05" version="1.0">Improved comments</revision>
 			<revision date="2019-12-05" version="1.0">Added param for 7</revision>
 			<revision date="2020-02-07" version="1.1">Added URLprefix</revision>
+			<revision date="2020-06-10" version="1.2">Added element overview</revision>
 		</revisions>
-		<ref_number>1.0</ref_number>
+		<ref_number>TEST TD/2</ref_number>
 		<screens>
 
 			<screen>

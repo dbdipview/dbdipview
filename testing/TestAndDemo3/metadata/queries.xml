@@ -5,13 +5,24 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo3 regression test viewer: two SIARD packages and a DDV</name>
+		<name>TestAndDemo3 regression test viewer</name>
+		<overview>
+Demonstration with two SIARD packages and one DDV package with viewer information. Search with infotip. 
+Redirection to the next report with "forward parameters". Use of BLOB. Use of metadata/description.txt 
+with html &lt;B&gt;tags&lt;/B&gt;.
+&lt;BR /&gt;
+Here follows the content of the file metadata/description.txt:
+&lt;BR /&gt;
+&lt;BR /&gt;
+		</overview>
 		<revisions>
 			<revision date="2019-09-16" version="0.8">Sample XML for regression test and demonstration of functionality</revision>
 			<revision date="2019-09-28" version="1.0">Two siard packages</revision>
 			<revision date="2019-10-06" version="1.1">Improved comments</revision>
+			<revision date="2020-06-08" version="1.2">Add some dummy reports to test scroll bar</revision>
+			<revision date="2020-06-12" version="1.3">Added element overview</revision>
 		</revisions>
-		<ref_number>1.1</ref_number>
+		<ref_number>TEST TD/3</ref_number>
 		<screens>
 
 			<screen>
@@ -226,19 +237,19 @@
 				<selectDescription>Use of BLOBS (note: using content of the 2nd SIARD package)</selectDescription>
 				<title>Integration of RTF, JPG, PDF</title>   
 				<subtitle>Some examples. Note: LOB value is not displayed, it is just detected and then a link is displayed with record id</subtitle>   
-                <param>
+				<param>
 					<name>ID</name>
 					<dbtable>table10</dbtable>
 					<dbcolumn>id</dbcolumn>
 					<type>integer</type>
 				</param>
-                <param>
+				<param>
 					<name>poradi</name>
 					<dbtable>table10</dbtable>
 					<dbcolumn>poradi</dbcolumn>
 					<type>integer</type>
 				</param> 
-               <param>
+				<param>
 					<name>Name</name>
 					<dbtable>table10</dbtable>
 					<dbcolumn>name</dbcolumn>
@@ -308,7 +319,52 @@
 					</link>
 				</links_to_next_screen>
 			</screen>
-            
+
+			<screen textOnly="1">
+				<id>not used</id>
+				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+			</screen>
+
+			<screen>
+				<id>100</id>
+				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+			</screen>
+
+			<screen>
+				<id>101</id>
+				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+			</screen>
+
+			<screen>
+				<id>102</id>
+				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+			</screen>
+
+			<screen>
+				<id>103</id>
+				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+			</screen>
+
+			<screen>
+				<id>104</id>
+				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+			</screen>
+
+			<screen>
+				<id>105</id>
+				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+			</screen>
+
+			<screen>
+				<id>106</id>
+				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+			</screen>
+
+			<screen>
+				<id>107</id>
+				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+			</screen>
+
 		</screens>
 	</database>
 </dbDIPview>

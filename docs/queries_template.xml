@@ -5,6 +5,9 @@
 	schemaMajorVersion="2" >
 	<database>
 		<name>Register XYZ</name>
+		<overview>
+Thuis is a short overview of Register XYZ... You can also create it as a metadata/description.txt file.
+		</overview>
 		<revisions>
 			<revision date="2019-06-12" version="0.1">draft version of reports during ingest of XYZ</revision>
 		</revisions>

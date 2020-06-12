@@ -2,7 +2,7 @@
 /**
  * funcActions.php
  * 
- * Functions for handling order packages (SIARD, EXT DDV, DDV)
+ * Functions for handling orders and packages (SIARD, EXT DDV, DDV)
  *
  * @author     Boris Domajnko
  */
@@ -767,6 +767,7 @@ function actions_access_on($orderInfo, $ddv) {
 
 	$token = "";
 	$XMLFILESRC = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
+	$DESCFILESRC = $DDV_DIR_EXTRACTED . "/metadata/description.txt";
 
 	msgCyan($MSG6_ACTIVATEDIP . " " . $ddv . "...");
 	if (notSet($ddv))
@@ -782,14 +783,26 @@ function actions_access_on($orderInfo, $ddv) {
 	else if (config_isPackageActivated($ddv, $DBC) > 0) 
 			err_msg($MSG30_ALREADY_ACTIVATED, "$ddv ($DBC)");
 	else {
+
 		$targetFile = $SERVERDATADIR . $ddv . ".xml";
-		if ( !is_file($targetFile))  //copy to be sure
-			if (! copy($XMLFILESRC, $targetFile))
+		if ( !is_file($targetFile) )
+			if ( !copy($XMLFILESRC, $targetFile) )
 				err_msg(__FUNCTION__ . ": Copy error:" . $ddv . ".xml");
 			else
 				debug(__FUNCTION__ . ": Created $targetFile");
 		else
 			debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
+
+		if( is_file($DESCFILESRC) ) {
+			$targetFile = $SERVERDATADIR . $ddv . ".txt";
+			if ( !is_file($targetFile) )
+				if ( !copy($DESCFILESRC, $targetFile) )
+					err_msg(__FUNCTION__ . ": Copy error:" . $ddv . ".txt");
+				else
+					debug(__FUNCTION__ . ": Created $targetFile");
+			else
+				debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
+		}
 
 		$configItemInfo['dbc']         = $DBC;
 		$configItemInfo['ddv']         = $ddv;
@@ -826,6 +839,10 @@ function actions_access_off($ddv) {
 		if (is_file($file))
 			if (unlink($file))
 				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".xml");
+		$file="$SERVERDATADIR" . $ddv . ".txt";
+		if (is_file($file))
+			if (unlink($file))
+				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".txt");
 	}	
 }
 

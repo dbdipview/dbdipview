@@ -70,8 +70,9 @@ switch ($submit_cycle) {
 		break;
 }
 
-$myXMLpath="data/";
-$myXMLfilePath=$myXMLpath . $myXMLfile;
+$myXMLpath = "data/";
+$myXMLfilePath = $myXMLpath . $myXMLfile;
+$myTXTfilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . ".txt";
 
 include "utils/downlds.php";
 
