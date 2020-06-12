@@ -339,7 +339,7 @@ function configGetInfo($ddv, $DBC) {
 			$configItemInfo['access']      = $line['access'];
 			$configItemInfo['ref']         = $line['ref'];
 			$configItemInfo['title']       = $line['title'];
-			$configItemInfo['order']       = $line['order'];
+			$configItemInfo['order']       = array_key_exists('order', $line) ? $line['order'] : "";
 		}
 	}
 	return($configItemInfo);

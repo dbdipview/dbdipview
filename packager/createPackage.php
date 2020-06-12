@@ -2,22 +2,25 @@
 /**
  * createPackage.php
  *
- * creates a package for dbDIPview
+ * creates a package for dbDIPview (to be content of an AIP)
  * Package content:
- * DDV package (file extension: .zip) - to accompany SIARD or EXT DDV packages
+ * DDV package (file extension: .zip) - viewer for SIARD or other EXT DDV packages
  *   - metadata/list.txt
  *   - metadata/info.txt
+ *   - [optional] metadata/description.txt
  *   - metadata/queries.xml 
  *   - [optional] redact.sql, redact01.sql
- * EXT DDV package (file extension: .tar.gz)
+ * EXT DDV package (file extension: .tar.gz) - complete content
  *   - metadata/list.txt
  *   - metadata/info.txt
+ *   - [optional] metadata/description.txt
  *   - metadata/queries.xml
  *   - metadata/createdb.sql
  *   - [optional] metadata/createdb01.sql
  *   - [optional] metadata/redact.sql and redact01.sql
  *   - data/ folder with database content as CSV files
- * Boris Domajnko
+ *
+ * @author     Boris Domajnko
  */
 
 $PROGDIR=__DIR__;
@@ -128,6 +131,10 @@ else
 msg_colour_reset();
 
 $ALLMETADATA="about.xml metadata/info.txt metadata/queries.xml metadata/list.txt";
+
+if ( is_file($SOURCE . "/metadata/description.txt") )
+	$ALLMETADATA = "$ALLMETADATA metadata/description.txt";
+
 if ( is_file($SOURCE . "/metadata/redactdb.sql") )
 	$ALLMETADATA = "$ALLMETADATA metadata/redactdb.sql";
 

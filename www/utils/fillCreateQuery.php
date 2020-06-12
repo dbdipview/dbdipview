@@ -434,7 +434,8 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 
 			$order=chop($subselect->selectOrder);                //remove white space characters
-			if (strlen($order)>0 && strrchr($text, '"')==0) {    //ignore, if " is already in xml, even though this is not expected
+//			if (strlen($order)>0 && strrchr($text, '"')==0) {    //ignore, if " is already in xml, even though this is not expected
+			if (strlen($order)>0 && strrchr($order, '"')==0) {    //ignore, if " is already in xml, even though this is not expected
 				debug("fillCreateQuery: subselect ORDER=$order");
 				$ordertmp0=str_replace('.',  '"."',  $order);						//db.col --> "db"."col"
 				$ordertmp1=str_replace(', ', '", "', $ordertmp0);            //db.col, --> db.col", "
@@ -458,7 +459,8 @@ foreach ($xml->database->screens->screen as $screen) {
 
 		$csvquery = $query;
 		$order=chop($screen->selectOrder);   //remove white space characters
-		if (strlen($order)>0 && strrchr($text, '"')==0) {    //ignore,if " is already in xml, even though this is not expected
+//		if (strlen($order)>0 && strrchr($text, '"')==0) {    //ignore,if " is already in xml, even though this is not expected
+		if (strlen($order)>0 && strrchr($order, '"')==0) {    //ignore,if " is already in xml, even though this is not expected
 				debug("fillCreateQuery: select ORDER=$order");
 				$ordertmp0=str_replace('.',  '"."',  $order);      //db.col --> "db"."col"
 				$ordertmp1=str_replace(', ', '", "', $ordertmp0);  //db.col, --> db.col", "
@@ -540,12 +542,20 @@ foreach ($xml->database->screens->screen as $screen) {
 				print("<br/>");
 
 				$newlist=qToTableWithLink($subqueries[$sqindexLoop], 
-										$subqueries_linknextscreen_columns[$sqindexLoop],
-										$subqueries_images_image_style[$sqindexLoop],
-										$subqueries_ahref_columns[$sqindexLoop],
-										$subqueries_blob_columns[$sqindexLoop],
-										$sqindexLoop,
-										0);
+							array_key_exists($sqindexLoop, $subqueries_linknextscreen_columns) ?
+								$subqueries_linknextscreen_columns[$sqindexLoop] : array(array()),
+
+							array_key_exists($sqindexLoop, $subqueries_images_image_style) ?
+								$subqueries_images_image_style[$sqindexLoop] : array(array()),
+
+							array_key_exists($sqindexLoop, $subqueries_ahref_columns) ?
+								$subqueries_ahref_columns[$sqindexLoop] : array(array()),
+
+							array_key_exists($sqindexLoop, $subqueries_blob_columns) ?
+								$subqueries_blob_columns[$sqindexLoop] : array(array()),
+
+							$sqindexLoop,
+							0);
 										
 				print $newlist[0];
 				$sqindexLoop  += 1;
@@ -591,12 +601,19 @@ foreach ($xml->database->screens->screen as $screen) {
 				print("<br/>");
 
 				$newlist=qToListWithLink($subqueries[$sqindexLoop], 
-										$subqueries_linknextscreen_columns[$sqindexLoop], 
-										$subqueries_images_image_style[$sqindexLoop],
-										$subqueries_ahref_columns[$sqindexLoop],
-										$subqueries_blob_columns[$sqindexLoop],
-										0);
+							array_key_exists($sqindexLoop, $subqueries_linknextscreen_columns) ?
+								$subqueries_linknextscreen_columns[$sqindexLoop] : array(array()),
 
+							array_key_exists($sqindexLoop, $subqueries_images_image_style) ?
+								$subqueries_images_image_style[$sqindexLoop] : array(array()),
+
+							array_key_exists($sqindexLoop, $subqueries_ahref_columns) ?
+								$subqueries_ahref_columns[$sqindexLoop] : array(array()),
+
+							array_key_exists($sqindexLoop, $subqueries_blob_columns) ?
+								$subqueries_blob_columns[$sqindexLoop] : array(array()),
+										0);
+								
 				print $newlist[0];
 				$sqindexLoop  += 1;
 			}

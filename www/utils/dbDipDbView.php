@@ -476,7 +476,10 @@ function qToTableWithLink($query,
 
 	$output .= "</tbody>\n";
 	$output .= "</table>\n";
-	$hits = pg_num_rows($result);
+	if (!$result)
+		$hits = "";  //error above
+	else
+		$hits = pg_num_rows($result);
 	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
 } // end qToTableWithLink

@@ -6,10 +6,12 @@
 
 	<database>
 		<name>TestAndDemo5 regression test viewer: SIARD, EXT DDV, and DDV package</name>
+		<overview>OVERVIEW: test and demo #5</overview>
 		<revisions>
 			<revision date="2019-12-01" version="0.1">First test</revision>
+			<revision date="2020-06-10" version="1.0">Added element overview</revision>
 		</revisions>
-		<ref_number>1.1</ref_number>
+		<ref_number>TEST TD/5</ref_number>
 		<screens>
 
 			<screen>
