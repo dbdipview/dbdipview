@@ -7,6 +7,8 @@ Generally, the master branch is always stable. You can use it for installation o
 ### Added
 - access: logo of the institution can be displayed on the first page (see local/README.txt)
 - access: a scrollable window is used to display available reports for a selected database
+- access: the <overview> element added as a short alternative to description.txt
+- access: description.txt added for the html text to be displayed on the reports menu page
 
 ## [2.1.0] - 2020-05-13
 ### Added
