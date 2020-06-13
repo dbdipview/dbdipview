@@ -1,76 +1,104 @@
+:root {
+  --main-background-color: #D7E1EB;
+  --main-body-color: black;
+  --main-htext-color: #00578F;
+  --main-a-color: #0072BC;
+  --main-hoover-color: #003559;
+  --main-hrborder-color: lightgray;
+  --main-hrborderbg-color: lightgray;
+  --main-mydbtable-color: #4D4D4D;
+  --main-tablesortable-color: #F0F5F5;
+  --main-buttonbg-color: #DCDCDC;
+  --main-buttonhoover-color: #eef;
+  --main-boxbg-color: #F4F4F4;
+  --main-boxborder-color: #CCC;
+}
+
 html { 
 font-size: 100%;
 }
+
 @media screen and (max-width: 480px) {
   html {
-  font-size:100%;
+  font-size: 100%;
   }
 }
-body{
-  background-color: #D7E1EB;
-  color: black;
+
+body {
+  background-color: var(--main-background-color);
+  color: var(--main-body-color);
   font-family: Arial,Helvetica,sans-serif;
-  font-size: 0.75rem; 
-  text-align:left
+  font-size: 0.75rem;
+  text-align: left
 }
 
 img {
-border:0 none;
+border: 0 none;
 }
+
 h1 {
-color:#00578F;
-font-family:Arial,Helvetica,sans-serif;
-font-size:1rem;
-margin-bottom:0;
+color: var(--main-htext-color);
+font-family: Arial,Helvetica,sans-serif;
+font-size: 1rem;
+margin-bottom: 0;
 }
+
 h2 {
-color:#00578F;
+color:var(--main-htext-color);
 font-family:Arial,Helvetica,sans-serif;
 font-size:0.9rem;
 margin-top:0.2rem;
 margin-bottom:0;
 }
+
 h3 {
-color:#00578F;
-font-family:Arial,Helvetica,sans-serif;
-font-size:0.875rem;
-margin-top:0.2rem;
-margin-bottom:0;
+color: var(--main-htext-color);
+font-family: Arial,Helvetica,sans-serif;
+font-size: 0.875rem;
+margin-top: 0.2rem;
+margin-bottom: 0;
 }
+
 h4 {
-color:#00578F;
-font-family:Arial,Helvetica,sans-serif;
-font-size:0.75rem;
-margin-top:0.2rem;
-margin-bottom:0;
+color: var(--main-htext-color);
+font-family: Arial,Helvetica,sans-serif;
+font-size: 0.75rem;
+margin-top: 0.2rem;
+margin-bottom: 0;
 }
+
 h5 {
-color:black;
-font-family:Arial,Helvetica,sans-serif;
-font-size:0.6875rem;
-font-weight:normal;
-margin-top:0.2rem;
-margin-bottom:0;
+color:var(--main-body-color);
+font-family: Arial,Helvetica,sans-serif;
+font-size: 0.6875rem;
+font-weight: normal;
+margin-top: 0.2rem;
+margin-bottom: 0;
 }
+
 p {
 margin-bottom:0;
 margin-top:0;
 }
+
 a {
-color:#0072BC;
-text-decoration:underline;
+color:var(--main-a-color);
+text-decoration: underline;
 }
+
 a:hover {
-color:#003559;
+color: var(--main-hoover-color);
 }
+
 hr {
-border-color: lightgray; background-color: lightgray;
+border-color: var(--main-hrborder-color);
+background-color: var(--main-hrborderbg-color);
 }
 
 table.mydbtable {
-color:#4D4D4D;
-font-family:Arial,Helvetica,sans-serif;
-font-size:0.75rem;
+color: var(--main-mydbtable-color);
+font-family: Arial,Helvetica,sans-serif;
+font-size: 0.75rem;
 }
 
 table.mydbtable1 {
@@ -99,9 +127,9 @@ table.mydbtable td {
 }
 
 table.sortable {
-color:#4D4D4D;
-font-family:Arial,Helvetica,sans-serif;
-font-size:0.75rem;
+color: var(--main-mydbtable-color);
+font-family: Arial,Helvetica,sans-serif;
+font-size: 0.75rem;
 }
 
 table.sortable1 {
@@ -112,6 +140,7 @@ table.sortable1 {
 	border-collapse: separate;
 	background-color: white;
 }
+
 table.sortable th {
 	border-width: 1px 1px 1px 1px;
 	padding: 1px 1px 1px 1px;
@@ -121,6 +150,7 @@ table.sortable th {
 	text-align: center;
 	border-radius: 4px / 4px;
 }
+
 table.sortable td {
 	border-width: 1px 1px 1px 1px;
 	padding: 5px 1px;
@@ -128,38 +158,27 @@ table.sortable td {
 	border-color: white white white white;
 	background-color: white;
 }
+
 table.sortable tbody tr:nth-child(even) td {
-    background-color: #F0F5F5;
+    background-color: var(--main-tablesortable-color);
 }
-
-.Blue {
-color:#0072BC;
-}
-.Gray {
-color:#979797;
-}
-a.Gray:hover {
-color:#000000;
-text-decoration:none;
-}
-
 
 .button {
 border: 1px gray solid;
-background: #DCDCDC;
+background: var(--main-buttonbg-color);
 }
+
 .button:hover {
 border: 1px gray solid;
-background: #eef;
+background: var(--main-buttonhoover-color);
 }
 
-
 .box {
-background-color: #F4F4F4;
-border: 1px solid #CCC;
+background-color: var(--main-boxbg-color);
+border: 1px solid var(--main-boxborder-color);
 padding: 5px;
-display:none;
-position:absolute;
+display: none;
+position: absolute;
 }
 
 input[type=checkbox]
