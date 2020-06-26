@@ -41,7 +41,7 @@ switch ($submit_cycle) {
 		if (array_key_exists("lang", $_GET))
 			$myLang = trim($_GET['lang']);
 
-		$recordsInfo = configGetInfo(substr($myXMLfile, 0, -4), $myDBname);  //filename without .xml
+		$recordsInfo = configGetInfo( rtrim($myXMLfile, ".xml"), $myDBname );  //filename without .xml
 		session_regenerate_id();
 		$_SESSION['myXMLfile'] = $myXMLfile;
 		$_SESSION['myDBname'] = $myDBname;
@@ -114,11 +114,6 @@ include "utils/fillCreateQuery.php";
 
 include "messagesw.php";
 
-if ("$myXMLfile"=="") {
-	echo "</BR><h2>$MSGSW06_ErrorSessionExpired</h2></BR>";
-	die("");
-}
-
 setDBparams($myDBname);
 if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 	strcmp($submit_cycle, "editStatus")            != 0 &&
@@ -136,7 +131,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 			</td>
 			<td style="text-align: right;">
 <?php
-			echo $myDBname . "&#x27a4;" . substr($myXMLfile, 0, -4) . "&nbsp;&nbsp;";
+			echo $myDBname . "&#x27a4;" . rtrim($myXMLfile, ".xml") . "&nbsp;&nbsp;";
 			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . 
 				"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a></abbr>" .
 				"&nbsp;&nbsp;&nbsp;";
@@ -147,18 +142,23 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 <?php
 } //if submit_cycle
 
-if (file_exists($myXMLfilePath)) {
+if ( empty($myXMLfile) || (strcmp($myXMLfile, "not_set") == 0) ) {
+	echo "</BR><h2>$MSGSW06_ErrorSessionExpired</h2></BR>";
+	$submit_cycle = "noSession";
+} elseif ( file_exists($myXMLfilePath) ) {
 	$xml = simplexml_load_file($myXMLfilePath);
 } else {
-	echo "</BR><h2>$MSGSW05_ErrorNoConfiguration.</h2></BR>"; 
-	die("");
+	echo "</BR><h2>$MSGSW05_ErrorNoConfiguration</h2></BR>"; 
+	$submit_cycle = "noSession";
 }
 
-if(strlen($myXMLfile)==0 || 
-	strlen($myDBname)==0 || 
-	config_isPackageActivated(substr($myXMLfile, 0, -4), $myDBname) == 0) {
+if( (strcmp($submit_cycle, "noSession") !== 0) &&
+	( strlen($myXMLfile)==0 || 
+	  strlen($myDBname)==0 || 
+	  config_isPackageActivated( rtrim($myXMLfile, ".xml"), $myDBname) == 0 )
+	){
 		echo "</BR><h2>$MSGSW07_ErrorNoSuchCombination.</h2></BR>";
-		die("");
+		$submit_cycle = "noSession";
 }
 
 $filespath="files/".str_replace(".xml", "", $myXMLfile)."/";  //area for attachments/BLOB content
@@ -172,11 +172,13 @@ else
 
 date_default_timezone_set($timezone);
 
-connectToDB();
+if( strcmp($submit_cycle, "noSession") !== 0 )
+	connectToDB();
 	  
 switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
+	session_regenerate_id();    // regenerated the session, delete the old one. 
 	echo "<h4>$MSGSW17_Records: " . $_SESSION['title'] . "</h4>";
 	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
 	getQueryNumber();
@@ -216,7 +218,7 @@ case "searchParametersReady":
 	fillCreateQuery();
 	break;
 default:
-	die("Wrong submit cycle:" . $submit_cycle);
+	//die("Wrong submit cycle:" . $submit_cycle);
 	break;
 }
 

@@ -7,6 +7,11 @@
   <link rel="stylesheet" href="main.css">
 </head>
 <?php
+ini_set( 'session.cookie_httponly', 1 );
+session_start();
+session_destroy();
+session_start();
+
 include "confighdr.txt";
 include "messagesw.php";
 include "../admin/funcConfig.php";
