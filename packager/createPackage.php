@@ -147,8 +147,10 @@ if ( !is_dir($datadir) ) {
 	$countDatafiles = 0; 
 } else {
 	$countDatafiles = count(scandir($datadir));
-	if ( $countDatafiles ===  0 )
+	if ( $countDatafiles ===  2 ) {
 		echo "No files in $datadir/" . PHP_EOL;
+		$countDatafiles = 0;
+	}
 }
 
 $errors = checkListFile($SOURCE);
