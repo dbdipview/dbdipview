@@ -374,8 +374,6 @@ function qToTableWithLink($query,
 		if( !empty($queryWithCount) )
 			$i -= 1;   //there will be an additional column with with Total, hide it
 
-		$columnsToDisplay = $i;
-
 		for ($j = 0; $j < $i; $j++) {
 			$field = pg_field_name($result, $j);
 			$hcol = $j + 1;
@@ -391,12 +389,11 @@ function qToTableWithLink($query,
 
 		while ($row = pg_fetch_assoc($result)) {
 			$output .= "<tr>\n";
-			$numOfColumns = 0;
 			foreach ($row as $col=>$valnl) {
 				
 				$val = nl2br($valnl);
 
-				if (++$numOfColumns > $columnsToDisplay) {
+				if ($col == "E2F7total7E8D233C") {
 					$totalLines = $val;
 					continue;     //hide column Total
 				}
