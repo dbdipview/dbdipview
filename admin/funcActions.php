@@ -62,7 +62,7 @@ function actions_Order_read($name, $file, &$orderInfo) {
 
 	$PKGFILEPATH = $DDV_DIR_PACKED . $DDV;
 	$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
-	$BFILES_DIR_TARGET = $BFILES_DIR . $DDV;
+	$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $DDV;
 	$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
 	
 	return($OK);
@@ -177,7 +177,7 @@ function actions_Order_remove($orderInfo) {
 	config_json_remove_item($ddv, $DBC);
 	actions_access_off($ddv);
 	
-	$BFILES_DIR_TARGET = $BFILES_DIR . $ddv;   //location for all external files as LOBs
+	$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $ddv;   //location for all external files as LOBs
 	if (is_dir("$BFILES_DIR_TARGET")) {
 		msgCyan("$MSG53_DELETINGLOBS " . basename($BFILES_DIR_TARGET) . "...");
 		passthru("rm -r " . $BFILES_DIR_TARGET, $rv);

@@ -153,15 +153,16 @@ if ( empty($myXMLfile) || (strcmp($myXMLfile, "not_set") == 0) ) {
 }
 
 if( (strcmp($submit_cycle, "noSession") !== 0) &&
-	( strlen($myXMLfile)==0 || 
-	  strlen($myDBname)==0 || 
+	( strlen($myXMLfile)== 0 || 
+	  strlen($myDBname) == 0 || 
 	  config_isPackageActivated( rtrim($myXMLfile, ".xml"), $myDBname) == 0 )
 	){
 		echo "</BR><h2>$MSGSW07_ErrorNoSuchCombination.</h2></BR>";
 		$submit_cycle = "noSession";
 }
 
-$filespath="files/".str_replace(".xml", "", $myXMLfile)."/";  //area for attachments/BLOB content
+//folder for attachments/BLOB content that if referenced from a db column
+$filespath = "files/" . $myDBname . "__" . str_replace(".xml", "", $myXMLfile) . "/"; 
 
 $PARAMS = $_GET;
 
