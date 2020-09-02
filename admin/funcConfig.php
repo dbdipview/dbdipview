@@ -253,7 +253,7 @@ function config_get_options_token() {
 /**
  * Display configuration information as a table
  */
-function config_show() {
+function config_show( $titleMaxLength = 30 ) {
 	global $SERVERCONFIGJSON, $TXT_GREEN,$TXT_RESET;
 	global $MSG34_NOACTIVEDB, $MSG_ACCESSDB, $MSG40_ACTIVATEDPKGS;
 	$length0 = strlen("DBC");
@@ -287,6 +287,9 @@ function config_show() {
 		}
 	}
 
+	if ($length5 > $titleMaxLength)
+		$length5 = $titleMaxLength;
+
 	msgCyan($MSG40_ACTIVATEDPKGS . ":");
 	echo str_pad("DBC",    $length0, "_", STR_PAD_BOTH) . "|";
 	echo str_pad("DDV",    $length1, "_", STR_PAD_BOTH) . "|";
@@ -295,7 +298,7 @@ function config_show() {
 	echo str_pad("REF",    $length4, "_", STR_PAD_BOTH) . "|";
 	echo str_pad("TITLE",  $length5, "_", STR_PAD_BOTH) . "|";
 	echo str_pad("ORDER",  $length6, "_", STR_PAD_BOTH) . "|" .  PHP_EOL;
-		
+
 	$i=0;
 	foreach ($array as $index=>$line) {
 		echo mb_str_pad($line['dbc'],    $length0) . "|";
@@ -303,7 +306,11 @@ function config_show() {
 		echo mb_str_pad($line['access'], $length2) . "|";
 		echo mb_str_pad($line['token'],  $length3) . "|";
 		echo mb_str_pad($line['ref'],    $length4) . "|";
-		echo mb_str_pad($line['title'],  $length5) . "|";
+
+		if ( strlen($line['title']) < $titleMaxLength )
+			$line['title'] = str_pad($line['title'],  $length5, " ", STR_PAD_RIGHT);
+
+		echo mb_strimwidth($line['title'], 0, $length5, "...") . "|";
 
 		if( isset($line['order']) || array_key_exists('order', $line) )
 			echo mb_str_pad($line['order'],  $length6) . "|" .  PHP_EOL;

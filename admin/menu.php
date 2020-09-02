@@ -224,8 +224,8 @@ while ( "$answer" != "q" ) {
 		case "q": exit(0);
 		case "c": 
 			echo "DDV_DIR_PACKED=" . $DDV_DIR_PACKED . PHP_EOL;
-			echo "DDV_DIR_UNPACKED=" . $DDV_DIR_UNPACKED . PHP_EOL;
 			if ($debug) {
+				echo "DDV_DIR_UNPACKED=" . $DDV_DIR_UNPACKED . PHP_EOL;
 				echo "DBADMINUSER="          . $DBADMINUSER . PHP_EOL;
 				echo "PROGDIR="              . $PROGDIR . PHP_EOL;
 				echo "SERVERDATADIR="        . $SERVERDATADIR . PHP_EOL;
@@ -245,16 +245,10 @@ while ( "$answer" != "q" ) {
 			dbf_list_databases();
 
 			msgCyan($MSG39_AVAILABLEPKGS . ":");
-			$out = array_diff(scandir($DDV_DIR_PACKED), array('.', '..'));
-			foreach($out as $key => $value) {
-				echo $value . PHP_EOL;
-			}
+			passthru("ls -C $DDV_DIR_PACKED 2>/dev/null");
 
 			msgCyan($MSG20_UNPACKED_DDV_PACKAGES . ":");
-			$out = array_diff(scandir($DDV_DIR_UNPACKED), array('.', '..'));
-			foreach($out as $key => $value) {
-				echo $value . PHP_EOL;
-			}
+			passthru("ls -C $DDV_DIR_UNPACKED 2>/dev/null");
 
 			config_show();
 
