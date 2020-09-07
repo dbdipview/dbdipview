@@ -4,12 +4,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
+
+## [2.2.0] - 2020-09-07
 ### Added
 - access: logo of the institution can be displayed on the first page (see local/README.txt)
 - access: a scrollable window is used to display available reports for a selected database
-- access: the <overview> element added as a short alternative to description.txt
-- access: description.txt added for the html text to be displayed on the reports menu page
+- access: description.txt has been added for the html text to be displayed on the reports menu page
+- access: the <overview> element has been added as a short alternative to description.txt
 - test suite: TestAndDemo2 report show number of records in each table added as a template
+- test suite: a sample control report has been added to display number of records in each table in a single report
+### Modified
+- administration module: the folder for attachment files (LOBs) is now created for each DBC/DDV pair, before it was for each DDV
 
 ## [2.1.0] - 2020-05-13
 ### Added
