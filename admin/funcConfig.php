@@ -307,8 +307,8 @@ function config_show( $titleMaxLength = 30 ) {
 		echo mb_str_pad($line['token'],  $length3) . "|";
 		echo mb_str_pad($line['ref'],    $length4) . "|";
 
-		if ( strlen($line['title']) < $titleMaxLength )
-			$line['title'] = str_pad($line['title'],  $length5, " ", STR_PAD_RIGHT);
+		if ( mb_strlen($line['title']) < $titleMaxLength )
+			$line['title'] = mb_str_pad($line['title'],  $length5, " ", STR_PAD_RIGHT);
 
 		echo mb_strimwidth($line['title'], 0, $length5, "...") . "|";
 
