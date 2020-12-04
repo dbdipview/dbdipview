@@ -225,9 +225,10 @@ default:
 
 
 function debug($mytxt) {
-	if (isset(   $_SESSION['mydebug'])){
+	global $debugCode;    //see config.txt
+	if (isset(   $_SESSION['mydebug']) && isset($debugCode)){
 		$mydebug=$_SESSION['mydebug'];
-		if($mydebug == "123")
+		if($mydebug == $debugCode)
 			echo "<p style='font-family:courier;color:red;'>DEBUG: $mytxt</p>\n";
 	}
 }

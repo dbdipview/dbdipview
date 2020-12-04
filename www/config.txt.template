@@ -1,7 +1,10 @@
 <?php
-//Access for the user. Readonly!
+//local settings
+//database
 $serverName = "localhost";
 $port="5432";
 $userName = "ddvreader";
 $password = "ddvreader";
+
 $timezone='Europe/Ljubljana';
+$debugCode = "123";

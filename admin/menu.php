@@ -53,7 +53,7 @@ $DDV_DIR_PACKED   = str_replace("admin/../", "", "$DDV_DIR_PACKED");
 $DDV_DIR_UNPACKED = str_replace("admin/../", "", "$DDV_DIR_UNPACKED");
 $BFILES_DIR       = str_replace("admin/../", "", "$BFILES_DIR");
 
-$XB=' ';$XC=' ';$XD=' ';$X0=' ';$X1=' ';$X2=' ';
+$XB=' ';$XC=' ';$XD=' ';$X0=' ';$X1=' ';$X2=' ';$X3=' ';
 $XP=' ';$XS=' ';$XT=' ';
 $X3=' ';$X5=' ';$X6=' ';$X7=' ';$X8=' ';$X9=' ';
 $XOS=' ';$XOI=' ';$XOD=' ';
@@ -185,13 +185,17 @@ while ( "$answer" != "q" ) {
 					echo "${X2}2  (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 					//echo "${X2}2o (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 	}
+	
 	if ( !empty($all) || (!empty($srd) && $XD == 'X') )  {
 					echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
 					if( !empty($SIARDNAME) ) {
 						echo "${XS}s  (SIARD) $MSGS_INSTALLSIARD - SIARD Suite [$SIARDNAME]" . PHP_EOL;
 						echo "${XT}t  (SIARD) $MSGS_INSTALLSIARD - DBPTK [$SIARDNAME]" . PHP_EOL;
 					}
-					//echo "${X3}3  (SIARD) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
+	}
+	
+	if ( !empty($all) || ($X2 == 'X')) {
+					echo "${X3}3  (DDV) (VIEW) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
 	}
 	if ( !empty($all) || ($XD == 'X' && !empty($DDV)) )  {
 					if ( file_exists($DDV_DIR_EXTRACTED . "/metadata/redactdb.sql") )
@@ -433,6 +437,15 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG12_ERR_DDV_NOT_AVAILABLE . ":", $PKGFILEPATH);
 			else if ($OK == actions_DDV_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED)) 
 				$X2='X';
+			enter();
+			break;
+
+		case "3": $X3=' ';
+			if (file_exists($DDV_DIR_EXTRACTED)) 
+				if ($OK == actions_DDV_create_views($DDV_DIR_EXTRACTED)) {
+					actions_DDVEXT_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
+					$X3='X';
+				}
 			enter();
 			break;
 

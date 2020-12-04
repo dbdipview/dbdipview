@@ -5,11 +5,12 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo5 regression test viewer: SIARD, EXT DDV, and DDV package</name>
+		<name>TestAndDemo5 regression test viewer with packages: SIARD, EXT DDV, and DDV</name>
 		<overview>OVERVIEW: test and demo #5</overview>
 		<revisions>
 			<revision date="2019-12-01" version="0.1">First test</revision>
 			<revision date="2020-06-10" version="1.0">Added element overview</revision>
+			<revision date="2020-12-01" version="1.1">Added demonstration of creating VIEWs for an existing (e.g. SIARD) database</revision>
 		</revisions>
 		<ref_number>TEST TD/5</ref_number>
 		<screens>
@@ -17,15 +18,16 @@
 			<screen>
 				<id>1</id>
 				<selectDescription>A simple report</selectDescription>
-				<title>Table created with TestAndDemo4 data (SIARD, EXT DDV), but with a new viewer (DDV)</title>
+				<title>Table created with TestAndDemo4 data (SIARD, EXT DDV), and accessed with this viewer (DDV)</title>
 				<subtitle>The table was created from a SIARD package with configuration and populated from EXT DDV with CSV content. 
-				The DDV package contains this viewer and commands for redaction.</subtitle>  
+				The DDV package contains this viewer and commands for redaction. In addition, VIEWs were created to be used by the viewer.</subtitle>
 				<param size='4'>
 					<name>Date hired</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>date Hired /hq</dbcolumn>
-					<type>date_ge</type>
-				</param>
+					<type>date</type>
+					<forwardToSubqueryName>param1</forwardToSubqueryName>
+				</param>  
 				<param>
 					<name>Employee name</name>
 					<dbtable>HR employees</dbtable>
@@ -38,6 +40,29 @@
 					"HR employees"."date Hired /hq" AS "Hired"
 						FROM "HR members"."HR employees"
 				</query>
+				
+				<subselect>
+					<title>A VIEW was created for the database</title>
+					<subtitle>Let's test use of createdb.sql. Search parameter Hired might be passed</subtitle>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>my_test_viewA</dbtable>
+						<dbcolumn>Hired</dbcolumn>
+					</param>
+					<query>SELECT * FROM "HR members"."my_test_viewA"</query>
+				</subselect>
+
+				<subselect>
+					<title>A VIEW was created for the database</title>
+					<subtitle>Let's test use of createdb01.sql. Search parameter Hired might be passed</subtitle>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>my_test_viewB</dbtable>
+						<dbcolumn>Hired</dbcolumn>
+					</param>
+					<query>SELECT * FROM "HR members"."my_test_viewB"</query>
+				</subselect>
+
 			</screen>
             
 		</screens>

@@ -1,9 +1,10 @@
 # dbDIPview
 
-A viewer solution for long-term digital preservation of databases.
+A viewer solution for long-term digital preservation of databases. Instead of archiving the whole application, we keep the archived database and the configuration for reporting.
 
 ### Prerequisites
-The databases can quickly be made available for access on user request or kept up and running as persistent (reusable) DIP-s. dbDIPview can run on a dedicated server with a DBMS. For a start, we use the administration menu to deploy two packages: the Archival Information Package (AIP) with database content, and the corresponding access enabling information package. Both packages need to be delivered to or kept available in the defined dbDIPview folder.
+The databases can quickly be made available for access on user request or kept up and running as persistent (reusable) DIP-s. 
+dbDIPview can run on a dedicated server with a DBMS. For a start, we use the administration menu to deploy two packages: the Archival Information Package (AIP) with database content, and the corresponding access enabling information package. Both packages need to be delivered to or kept available in the defined dbDIPview folder.
 
 ## Technology
 The tool is based on Linux, Apache, PHP, and PostgreSQL. Its relative simplicity ensures long-term code maintainability as a prerequisite for use in archives. 

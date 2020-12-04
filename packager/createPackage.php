@@ -4,13 +4,17 @@
  *
  * creates a package for dbDIPview (to be content of an AIP)
  * Package content:
- * DDV package (file extension: .zip) - viewer for SIARD or other EXT DDV packages
+ * DDV package (file extension: .zip)
+ *   A viewer for SIARD or other EXT DDV packages, also VIEWs and redaction functionality can be used 
  *   - metadata/list.txt
  *   - metadata/info.txt
  *   - [optional] metadata/description.txt
+ *   - [optional] metadata/createdb.sql
+ *   - [optional] metadata/createdb01.sql
  *   - metadata/queries.xml 
  *   - [optional] redact.sql, redact01.sql
- * EXT DDV package (file extension: .tar.gz) - complete content
+ * EXT DDV package (file extension: .tar.gz) 
+ *   Complete content
  *   - metadata/list.txt
  *   - metadata/info.txt
  *   - [optional] metadata/description.txt
@@ -134,6 +138,13 @@ $ALLMETADATA="about.xml metadata/info.txt metadata/queries.xml metadata/list.txt
 
 if ( is_file($SOURCE . "/metadata/description.txt") )
 	$ALLMETADATA = "$ALLMETADATA metadata/description.txt";
+	
+if ( is_file($SOURCE . "/metadata/createdb.sql") ) {
+	$ALLMETADATA = "$ALLMETADATA metadata/createdb.sql";
+}
+if ( is_file($SOURCE . "/metadata/createdb01.sql") ) {
+	$ALLMETADATA = "$ALLMETADATA metadata/createdb01.sql";
+}
 
 if ( is_file($SOURCE . "/metadata/redactdb.sql") )
 	$ALLMETADATA = "$ALLMETADATA metadata/redactdb.sql";
@@ -185,10 +196,6 @@ if ( $countDatafiles ===  0 ) {
 	$pkgtype=".zip";
 } else {
 	$ALLDATA='data/*';
-	$ALLMETADATA = "$ALLMETADATA metadata/createdb.sql";
-	if ( is_file($SOURCE . "/metadata/createdb01.sql") ) {
-		$ALLMETADATA = "$ALLMETADATA metadata/createdb01.sql";
-	}
 
 	echo "Creating hashes...". PHP_EOL;
 
