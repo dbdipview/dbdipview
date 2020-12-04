@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.2.1] - 2020-12-04
+### Added
+- access: debug mode parameter is now configurable in the config.txt file
+- packaging: in addition to already available redacting, DDV package can now contain definitions of VIEWs for already existing database
+- administration module: VIEWs from DDV can now also be configured (not only from EXT DDV)
+- test suite: TestAndDemo5 now contains an example of VIEW to another table
+### Modified
+- access: improved search parameters passing (as forwarded values) for subqueries ( e.g. date >=, date < )
+
 ## [2.2.0] - 2020-09-07
 ### Added
 - access: logo of the institution can be displayed on the first page (see local/README.txt)

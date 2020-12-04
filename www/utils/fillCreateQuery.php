@@ -105,6 +105,7 @@ global $MSGSW12_HitsOnPage, $MSGSW12_TotalRecords, $MSGSW13_PreviousPage, $MSGSW
 global $MSGSW15_Close, $MSGSW18_ReportDescription, $MSGSW23_PAGE, $MSGSW24_NOPARAMETER;
 
 $paramForwardNum = array();
+$paramForwardEqual = array();
 
 if ( array_key_exists("totalCount", $PARAMS) ) 
 	$totalCount = pg_escape_string($PARAMS['totalCount']);
@@ -136,15 +137,16 @@ foreach ($xml->database->screens->screen as $screen) {
 			$field=            $param->dbtable.TABLECOLUMN.$param->dbcolumn;                  //cities.id -> cities_id
 			$fieldType=        $param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
 			$fieldParamForward=$param->forwardToSubqueryName;                                 //to be used in subquery
-			debug("fillCreateQuery: checking param name: $param->name, dbcolumn: $param->dbcolumn, 
-				field: $field, type: $param->type, forward as: $fieldParamForward");
+			debug("fillCreateQuery: checking existence of: name: $param->name, dbcolumn: $param->dbcolumn, 
+				field: $field, type: $param->type, to be forwarded as: $fieldParamForward");
 
 			$fieldType = str_replace(" ", "__20__", $fieldType);
 			$field     = str_replace(" ", "__20__", $field);     //temporarily replace space
 
+			$paramFound = False;
 			foreach($_GET as $key => $value){
-				$x=$field . $param->type;
-				if(0 == strcmp($key, $field . $param->type)) {
+				if( 0 == strcmp($key, $field . $param->type) || 
+					0 == strcmp($key, $field) ) {                     //this comes with links_to_next_screens
 					if(empty($value)) {
 						if($attrParamMandatory)
 							if( empty($mandatory) )
@@ -152,14 +154,19 @@ foreach ($xml->database->screens->screen as $screen) {
 							else
 								$mandatory .= ", " . $param->name;
 					} else {
+						$paramFound = True;
 						if(is_array($value)) 
-							debug("&nbsp;&nbsp;" . $key . ": " . $value[0] . "...\r\n");
+							debug("(found!)&nbsp;&nbsp;" . $key . ": " . $value[0] . "...\r\n");
 						else
-							debug("&nbsp;&nbsp;" . $key . ": " . $value . "\r\n");
+							debug("(found!)&nbsp;&nbsp;" . $key . ": " . $value . "\r\n");
 					}
 				}
 			}
-			
+			if ( $paramFound == False) {
+				debug("(not found)");
+				continue;  //forget this one and check the next parameter
+			}
+			debug("(check param type): $param->type");
 			$quote=QUOTE_WHERE;   //since postgresql 8.4 no more '';
 			$equal='=';
 			if(0==strcmp("text", $param->type)) {
@@ -187,6 +194,7 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			$and = is_where_already_here($screen->query);     //true=yes, put AND before for next search element
 		
+			debug("(checking) field=$field, fieldType=$fieldType");
 			if (isset($_GET[$field]) || isset($_GET[$fieldType])) {   
 						
 				if (isset($_GET[$field])) {
@@ -204,8 +212,7 @@ foreach ($xml->database->screens->screen as $screen) {
 					} else
 						$value = trim($valueIN, "\t\n\r\0\x0B");   //trim, but leave the blank
 				}
-				
-				
+
 				if(strlen($value)>0) {
 					$value = str_replace("'", '', $value); // ' not needed
 					$value = str_replace('"', '', $value); // " not needed
@@ -237,12 +244,13 @@ foreach ($xml->database->screens->screen as $screen) {
 
 					if(strlen("$fieldParamForward") > 0) {
 						$paramForwardNum["$fieldParamForward"] = "$quote$value$quote";
-						debug("&nbsp;&nbsp;created: " . $fieldParamForward . " : " . $value . "\r\n");
+						$paramForwardEqual["$fieldParamForward"] = $equal;
+						debug("(prepared)&nbsp;&nbsp;" . $fieldParamForward . ": " . $value . "\r\n"); 
 					}
 				} //if strlen
 			} //if isset
 			else
-				debug("fillCreateQuery: param field NOT SET: $field");
+				debug("fillCreateQuery: parameter NOT SET: field=$field, fieldType=$fieldType");
 		} //for each param
 
 		if( !empty($mandatory) ) {
@@ -305,7 +313,7 @@ foreach ($xml->database->screens->screen as $screen) {
 
 				$linknextscreen_column["next_screen_id"] = $link->next_screen_id;
 				$linknextscreen_column["dbtable"]        = $link->dbtable;
-				$linknextscreen_column["dbcolumn"]       = $link->dbcolumn;
+				$linknextscreen_column["dbcolumn"]       = $link->dbcolumn; // . "integer"; to dela za drugi nivo
 
 				if (strlen((string)$link->linkaction)==0)
 					$linknextscreen_column["linkaction"] = "searchParametersReady";   //default
@@ -351,9 +359,12 @@ foreach ($xml->database->screens->screen as $screen) {
 
 				if( isset  ($paramForwardNum["$param->forwardedParamName"]) ) {
 					$value= $paramForwardNum["$param->forwardedParamName"];
-					debug("Forward name:". "$param->forwardedParamName" . 
-						", value:" . $paramForwardNum["$param->forwardedParamName"]);
+					debug("adding forwarded parameter: ". 
+						$param->forwardedParamName . " " .
+						$paramForwardEqual["$param->forwardedParamName"] . " " .
+						$paramForwardNum["$param->forwardedParamName"]);
 
+					$equal = $paramForwardEqual["$param->forwardedParamName"];
 					if(strlen($param->dbcolumn)>0 && strlen($param->forwardedParamName) > 0) {     //use 3 now: SELECT ... WHERE xyz = 3
 						$value = str_replace("'", '', $value); // ' not needed
 						$value = str_replace('"', '', $value); // " not needed
@@ -444,7 +455,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 
 			$subqueries[$sqindex] = $subquery;
-			debug("fillCreateQuery: <b>subquery$sqindex </b>= $subqueries[$sqindex]");	
+			debug("<b>subquery$sqindex </b>= $subqueries[$sqindex]");	
 			debug(str_repeat(".",80));
 			$sqindex  += 1;
 		} //for each subselect

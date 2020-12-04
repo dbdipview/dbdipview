@@ -1,5 +1,11 @@
-VERSION	2020-04-10
+VERSION	2020-12-03
 COMMENT	TestAndDemo5 - dbDIPview regression test
-COMMENT	no SCHEMA and TABLE in this package
-COMMENT	Use with TestAndDemo4.siard and CSV table data in TestAndDemo4 EXT DDV
+COMMENT	Two VIEWS and no SCHEMA and TABLE in this package 
+COMMENT	Use with TestAndDemo4.siard (database) 
+COMMENT	  and TestAndDemo4.tar.gz (EXT DDV with a CSV table data) 
+COMMENT	  and TestAndDemo5.zip (VIEWs, viewer)
 COMMENT	See order_TestAndDemo5.xml
+
+#list the VIEWs from createdb.sql and createdb01.sql in order to enable setting their permissions
+VIEW	HR members.my_test_viewA
+VIEW	"HR members"."my_test_viewB"

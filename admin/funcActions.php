@@ -119,7 +119,8 @@ function actions_Order_process($orderInfo) {
 				$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
 				if ($OK == actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED))
 					actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
-			}
+			} else
+				return($NOK);
 		} else {
 			err_msg($MSG17_FILE_NOT_FOUND . ":", $filepath);
 			return($NOK);
@@ -130,7 +131,11 @@ function actions_Order_process($orderInfo) {
 	if ( isset($orderInfo['ddvFile'] ) && $orderInfo['ddvFile'] != "" ) {
 		debug(__FUNCTION__ . ": unpack DDV...");
 		$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . substr($orderInfo['ddvFile'], 0, -4);  
-		if( $OK != actions_DDV_unpack($DDV_DIR_PACKED . $orderInfo['ddvFile'], $DDV_DIR_EXTRACTED) )
+		if( $OK == actions_DDV_unpack($DDV_DIR_PACKED . $orderInfo['ddvFile'], $DDV_DIR_EXTRACTED) ) {
+			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+			if ($OK == actions_DDV_create_views($DDV_DIR_EXTRACTED))
+				actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
+		} else
 			return($NOK);
 	} else if ( isset($orderInfo['ddvExtFiles']) ) {
 		debug(__FUNCTION__ . ": DDV not found, will check EXT...");
@@ -333,6 +338,39 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 }
 
 /**
+ * For a DDV packages the database has already been created, e.g. from SIARD.
+ * Optionally, we can add VIEWs 
+ *
+ * @return $OK or $NOK    
+ */
+function actions_DDV_create_views($DDV_DIR_EXTRACTED) {
+	global $MSG_ERROR, $MSG29_EXECUTING;
+	global $OK, $NOK;
+	global $DBC;
+	
+	$ret = $NOK;
+	$CREATEDB0 = $DDV_DIR_EXTRACTED . "/metadata/createdb.sql";
+	$CREATEDB1 = $DDV_DIR_EXTRACTED . "/metadata/createdb01.sql";
+
+	if ( is_file($CREATEDB0) ) {
+		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . "...");
+		$rv = dbf_run_sql($DBC, $CREATEDB0);
+		if ( $rv != 0 )
+			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+	}
+
+	if ( is_file($CREATEDB1) ) {
+		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
+		$rv = dbf_run_sql($DBC, $CREATEDB1);
+		if ( $rv != 0 )
+			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+	}
+	$ret = $OK;
+
+	return($ret);
+}
+
+/**
  * Populate database tables from a DDV EXTended package
  *
  * @return $OK or $NOK    
@@ -441,13 +479,13 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 				err_msg(__FUNCTION__ . ": " . $MSG31_NOSCHEMA);
 			}
 
-			elseif ( "$LTYPE" == "COMMENT" ) {
+			elseif ( "$LTYPE" == "VERSION" || "$LTYPE" == "COMMENT") {
 				echo $line . PHP_EOL;
 			}
 
-			elseif (strpos($line, '#') === 0 || strpos($line, '//') === 0){
+			elseif ( strpos($line, '#') === 0 || strpos($line, '//') === 0 || strlen($line) == 0 ){
 				;
-			} //commented out
+			} //commented out or an empty line
 
 			else {
 				debug(__FUNCTION__ . ": $MSG33_SKIPPING $line");

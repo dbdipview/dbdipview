@@ -17,8 +17,9 @@
 			<screen>
 				<id>1</id>
 				<selectDescription>A simple report</selectDescription>
-				<title>See TestAndDemo4 for creation of DB.</title>
-				<subtitle>This viewer has been installed without any database and enables access to an already deployed DB.</subtitle>  
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<subtitle>This DDV viewer has been installed without any database and enables access to a previously deployed database. 
+				The column Names might be redacted during installation of this DDV package.</subtitle>  
 				<param size='4'>
 					<name>Date hired</name>
 					<dbtable>HR employees</dbtable>
