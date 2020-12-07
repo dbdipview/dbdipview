@@ -322,7 +322,7 @@ while ( "$answer" != "q" ) {
 				$PACKAGEFILE = $file;
 				$PKGFILEPATH = $DDV_DIR_PACKED . $file;
 				$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
-				$BFILES_DIR_TARGET = $BFILES_DIR . $DDV;
+				$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $DDV;
 				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
 				echo $DDV . PHP_EOL;
 				if (stopHere($MSG2_UNPACKDDV)) {

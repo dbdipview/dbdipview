@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.2.2] - 2020-12-07
+### Added
+- test suite: TestAndDemo4 now contains an example of populating a table from two CSV files
+### Fixed
+- administration module: files folder name (for attachments) did not have the same name if installed with order or manual mode
+
 ## [2.2.1] - 2020-12-04
 ### Added
 - access: debug mode parameter is now configurable in the config.txt file

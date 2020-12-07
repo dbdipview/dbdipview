@@ -540,8 +540,8 @@ function checkListFile($folder) {
 					$TABLE = $tok[1];
 					$retErrors += checkIsTable($lineNum, $TABLE);
 					if (in_array($TABLE, $tablesMentioned)) {
-						checkShowError($lineNum, "ERROR, multiple definitions of a table: " . $TABLE);
-						$retErrors++;
+						checkShowError($lineNum, "WARNING, multiple definitions of a TABLE: " . $TABLE);
+						checkShowError($lineNum, "(or the content is loaded from more data files, which is allowed)");
 					}
 					$tablesMentioned[] = $TABLE;
 					
