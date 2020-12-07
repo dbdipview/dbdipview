@@ -12,7 +12,7 @@
 			<revision date="2020-06-10" version="1.0">Added element overview</revision>
 			<revision date="2020-12-01" version="1.1">Added demonstration of creating VIEWs for an existing (e.g. SIARD) database</revision>
 		</revisions>
-		<ref_number>TEST TD/5</ref_number>
+		<ref_number>TestAndDemo5</ref_number>
 		<screens>
 
 			<screen>
