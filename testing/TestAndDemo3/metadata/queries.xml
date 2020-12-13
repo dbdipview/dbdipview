@@ -21,6 +21,7 @@ Here follows the content of the file metadata/description.txt:
 			<revision date="2019-10-06" version="1.1">Improved comments</revision>
 			<revision date="2020-06-08" version="1.2">Add some dummy reports to test scroll bar</revision>
 			<revision date="2020-06-12" version="1.3">Added element overview</revision>
+			<revision date="2019-12-13" version="1.4">Link to next query/subquery with parameter from other column added</revision>
 		</revisions>
 		<ref_number>TestAndDemo3</ref_number>
 		<screens>
@@ -29,7 +30,7 @@ Here follows the content of the file metadata/description.txt:
 				<id>1</id>
 				<selectDescription>A simple report, no search parameters</selectDescription>
 				<title>Title: Employees</title>
-				<subtitle>Subtitle, also optional. This is a basic report. Just for a quick start.</subtitle>   
+				<subtitle>Subtitle is optional.</subtitle>   
 				<query>SELECT * 
 					FROM "HR members"."HR employees"
 				</query>
@@ -39,8 +40,11 @@ Here follows the content of the file metadata/description.txt:
 				<id>2</id>
 				<selectDescription>Use of search; use of link to next screen with forwarded parameters</selectDescription>
 				<title>Employees again, html formating of the text - bold and new line</title>
-				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report, with &lt;BR /&gt;- column ID as a source 
-				value &lt;BR /&gt; - to be searched as &lt;B&gt;HR employees-Id&lt;/B&gt; in the linked report. &lt;BR /&gt;- Use of ORDER.</subtitle> 
+				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report, with &lt;BR /&gt;
+				- column ID value is used as a link parameter in ID column &lt;BR /&gt; 
+				- in the second column, another column (i.e. ID) value is used as a parameter &lt;BR /&gt; 
+				- to be searched as &lt;B&gt;HR employees-Id&lt;/B&gt; in the linked report. &lt;BR /&gt;
+				- Use of ORDER.</subtitle> 
 				<param size='4'>
 					<name>ID</name>
 					<dbtable>HR employees</dbtable>
@@ -59,10 +63,17 @@ Here follows the content of the file metadata/description.txt:
 						FROM "HR members"."HR employees"
 						WHERE "Id" != '1000'
 				</query>
-				<selectOrder>"The name", "ID"</selectOrder>
+				<selectOrder>"ID" ASC, "The name"</selectOrder>
 				<links_to_next_screen>
 					<link>
 						<dbcolumnname>ID</dbcolumnname>
+						<next_screen_id>2a</next_screen_id>
+						<dbtable>HR employees</dbtable>
+						<dbcolumn>Id</dbcolumn>
+						<linkaction/>
+					</link>
+					<link>
+						<dbcolumnname valueFromColumn='ID'>The name</dbcolumnname>
 						<next_screen_id>2a</next_screen_id>
 						<dbtable>HR employees</dbtable>
 						<dbcolumn>Id</dbcolumn>
@@ -99,9 +110,19 @@ Here follows the content of the file metadata/description.txt:
 					</param>
 					<query>SELECT 
                     "HR employees"."Id", 
-                    "HR employees"."Employee Name" AS "The name" 				
+                    "HR employees"."Employee Name" AS "Name_üü" 				
 						FROM "HR members"."HR employees"
 					</query>
+				<selectOrder>Name_üü</selectOrder>
+					<links_to_next_screen>
+						<link>
+							<dbcolumnname valueFromColumn='Id'>Name_üü</dbcolumnname>
+							<next_screen_id>2</next_screen_id>
+							<dbtable>HR employees</dbtable>
+							<dbcolumn>Id</dbcolumn>
+							<linkaction/>
+						</link>
+					</links_to_next_screen>
 				</subselect>
 
 				<subselect>
@@ -116,7 +137,9 @@ Here follows the content of the file metadata/description.txt:
 					<query>SELECT 
                     "Arrivals"."id_emp", 
                     "Arrivals"."arrival" 				
-						FROM "HR members"."Arrivals"</query>
+						FROM "HR members"."Arrivals"
+					</query>
+					<selectOrder>"id_emp" ASC, "arrival"</selectOrder>
 					<links_to_next_screen>
 						<link>
 							<dbcolumnname>id_emp</dbcolumnname>
@@ -236,7 +259,7 @@ Here follows the content of the file metadata/description.txt:
 				<id>11</id>
 				<selectDescription>Use of BLOBS (note: using content of the 2nd SIARD package)</selectDescription>
 				<title>Integration of RTF, JPG, PDF</title>   
-				<subtitle>Some examples. Note: LOB value is not displayed, it is just detected and then a link is displayed with record id</subtitle>   
+				<subtitle>A link is available to show the BLOB contents</subtitle>   
 				<param>
 					<name>ID</name>
 					<dbtable>table10</dbtable>
@@ -322,47 +345,55 @@ Here follows the content of the file metadata/description.txt:
 
 			<screen textOnly="1">
 				<id>not used</id>
-				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<selectDescription>No queries in this section, this is just a scroll bar test</selectDescription>
 			</screen>
 
 			<screen>
 				<id>100</id>
 				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>101</id>
 				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>102</id>
 				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>103</id>
 				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>104</id>
 				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>105</id>
 				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>106</id>
 				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>107</id>
 				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 		</screens>
