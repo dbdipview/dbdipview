@@ -2,7 +2,7 @@
 
 /**
  * dbDipDbView.php
- * functions that execute a query and return result
+ * functions that execute a database query and return formatted result
  */
  
 /**
@@ -37,6 +37,7 @@ function addCountTotal($string) {
 	return("");
 }
 
+
 /**
  * finds a keyword that is not in parenthesis
  * SELECT a,b,( ... FROM ...   ) FROM ....
@@ -56,9 +57,27 @@ function findFirstFreeNeedle($string, $needle, $offset) {
 	else
 		return( findFirstFreeNeedle($string, $needle, $pos + 1) );
 }
- 
- 
-//given a query, returns an array from the first line of result
+
+
+/**
+ * in one line result from the database find the key
+ *
+ * Returns: the value for a given column
+ */
+function getKeyValue($arr, $key) {
+	$key = htmlspecialchars($key);
+	if ( array_key_exists($key, $arr) )
+		return($arr[$key]);
+	else
+		return("UNKNOWN_COLUMN_" . $key);
+}
+
+
+/**
+ * execute a query 
+ *
+ * Returns: an array from the first line of result
+ */
 function qRowToArray($query){
 	global $dbConn;
 	$result = pg_query($dbConn, $query );
@@ -70,7 +89,11 @@ function qRowToArray($query){
 } // end qRowToArray
 
 
-//given a query, returns an array with all rows of the result
+/**
+ * execute a query 
+ *
+ * Returns: an array with all rows of the result
+ */
 function qRowsToArray($query){
 	global $dbConn;
 	$outarray = array();
@@ -92,7 +115,11 @@ function qRowsToArray($query){
 } // end qRowToArray
 
 
-//given a query, returns an array with results of first column
+/**
+ * execute a query 
+ *
+ * Returns: an array with results of first column
+ */
 function qColToArray($query){
 	global $dbConn;
 	$outarray = array();
@@ -112,7 +139,11 @@ function qColToArray($query){
 } // end qColToArray
 
 
-//given a query, returns a string, only one value is expected
+/**
+ * execute a query 
+ *
+ * Returns: a string (only one value is expected)
+ */
 function qToValue($query){
 	global $dbConn;
 	$output = "";    //no value
@@ -137,8 +168,11 @@ function qToValue($query){
 } // end qToValue
 
 
-//given a query, returns a string, only one value is expected
-//uses prepared query
+/**
+ * execute a prepared query 
+ *
+ * Returns: a string (only one value is expected)
+ */
 function qToPrepValue($query, $params){
 	global $dbConn;
 	$output = "";    //no value
@@ -168,7 +202,11 @@ function qToPrepValue($query, $params){
 } // end qToPrepValue
 
 
-//given a query, creates an HTML table output
+/**
+ * execute a query 
+ *
+ * Returns: an HTML table output
+ */
 function qToListWithLink($query, 
 					$linknextscreen_columns, 
 					$images_image_style, 
@@ -211,12 +249,16 @@ function qToListWithLink($query,
 				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
 					if ( !is_null($column) && $column["dbtable"]!="" ) { 
+						if ( $column["columnWithValue"] != "" )
+							$linkval = getKeyValue($row, $column["columnWithValue"]);
+						else
+							$linkval = $val; 
 						$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
 						$link= str_replace(" ", "__20__", $link);   //temporarily replace space  
 						$output .= "  <a href='?tablelist=list&submit_cycle=".
 							$column["linkaction"].
 							"&targetQueryNum=".$column["next_screen_id"].
-							"&".$link."=".$val.
+							"&".$link."=".urlencode($linkval).
 							"'>$val</a><br />\n";
 						continue;
 					}
@@ -289,8 +331,12 @@ function qToListWithLink($query,
 } // end qToListWithLink
 
 
-//might notbe needed - it does the some functionality as qToTableWithLink!
-//given a query, automatically creates an HTML table output
+/**
+ * execute a query 
+ * still used?? - it does the some functionality as qToTableWithLink!
+ *
+ * Returns: an HTML table output
+ */
 function qToTable($query){
 	global $dbConn;
 	$output = "";
@@ -331,8 +377,12 @@ function qToTable($query){
 } // end qToTable
 
 
-//given a query, creates an HTML table output
-//results of query can be shown directy or they are used as parameters for a link
+/**
+ * execute a query 
+ * results of query can be shown directy or they are used as parameters for a link
+ *
+ * Returns: an HTML table output
+ */
 function qToTableWithLink($query, 
 					$linknextscreen_columns, 
 					$images_image_style, 
@@ -400,14 +450,18 @@ function qToTableWithLink($query,
 				
 				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
-					if ( !is_null($column) && $column["dbtable"]!="" ) { 
+					if ( !is_null($column) && $column["dbtable"]!="" ) {
+						if ( $column["columnWithValue"] != "" )
+							$linkval = getKeyValue($row, $column["columnWithValue"]);
+						else
+							$linkval = $val; 
 						$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
 						$link= str_replace(" ", "__20__", $link);   //temporarily replace space 
 						$output .= "  <td><a href='?tablelist=table&submit_cycle=".
 							$column["linkaction"].
 							"&targetQueryNum=".
 							$column["next_screen_id"].
-							"&".$link."=".$val.
+							"&".$link."=".urlencode($linkval).
 							"'>$val</a></td>\n";
 						continue;
 					}

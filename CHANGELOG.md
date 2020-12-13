@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.3.0] - 2020-12-13
+### Added
+- packaging: when a link to another query is made from a certain column, the forwarded parameter can now also be a value from another column by using the new attribute valueFromColumn
+- test suite: some improvements in TestAndDemo cases
+### Fixed
+- access: issue with forwarded parameter when text with spaces
+- access: issue with parenthesis in ORDER BY with ASC and DESC
+
 ## [2.2.2] - 2020-12-07
 ### Added
 - test suite: TestAndDemo4 now contains an example of populating a table from two CSV files
