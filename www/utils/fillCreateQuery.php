@@ -63,6 +63,24 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 		"' aria-label='" . $MSGSW28_SAVESASCSV . "'><span style='text-decoration:underline;'>&#129123;</span></a></abbr>&nbsp;");
 }
 
+//add ORDER BY or GROUP BY part
+function appendOrderGroupBy($what, $criteria) {
+	$queryTail = "";
+	$criteria = chop($criteria);   //remove white space characters
+	if ( strlen($criteria) > 0 ) {
+		debug("fillCreateQuery: $what=$criteria");
+		if ( $criteria[0] != '"' ) {		// is " already in xml?
+			$criteriatmp0 = str_replace('.',  '"."',  $criteria);      //db.col --> "db"."col"
+			$criteriatmp1 = str_replace(', ', '", "', $criteriatmp0);  //db.col, --> db.col", "
+			$queryTail = " $what \"" . $criteriatmp1 . "\"";
+		} else {
+			$queryTail = " $what " . $criteria;
+		}
+	}
+	return($queryTail);
+}
+
+
 // operator = "||" or "&&"
 // 'aaa || bbb || ccc' -> (x='%aaa%' OR x='%bbb%' OR x='%ccc%')
 // 'aaa || bbb || !ccc' is also allowed
@@ -156,9 +174,9 @@ foreach ($xml->database->screens->screen as $screen) {
 					} else {
 						$paramFound = True;
 						if(is_array($value)) 
-							debug("(found!)&nbsp;&nbsp;" . $key . ": " . $value[0] . "...\r\n");
+							debug("(found!)&nbsp;&nbsp;" . $key . ": >" . $value[0] . "< ...\r\n");
 						else
-							debug("(found!)&nbsp;&nbsp;" . $key . ": " . $value . "\r\n");
+							debug("(found!)&nbsp;&nbsp;" . $key . ": >" . $value . "<\r\n");
 					}
 				}
 			}
@@ -304,16 +322,18 @@ foreach ($xml->database->screens->screen as $screen) {
 			foreach ($links_to_next_screen->link as $link) {
 				$f_links_to_next_screen = true;
 				$linknextscreen_column = array();
-   
-				debug("fillCreateQuery: LINK dbcolumnname:   $link->dbcolumnname");
-				debug("fillCreateQuery: LINK next_screen_id: $link->next_screen_id");
-				debug("fillCreateQuery: LINK dbtable:        $link->dbtable");
-				debug("fillCreateQuery: LINK dbcolumn:       $link->dbcolumn");
-				debug("fillCreateQuery: LINK linkaction:     $link->linkaction");
+ 
+				debug("fillCreateQuery: LINK column:   $link->dbcolumnname");
+				debug("fillCreateQuery: ____ value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
+				debug("fillCreateQuery: ____ next screen id:         $link->next_screen_id");
+				debug("fillCreateQuery: ____ next screen dbtable:    $link->dbtable");
+				debug("fillCreateQuery: ____ next screen dbcolumn:   $link->dbcolumn");
+				debug("fillCreateQuery: ____ next screen linkaction: $link->linkaction");
 
-				$linknextscreen_column["next_screen_id"] = $link->next_screen_id;
-				$linknextscreen_column["dbtable"]        = $link->dbtable;
-				$linknextscreen_column["dbcolumn"]       = $link->dbcolumn; // . "integer"; to dela za drugi nivo
+				$linknextscreen_column["next_screen_id"]  = $link->next_screen_id;
+				$linknextscreen_column["dbtable"]         = $link->dbtable;
+				$linknextscreen_column["dbcolumn"]        = $link->dbcolumn;
+				$linknextscreen_column["columnWithValue"] = $link->dbcolumnname->attributes()->valueFromColumn;
 
 				if (strlen((string)$link->linkaction)==0)
 					$linknextscreen_column["linkaction"] = "searchParametersReady";   //default
@@ -417,15 +437,17 @@ foreach ($xml->database->screens->screen as $screen) {
 				foreach ($links_to_next_screen->link as $link) {
 					$f_subqeries_links_to_next_screen[$sqindex] = true;
 					$linknextscreen_column = array();
-					debug("fillCreateQuery: LINKSUBQ dbcolumnname:   $link->dbcolumnname");
-					debug("fillCreateQuery: LINKSUBQ next_screen_id: $link->next_screen_id");
-					debug("fillCreateQuery: LINKSUBQ dbtable:        $link->dbtable");
-					debug("fillCreateQuery: LINKSUBQ dbcolumn:       $link->dbcolumn");
-					debug("fillCreateQuery: LINKSUBQ linkaction:     $link->linkaction");
+					debug("fillCreateQuery: LINKSUBQ column:   $link->dbcolumnname");
+					debug("fillCreateQuery: ____ value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
+					debug("fillCreateQuery: ____ next screen id:             $link->next_screen_id");
+					debug("fillCreateQuery: ____ next screen dbtable:        $link->dbtable");
+					debug("fillCreateQuery: ____ next screen dbcolumn:       $link->dbcolumn");
+					debug("fillCreateQuery: ____ next screen linkaction:     $link->linkaction");
 
-					$linknextscreen_column["next_screen_id"] = $link->next_screen_id;
-					$linknextscreen_column["dbtable"]        = $link->dbtable;
-					$linknextscreen_column["dbcolumn"]       = $link->dbcolumn;
+					$linknextscreen_column["next_screen_id"]  = $link->next_screen_id;
+					$linknextscreen_column["dbtable"]         = $link->dbtable;
+					$linknextscreen_column["dbcolumn"]        = $link->dbcolumn;
+					$linknextscreen_column["columnWithValue"] = $link->dbcolumnname->attributes()->valueFromColumn;
 
 					if (strlen((string)$link->linkaction)==0)
 						$linknextscreen_column["linkaction"] = "searchParametersReady";   //default
@@ -437,22 +459,8 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 
 			//-------------------------------------------------------------------
-
-			$group=chop($subselect->selectGroup);   //remove white space characters
-			if (strlen($group)>0) {
-				debug("fillCreateQuery: subselect GROUP=$group");
-				$subquery = $subquery . " GROUP BY " .$group ;
-			}
-
-			$order=chop($subselect->selectOrder);                //remove white space characters
-//			if (strlen($order)>0 && strrchr($text, '"')==0) {    //ignore, if " is already in xml, even though this is not expected
-			if (strlen($order)>0 && strrchr($order, '"')==0) {    //ignore, if " is already in xml, even though this is not expected
-				debug("fillCreateQuery: subselect ORDER=$order");
-				$ordertmp0=str_replace('.',  '"."',  $order);						//db.col --> "db"."col"
-				$ordertmp1=str_replace(', ', '", "', $ordertmp0);            //db.col, --> db.col", "
-				$subquery = $subquery . " ORDER BY \"" . $ordertmp1 . "\"";   
-				$subquery = str_replace('""', '"',    $subquery);            //"" --> "     
-			}
+			$subquery = $subquery . appendOrderGroupBy("GROUP BY", $subselect->selectGroup);
+			$subquery = $subquery . appendOrderGroupBy("ORDER BY", $subselect->selectOrder); 
 
 			$subqueries[$sqindex] = $subquery;
 			debug("<b>subquery$sqindex </b>= $subqueries[$sqindex]");	
@@ -462,25 +470,13 @@ foreach ($xml->database->screens->screen as $screen) {
 
 		
 		//continue with main select query, add missing parts
-		$group=chop($screen->selectGroup);   //remove white space characters
-		if (strlen($group)>0) {
-			debug("fillCreateQuery: subselect GROUP=$group");
-			$query = $query . " GROUP BY " . $group ;
-		}
+		$query = $query . appendOrderGroupBy("GROUP BY", $screen->selectGroup);
 
 		$csvquery = $query;
-		$order=chop($screen->selectOrder);   //remove white space characters
-//		if (strlen($order)>0 && strrchr($text, '"')==0) {    //ignore,if " is already in xml, even though this is not expected
-		if (strlen($order)>0 && strrchr($order, '"')==0) {    //ignore,if " is already in xml, even though this is not expected
-				debug("fillCreateQuery: select ORDER=$order");
-				$ordertmp0=str_replace('.',  '"."',  $order);      //db.col --> "db"."col"
-				$ordertmp1=str_replace(', ', '", "', $ordertmp0);  //db.col, --> db.col", "
-				$query = $query . " ORDER BY \"" . $ordertmp1 . "\"";   
-				$query=str_replace('""', '"',    $query);         //"" --> "     
-		}
+		$query = $query . appendOrderGroupBy("ORDER BY", $screen->selectOrder);
 
 		$maxcount = 0;
-		if (isset($_GET['maxcount'])) {   
+		if (isset($_GET['maxcount'])) {
 			$maxcount = pg_escape_string($_GET['maxcount']);
 			if ($maxcount != 0) {
 				$query = $query . " LIMIT " . $maxcount;    //limit only for main query

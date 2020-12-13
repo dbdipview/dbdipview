@@ -3,7 +3,7 @@
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
            vc:minVersion="2.0">
-	<!-- dbDIPview schema for queries.xml, 2020-06-09 -->
+	<!-- dbDIPview schema for queries.xml, 2020-12-09 -->
 	<xs:complexType name="revisions">
 		<xs:sequence>
 			<xs:element name="revision" type="revision" minOccurs="0" maxOccurs="unbounded" />
@@ -21,7 +21,7 @@
 
 	<xs:complexType name="link">
 		<xs:sequence>
-			<xs:element name="dbcolumnname"   type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="dbcolumnname"   type="dbcolumnname" minOccurs="1" maxOccurs="1" />
 			<xs:element name="next_screen_id" type="xs:string" minOccurs="1" maxOccurs="1" />
 			<xs:element name="dbtable"        type="xs:string" minOccurs="1" maxOccurs="1" />
 			<xs:element name="dbcolumn"       type="xs:string" minOccurs="1" maxOccurs="1" />
@@ -71,6 +71,14 @@
 			<xs:extension base="xs:string">
 				<xs:attribute name="size" type="xs:integer" />
 				<xs:attribute name="hide" type="xs:boolean" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="dbcolumnname" >
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="valueFromColumn" type="xs:string" use="optional" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>

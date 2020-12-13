@@ -5,7 +5,7 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo4 regression test with packages: SIARD and EXT DDV; use of redaction</name>
+		<name>TestAndDemo4 regression test with packages: SIARD and EXT DDV</name>
 		<overview></overview>
 		<revisions>
 			<revision date="2019-12-01" version="0.1">First test</revision>
@@ -16,17 +16,17 @@
 
 			<screen>
 				<id>1</id>
-				<selectDescription>Simple report</selectDescription>
+				<selectDescription>A basic report</selectDescription>
 				<title>Employees</title>
-				<subtitle>An empty database was created from a SIARD package and was then populated from a EXT DDV package; use of redaction.</subtitle>  
+				<subtitle>An empty database was created from a SIARD package, and the table was then populated from an EXT DDV package with two CSV files.</subtitle>  
 				<param size='4'>
-					<name>Date hired: from</name>
+					<name>Date hired (from)</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>date Hired /hq</dbcolumn>
 					<type>date_ge</type>
 				</param>  
 				<param size='4'>
-					<name>Date hired: to</name>
+					<name>Date hired (before)</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>date Hired /hq</dbcolumn>
 					<type>date_lt</type>

@@ -1,12 +1,12 @@
 CREATE TABLE "AirplanesLinks"."models"
 (
-    "id" integer NOT NULL,
-    "height"      decimal,
-    "name"        character varying(50),
-    "picture"     character varying(100),
-    "ext_link"    VARCHAR(100),
-	"motors_code" INTEGER,
-	"motors_text" VARCHAR(100)
+   "id" integer NOT NULL,
+   "height"      decimal,
+   "name Ü"      character varying(50),
+   "picture"     character varying(100),
+   "ext_link"    VARCHAR(100),
+   "motors_code" INTEGER,
+   "motors_text" VARCHAR(100)
 );
 
 CREATE INDEX models_id ON "AirplanesLinks"."models"(id);
