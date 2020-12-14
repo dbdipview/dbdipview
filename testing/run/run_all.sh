@@ -7,9 +7,9 @@
 #    - copy the order and siard files to the DIP0 folder
 #    - use the orders and install and activate the databases
 #
-# Run with this command:
+# Run with this command (remove and install):
 #    ./run_all.sh
-# To remove all installed databases:
+# Only remove all installed databases:
 #    ./run_all.sh -r
 #
 # Boris Domajnko
@@ -20,8 +20,24 @@ MH="$dir/../.."      #dbdipview
 DIP0=$MH/records/DIP0
 UNPACKED=$MH/records/DIP0unpacked
 INFO="Package created by run_all.sh"
-#DBG="-d"
 DBG=
+RMONLY=false
+
+usage() { echo "Usage: $0 [-r] [-d]" 1>&2; exit 1; }
+
+while getopts "rd" o; do
+    case "${o}" in
+        r)
+            RMONLY=true
+            ;;
+        d)
+            DBG="-d"
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
 
 if [ ! -d $DIP0 ]
 then
@@ -29,7 +45,7 @@ then
  	- check configa.txt for DDV_DIR_PACKED folder or
 	- run the menu.php for the first time to complete the installation or
 	- check the MH variable in this file."
-	exit
+	exit 1
 fi
 
 echo "== Removing previously installed databases ==========="
@@ -41,9 +57,18 @@ do
 		php ${MH}/admin/menu.php $DBG -r order_${TESTCASE}.xml
 	fi
 done
+echo "== .... Repeat (there are some test case dependencies) ==========="
+for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5 TestAndDemo6
+do
+	echo "== deleting ${TESTCASE} ============"
+	#skip after first installation
+	if [ -d $UNPACKED/${TESTCASE} ] ; then
+		php ${MH}/admin/menu.php $DBG -r order_${TESTCASE}.xml
+	fi
+done
 
-if [ "$1" == "-r" ]; then
-	exit
+if [ "$RMONLY" = true ] ; then
+	exit 0
 fi
 	
 echo "== Building or copying packages ==========="
