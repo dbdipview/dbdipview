@@ -30,7 +30,7 @@ usage() {
 	exit 1;
 }
 
-while getopts "rv" o; do
+while getopts "rvh" o; do
 	case "${o}" in
 		r)	RMONLY=true;;
 		v)	DBG="-d";;
@@ -103,7 +103,7 @@ done
 echo "======================================================"
 echo "Done."
 xip=`hostname -I`
-ip=`echo $xip | sed 's/ *$//g'`
+ip=`echo $xip | sed 's/\s.*$//g'`
 echo "Now you can check http://$ip/dbdipview/login.htm"
 echo "To remove TestAndDemo databases run: ./run_all.sh -r"
 
