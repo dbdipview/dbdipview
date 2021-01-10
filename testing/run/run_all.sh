@@ -23,20 +23,19 @@ INFO="Package created by run_all.sh"
 DBG=
 RMONLY=false
 
-usage() { echo "Usage: $0 [-r] [-d]" 1>&2; exit 1; }
+usage() {
+	echo "Usage: $0 [-r] [-d]" 1>&2;
+	echo "  -r       remove (uninstall) only" 1>&2;
+	echo "  -v       verbose mode" 1>&2;
+	exit 1;
+}
 
-while getopts "rd" o; do
-    case "${o}" in
-        r)
-            RMONLY=true
-            ;;
-        d)
-            DBG="-d"
-            ;;
-        *)
-            usage
-            ;;
-    esac
+while getopts "rv" o; do
+	case "${o}" in
+		r)	RMONLY=true;;
+		v)	DBG="-d";;
+		*)	usage;;
+	esac
 done
 
 if [ ! -d $DIP0 ]
@@ -49,18 +48,9 @@ then
 fi
 
 echo "== Removing previously installed databases ==========="
-for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5 TestAndDemo6
+for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo6 TestAndDemo5 TestAndDemo4
 do
-	echo "== deleting ${TESTCASE} ============"
-	#skip after first installation
-	if [ -d $UNPACKED/${TESTCASE} ] ; then
-		php ${MH}/admin/menu.php $DBG -r order_${TESTCASE}.xml
-	fi
-done
-echo "== .... Repeat (there are some test case dependencies) ==========="
-for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5 TestAndDemo6
-do
-	echo "== deleting ${TESTCASE} ============"
+	echo "== deleting ${TESTCASE} ========================================="
 	#skip after first installation
 	if [ -d $UNPACKED/${TESTCASE} ] ; then
 		php ${MH}/admin/menu.php $DBG -r order_${TESTCASE}.xml
@@ -70,43 +60,43 @@ done
 if [ "$RMONLY" = true ] ; then
 	exit 0
 fi
-	
-echo "== Building or copying packages ==========="
+
+echo "== Building and copying the packages ==========="
 sleep 2
 
 TESTCASE=TestAndDemo2
-echo "==${TESTCASE}========================================="
+echo "== ${TESTCASE} ========================================="
 php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 
 TESTCASE=TestAndDemo3
-echo "==${TESTCASE}========================================="
+echo "== ${TESTCASE} ========================================="
 php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
 
 TESTCASE=TestAndDemo4
-echo "==${TESTCASE}========================================="
+echo "== ${TESTCASE} ========================================="
 php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
 
 TESTCASE=TestAndDemo5
-echo "==${TESTCASE}========================================="
+echo "== ${TESTCASE} ========================================="
 php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 
 TESTCASE=TestAndDemo6
-echo "==${TESTCASE}========================================="
+echo "== ${TESTCASE} ========================================="
 php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
 cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
 
-echo "== Instaling ==========="
+echo "== Deployment ==========="
 sleep 2
 
 for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5 TestAndDemo6
 do
-	echo "== ${TESTCASE} ============"
+	echo "== Deploying ${TESTCASE} ========================================="
 	php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
 done
 
