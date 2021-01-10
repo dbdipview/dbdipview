@@ -259,7 +259,7 @@ Here follows the content of the file metadata/description.txt:
 				<id>11</id>
 				<selectDescription>Use of BLOBS (note: using content of the 2nd SIARD package)</selectDescription>
 				<title>Integration of RTF, JPG, PDF</title>   
-				<subtitle>A link is available to show the BLOB contents</subtitle>   
+				<subtitle>A link is available for showing or downloading the BLOB contents.</subtitle>   
 				<param>
 					<name>ID</name>
 					<dbtable>table10</dbtable>
