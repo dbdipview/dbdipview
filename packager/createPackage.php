@@ -60,7 +60,7 @@ function showOptions() {
 	echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS" . PHP_EOL;
 	echo "  Validate input and create package:" . PHP_EOL;
 	echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS -t ~/dbdipview/records/DIP0 -n GZSP -y -i 'this is a test package'" . PHP_EOL;
-	exit -2;
+	exit(-2);
 }
 
 function createAboutXML($file) {
@@ -96,7 +96,7 @@ if ( array_key_exists('h', $options) || !array_key_exists('s', $options) )
 $SOURCE = "";
 $OUTDIR = "";
 $NAME = "";
-$OUTFILE_TAR = "";
+$OUTFILE_TARGZ = "";
 $OUTFILE_ZIP = "";
 $infotext="";
 
@@ -114,7 +114,7 @@ if (array_key_exists('t', $options))
 
 if (array_key_exists('n', $options)) {
 	$NAME = $options['n'];
-	$OUTFILE_TAR = "$OUTDIR/$NAME" . ".tar";
+	$OUTFILE_TARGZ = "$OUTDIR/$NAME" . ".tar.gz";
 	$OUTFILE_ZIP = "$OUTDIR/$NAME" . ".zip";
 }
 
@@ -184,15 +184,17 @@ if (empty($NAME)) {
 	showOptions();
 }
 
-checkRemove("Target package file $OUTFILE_TAR exists.", $OUTFILE_TAR);
-checkRemove("Target package file $OUTFILE_TAR" . ".gz exists.", $OUTFILE_TAR . ".gz");
+checkRemove("Target package file $OUTFILE_TARGZ exists.", $OUTFILE_TARGZ);
 checkRemove("Target package file $OUTFILE_ZIP exists.", $OUTFILE_ZIP);
 createAboutXML($infofile);
 
 if ( $countDatafiles ===  0 ) {
+	$status = 0;
     echo "Creating DDV package...". PHP_EOL;
 	passthru("cd '" . $SOURCE . "' && " .
-		"zip -r $OUTFILE_ZIP $ALLMETADATA");
+		"zip --must-match -r $OUTFILE_ZIP $ALLMETADATA", $status);
+	if ($status != 0)
+		exit(1);
 	$pkgtype=".zip";
 } else {
 	$ALLDATA='data/*';
@@ -213,9 +215,11 @@ if ( $countDatafiles ===  0 ) {
 	$ALLMETADATA = "$ALLMETADATA manifest-md5.txt manifest-sha256.txt";
 	
 	echo "Creating EXT DDV package...". PHP_EOL;
+	$status = 0;
 	passthru("cd '" . $SOURCE . "' && " .
-		"tar vcf $OUTFILE_TAR $ALLMETADATA $ALLDATA && " .
-		"gzip $OUTFILE_TAR");
+		"tar czf $OUTFILE_TARGZ $ALLMETADATA $ALLDATA", $status);
+	if ($status != 0)
+		exit(1);
 	$pkgtype = ".tar.gz";
 }
 

@@ -4,8 +4,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
+
+## [2.3.3] - 2021-01-22
 ### Modified
 - test suite: run all options -v (verbose) and -r (remove only), no need to remove twice because of dependencies in TC 4,5 and 6
+- packaging: stop processing sooner if a file missing (for easier debugging)
 
 ## [2.3.0] - 2020-12-13
 ### Added
