@@ -50,6 +50,7 @@ switch ($submit_cycle) {
 			$_SESSION['title'] = $recordsInfo['ref'] . " " . $recordsInfo['title'];
 		else
 			$_SESSION['title'] = "unknown";
+		$_SESSION['tablelist'] = "table";
 		$_SESSION['mydebug'] = $mydebug;
 		break;
 	case "Logout":
@@ -88,6 +89,13 @@ switch ($submit_cycle) {
 		$filename = pg_escape_string($_GET['f']); 
 		$title =    pg_escape_string($_GET['t']); 
 		showCsv($sql, $filename, $title);
+		break;
+	case "setDispMode":
+		$tl = pg_escape_string($_GET['tablelist']);
+		if ($tl == "table" || $tl == "list")
+			$_SESSION['tablelist'] = $tl;
+		echo($_SESSION['tablelist']);
+		exit(0);
 		break;
 }
 

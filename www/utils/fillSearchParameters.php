@@ -5,6 +5,7 @@
  * Input parameter is the query number as targetQueryNum
  * Parameter names as compound from dbtable/dbcolumn/type
  * Type is used mainly because of date duplicates - date field can be used more times
+ * Author: Boris Domajnko
  *
  */
 
@@ -27,7 +28,7 @@ function FunctionHelpToggle() {
 }
 </script>
 
-<form name="statusform" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' target='bottomframe' >      
+<form name="statusform" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' target='bottomframe' >
 <table border = 1>
 <tr>
 	<td colspan = 2>
@@ -40,19 +41,19 @@ foreach ($xml->database->screens->screen as $screen) {
 
 		foreach ($screen->param as $param) {
 			$attributeHR = get_bool($param->attributes()->hr);
-			if($attributeHR == true) 
+			if($attributeHR == true)
 				echo "<hr/>" . "\r\n";
 
 			$attributeSkipNewLine = get_bool($param->attributes()->skipNewLine);
-			if($attributeSkipNewLine == true) 
+			if($attributeSkipNewLine == true)
 				$stringNewLine = "&nbsp;" . "\r\n";
-			else 
+			else
 				$stringNewLine = "<br/>" . "\r\n";
 
 			$attributeSize = (string) $param->attributes()->size;
 			if(is_numeric($attributeSize) )
 				$bSize = TRUE;
-			else 
+			else
 				$bSize = FALSE;
 
 			$screenFields+=1;
@@ -90,11 +91,11 @@ foreach ($xml->database->screens->screen as $screen) {
 			if( (0==strcmp("date",    $param->type)) ||
 				(0==strcmp("date_ge", $param->type)) ||
 				(0==strcmp("date_lt", $param->type))    ) {
-					input_date($field, '',"statusform"); 
+					input_date($field, '',"statusform");
 			}
 
 			if(!empty($infotip))
-				showInfotip($infotip, $field); 
+				showInfotip($infotip, $field);
 
 			echo "$stringNewLine";
 		} //for each param
@@ -108,14 +109,45 @@ if($screenFields == 0)
 	</td>
 
 	<td>
+		<?php
+		if ($_SESSION['tablelist'] == "table") {
+			$checkedT="checked";
+			$checkedL="";
+		} else {
+			$checkedT="";
+			$checkedL="checked";
+		}
+		?>
 
 		<abbr title="<?php echo $MSGSW25_TABLEVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="table" checked /><img src="img/table.png" alt="<?php echo $MSGSW25_TABLEVIEW; ?>"></img></label></abbr>
+			<label><input type="radio" name="tablelist" value="table" onclick="setTreeOrList()" id="tableCheck" <?php echo $checkedT; ?>
+			       /><img src="img/table.png" alt="<?php echo $MSGSW25_TABLEVIEW; ?>"></img></label></abbr>
 
 		<abbr title="<?php echo $MSGSW26_LISTVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="list" /><img src="img/list.png"  alt="<?php echo $MSGSW26_LISTVIEW; ?>"></img></label></abbr>
-
+			<label><input type="radio" name="tablelist" value="list"  onclick="setTreeOrList()"                 <?php echo $checkedL; ?>
+			       /><img src="img/list.png"  alt="<?php echo $MSGSW26_LISTVIEW; ?>"></img></label></abbr>
 		&nbsp;<br /><br />
+
+		<script>
+		function setTreeOrList() {
+			var request = new XMLHttpRequest();
+
+			var checkBox = document.getElementById("tableCheck");
+			if (checkBox.checked == true)
+				request.open("GET", "prog1.php?tablelist=table&submit_cycle=setDispMode");
+			else
+				request.open("GET", "prog1.php?tablelist=list&submit_cycle=setDispMode");
+
+			request.onreadystatechange = function() {
+				if(this.readyState === 4 && this.status === 200) {
+					document.getElementById("none").innerHTML = this.responseText;
+				}
+			};
+			request.send();
+		}
+		</script>
+
+
 		<abbr title="<?php echo $MSGSW12_RecordsPerPage; ?>">
 			<img src="img/linesperpage.png" alt="<?php echo $MSGSW12_RecordsPerPage; ?>" style="vertical-align:sub"></img></abbr>
 		<select name="maxcount" size="1">
@@ -155,7 +187,7 @@ if($screenFields == 0)
 			<?php echo $MHLP11; ?><pre></pre>
 &nbsp;&nbsp;<?php echo $MHLP12; ?><pre></pre>
 
-		<div style="font-family: Comic Sans MS, cursive, sans-serif; 
+		<div style="font-family: Comic Sans MS, cursive, sans-serif;
 			font-size: 70%;text-align:right;
 			color: #333;background-color:#FFFFFF; ">dbDIPview
 		</div>
