@@ -255,11 +255,9 @@ function qToListWithLink($query,
 							$linkval = $val; 
 						$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
 						$link= str_replace(" ", "__20__", $link);   //temporarily replace space  
-						$output .= "  <a href='?tablelist=list&submit_cycle=".
-							$column["linkaction"].
-							"&targetQueryNum=".$column["next_screen_id"].
-							"&".$link."=".urlencode($linkval).
-							"'>$val</a><br />\n";
+						$output .= "  <a href='?submit_cycle=" . $column["linkaction"].
+											"&targetQueryNum=".$column["next_screen_id"].
+											"&".$link."=".urlencode($linkval)."'>$val</a><br />\n";
 						continue;
 					}
 				}
@@ -457,12 +455,9 @@ function qToTableWithLink($query,
 							$linkval = $val; 
 						$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
 						$link= str_replace(" ", "__20__", $link);   //temporarily replace space 
-						$output .= "  <td><a href='?tablelist=table&submit_cycle=".
-							$column["linkaction"].
-							"&targetQueryNum=".
-							$column["next_screen_id"].
-							"&".$link."=".urlencode($linkval).
-							"'>$val</a></td>\n";
+						$output .= "  <td><a href='?submit_cycle=" . $column["linkaction"].
+												"&targetQueryNum=" . $column["next_screen_id"].
+												"&".$link."=".urlencode($linkval)."'>$val</a></td>\n";
 						continue;
 					}
 				}

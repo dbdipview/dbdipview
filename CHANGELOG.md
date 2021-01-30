@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.3.4] - 2021-01-30
+### Modified
+- access: toggle between table and list view is now possible before any search
+
 ## [2.3.3] - 2021-01-22
 ### Modified
 - test suite: run all options -v (verbose) and -r (remove only), no need to remove twice because of dependencies in TC 4,5 and 6
