@@ -497,10 +497,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		$hits=0;
 		if( strcmp($tablelist, "table") == 0) {
 
-			print ("<h4>" . $MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h4>");
-			if($screen->title && strlen($screen->title)>0 )
-				print ("<h4>" . $screen->title . "</h4>");	
-
+			print ("<h4>");
 			if($attrSkipCSVsave != true) {
 				$csvfilename = "export" . $targetQueryNum . ".csv";
 				createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
@@ -509,10 +506,13 @@ foreach ($xml->database->screens->screen as $screen) {
 								$csvquery,
 								$csvfilename);
 			}
+			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h4>");
+
+			if($screen->title && strlen($screen->title)>0 )
+				print ("<h4>" . $screen->title . "</h4>");	
 
 			if(isset($subTitle) && strlen($subTitle)>0 )
-				print($subTitle);
-			print("<br/>");
+				print($subTitle . "<br/>");
 
 			$newlist = qToTableWithLink($query,
 									$linknextscreen_columns,
@@ -533,8 +533,8 @@ foreach ($xml->database->screens->screen as $screen) {
 			$sqindexLoop=0;
 			while ($sqindexLoop < $sqindex) {
 				print("<br/>");
-				print("<h4>" . $subqueriesTitle[$sqindexLoop] . "</h4>");
 
+				print("<h4>");
 				if($attrSkipCSVsave != true) {
 					$csvfilename = "export" . $targetQueryNum . "_" . $sqindexLoop . ".csv";
 					createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
@@ -543,10 +543,10 @@ foreach ($xml->database->screens->screen as $screen) {
 									$subqueries[$sqindexLoop],
 									$csvfilename);
 				}
+				print($subqueriesTitle[$sqindexLoop] . "</h4>");
 
 				if($subqueriesSubTitle[$sqindexLoop] && strlen($subqueriesSubTitle[$sqindexLoop])>0 )
-					print("$subqueriesSubTitle[$sqindexLoop]");
-				print("<br/>");
+					print("$subqueriesSubTitle[$sqindexLoop]" . "<br/>");
 
 				$newlist=qToTableWithLink($subqueries[$sqindexLoop],
 							array_key_exists($sqindexLoop, $subqueries_linknextscreen_columns) ?
