@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.3.5] - 2021-04-08
+### Modified
+- access: link download as CSV moved to the first line of the header
+
 ## [2.3.4] - 2021-01-30
 ### Modified
 - access: toggle between table and list view is now possible before any search
