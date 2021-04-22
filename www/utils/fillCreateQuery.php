@@ -102,7 +102,7 @@ function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote
 			$value = trim($value);                                 // treat "! ABC" as "!ABC"
 			if($addPercentage && strpos("$value",'%') === false)
 				$value = "%".$value."%";
-			$text = $text . $op . "(" . $field . " NOT " . $equal . " " . $quote . trim($value) . $quote . " OR " . $field . " IS NULL)";
+			$text = $text . $op . "(" . $field . " IS NULL OR " . $field . " NOT " . $equal . " " . $quote . trim($value) . $quote . ")";
 		} else {
 			if($addPercentage && strpos("$value",'%') === false)
 				$value = "%".$value."%";
@@ -188,8 +188,8 @@ foreach ($xml->database->screens->screen as $screen) {
 			$quote=QUOTE_WHERE;   //since postgresql 8.4 no more '';
 			$equal='=';
 			if(0==strcmp("text", $param->type)) {
-				$quote=QUOTE_WHERE;                        //NO: usage: where a='txt'
-				$equal='LIKE';                             //YES: usage: where a='%000' or '__txt'
+				$quote = QUOTE_WHERE;
+				$equal = '=';
 			} else if(0==strcmp("textlike", $param->type)) {
 				$quote=QUOTE_WHERE;
 				$equal='ILIKE';
@@ -245,7 +245,7 @@ foreach ($xml->database->screens->screen as $screen) {
 						$value = trim($value);                                      // treat "! ABC" as "!ABC"
 						if(0==strcmp("textlike", $param->type) && strpos("$value",'%') === false)
 							$value = "%".$value."%";
-						$wheretext = " ($myColumn NOT $equal $quote$value$quote OR $myColumn IS NULL)";
+						$wheretext = " ($myColumn IS NULL OR $myColumn NOT $equal $quote$value$quote)";
 					} else {
 						if(0==strcmp("textlike", $param->type) && strpos("$value",'%') === false) {  //check if user is already using %
 							$value = "%".$value."%";     //SQL ILIKE: user does not need this help any more: %ARHIV%, ARHIV%, STEKL_RSTVO
