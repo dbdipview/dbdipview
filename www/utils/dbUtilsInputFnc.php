@@ -36,6 +36,9 @@
 	var dd = document.getElementById(d);
 	AssignPosition(dd);
 	dd.style.display = "block";
+	dd.style.border = "1px solid var(--main-htext-color)";
+	dd.style.backgroundColor = "var(--main-boxbg-color)";
+	dd.style.borderRadius = "5px";
 	}
 	function ReverseContentDisplay(d) {
 	if(d.length < 1) { return; }
@@ -248,8 +251,13 @@ function checkmydate($date) {
 		return false;
 }
 
- function  showInfotip($text, $id) {
-	$msgid="MSG".$id;
+
+$infoTipNumber = 0;
+
+function showInfotip($text, $id) {
+	global $infoTipNumber;
+	$msgid="MSG" . $id . $infoTipNumber;
+	$infoTipNumber++;
  ?>
 	<span
 		onmouseover="ShowText('<?php print $msgid; ?>'); return true;"
@@ -261,3 +269,21 @@ function checkmydate($date) {
  <?php
 }
 
+
+function showInfotipInline($text, $id) {
+	global $infoTipNumber;
+	$msgid="MSG" . $id . $infoTipNumber;
+	$infoTipNumber++;
+
+	if ( is_null($text) || $text == "" )
+		return("");
+
+	$out =  "<span\n";
+	$out .= "  onmouseover=\"ShowText('" . $msgid . "'); return true;\"" . PHP_EOL;
+	$out .= "  onmouseout= \"HideText('" . $msgid . "'); return true;\"" . PHP_EOL;
+	$out .= "  href=\"javascript:ShowText('" . $msgid . "')\">" . PHP_EOL;
+	$out .= "  <img src=\"img/question_mark.gif\">" . PHP_EOL;
+	$out .= "</span>" . PHP_EOL;
+	$out .= "<div id=\"" . $msgid . "\" class=\"box\">" . $text . "</div>";
+	return($out);
+}

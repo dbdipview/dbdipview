@@ -99,8 +99,8 @@ function qRowsToArray($query){
 	$outarray = array();
 	$result = pg_query($dbConn, $query );
 	if (!$result) {
-		debug(pg_last_error($dbConn));
-		return(array(array("ERROR: qRowsToArray<br/>")));
+		$err = pg_last_error($dbConn);
+		return(array(array("ERROR: qRowsToArray<br/>" . $err)));
 	} else {
 		$rows = pg_num_rows($result);
 		$i=0;
@@ -224,6 +224,7 @@ function qToListWithLink($query,
 		$totalLines = $totalCount;  //was calculated at first page
 		$queryWithCount = "";
 	}
+	$columnDescriptions = new ColumnDescriptions($query); 
 	
 	if( empty($queryWithCount) ) 
 		$result = pg_query($dbConn, $query );
@@ -244,6 +245,8 @@ function qToListWithLink($query,
 					$totalLines = $val;
 					continue;     //hide column Total
 				}
+				
+				$output .= showInfotipInline($columnDescriptions->getDescriptionForColumn($col), $col);
 				$output .= "<b>$col:</b> ";
 
 				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
@@ -331,9 +334,9 @@ function qToListWithLink($query,
 
 /**
  * execute a query 
- * still used?? - it does the some functionality as qToTableWithLink!
+ * a simpler version of qToTableWithLink
  *
- * Returns: an HTML table output
+ * Returns: HTML table output
  */
 function qToTable($query){
 	global $dbConn;
@@ -403,6 +406,7 @@ function qToTableWithLink($query,
 		$totalLines = $totalCount;  //was calculated at first page
 		$queryWithCount = "";
 	}
+	$columnDescriptions = new ColumnDescriptions($query); 
 	
 	if( empty($queryWithCount) ) 
 		$result = pg_query($dbConn, $query );
@@ -429,7 +433,8 @@ function qToTableWithLink($query,
 				$mycheckbox = "<input type=\"checkbox\" name=\"". $tableid . "_col$hcol\" checked=\"checked\" />";
 			else
 				$mycheckbox = "";
-			$output .= "  <th>$mycheckbox$field</th>\n";
+			$description = showInfotipInline($columnDescriptions->getDescriptionForColumn($field), $field);
+			$output .= "  <th>$mycheckbox$field" . $description . "</th>\n";
 		}
 		$output .= "</tr></thead>\n\n";
 

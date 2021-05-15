@@ -2,7 +2,7 @@
 
 /**
  * dbDIPview main loop
- * Author: Boris Domajnko
+ * @author: Boris Domajnko
  */
 ini_set( 'session.cookie_httponly', 1 );
 session_start();
@@ -116,6 +116,7 @@ switch ($submit_cycle) {
 include "dbUtilsView.php";
 include "utils/dbDipDbView.php";
 include "utils/dbUtilsInputFnc.php";
+include "utils/ColumnDescriptions.php";
 include "utils/getQueryNumber.php";
 include "utils/fillSearchParameters.php";
 include "utils/fillCreateQuery.php";
@@ -232,8 +233,13 @@ default:
 }
 
 
+/**
+ * function debug
+ * if debug is enabled displays debug text
+ * see config.txt
+ */
 function debug($mytxt) {
-	global $debugCode;    //see config.txt
+	global $debugCode;
 	if (isset(   $_SESSION['mydebug']) && isset($debugCode)){
 		$mydebug=$_SESSION['mydebug'];
 		if($mydebug == $debugCode)

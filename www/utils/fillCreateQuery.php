@@ -5,10 +5,11 @@
  * - build the SELECT statements (i.e. main query and optional subqueries),
  * - execute them,
  * - display the results.
- * Boris Domajnko
+ * @author: Boris Domajnko
  */
 
 ?>
+<!-- hide a column -->
 <script type="text/javascript" language="JavaScript">
 $(document).ready(function() {
 	$('input[type="checkbox"]').click(function() {
@@ -561,8 +562,8 @@ foreach ($xml->database->screens->screen as $screen) {
 							array_key_exists($sqindexLoop, $subqueries_blob_columns) ?
 								$subqueries_blob_columns[$sqindexLoop] : array(array()),
 
-							$sqindexLoop,
-							0);
+							0,
+							$sqindexLoop);
 										
 				print $newlist[0];
 				$sqindexLoop  += 1;
@@ -723,6 +724,7 @@ function is_where_already_here($selectStmnt) {
 	$left =   preg_replace("/\([^)]+\)/"," ",$selectStmnt);     // remove anything between ( and )
 	$right =  preg_replace("/\([^)]+\(/"," ",$left);            // remove anything between ( and (
 	$no_wrong_where = preg_replace("/\([^)]+\)/"," ",$right);   // remove anything between ( and )
+	$no_wrong_where = strtoupper(preg_replace('/\s+/', ' ', $no_wrong_where));  //new line -> ' '
 
 	if (substr_count($no_wrong_where, " WHERE ")   > 0 ||
 			substr_count($no_wrong_where, " WHERE\t")  > 0 ||

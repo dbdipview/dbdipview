@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.4.0] - 2021-05-15
+### Added
+- access: database column descriptions are shown as infotip
+
 ## [2.3.6] - 2021-04-20
 ### Fixed
 - access: exact parameter match for subquery call instead of LIKE
