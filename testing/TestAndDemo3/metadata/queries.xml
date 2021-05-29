@@ -11,7 +11,7 @@ Demonstration with two SIARD packages and one DDV package with viewer informatio
 Redirection to the next report with "forward parameters". Use of BLOB. Use of metadata/description.txt 
 with html &lt;B&gt;tags&lt;/B&gt;.
 &lt;BR /&gt;
-Here follows the content of the file metadata/description.txt:
+This text is from queries.xml. Here follows the content of the file metadata/description.txt:
 &lt;BR /&gt;
 &lt;BR /&gt;
 		</overview>
@@ -21,14 +21,15 @@ Here follows the content of the file metadata/description.txt:
 			<revision date="2019-10-06" version="1.1">Improved comments</revision>
 			<revision date="2020-06-08" version="1.2">Add some dummy reports to test scroll bar</revision>
 			<revision date="2020-06-12" version="1.3">Added element overview</revision>
-			<revision date="2019-12-13" version="1.4">Link to next query/subquery with parameter from other column added</revision>
+			<revision date="2020-12-13" version="1.4">Link to next query/subquery with parameter from other column added</revision>
+			<revision date="2021-05-27" version="1.6">Level attribute added</revision>
 		</revisions>
 		<ref_number>TestAndDemo3</ref_number>
 		<screens>
 
 			<screen>
 				<id>1</id>
-				<selectDescription>A simple report, no search parameters</selectDescription>
+				<selectDescription>A basic report without search parameters</selectDescription>
 				<title>Title: Employees</title>
 				<subtitle>Subtitle is optional.</subtitle>   
 				<query>SELECT * 
@@ -38,7 +39,7 @@ Here follows the content of the file metadata/description.txt:
 
 			<screen>
 				<id>2</id>
-				<selectDescription>Use of search; use of link to next screen with forwarded parameters</selectDescription>
+				<selectDescription>Simple search; use of link to next screen with forwarded parameters</selectDescription>
 				<title>Employees again, html formating of the text - bold and new line</title>
 				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report, with &lt;BR /&gt;
 				- column ID value is used as a link parameter in ID column &lt;BR /&gt; 
@@ -155,7 +156,7 @@ Here follows the content of the file metadata/description.txt:
 
 			<screen>
 				<id>3</id>
-				<selectDescription>Search parameters, infotip, date</selectDescription>
+				<selectDescription>Search parameters, parameter infotip</selectDescription>
 				<title>Use of infotip, attributes: size, hr, skipNewLine; dates</title>
 				<subtitle>See the search screen: infotip at ID field, a horizontal line and skipped new line after first date</subtitle>    
 				<param size='4'>
@@ -190,14 +191,14 @@ Here follows the content of the file metadata/description.txt:
 				</query>
 			</screen>
 
-			<screen textOnly="1">
+			<screen level="1" textOnly="1">
 				<id>not used</id>
-				<selectDescription>Another group of reports</selectDescription>
+				<selectDescription>Another group of reports (click here)</selectDescription>
 			</screen>
 
-			<screen>
+			<screen level="2">
 				<id>4</id>
-				<selectDescription>Use of SELECT, dropdown, example 1</selectDescription>
+				<selectDescription>Specific use of SELECT, dropdown</selectDescription>
 				<title>Example 1</title>   
 				<subtitle>Use of dropdown selection from a separate query returning two columns (value-to-be-searched, combobox-text); 
 				          use of table alias; compare SQL code with report #5</subtitle>   
@@ -223,9 +224,9 @@ Here follows the content of the file metadata/description.txt:
 				<selectOrder>"IDdep", "Employee Name"</selectOrder>
 			</screen>
 
-			<screen>
+			<screen level="2">
 				<id>5</id>
-				<selectDescription>Use of SELECT, mandatory parameter, example 2</selectDescription>
+				<selectDescription>Specific use of SELECT, mandatory parameter</selectDescription>
 				<title>Example 2</title>   
 				<subtitle>Mandatory parameter; use of SQL alias in the query</subtitle>   
 				<param  mandatory="1">
@@ -350,49 +351,49 @@ Here follows the content of the file metadata/description.txt:
 
 			<screen>
 				<id>100</id>
-				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<selectDescription>Ignore me, this is just a scroll bar test</selectDescription>
 				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>101</id>
-				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<selectDescription>Ignore me, this is just a scroll bar test</selectDescription>
 				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>102</id>
-				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<selectDescription>Ignore me, this is just a scroll bar test</selectDescription>
 				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>103</id>
-				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<selectDescription>Ignore me, this is just a scroll bar test</selectDescription>
 				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>104</id>
-				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<selectDescription>Ignore me, this is just a scroll bar test</selectDescription>
 				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>105</id>
-				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<selectDescription>Ignore me, this is just a scroll bar test</selectDescription>
 				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>106</id>
-				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<selectDescription>Ignore me, this is just a scroll bar test</selectDescription>
 				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 
 			<screen>
 				<id>107</id>
-				<selectDescription>Ignore me, this is a scroll bar test</selectDescription>
+				<selectDescription>Ignore me, this is just a scroll bar test</selectDescription>
 				<query>SELECT NULL AS nihil WHERE FALSE</query>
 			</screen>
 

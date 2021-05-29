@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <dbDIPview 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
@@ -6,7 +6,7 @@
 	<database>
 		<name>Register XYZ</name>
 		<overview>
-Thuis is a short overview of Register XYZ... You can also create it as a metadata/description.txt file.
+This is a short overview of Register XYZ... You can also create it as a metadata/description.txt file.
 		</overview>
 		<revisions>
 			<revision date="2019-06-12" version="0.1">draft version of reports during ingest of XYZ</revision>

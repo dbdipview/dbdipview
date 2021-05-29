@@ -76,22 +76,6 @@ function getKeyValue($arr, $key) {
 /**
  * execute a query 
  *
- * Returns: an array from the first line of result
- */
-function qRowToArray($query){
-	global $dbConn;
-	$result = pg_query($dbConn, $query );
-	if (!$result) {
-		debug(pg_last_error($dbConn));
-		return(array("ERROR: qRowToArray<br/>"));
-	}
-	return(pg_fetch_assoc($result)) ;
-} // end qRowToArray
-
-
-/**
- * execute a query 
- *
  * Returns: an array with all rows of the result
  */
 function qRowsToArray($query){
@@ -99,8 +83,8 @@ function qRowsToArray($query){
 	$outarray = array();
 	$result = pg_query($dbConn, $query );
 	if (!$result) {
-		$err = pg_last_error($dbConn);
-		return(array(array("ERROR: qRowsToArray<br/>" . $err)));
+		debug(pg_last_error($dbConn), false);
+		return(array(array("ERROR: qRowsToArray<br/>")));
 	} else {
 		$rows = pg_num_rows($result);
 		$i=0;
@@ -112,94 +96,7 @@ function qRowsToArray($query){
 		}
 		return($outarray);
 	}
-} // end qRowToArray
-
-
-/**
- * execute a query 
- *
- * Returns: an array with results of first column
- */
-function qColToArray($query){
-	global $dbConn;
-	$outarray = array();
-	$result = pg_query($dbConn, $query );
-	if (!$result) {
-		debug(pg_last_error($dbConn));
-		return(array("ERROR: qColToArray<br/>"));
-	} else {
-		$rows = pg_num_rows($result);
-		if ($rows > 0) {
-			while ($row = pg_fetch_row($result)) {
-				$outarray[] = $row[0];
-			}
-		}
-	}
-	return $outarray;
-} // end qColToArray
-
-
-/**
- * execute a query 
- *
- * Returns: a string (only one value is expected)
- */
-function qToValue($query){
-	global $dbConn;
-	$output = "";    //no value
-	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
-	$result = pg_query($dbConn, $query );
-	if (!$result) {
-		$output = "ERROR: qToValue<br />";
-		debug(pg_last_error($dbConn));
-	} else {
-		if (pg_num_rows($result) != 1) {//more than one row?
-			$rows = pg_num_rows($result);
-			for ($i = 0; $i < $rows; $i++) {
-				$row = pg_fetch_row($result, $i);
-				$output .= "$row[0]<br/>";   
-			}
-		} else {
-			$row = pg_fetch_row($result);
-			$output .= $row[0];   
-		}
-	}
-	return $output;
-} // end qToValue
-
-
-/**
- * execute a prepared query 
- *
- * Returns: a string (only one value is expected)
- */
-function qToPrepValue($query, $params){
-	global $dbConn;
-	$output = "";    //no value
-	$result = pg_prepare($dbConn, "my_query", $query );
-	$result = pg_execute($dbConn, "my_query", $params);
-	if (!$result) {
-		$output = "ERROR: qToPrepValue<br />";
-		debug(pg_last_error($dbConn));
-	} else {
-		if (pg_num_rows($result) != 1) {//more than one row?
-			$rows = pg_num_rows($result);
-			for ($i = 0; $i < $rows; $i++) {
-				$row = pg_fetch_row($result, $i);
-				$output .= "$row[0]<br/>";   
-			}
-		} else {
-			$row = pg_fetch_row($result);
-			$output .= $row[0];   
-		}
-
-		$result = pg_query($dbConn, "DEALLOCATE "."\"my_query\"");
-		if (!$result)
-			return "Error in deallocate: " . pg_last_error($dbConn) . "<br/>";
-	}
-	return $output;
-	
-} // end qToPrepValue
+}
 
 
 /**
@@ -232,8 +129,8 @@ function qToListWithLink($query,
 		$result = pg_query($dbConn, $queryWithCount );
 
 	if (!$result) {
-		$output = "ERROR: qToListWithLink<br />";
 		debug(pg_last_error($dbConn));
+		$output = "ERROR: qToListWithLink<br />";
 	} else {
 
 		while ($row = pg_fetch_assoc($result)) {
@@ -245,7 +142,12 @@ function qToListWithLink($query,
 					$totalLines = $val;
 					continue;     //hide column Total
 				}
-				
+
+				$tablelist = $_SESSION['tablelist'];
+				if( strcmp($tablelist, "listAll") !== 0 )
+					if( empty($val) )
+						continue;
+					
 				$output .= showInfotipInline($columnDescriptions->getDescriptionForColumn($col), $col);
 				$output .= "<b>$col:</b> ";
 
@@ -320,62 +222,17 @@ function qToListWithLink($query,
 			$output .= "<hr /> \n" ;
 		} // end while
 
+		$hits = pg_num_rows($result);
+	
 	} // if result
 
 	if (strlen($output)==0)
 		$output .= "<hr /> \n" ;
 
-	$hits = pg_num_rows($result);
 	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
 	
-} // end qToListWithLink
-
-
-/**
- * execute a query 
- * a simpler version of qToTableWithLink
- *
- * Returns: HTML table output
- */
-function qToTable($query){
-	global $dbConn;
-	$output = "";
-	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
-	$result = pg_query($dbConn, $query );
-	if (!$result) {
-		$output = "ERROR: qToTable<br />";
-		debug(pg_last_error($dbConn));
-	} else {
-		$output .= "<br />\n<table class=\"sortable\">\n"; //mydbtable
-
-		$output .= "<thead><tr>\n";
-		$i = pg_num_fields($result);
-		for ($j = 0; $j < $i; $j++) {
-			$field = pg_field_name($result, $j);
-			$output .= "  <th>$field</th>\n";
-		}
-		$output .= "</tr></thead>\n\n";
-
-		$output .= "<tbody>\n";
-
-		while ($row = pg_fetch_assoc($result)) {
-			$output .= "<tr>\n";
-			foreach ($row as $col=>$valnl){
-				$val = nl2br($valnl);
-				$output .= "  <td>$val</td>\n";
-			}
-				$output .= "</tr>\n";
-		}
-
-		$output .= "</tbody>\n";
-	}
-
-	$output .= "</table>\n";
-	$hits = pg_num_rows($result);
-	$returnarray = array($output, $hits);
-	return $returnarray;
-} // end qToTable
+}
 
 
 /**
@@ -395,7 +252,7 @@ function qToTableWithLink($query,
 	global $filespath;
 	$output = "";
 	$tableid = "table" . $queryId;
-	//$query = str_replace("'", "\"", $query);    // 'name'--> "name" _ _ SELECT _ AS "name"
+	//$query = str_replace("'", "\"", $query);	// 'name'--> "name" _ _ SELECT _ AS "name"
 
 	$totalLines = 0;
 	
@@ -414,13 +271,13 @@ function qToTableWithLink($query,
 		$result = pg_query($dbConn, $queryWithCount );
 	
 	if (!$result) {
-		$output .= "ERROR: qToTableWithLink<br />";
 		debug(pg_last_error($dbConn));
+		$output .= "ERROR: qToTableWithLink<br />";
 	} else {
 		//$output .= "Added COUNT():" . $queryWithCount;
 		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">\n";  
 
-		$output .= "<thead><tr>\n";
+		$output .= "<thead><tr>" . PHP_EOL;
 		$i = pg_num_fields($result);
 		
 		if( !empty($queryWithCount) )
@@ -429,14 +286,14 @@ function qToTableWithLink($query,
 		for ($j = 0; $j < $i; $j++) {
 			$field = pg_field_name($result, $j);
 			$hcol = $j + 1;
-			if (strlen($queryId) > 0 && ($j !== 0))
-				$mycheckbox = "<input type=\"checkbox\" name=\"". $tableid . "_col$hcol\" checked=\"checked\" />";
-			else
+			if (strlen($queryId) > 0 && ($j !== 0)) {
+				$mycheckbox = "<input type=\"checkbox\" name=\"". $tableid . "_col$hcol\" checked=\"checked\" class=\"noClipboard\" />";
+			} else
 				$mycheckbox = "";
 			$description = showInfotipInline($columnDescriptions->getDescriptionForColumn($field), $field);
-			$output .= "  <th>$mycheckbox$field" . $description . "</th>\n";
+			$output .= "<th><span class=\"forceInline\">$mycheckbox$field" . $description . "</span></th>" . PHP_EOL;
 		}
-		$output .= "</tr></thead>\n\n";
+		$output .= "</tr></thead>" . PHP_EOL;
 
 		$output .= "<tbody>\n";
 
@@ -533,6 +390,6 @@ function qToTableWithLink($query,
 		$hits = pg_num_rows($result);
 	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
-} // end qToTableWithLink
+}
 
 ?>
