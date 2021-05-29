@@ -49,6 +49,7 @@
 	}
 //-->
 </script>
+
 <?php
 
 //print a single-line text box
@@ -142,7 +143,6 @@ function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default
 	<label for="<?php echo "$fieldname"; ?>">
 		<abbr title="<?php echo $MSGSW29_MULTIPLESELECT; ?>"
 			><button 
-			id="<?php echo "$fieldname"; ?>"
 			type="button" 
 			style="padding: 0; border: none;border-radius: 40%;" 
 			onclick="ToggleCombo('<?php echo "$fieldname"; ?>',this)">+
@@ -161,27 +161,6 @@ function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default
 <?php
 }
 
-?>
-<script>
-function ToggleCombo(value1,value2, object){  
-  var x = document.getElementById(value1);
-  var y = document.getElementById(value1+"M");
-  
-  if (x.style.display === "none") {
-    x.style.display = "inline-block";
-    y.style.display = "none";
-    var z = document.getElementById(value1+"M" + "sel");
-    z.value = "";
-  } else {
-    x.style.display = "none";
-    var z = document.getElementById(value1 + "sel");
-    z.value = "";
-    y.style.display = "inline-block";
-  }
-
-} 
-</script>
-<?php
 
 //creates select form
 function input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true, $multiple="") {
@@ -271,3 +250,23 @@ function showInfotipInline($text, $id) {
 	$out .= "<span id=\"" . $msgid . "\" class=\"box\">" . $text . "</span>" . PHP_EOL;
 	return($out);
 }
+
+?>
+<script type="text/javascript" >
+function ToggleCombo(value1,value2, object){  
+  var x = document.getElementById(value1);
+  var y = document.getElementById(value1+"M");
+  
+  if (x.style.display === "none") {
+    x.style.display = "inline-block";
+    y.style.display = "none";
+    document.getElementById(value1+"M" + "sel").value = "";
+  } else {
+    x.style.display = "none";
+    y.style.display = "inline-block";
+    document.getElementById(value1 + "sel").value = "";
+  }
+
+} 
+</script>
+<?
