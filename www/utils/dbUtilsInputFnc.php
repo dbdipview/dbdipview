@@ -170,11 +170,11 @@ function ToggleCombo(value1,value2, object){
   if (x.style.display === "none") {
     x.style.display = "inline-block";
     y.style.display = "none";
-	var z = document.getElementById(value1+"M" + "sel");
+    var z = document.getElementById(value1+"M" + "sel");
     z.value = "";
   } else {
     x.style.display = "none";
-	var z = document.getElementById(value1 + "sel");
+    var z = document.getElementById(value1 + "sel");
     z.value = "";
     y.style.display = "inline-block";
   }
@@ -254,22 +254,6 @@ function checkmydate($date) {
 
 $infoTipNumber = 0;
 
-function showInfotip($text, $id) {
-	global $infoTipNumber;
-	$msgid="MSG" . $id . $infoTipNumber;
-	$infoTipNumber++;
- ?>
-	<span
-		onmouseover="ShowText('<?php print $msgid; ?>'); return true;"
-		onmouseout= "HideText('<?php print $msgid; ?>'); return true;"
-		href="javascript:ShowText('<?php print $msgid; ?>')">
-		<img src="img/question_mark.gif">
-	</span>
-	<div id="<?php print $msgid; ?>" class="box"><?php print $text; ?></div>
- <?php
-}
-
-
 function showInfotipInline($text, $id) {
 	global $infoTipNumber;
 	$msgid="MSG" . $id . $infoTipNumber;
@@ -278,12 +262,12 @@ function showInfotipInline($text, $id) {
 	if ( is_null($text) || $text == "" )
 		return("");
 
-	$out =  "<span\n";
+	$out =  "<span class=\"noClipboard\" \n";
 	$out .= "  onmouseover=\"ShowText('" . $msgid . "'); return true;\"" . PHP_EOL;
 	$out .= "  onmouseout= \"HideText('" . $msgid . "'); return true;\"" . PHP_EOL;
 	$out .= "  href=\"javascript:ShowText('" . $msgid . "')\">" . PHP_EOL;
 	$out .= "  <img src=\"img/question_mark.gif\">" . PHP_EOL;
-	$out .= "</span>" . PHP_EOL;
-	$out .= "<div id=\"" . $msgid . "\" class=\"box\">" . $text . "</div>";
+	$out .= "</span>";
+	$out .= "<span id=\"" . $msgid . "\" class=\"box\">" . $text . "</span>" . PHP_EOL;
 	return($out);
 }

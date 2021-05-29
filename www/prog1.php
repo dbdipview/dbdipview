@@ -23,6 +23,7 @@ $myLang = "en";
 
 switch ($submit_cycle) {
 	case "CheckLogin":
+		session_regenerate_id();
 		if (array_key_exists("code", $_GET)) {
 			$code = trim($_GET['code']);
 			list($myDBname, $myXMLfile) = config_code2database($code);
@@ -92,9 +93,8 @@ switch ($submit_cycle) {
 		break;
 	case "setDispMode":
 		$tl = pg_escape_string($_GET['tablelist']);
-		if ($tl == "table" || $tl == "list")
+		if ($tl == "table" || $tl == "list" || $tl == "listAll")
 			$_SESSION['tablelist'] = $tl;
-		echo($_SESSION['tablelist']);
 		exit(0);
 		break;
 }
@@ -120,6 +120,7 @@ include "utils/ColumnDescriptions.php";
 include "utils/getQueryNumber.php";
 include "utils/fillSearchParameters.php";
 include "utils/fillCreateQuery.php";
+include "utils/ReportMenu.php";
 
 include "messagesw.php";
 
@@ -188,7 +189,6 @@ if( strcmp($submit_cycle, "noSession") !== 0 )
 switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
-	session_regenerate_id();    // regenerated the session, delete the old one. 
 	echo "<h4>$MSGSW17_Records: " . $_SESSION['title'] . "</h4>";
 	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
 	getQueryNumber();
@@ -196,6 +196,10 @@ case "CheckLogin":
 case "querySelected":
 	echo "<h4>$MSGSW17_Records: " . $_SESSION['title'] . "</h4>";
 	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
+	if( empty($targetQueryNum) ) {
+		getQueryNumber();
+		break;
+	}
 	?>
 	<table>
 		<tr>
@@ -238,14 +242,21 @@ default:
  * if debug is enabled displays debug text
  * see config.txt
  */
-function debug($mytxt) {
+function debug($mytxt, $return = false) {
 	global $debugCode;
-	if (isset(   $_SESSION['mydebug']) && isset($debugCode)){
+	if (isset(   $_SESSION['mydebug']) && isset($debugCode)) {
 		$mydebug=$_SESSION['mydebug'];
-		if($mydebug == $debugCode)
-			echo "<p style='font-family:courier;color:red;'>DEBUG: $mytxt</p>\n";
+		if($mydebug == $debugCode) {
+			if($return)
+				return("DEBUG: $mytxt");
+			else
+				echo "<p style='font-family:courier;color:red;'>DEBUG: $mytxt</p>" . PHP_EOL;			
+		}
 	}
+	if($return)
+		return("");
 }
+
 ?>
 </body>
 </html>

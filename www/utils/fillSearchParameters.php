@@ -95,7 +95,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 
 			if(!empty($infotip))
-				showInfotip($infotip, $field);
+				echo showInfotipInline($infotip, $field);
 
 			echo "$stringNewLine";
 		} //for each param
@@ -113,40 +113,30 @@ if($screenFields == 0)
 		if ($_SESSION['tablelist'] == "table") {
 			$checkedT="checked";
 			$checkedL="";
-		} else {
+			$checkedLA="";
+		} else if ($_SESSION['tablelist'] == "list") {
 			$checkedT="";
 			$checkedL="checked";
+			$checkedLA="";
+		} else {
+			$checkedT="";
+			$checkedL="";
+			$checkedLA="checked";
 		}
 		?>
 
 		<abbr title="<?php echo $MSGSW25_TABLEVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="table" onclick="setTreeOrList()" id="tableCheck" <?php echo $checkedT; ?>
+			<label><input type="radio" name="tablelist" value="table" onclick="setTreeOrList()" id="wantTable" <?php echo $checkedT; ?>
 			       /><img src="img/table.png" alt="<?php echo $MSGSW25_TABLEVIEW; ?>"></img></label></abbr>
 
 		<abbr title="<?php echo $MSGSW26_LISTVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="list"  onclick="setTreeOrList()"                 <?php echo $checkedL; ?>
+			<label><input type="radio" name="tablelist" value="list"  onclick="setTreeOrList()"  id="wantList" <?php echo $checkedL; ?>
 			       /><img src="img/list.png"  alt="<?php echo $MSGSW26_LISTVIEW; ?>"></img></label></abbr>
+
+		<abbr title="<?php echo $MSGSW26_LISTVIEW; ?>">
+			<label><input type="radio" name="tablelist" value="listAll"  onclick="setTreeOrList()"id="wantListAll" <?php echo $checkedLA; ?>
+			       /><img src="img/listAll.png"  alt="<?php echo $MSGSW26_LISTVIEW; ?>"></img></label></abbr>
 		&nbsp;<br /><br />
-
-		<script>
-		function setTreeOrList() {
-			var request = new XMLHttpRequest();
-
-			var checkBox = document.getElementById("tableCheck");
-			if (checkBox.checked == true)
-				request.open("GET", "prog1.php?tablelist=table&submit_cycle=setDispMode");
-			else
-				request.open("GET", "prog1.php?tablelist=list&submit_cycle=setDispMode");
-
-			request.onreadystatechange = function() {
-				if(this.readyState === 4 && this.status === 200) {
-					document.getElementById("none").innerHTML = this.responseText;
-				}
-			};
-			request.send();
-		}
-		</script>
-
 
 		<abbr title="<?php echo $MSGSW12_RecordsPerPage; ?>">
 			<img src="img/linesperpage.png" alt="<?php echo $MSGSW12_RecordsPerPage; ?>" style="vertical-align:sub"></img></abbr>
@@ -198,6 +188,28 @@ if($screenFields == 0)
 </tr>
 </table>
 </form>
+
+<script>
+function setTreeOrList() {
+    var request = new XMLHttpRequest();
+
+    if (document.getElementById("wantTable").checked)
+        request.open("GET", "prog1.php?tablelist=table&submit_cycle=setDispMode");
+    else {
+        if (document.getElementById("wantList").checked)
+            request.open("GET", "prog1.php?tablelist=list&submit_cycle=setDispMode");
+        else
+            request.open("GET", "prog1.php?tablelist=listAll&submit_cycle=setDispMode");
+    }
+
+    request.onreadystatechange = function() {
+        if(this.readyState === 4 && this.status === 200) {
+            document.getElementById("none").innerHTML = this.responseText;
+        }
+    };
+    request.send();
+}
+</script>
 <?php
 
 } // function fillSearchParameters

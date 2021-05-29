@@ -576,7 +576,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 		}
 
-		if( strcmp($tablelist, "list") == 0) {
+		if( strcmp($tablelist, "list") == 0 || strcmp($tablelist, "listAll") == 0) {
 			print "<table class=\"mydbtable\">" . PHP_EOL;   // force mydb color
 			print "<tr><td>" . PHP_EOL;
 			print ("<h3>" . $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h3>");
@@ -599,7 +599,7 @@ foreach ($xml->database->screens->screen as $screen) {
 				$totalLines = $newlist[2];
 			else
 				$totalLines = $totalCount; //already known
-			
+
 			//display subqueries
 			$sqindexLoop=0;
 			while ($sqindexLoop < $sqindex) {

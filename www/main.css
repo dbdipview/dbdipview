@@ -186,3 +186,48 @@ input[type=checkbox]
   transform: scale(0.7);
 }
 
+
+ul, #nestedList {
+list-style-type: none;
+padding-left: 14px;
+}
+#nestedList {
+margin: 0;
+padding: 0;
+}
+.caret {
+cursor: pointer;
+user-select: none;
+}
+.caret::before {
+content: "\B1";
+color: var(--main-htext-color);
+display: inline-block;
+margin-right: 2px;
+}
+.caret-down::before {
+content: "–";
+}
+.caretNone {
+cursor: default;
+user-select: none;
+display: inline-block;
+}
+.caretNone::before {
+content: "\B1";
+color: transparent;
+display: inline-block;
+margin-right: 3px;
+}
+ul.nested {
+display: none;
+}
+ul.active {
+display: block;
+}
+
+
+.noClipboard {
+user-select: none;
+}
+

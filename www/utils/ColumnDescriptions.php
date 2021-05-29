@@ -10,7 +10,6 @@
  * @author:  Boris Domajnko
  */
 
-
 class ColumnDescriptions
 {
 	private $columnsArrayL = array();
@@ -46,7 +45,6 @@ class ColumnDescriptions
 
 		$myArray = explode(',', $str);
 		foreach ($myArray as $str) {
-
 			if ($str == "*") {
 				$table = "*";
 				$column = "*";
@@ -68,16 +66,20 @@ class ColumnDescriptions
 				}
 				$str = ltrim(rtrim($str));
 
-				if ($str[0] == '*' ) {
+				if ( !empty($str) && $str[0] == '*' ) {
 					$column = "*";
 					$str = substr($str, 1);
 				} else {
 					$start = 0;
-					$end	= strpos($str, '"', $start + 1);
-					$length = $end - $start;
-					$column = substr($str, $start + 1, $length - 1);
-				
-					$str = substr($str, $length+2);
+					if( strlen($str) > $start) {
+						$end	= strpos($str, '"', $start + 1);
+						$length = $end - $start;
+						$column = substr($str, $start + 1, $length - 1);
+						$str = substr($str, $length+2);
+					} else {
+						$str = ""; 
+						$column = "";
+					}
 				}
 				$str = ltrim(rtrim($str));
 				$i = stripos($str, 'AS ');
@@ -93,7 +95,6 @@ class ColumnDescriptions
 						$asvalue = substr($str, 0, $length);		// AS ddd something -> ddd
 					}
 				} 
-
 			}
 
 			if (empty($table))
@@ -242,6 +243,5 @@ class ColumnDescriptions
 		return($ret);
 	}
 }
-
 
 ?>

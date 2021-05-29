@@ -5,18 +5,19 @@
 	schemaMajorVersion="2" >
 
 	<database>
-		<name>TestAndDemo6 regression test viewer: DDV only, data from TestAndDemo4</name>
+		<name>TestAndDemo6 regression test viewer: DDV only (using data from TestAndDemo4); nested treeview</name>
 		<overview></overview>
 		<revisions>
 			<revision date="2020-05-11" version="0.1">First test</revision>
 			<revision date="2020-06-10" version="1.0">Added element overview</revision>
+			<revision date="2021-05-27" version="1.1">Added nested treeview testcase</revision>
 		</revisions>
 		<ref_number>TestAndDemo6</ref_number>
 		<screens>
 
 			<screen>
 				<id>1</id>
-				<selectDescription>A simple report</selectDescription>
+				<selectDescription>The report</selectDescription>
 				<title>See TestAndDemo4 for the creation of database DBC4.</title>
 				<subtitle>This DDV viewer has been installed without any database and enables access to a previously deployed database.</subtitle>  
 				<param size='4'>
@@ -38,7 +39,181 @@
 						FROM "HR members"."HR employees"
 				</query>
 			</screen>
-            
+           
+  			<screen level="0" textOnly="1">
+				<id>not used</id>
+				<selectDescription>Group0 at level 0</selectDescription>
+			</screen>
+
+			<screen level="1" textOnly="1">
+				<id>not used</id>
+				<selectDescription>Group1 at level 1</selectDescription>
+			</screen>
+
+			<screen level="2">
+				<id>10</id>
+				<selectDescription>Report1 at level 2</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+							"HR employees"."Id" AS "ID",
+							"HR employees"."Employee Name" AS "Name",
+							"HR employees"."date Hired /hq" AS "Hired"
+								FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen level="2">
+				<id>11</id>
+				<selectDescription>Report2 at level 2</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+							"HR employees"."Id" AS "ID",
+							"HR employees"."Employee Name" AS "Name",
+							"HR employees"."date Hired /hq" AS "Hired"
+								FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen level="1" textOnly="1">
+				<id>not used</id>
+				<selectDescription>Group2 at level 1</selectDescription>
+			</screen>
+
+			<screen level="2">
+				<id>12</id>
+				<selectDescription>Report3 at level 2</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+							"HR employees"."Id" AS "ID",
+							"HR employees"."Employee Name" AS "Name",
+							"HR employees"."date Hired /hq" AS "Hired"
+								FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen level="8">
+				<id>13</id>
+				<selectDescription>Report4 at level 8 (!)</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+							"HR employees"."Id" AS "ID",
+							"HR employees"."Employee Name" AS "Name",
+							"HR employees"."date Hired /hq" AS "Hired"
+								FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen level="2" textOnly="1">
+				<id>not used</id>
+				<selectDescription>Group3 at level 1</selectDescription>
+			</screen>
+
+			<screen level="4">
+				<id>14</id>
+				<selectDescription>Report5 at level 4 (!)</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+								"HR employees"."Id" AS "ID",
+								"HR employees"."Employee Name" AS "Name",
+								"HR employees"."date Hired /hq" AS "Hired"
+									FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+
+			<screen level="1" textOnly="1">
+				<id>not used</id>
+				<selectDescription>Group4 at level 1</selectDescription>
+			</screen>
+
+			<screen level="2">
+				<id>15</id>
+				<selectDescription>Report6 at level 2</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+					"HR employees"."Id" AS "ID",
+					"HR employees"."Employee Name" AS "Name",
+					"HR employees"."date Hired /hq" AS "Hired"
+						FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+
+			<screen level="3" textOnly="1">
+				<id>not used</id>
+				<selectDescription>Group5 at level 3</selectDescription>
+			</screen>
+
+			<screen level="4">
+				<id>16</id>
+				<selectDescription>Report7 at level 4</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+					"HR employees"."Id" AS "ID",
+					"HR employees"."Employee Name" AS "Name",
+					"HR employees"."date Hired /hq" AS "Hired"
+						FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen level="1">
+				<id>17</id>
+				<selectDescription>Report8 at level 1</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+					"HR employees"."Id" AS "ID",
+					"HR employees"."Employee Name" AS "Name",
+					"HR employees"."date Hired /hq" AS "Hired"
+						FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen textOnly="1">
+				<id>not used</id>
+				<selectDescription>Group6 (level undefined)</selectDescription>
+			</screen>
+
+			<screen>
+				<id>18</id>
+				<selectDescription>Report9 (level undefined)</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+					"HR employees"."Id" AS "ID",
+					"HR employees"."Employee Name" AS "Name",
+					"HR employees"."date Hired /hq" AS "Hired"
+						FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen level="0">
+				<id>19</id>
+				<selectDescription>Report10 at level 0</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+					"HR employees"."Id" AS "ID",
+					"HR employees"."Employee Name" AS "Name",
+					"HR employees"."date Hired /hq" AS "Hired"
+						FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
+			<screen level="0" textOnly="1">
+				<id>not used</id>
+				<selectDescription>Group7 at level 0</selectDescription>
+			</screen>
+
+			<screen level="1">
+				<id>20</id>
+				<selectDescription>Report11 at level 1</selectDescription>
+				<title>See TestAndDemo4 for the creation of database DBC4.</title>
+				<query>SELECT
+					"HR employees"."Id" AS "ID",
+					"HR employees"."Employee Name" AS "Name",
+					"HR employees"."date Hired /hq" AS "Hired"
+						FROM "HR members"."HR employees"
+				</query>
+			</screen>
+
 		</screens>
 	</database>
 </dbDIPview>

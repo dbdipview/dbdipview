@@ -5,9 +5,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.5.0] - 2021-05-29
+### Added
+- access: nested treeview for menu with avaiable reports
+- access: in the list view it is possible to choose between showing all lines or non-empty lines
+### Modified
+- test suite: TestAndDemo 2 and 6 enhanced to test new functionality
+### Fixed
+- access: copy to clipboard will now exclude the question mark icon
+
 ## [2.4.0] - 2021-05-15
 ### Added
 - access: database column descriptions are shown as infotip
+### Modified
+- test suite: TestAndDemo 2 enhanced to test new functionality
 
 ## [2.3.6] - 2021-04-20
 ### Fixed
@@ -23,7 +34,7 @@ Generally, the master branch is always stable. You can use it for installation o
 
 ## [2.3.3] - 2021-01-22
 ### Modified
-- test suite: run all options -v (verbose) and -r (remove only), no need to remove twice because of dependencies in TC 4,5 and 6
+- test suite: run all options -v (verbose) and -r (remove only), no need to remove twice because of dependencies in TestAndDemo 4,5 and 6
 - packaging: stop processing sooner if a file missing (for easier debugging)
 
 ## [2.3.0] - 2020-12-13

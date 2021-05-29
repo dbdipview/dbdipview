@@ -87,7 +87,7 @@
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>models</dbtable>
-						<dbcolumn>Ü</dbcolumn>
+						<dbcolumn>name Ü</dbcolumn>
 					</param>
 					<query>SELECT 
 							"id",
