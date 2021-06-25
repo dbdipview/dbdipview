@@ -31,11 +31,11 @@ class ReportMenu {
 	 * @return int number of lines to be shown in the menu
 	 */
 	public function howManyLines() {
-        return($this->numberOfScreens);
+		return($this->numberOfScreens);
 	}
 
 	/**
-	 * display the menu with all available reports
+	 * display the nested menu with all visible reports
 	 */
 	public function show() {
 		echo PHP_EOL;
@@ -43,175 +43,246 @@ class ReportMenu {
 		$this->showReportMenu();
 		echo '</ul>' . PHP_EOL;
 ?>
-        <script>
-            addCaretEventListener();
-            expandTreeToTheCheckbox();
-        </script>
+		<script>
+			addCaretEventListener();
+			expandTreeToTheCheckbox();
+		</script>
 
 <?php
 	}
 	
 	/**
 	 * show line by line in the reports menu as nested treeview
-	 * 
+	 *
 	 */
 	private function showReportMenu() {
-        $treemodestatus = array();
-        $currentMenuItem = 0;
-        $previousLevel = 0;
-        while(true) {
-            $screen = array_shift($this->screensArray);
+		$treemodestatus = array();
+		$currentMenuItem = 0;
+		$oldLevel = 0;
 
-            if (is_null($screen)) {
-                while ($previousLevel >= 0) {
-                    $pref = str_repeat ( "  " , $previousLevel);
-                    if ($treemodestatus[$previousLevel] & self::TREE_IN_NESTED) {
-                        echo $pref . '  </ul>' . PHP_EOL;
-                    }
-                    if ($treemodestatus[$previousLevel] & self::TREE_IN_CARETAFTER) {
-                        echo $pref . '</li>' . PHP_EOL;
-                    }
-                    $previousLevel -= 1;
-                }
-                return;
-            }
+		while(true) {
+			$screen = array_shift($this->screensArray);
 
-            $currentMenuItem += 1;
+			if (is_null($screen)) {
+				while ($oldLevel > 0) {
+					$pref = str_repeat ( "  " , $oldLevel);
+					if ($treemodestatus[$oldLevel] & self::TREE_IN_NESTED) {
+						$treemodestatus[$oldLevel] &= ~self::TREE_IN_NESTED;
+						echo $pref . '  </ul>' . PHP_EOL;
+					}
+					if ($treemodestatus[$oldLevel] & self::TREE_IN_CARETAFTER) {
+						$treemodestatus[$oldLevel] &= ~self::TREE_IN_CARETAFTER;
+						echo $pref . '</li>' . PHP_EOL;
+					}
+					$oldLevel -= 1;
+				}
+				return;
+			}
 
-            $attributeHide =	 get_bool($screen->id->attributes()->hide);
-            $attributeTextOnly = get_bool($screen->attributes()->textOnly);
-            $attributeLevel = $screen->attributes()->level;
-            
-            if (is_null($attributeLevel))
-                $attributeLevel = 0; //default
-            else {
-                $attributeLevel = intval($attributeLevel);
-                if ($attributeLevel > ($previousLevel + 1)) {
-                    $attributeLevel = $previousLevel + 1;  //assume
-                }
-            }
-            
-            if( !array_key_exists($attributeLevel, $treemodestatus))
-                $treemodestatus[$attributeLevel] = 0;
-                
-            if($attributeHide != true) {
-                
-                if ($attributeLevel == $previousLevel ) {
-                    $pref = str_repeat ( "  " , $previousLevel);
-                    if ($treemodestatus[$previousLevel] & self::TREE_IN_CARETAFTER) {
-                        $treemodestatus[$previousLevel] &= ~self::TREE_IN_CARETAFTER;
-                        echo $pref . '  </li>' . PHP_EOL;
-                    }
-                }
+			$currentMenuItem += 1;
 
-                while ($attributeLevel < $previousLevel ) {
-                    $pref = str_repeat ( "  " , $previousLevel);
-                    $treemodestatus[$previousLevel] &= ~self::TREE_IN_SKIPCARET;
-                    if ($treemodestatus[$previousLevel] & self::TREE_IN_CARETAFTER) {
-                        $treemodestatus[$previousLevel] &= ~self::TREE_IN_CARETAFTER;
-                        echo $pref . '  </li>' . PHP_EOL;
-                    }
-                    if ($treemodestatus[$previousLevel] & self::TREE_IN_NESTED) {
-                        $treemodestatus[$previousLevel] &= ~self::TREE_IN_NESTED;
-                        echo $pref . '  </ul>' . PHP_EOL;
-                    } 
-                    $previousLevel -= 1;
-                }
-                if($previousLevel < 0)
-                    $previousLevel = 0;
+			$attributeHide =	 get_bool($screen->id->attributes()->hide);
+			$attributeTextOnly = get_bool($screen->attributes()->textOnly);
+			$nowLevel = $screen->attributes()->level;
 
-                if ($attributeLevel == $previousLevel ) {
-                    $pref = str_repeat ( "  " , $previousLevel);
-                    $treemodestatus[$previousLevel] &= ~self::TREE_IN_SKIPCARET;
-                    if ($treemodestatus[$previousLevel] & self::TREE_IN_CARETAFTER) {
-                        $treemodestatus[$previousLevel] &= ~self::TREE_IN_CARETAFTER;
-                        echo $pref . '  </li>' . PHP_EOL;
-                    }
-                }
+			if (is_null($nowLevel))
+				$nowLevel = 0;
 
-                $useCaret = false;
-                if( array_key_exists(0, $this->screensArray)) {
-                    $attributeLevelNext = $this->screensArray[0]->attributes()->level;
-                    if (is_null($attributeLevelNext))
-                        $attributeLevelNext = $attributeLevel;
-                    if ($attributeLevelNext > $attributeLevel) {
-                        $useCaret = true;
-                    }
-                }
+			if ( !hasPermissionForThis($screen->needed_permission) )
+				$attributeHide = true;
+			else {
+				$nowLevel = intval($nowLevel);
+				if ($nowLevel > ($oldLevel + 1)) {
+					if( $attributeTextOnly == true )
+						$nowLevel = $oldLevel + 1;
+					else
+						$nowLevel = $oldLevel + 1;
+				}
+			}
 
-                $pref = str_repeat ( "  " , $attributeLevel+1);
-                if ($previousLevel < $attributeLevel && 
-                    $treemodestatus[$previousLevel] & self::TREE_IN_CARETAFTER && 
-                    $treemodestatus[$attributeLevel] == 0) 
-                {
-                    $treemodestatus[$attributeLevel] |= self::TREE_IN_NESTED;
-                    echo $pref . '<ul id="my' . $currentMenuItem  . '" class="nested">' . PHP_EOL;
-                } 
+			if( !array_key_exists($nowLevel, $treemodestatus)) {
+				$treemodestatus[$nowLevel]   = 0;
+				$treemodestatus[$nowLevel+1] = 0;
+				$treemodestatus[$nowLevel+2] = 0;
+			}
 
-                if($attributeTextOnly == true) {
-                    $treemodestatus[$attributeLevel] |= self::TREE_IN_CARETAFTER;
-                    if ($useCaret)
-                        echo $pref . '<li class="withCaret" id="myy' . $currentMenuItem  . '" ><span class="caret">' . "<b>$screen->selectDescription</b>" . '</span>' . PHP_EOL;
-                    else {
-                        $treemodestatus[$attributeLevel] |= self::TREE_IN_SKIPCARET;
-                        echo $pref . '<li><span class="caretNone">' . "<b>$screen->selectDescription</b>" . '</span>' . PHP_EOL;
-                    }
-                } else {
-                    echo $pref . '<li style="padding-left: 4px;">';
-                        echo "<label>";
-                        //if($this->screenCounter==0)
-                        //    input_radiocheck_checked('radio','targetQueryNum', $screen->id);
-                        //else
-                            input_radiocheck		('radio','targetQueryNum', $_GET, $screen->id);
-                        $this->screenCounter += 1;
-                        echo "$screen->id - $screen->selectDescription" . "&nbsp;<br />";
-                        echo "</label>";
-                    echo '</li>' . PHP_EOL;
-                }
-            }
+			if($attributeHide != true) {
 
-            $previousLevel = $attributeLevel;
-        }
+				if ($nowLevel == $oldLevel ) {
+					$pref = str_repeat ( "  " , $oldLevel);
 
-	} 
+					$j = count($treemodestatus)-1;
+					while ($j > $nowLevel) {
+						if ($treemodestatus[$j] & self::TREE_IN_NESTED) {
+							$treemodestatus[$j] &= ~self::TREE_IN_NESTED;
+							$pref = str_repeat ( "  " , $j);
+							echo $pref . '  </ul>' . PHP_EOL;
+							break;
+						}
+						$j--;
+					}
 
+					if ($treemodestatus[$oldLevel] & self::TREE_IN_CARETAFTER) {
+						$treemodestatus[$oldLevel] &= ~self::TREE_IN_CARETAFTER;
+						echo $pref . '  </li>' . PHP_EOL;
+					}
+				}
 
+				while ($nowLevel < $oldLevel ) {
+					$pref = str_repeat ( "  " , $oldLevel);
+
+					$treemodestatus[$oldLevel] &= ~self::TREE_IN_SKIPCARET;
+					if ($treemodestatus[$oldLevel] & self::TREE_IN_CARETAFTER) {
+						$treemodestatus[$oldLevel] &= ~self::TREE_IN_CARETAFTER;
+						echo $pref . '  </li>' . PHP_EOL;
+					}
+
+					$j = count($treemodestatus)-1;
+					while ($j > $nowLevel) {
+						if ($treemodestatus[$j] & self::TREE_IN_NESTED) {
+							$treemodestatus[$j] &= ~self::TREE_IN_NESTED;
+							$pref = str_repeat ( "  " , $j);
+							echo $pref . '  </ul>' . PHP_EOL;
+							break;
+						}
+						$j--;
+					}
+
+					$oldLevel -= 1;
+				}
+				if($oldLevel < 0)
+					$oldLevel = 0;
+
+				if ($nowLevel == $oldLevel ) {
+					$pref = str_repeat ( "  " , $oldLevel);
+					$treemodestatus[$oldLevel] &= ~self::TREE_IN_SKIPCARET;
+
+					$j = count($treemodestatus)-1;
+					while ($j > $nowLevel) {
+						if ($treemodestatus[$j] & self::TREE_IN_NESTED) {
+							$treemodestatus[$j] &= ~self::TREE_IN_NESTED;
+							$pref = str_repeat ( "  " , $j);
+							echo $pref . '  </ul>' . PHP_EOL;
+							break;
+						}
+						$j--;
+					}
+
+					if ($treemodestatus[$oldLevel] & self::TREE_IN_CARETAFTER) {
+						$treemodestatus[$oldLevel] &= ~self::TREE_IN_CARETAFTER;
+						echo $pref . '  </li>' . PHP_EOL;
+					}
+				}
+
+				//determine caret usage based on the level of next not hidden screen
+				$useCaret = false;
+				$i = 0;
+				$loop = true;
+				while($loop) {
+					if( array_key_exists($i, $this->screensArray) ) {
+						$attributeHide = $this->screensArray[$i]->attributes()->hide;
+						if($attributeHide != true) {
+							$loop = false;
+							$nextLevel = $this->screensArray[$i]->attributes()->level;
+							if (is_null($nextLevel)) {
+								$nextLevel = 0;
+							} else {
+								if ($nextLevel > $nowLevel)
+									$useCaret = true;
+							}
+						}
+						$i++;
+					} else
+						$loop = false;
+				}
+
+				$pref = str_repeat ( "  " , $nowLevel+1);
+				if ($nowLevel > $oldLevel &&
+					$treemodestatus[$oldLevel] & self::TREE_IN_CARETAFTER 
+					//&&	$treemodestatus[$nowLevel] == 0
+					)
+				{
+					$treemodestatus[$nowLevel] |= self::TREE_IN_NESTED;
+					echo $pref . '<ul id="my' . $currentMenuItem . '" class="nested">' . PHP_EOL;
+				}
+
+				if($attributeTextOnly == true) {
+					$treemodestatus[$nowLevel] |= self::TREE_IN_CARETAFTER;
+					if ($useCaret)
+						echo $pref . '<li class="withCaret" id="myy' . $currentMenuItem . '" ><span class="caret">' . "<b>$screen->selectDescription</b>" . '&nbsp;</span>' . PHP_EOL;
+					else {
+						$treemodestatus[$nowLevel] |= self::TREE_IN_SKIPCARET;
+						echo $pref . '<li><span class="caretNone">' . "<b>$screen->selectDescription</b>" . '&nbsp;</span>' . PHP_EOL;
+					}
+				} else {
+					echo $pref . '<li style="padding-left: 4px;">';
+						echo "<label>";
+						input_radiocheck('radio','targetQueryNum', $_GET, $screen->id);
+						$this->screenCounter += 1;
+						if (empty($screen->needed_permission))
+							$ddbg = "";
+						else
+							$ddbg = debug($screen->needed_permission." ", true);
+						echo $ddbg . "$screen->id - $screen->selectDescription" . "&nbsp;<br />";
+						echo "</label>";
+					echo '</li>' . PHP_EOL;
+				}
+			}
+
+			$oldLevel = $nowLevel;
+		}
+
+	}
+
+	/**
+	 * call: $this->dbg("M1", $nowLevel, $oldLevel, $treemodestatus)
+	 */
+	private function dbg($marker, $nowLevel, $oldLevel, $treemodestatus) {
+		return("");
+		$r = " $marker L=".$nowLevel.$oldLevel. " ";
+		$j = 0;
+		$i = count($treemodestatus);
+		while ($j < $i) {
+			$r .= decbin($treemodestatus[$j])."_"; 
+			$j += 1;
+		}
+		return($r); 
+	}
 }
-
 
 ?>
 <script>
 
 function addCaretEventListener() {
-    var toggler = document.getElementsByClassName("caret");
-    var i;
+	var toggler = document.getElementsByClassName("caret");
+	var i;
 
-    for (i = 0; i < toggler.length; i++) {
-        toggler[i].addEventListener("click", function() {
-            this.parentElement.querySelector(".nested").classList.toggle("active");
-            this.classList.toggle("caret-down");
-        });
-    }
+	for (i = 0; i < toggler.length; i++) {
+		toggler[i].addEventListener("click", function() {
+			this.parentElement.querySelector(".nested").classList.toggle("active");
+			this.classList.toggle("caret-down");
+		});
+	}
 }
 
 function expandTreeToTheCheckbox() {
-    var arrInput = document.getElementsByTagName("input");
-    for (var i = 0; i < arrInput.length; i++) {
-        if (arrInput[i].type == "radio" && arrInput[i].checked) {
-            var node = arrInput[i];
-            node = node.parentElement;
-            node = node.parentElement;
-            while( node = node.parentElement ) {
-                if (node.id === "nestedList" )
-                    break;
-                if(node.className === "withCaret" ) {
-                    node.querySelector(".nested").classList.toggle("active");
-                    node.querySelector(".caret").classList.toggle("caret-down");
-                }
-            } 
-        }
+	var arrInput = document.getElementsByTagName("input");
+	for (var i = 0; i < arrInput.length; i++) {
+		if (arrInput[i].type == "radio" && arrInput[i].checked) {
+			var node = arrInput[i];
+			node = node.parentElement;
+			node = node.parentElement;
+			while( node = node.parentElement ) {
+				if (node.id === "nestedList" )
+					break;
+				if(node.className === "withCaret" ) {
+					node.querySelector(".nested").classList.toggle("active");
+					node.querySelector(".caret").classList.toggle("caret-down");
+				}
+			}
+		}
 
-    }
+	}
 }
 
 </script>

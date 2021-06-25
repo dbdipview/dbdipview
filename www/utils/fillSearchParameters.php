@@ -12,7 +12,7 @@
 function fillSearchParameters() {
 global $xml;
 global $targetQueryNum;
-global $MSGSW16_Display, $MSGSW25_TABLEVIEW, $MSGSW26_LISTVIEW, $MSGSW12_RecordsPerPage;
+global $MSGSW16_Display, $MSGSW25_TABLEVIEW, $MSGSW26a_LISTVIEW, $MSGSW26b_LISTVIEW, $MSGSW12_RecordsPerPage;
 global $MHLP00,$MHLP01,$MHLP02,$MHLP03,$MHLP04,$MHLP05,$MHLP06,$MHLP07,$MHLP08,$MHLP09;
 global $MHLP10,$MHLP11,$MHLP12;
 ?>
@@ -129,13 +129,13 @@ if($screenFields == 0)
 			<label><input type="radio" name="tablelist" value="table" onclick="setTreeOrList()" id="wantTable" <?php echo $checkedT; ?>
 			       /><img src="img/table.png" alt="<?php echo $MSGSW25_TABLEVIEW; ?>"></img></label></abbr>
 
-		<abbr title="<?php echo $MSGSW26_LISTVIEW; ?>">
+		<abbr title="<?php echo $MSGSW26a_LISTVIEW; ?>">
 			<label><input type="radio" name="tablelist" value="list"  onclick="setTreeOrList()"  id="wantList" <?php echo $checkedL; ?>
-			       /><img src="img/list.png"  alt="<?php echo $MSGSW26_LISTVIEW; ?>"></img></label></abbr>
+			       /><img src="img/list.png"  alt="<?php echo $MSGSW26a_LISTVIEW; ?>"></img></label></abbr>
 
-		<abbr title="<?php echo $MSGSW26_LISTVIEW; ?>">
+		<abbr title="<?php echo $MSGSW26b_LISTVIEW; ?>">
 			<label><input type="radio" name="tablelist" value="listAll"  onclick="setTreeOrList()"id="wantListAll" <?php echo $checkedLA; ?>
-			       /><img src="img/listAll.png"  alt="<?php echo $MSGSW26_LISTVIEW; ?>"></img></label></abbr>
+			       /><img src="img/listAll.png"  alt="<?php echo $MSGSW26b_LISTVIEW; ?>"></img></label></abbr>
 		&nbsp;<br /><br />
 
 		<abbr title="<?php echo $MSGSW12_RecordsPerPage; ?>">

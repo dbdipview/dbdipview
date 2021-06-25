@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.6.0] - 2021-06-25
+### Added
+- access: composite keys for links from one report to another one (values from more source columns used as parameters for matching a record)
+- access: print button for report in list view
+### Modified
+- test suite: TestAndDemo 3 enhanced to test new functionality
+### Fixed
+- access: passing parameters from multiple input fields down to subqueries
+- access: sone nested treeview details
+
 ## [2.5.0] - 2021-05-29
 ### Added
 - access: nested treeview for menu with avaiable reports
