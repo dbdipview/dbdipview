@@ -60,7 +60,7 @@ function findFirstFreeNeedle($string, $needle, $offset) {
 
 
 /**
- * in one line result from the database find the key
+ * find the key in one line result from the database 
  *
  * Returns: the value for a given column
  */
@@ -96,6 +96,44 @@ function qRowsToArray($query){
 		}
 		return($outarray);
 	}
+}
+
+
+/**
+ * create part of link
+ *
+ * Returns: part of the link
+ */
+function makeParameterReferences($val, $row, $column){
+	
+	if ( $column["columnWithValue"] != "" ) {
+		$out = "";
+		$columns = $column["columnWithValue"];
+		$table   = $column["dbtable"];
+		$linkcol = $column["dbcolumn"];
+		$columnsArr = explode("|", $columns);
+		$linkColArr = explode("|", $linkcol);
+		$num = sizeof($columnsArr);
+		if ($num != sizeof($linkColArr))
+			$out = "ERROR: columnWithValue_PARAMETER_COUNT_DISCREPANCY_CHECK_XML";
+		else {
+			$i = 0;
+			while ($i < $num) {
+				$linkval = getKeyValue($row, $columnsArr[$i]);
+				$out .= makeParameterReferencesOne($column["dbtable"].TABLECOLUMN.$linkColArr[$i], $linkval);
+				$i = $i + 1;
+			}
+		}
+	} else {
+		$out = makeParameterReferencesOne($column["dbtable"].TABLECOLUMN.$column["dbcolumn"], $val);
+	}
+	return($out);	
+}
+
+function makeParameterReferencesOne($link, $linkval) {
+	$link = str_replace(" ", "__20__", $link);   //temporarily replace space 
+	$out = "&" . $link . "=" . urlencode($linkval);
+	return($out);	
 }
 
 
@@ -153,16 +191,11 @@ function qToListWithLink($query,
 
 				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
-					if ( !is_null($column) && $column["dbtable"]!="" ) { 
-						if ( $column["columnWithValue"] != "" )
-							$linkval = getKeyValue($row, $column["columnWithValue"]);
-						else
-							$linkval = $val; 
-						$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
-						$link= str_replace(" ", "__20__", $link);   //temporarily replace space  
+					if ( !is_null($column) && $column["dbtable"]!="" ) {
+						$parameters = makeParameterReferences($val, $row, $column);
 						$output .= "  <a href='?submit_cycle=" . $column["linkaction"].
-											"&targetQueryNum=".$column["next_screen_id"].
-											"&".$link."=".urlencode($linkval)."'>$val</a><br />\n";
+											"&targetQueryNum=" . $column["next_screen_id"].
+											$parameters . "'>$val</a><br />\n";
 						continue;
 					}
 				}
@@ -311,15 +344,10 @@ function qToTableWithLink($query,
 				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
 					if ( !is_null($column) && $column["dbtable"]!="" ) {
-						if ( $column["columnWithValue"] != "" )
-							$linkval = getKeyValue($row, $column["columnWithValue"]);
-						else
-							$linkval = $val; 
-						$link=$column["dbtable"].TABLECOLUMN.$column["dbcolumn"];
-						$link= str_replace(" ", "__20__", $link);   //temporarily replace space 
+						$parameters = makeParameterReferences($val, $row, $column);
 						$output .= "  <td><a href='?submit_cycle=" . $column["linkaction"].
 												"&targetQueryNum=" . $column["next_screen_id"].
-												"&".$link."=".urlencode($linkval)."'>$val</a></td>\n";
+												$parameters . "'>$val</a></td>\n";
 						continue;
 					}
 				}

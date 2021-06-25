@@ -79,6 +79,7 @@
 	<xs:complexType name="dbcolumnname" >
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
+				<!-- for link_to_next_screen more columns can be defined, use | as a delimiter, and same in dbcolumn -->
 				<xs:attribute name="valueFromColumn" type="xs:string" use="optional" />
 			</xs:extension>
 		</xs:simpleContent>

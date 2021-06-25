@@ -1,6 +1,6 @@
 <?php
 ?>
-<script type="text/javascript" >
+<script>
 <!-- 
 	var cX = 0; var cY = 0; var rX = 0; var rY = 0;
 	function UpdateCursorPosition(e){ cX = e.pageX; cY = e.pageY;}
@@ -208,8 +208,7 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 			}
 
 ?>
-			</select>
-			</abbr></label>
+			</select></abbr></label>
 <?php
 		} else {
 ?>
@@ -252,7 +251,7 @@ function showInfotipInline($text, $id) {
 }
 
 ?>
-<script type="text/javascript" >
+<script>
 function ToggleCombo(value1,value2, object){  
   var x = document.getElementById(value1);
   var y = document.getElementById(value1+"M");
@@ -269,4 +268,4 @@ function ToggleCombo(value1,value2, object){
 
 } 
 </script>
-<?
+<?php

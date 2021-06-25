@@ -238,6 +238,13 @@ default:
 
 
 /**
+ * input: $screen->needed_permission
+ */
+function hasPermissionForThis($needed) {
+	return(true);
+}	
+
+/**
  * function debug
  * if debug is enabled displays debug text
  * see config.txt

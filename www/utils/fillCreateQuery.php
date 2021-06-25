@@ -10,7 +10,7 @@
 
 ?>
 <!-- hide a column -->
-<script type="text/javascript" language="JavaScript">
+<script>
 $(document).ready(function() {
 	$('input[type="checkbox"]').click(function() {
 		var hidableTable = $(this).attr('name').substr(0,6);
@@ -24,7 +24,24 @@ $(document).ready(function() {
 		}
 	});
 });
+
+function printContent(frameID) {
+	window.print();
+}
 </script>
+
+<style type="text/css" media="print">
+    @page 
+    {
+        size: auto;
+        margin: 0mm 5mm 5mm 5mm;
+    }
+    
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+</style>
 
 <?php
 
@@ -122,6 +139,7 @@ global $targetQueryNum;
 global $PARAMS;
 global $MSGSW12_HitsOnPage, $MSGSW12_TotalRecords, $MSGSW13_PreviousPage, $MSGSW14_NextPage;
 global $MSGSW15_Close, $MSGSW18_ReportDescription, $MSGSW23_PAGE, $MSGSW24_NOPARAMETER;
+global $MSGSW31_Print;
 
 $paramForwardNum = array();
 $paramForwardEqual = array();
@@ -380,7 +398,7 @@ foreach ($xml->database->screens->screen as $screen) {
 
 				if( isset  ($paramForwardNum["$param->forwardedParamName"]) ) {
 					$value= $paramForwardNum["$param->forwardedParamName"];
-					debug("adding forwarded parameter: ".
+					debug("adding forwarded parameter to query: ".
 						$param->forwardedParamName . " " .
 						$paramForwardEqual["$param->forwardedParamName"] . " " .
 						$paramForwardNum["$param->forwardedParamName"]);
@@ -391,20 +409,20 @@ foreach ($xml->database->screens->screen as $screen) {
 						$value = str_replace('"', '', $value); // " not needed
 						$myColumn = '"' . $param->dbtable . '"."' . $param->dbcolumn . '"';  // "table"."column" = ...
 
-						if     (strpos("$value", '||') > 0)
+						if (strpos("$value", '||') > 0)
 							$wheretext = processSimpleOR_ANDqueryParam("OR", $myColumn, $value, $equal, $quote, false);
 						else if(strpos("$value", "&&") > 0)
 							$wheretext = processSimpleOR_ANDqueryParam("AND",$myColumn, $value, $equal, $quote, false);
 						else
 							$wheretext = $myColumn . " " . $equal . " " . $quote . $value . $quote;
-					
-						$and = is_where_already_here($subselect->query);  //true=yes, AND is needed
+
+						$and = is_where_already_here($subquery);  //true=yes, AND is needed
 						if ($and === false)
-							$subquery = $subselect->query . " WHERE $wheretext";
+							$subquery .= " WHERE $wheretext";
 						else
-							$subquery = $subselect->query . " AND $wheretext";
+							$subquery .= " AND $wheretext";
 					} else
-						debug("Skipped!");
+						debug("&nbsp;&nbsp;&nbsp;Skipped!");
 				}
 
 			} //for each param
@@ -439,11 +457,11 @@ foreach ($xml->database->screens->screen as $screen) {
 					$f_subqeries_links_to_next_screen[$sqindex] = true;
 					$linknextscreen_column = array();
 					debug("fillCreateQuery: LINKSUBQ column:   $link->dbcolumnname");
-					debug("fillCreateQuery: ____ value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
-					debug("fillCreateQuery: ____ next screen id:             $link->next_screen_id");
-					debug("fillCreateQuery: ____ next screen dbtable:        $link->dbtable");
-					debug("fillCreateQuery: ____ next screen dbcolumn:       $link->dbcolumn");
-					debug("fillCreateQuery: ____ next screen linkaction:     $link->linkaction");
+					debug("&nbsp;&nbsp;&nbsp; value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
+					debug("&nbsp;&nbsp;&nbsp; next screen id:             $link->next_screen_id");
+					debug("&nbsp;&nbsp;&nbsp; next screen dbtable:        $link->dbtable");
+					debug("&nbsp;&nbsp;&nbsp; next screen dbcolumn:       $link->dbcolumn");
+					debug("&nbsp;&nbsp;&nbsp; next screen linkaction:     $link->linkaction");
 
 					$linknextscreen_column["next_screen_id"]  = $link->next_screen_id;
 					$linknextscreen_column["dbtable"]         = $link->dbtable;
@@ -464,7 +482,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			$subquery = $subquery . appendOrderGroupBy("ORDER BY", $subselect->selectOrder);
 
 			$subqueries[$sqindex] = $subquery;
-			debug("<b>subquery$sqindex </b>= $subqueries[$sqindex]");	
+			debug("<b>subquery". strval($sqindex+1) . " </b>= $subqueries[$sqindex]");	
 			debug(str_repeat(".",80));
 			$sqindex  += 1;
 		} //for each subselect
@@ -576,14 +594,29 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 		}
 
+define('PRINTER_ICON', '&#x1f5b6;'); 
+
 		if( strcmp($tablelist, "list") == 0 || strcmp($tablelist, "listAll") == 0) {
 			print "<table class=\"mydbtable\">" . PHP_EOL;   // force mydb color
 			print "<tr><td>" . PHP_EOL;
-			print ("<h3>" . $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h3>");
+?>
+		<table border="0" width="100%">
+		<tr>
+			<td style="text-align: left"><?php	print "<h3>" . $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h3>"; ?></td>
+			<td style="text-align: right;">
+<?php
+			print "<span class='no-print'><h3>";
+			print "<abbr style='text-decoration: none' title='" . $MSGSW31_Print . "'><a style='text-decoration: none' href='#' onclick=\"printContent('bottomframe');\">" . PRINTER_ICON . "</a></abbr> ";
+			print "</h3></span>";
+?>
+		</tr>
+		</table>
+<?php			
+
 			if($screen->title && strlen($screen->title)>0 )
-				print ("<h4>" . $screen->title . "</h4>");
+				print ("<h4>" . $screen->title . "</h4>" . PHP_EOL);
 			if($screen->subtitle && strlen($screen->subtitle)>0 )
-				print ("<h5>".$screen->subtitle."</h5>");
+				print ("<h5>".$screen->subtitle."</h5>" . PHP_EOL);
 			print ("<br/>");
 
 			$newlist=qToListWithLink($query,
@@ -709,7 +742,9 @@ if ($maxcount == $hits && ($hits > 0) && !(($page * $hits) == $totalLines) ) {
 <tr>
   <td colspan = 2>
       <form style="display: inline;" action="empty.htm" method='get' >
-        <input type="submit" value="<?php echo (isset($MSGSW15_Close) ? $MSGSW15_Close : "Zapri"); ?>" class='button' />
+        <span class='no-print'>
+          <input type="submit" value="<?php echo (isset($MSGSW15_Close) ? $MSGSW15_Close : "Zapri"); ?>" class='button' />
+        </span>
       </form>
   </td>
 </tr>

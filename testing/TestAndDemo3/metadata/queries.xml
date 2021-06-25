@@ -23,6 +23,7 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 			<revision date="2020-06-12" version="1.3">Added element overview</revision>
 			<revision date="2020-12-13" version="1.4">Link to next query/subquery with parameter from other column added</revision>
 			<revision date="2021-05-27" version="1.6">Level attribute added</revision>
+			<revision date="2021-06-22" version="1.7">Composite key example added</revision>
 		</revisions>
 		<ref_number>TestAndDemo3</ref_number>
 		<screens>
@@ -39,12 +40,12 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 
 			<screen>
 				<id>2</id>
-				<selectDescription>Simple search; use of link to next screen with forwarded parameters</selectDescription>
-				<title>Employees again, html formating of the text - bold and new line</title>
-				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report, with &lt;BR /&gt;
-				- column ID value is used as a link parameter in ID column &lt;BR /&gt; 
-				- in the second column, another column (i.e. ID) value is used as a parameter &lt;BR /&gt; 
-				- to be searched as &lt;B&gt;HR employees-Id&lt;/B&gt; in the linked report. &lt;BR /&gt;
+				<selectDescription>Simple search; use of forwarded parameters</selectDescription>
+				<title>Various examples for use of link to next screen with forwarded parameters</title>
+				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report (screen), with &lt;BR /&gt;
+				- column "ID" value is used as a link parameter in ID column &lt;BR /&gt; 
+				- in the "The name" column, another column (i.e. ID) value is used as a parameter &lt;BR /&gt; 
+				- in the "Composite key" column, two columns will be passed as parameters, please select each of Jan Novak line &lt;BR /&gt; 
 				- Use of ORDER.</subtitle> 
 				<param size='4'>
 					<name>ID</name>
@@ -58,14 +59,21 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 					<dbcolumn>Employee Name</dbcolumn>
 					<type>textlike</type>
 				</param>
-				<query>SELECT 
+				<query>SELECT
                     "HR employees"."Id" AS "ID", 
-                    "HR employees"."Employee Name" AS "The name" 				
+                    "HR employees"."Employee Name" AS "The name" ,
+					'show' AS "Composite key"
 						FROM "HR members"."HR employees"
 						WHERE "Id" != '1000'
 				</query>
 				<selectOrder>"ID" ASC, "The name"</selectOrder>
 				<links_to_next_screen>
+					<link>
+						<dbcolumnname valueFromColumn='ID|The name'>Composite key</dbcolumnname>
+						<next_screen_id>2a</next_screen_id>
+						<dbtable>HR employees</dbtable>
+						<dbcolumn>Id|Employee Name</dbcolumn>
+					</link>
 					<link>
 						<dbcolumnname>ID</dbcolumnname>
 						<next_screen_id>2a</next_screen_id>
@@ -85,33 +93,44 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 
 			<screen>
 				<id hide='true'>2a</id>
-				<selectDescription>A hidden report, only called from another report, with parameter; use of parameter 
-				in subselect reports</selectDescription>
-				<title>Note, this report was not in the list of reports</title>   
-				<subtitle/>   
+				<selectDescription>Use of parameters in subselect reports</selectDescription>
+				<title>Use of parameters from report 2</title>
+				<subtitle>This report is hiden from the menu (atribute: hide) and is only called from another report with parameter</subtitle>
 				<param mandatory="1">
 					<name>ID</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>Id</dbcolumn>
 					<type>integer</type>
-					<forwardToSubqueryName>param1</forwardToSubqueryName>
+					<forwardToSubqueryName>param_Id</forwardToSubqueryName>
+				</param>
+				<param>
+					<name>Employee name</name>
+					<dbtable>HR employees</dbtable>
+					<dbcolumn>Employee Name</dbcolumn>
+					<type>text</type>
+					<forwardToSubqueryName>param_Name</forwardToSubqueryName>
 				</param>
 				<query>SELECT 
-                    "HR employees"."Id", 
-                    "HR employees"."Employee Name" AS "The name" 				
+                    "HR employees"."Id" AS "Header ID", 
+                    "HR employees"."Employee Name" AS "The name"
 						FROM "HR members"."HR employees"
 				</query>
 
 				<subselect>
-					<title>Subselect 1, use of a forwarded parameter from the main report above</title>
+					<title>Subselect 1, use of a forwarded parameters from the main report above</title>
 					<param>
-						<forwardedParamName>param1</forwardedParamName>
+						<forwardedParamName>param_Id</forwardedParamName>
 						<dbtable>HR employees</dbtable>
 						<dbcolumn>Id</dbcolumn>
 					</param>
+					<param>
+						<forwardedParamName>param_Name</forwardedParamName>
+						<dbtable>HR employees</dbtable>
+						<dbcolumn>Employee Name</dbcolumn>
+					</param>
 					<query>SELECT 
                     "HR employees"."Id", 
-                    "HR employees"."Employee Name" AS "Name_üü" 				
+                    "HR employees"."Employee Name" AS "Name_üü"
 						FROM "HR members"."HR employees"
 					</query>
 				<selectOrder>Name_üü</selectOrder>
@@ -128,16 +147,16 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 
 				<subselect>
 					<title>Subselect 2, use of a forwarded parameter; link to the connected screen</title>
-					<subtitle>The value of the parameter param1 from the previous report was used as a search criteria in this report. 
-					There is a also a further connection to the report No. 3 using the value of column id_emp</subtitle>
+					<subtitle>The value of the parameter param_Id from the previous report was used as a search criteria in this report.
+					There is a also a further connection to the report 3 using the value of column id_emp</subtitle>
 					<param>
-						<forwardedParamName>param1</forwardedParamName>
+						<forwardedParamName>param_Id</forwardedParamName>
 						<dbtable>Arrivals</dbtable>
 						<dbcolumn>id_emp</dbcolumn>
 					</param>
 					<query>SELECT 
                     "Arrivals"."id_emp", 
-                    "Arrivals"."arrival" 				
+                    "Arrivals"."arrival" 
 						FROM "HR members"."Arrivals"
 					</query>
 					<selectOrder>"id_emp" ASC, "arrival"</selectOrder>
@@ -157,8 +176,8 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 			<screen>
 				<id>3</id>
 				<selectDescription>Search parameters, parameter infotip</selectDescription>
-				<title>Use of infotip, attributes: size, hr, skipNewLine; dates</title>
-				<subtitle>See the search screen: infotip at ID field, a horizontal line and skipped new line after first date</subtitle>    
+				<title>Use of infotip, attributes: size, hr, skipNewLine; use of dates</title>
+				<subtitle>See these search pane details: infotip at ID field, a horizontal line and skipped new line after first date</subtitle>
 				<param size='4'>
 					<name>ID</name>
 					<infotip>This is a sample help text for this field. &lt;br /&gt;
@@ -200,7 +219,7 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 				<id>4</id>
 				<selectDescription>Specific use of SELECT, dropdown</selectDescription>
 				<title>Example 1</title>   
-				<subtitle>Use of dropdown selection from a separate query returning two columns (value-to-be-searched, combobox-text); 
+				<subtitle>Use of dropdown selection from a separate query returning two columns (value-to-be-searched, combobox-text);
 				          use of table alias; compare SQL code with report #5</subtitle>   
 				<param>
 					<name>Department</name>
@@ -260,7 +279,7 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 				<id>11</id>
 				<selectDescription>Use of BLOBS (note: using content of the 2nd SIARD package)</selectDescription>
 				<title>Integration of RTF, JPG, PDF</title>   
-				<subtitle>A link is available for showing or downloading the BLOB contents.</subtitle>   
+				<subtitle>A link is available for showing or downloading the BLOB contents.</subtitle>
 				<param>
 					<name>ID</name>
 					<dbtable>table10</dbtable>
@@ -306,9 +325,9 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 						<id>2_1</id>
 						<dbcolumnname>RTF</dbcolumnname>
 						<query>SELECT 
-							'application/rtf' AS "ContentType", 
-							'obsah.rtf'       AS "filename", 
-							"obsah"           AS "blob" 
+							'application/rtf' AS "ContentType",
+							'obsah.rtf'       AS "filename",
+							"obsah"           AS "blob"
 						FROM "dbo"."table10" 
 						WHERE "poradi" = ?</query>
 					</blob>
@@ -326,8 +345,8 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 						<id>2_3</id>
 						<dbcolumnname>PDF</dbcolumnname>
 						<query>SELECT 
-							'application/pdf' AS "ContentType", 
-							'document.pdf'    AS "filename", 
+							'application/pdf' AS "ContentType",
+							'document.pdf'    AS "filename",
 							"documentpdf"     AS "blob" 
 						FROM "dbo"."table10" 
 						WHERE "poradi" = ?</query>

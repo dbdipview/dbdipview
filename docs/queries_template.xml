@@ -4,24 +4,25 @@
 	xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
 	schemaMajorVersion="2" >
 	<database>
-		<name>Register XYZ</name>
+		<name>Viewer for database XYZ. But this file is just a template for copy paste work with a real xml file.</name>
 		<overview>
-This is a short overview of Register XYZ... You can also create it as a metadata/description.txt file.
+Write here a short overview of database XYZ... You can also create it as a metadata/description.txt file.
 		</overview>
 		<revisions>
 			<revision date="2019-06-12" version="0.1">draft version of reports during ingest of XYZ</revision>
 		</revisions>
 		<ref_number></ref_number>
 		<screens>
+
 			<screen>
 				<id>1</id>
 				<selectDescription></selectDescription>
 				<title></title>
 				<subtitle></subtitle>
-				<param>
-					<name></name>
-					<dbtable></dbtable>
-					<dbcolumn></dbcolumn>
+				<param size='20' mandatory='0'>
+					<name>Label</name>
+					<dbtable>this DB table</dbtable>
+					<dbcolumn>this column</dbcolumn>
 					<type>textlike</type>
 				</param>
 				<query>SELECT
@@ -30,11 +31,10 @@ This is a short overview of Register XYZ... You can also create it as a metadata
 				<selectOrder></selectOrder>
 				<links_to_next_screen>
 					<link>
-						<dbcolumnname></dbcolumnname>
-						<next_screen_id></next_screen_id>
-						<dbtable></dbtable>
-						<dbcolumn></dbcolumn>
-						<linkaction></linkaction>
+						<dbcolumnname>source column title</dbcolumnname>
+						<next_screen_id>target screen</next_screen_id>
+						<dbtable>target DB table</dbtable>
+						<dbcolumn>target column</dbcolumn>
 					</link>
 				</links_to_next_screen>
 			</screen>
@@ -44,10 +44,10 @@ This is a short overview of Register XYZ... You can also create it as a metadata
 				<selectDescription></selectDescription>
 				<title></title>
 				<subtitle></subtitle>
-				<param>
-					<name></name>
-					<dbtable></dbtable>
-					<dbcolumn></dbcolumn>
+				<param size='20' mandatory='1'>
+					<name>Label</name>
+					<dbtable>this DB table</dbtable>
+					<dbcolumn>this column</dbcolumn>
 					<type>integer</type>
 					<forwardToSubqueryName>param1</forwardToSubqueryName>
 				</param>
