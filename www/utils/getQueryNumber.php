@@ -16,9 +16,9 @@ function get_bool($value){
 
 
 function getQueryNumber() { 
-global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue, $MSGSW30_Overview;
-global $myTXTfilePath;
-	global $screensArray;
+	global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue, $MSGSW30_Overview;
+	global $myTXTfilePath;
+	global $screensArray, $menuFrameHeight;
 
 	$reportMenu = new ReportMenu($xml);
 	$lines = $reportMenu->howManyLines();
@@ -41,10 +41,14 @@ global $myTXTfilePath;
 	<tr>
 		<td style="white-space: nowrap;">
 	<?php
+		if (!is_numeric($menuFrameHeight))  //is set in the config.txt?
+			$menuFrameHeight = 250;
+
 		if ($lines > 15)
-			echo '<div style="text-align:left; height:250px; overflow-y:scroll; scrollbar-width: thin;">';
+			echo '<div style="text-align:left; height:' . $menuFrameHeight . 'px; overflow-y:scroll; scrollbar-width: thin;">';
 		else
 			echo '<div style="text-align:left;">';
+
 		$reportMenu->show();
 			echo '</div>';
 	?>
