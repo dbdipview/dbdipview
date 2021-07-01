@@ -100,13 +100,13 @@ class ReportMenu {
 				}
 			}
 
-			if( !array_key_exists($nowLevel, $treemodestatus)) {
-				$treemodestatus[$nowLevel]   = 0;
-				$treemodestatus[$nowLevel+1] = 0;
-				$treemodestatus[$nowLevel+2] = 0;
-			}
-
 			if($attributeHide != true) {
+
+				if( !array_key_exists($nowLevel, $treemodestatus)) {
+						$treemodestatus[$nowLevel]   = 0;
+						$treemodestatus[$nowLevel+1] = 0;
+						$treemodestatus[$nowLevel+2] = 0;
+				}
 
 				if ($nowLevel == $oldLevel ) {
 					$pref = str_repeat ( "  " , $oldLevel);
@@ -198,9 +198,7 @@ class ReportMenu {
 
 				$pref = str_repeat ( "  " , $nowLevel+1);
 				if ($nowLevel > $oldLevel &&
-					$treemodestatus[$oldLevel] & self::TREE_IN_CARETAFTER 
-					//&&	$treemodestatus[$nowLevel] == 0
-					)
+					$treemodestatus[$oldLevel] & self::TREE_IN_CARETAFTER)
 				{
 					$treemodestatus[$nowLevel] |= self::TREE_IN_NESTED;
 					echo $pref . '<ul id="my' . $currentMenuItem . '" class="nested">' . PHP_EOL;
@@ -227,10 +225,11 @@ class ReportMenu {
 						echo "</label>";
 					echo '</li>' . PHP_EOL;
 				}
+
+				$oldLevel = $nowLevel;
 			}
 
-			$oldLevel = $nowLevel;
-		}
+		} //while
 
 	}
 

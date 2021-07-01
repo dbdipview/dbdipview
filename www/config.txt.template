@@ -7,4 +7,6 @@ $userName = "ddvreader";
 $password = "ddvreader";
 
 $timezone='Europe/Ljubljana';
-$debugCode = "123";
+$debugCode = "123";				//activate debug: .../dbdipview/login.htm?debug=123
+
+//$menuFrameHeight = 250;		//height of menu frame with available reports in pixels
