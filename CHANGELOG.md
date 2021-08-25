@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.6.2] - 2021-08-25
+### Modified
+- access: debugg messages for query parameters 
+- access: main query before subqueries can be skipped (i.e. empty) now 
+### Fixed
+- access: description.txt content was too far right on the reports menu
+
 ## [2.6.1] - 2021-07-01
 ### Added
 - access: admin can change treeview window preset height

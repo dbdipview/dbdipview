@@ -32,7 +32,7 @@ function getQueryNumber() {
 	  <col />
 </colgroup>
 <tr>
-<td style="vertical-align:top; white-space: nowrap;" >
+<td style="vertical-align:top; white-space: nowrap; width: 10%;" >
 	<table border = 1>
 	<tr>
 		<td style="text-align:center"><h4><?php echo $MSGSW22_REPORTS; ?></h4></td>

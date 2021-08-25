@@ -87,12 +87,12 @@ function appendOrderGroupBy($what, $criteria) {
 	$criteria = chop($criteria);   //remove white space characters
 	if ( strlen($criteria) > 0 ) {
 		debug("fillCreateQuery: $what=$criteria");
-		if ( $criteria[0] != '"' ) {		// is " already in xml?
+		if ( substr_count($criteria, '"') > 0) {
+			$queryTail = " $what " . $criteria;
+		} else {
 			$criteriatmp0 = str_replace('.',  '"."',  $criteria);      //db.col --> "db"."col"
 			$criteriatmp1 = str_replace(', ', '", "', $criteriatmp0);  //db.col, --> db.col", "
 			$queryTail = " $what \"" . $criteriatmp1 . "\"";
-		} else {
-			$queryTail = " $what " . $criteria;
 		}
 	}
 	return($queryTail);
@@ -168,42 +168,47 @@ foreach ($xml->database->screens->screen as $screen) {
 	if($screen->id  == $targetQueryNum) {
 		$attrSkipCSVsave = get_bool($screen->attributes()->skipCSVsave);
 		$subTitle=$screen->subtitle;
+		$screenQuery = trim($screen->query);
 		foreach ($screen->param as $param) {
 
 			$attrParamMandatory = get_bool($param->attributes()->mandatory);
 			$field=            $param->dbtable.TABLECOLUMN.$param->dbcolumn;                  //cities.id -> cities_id
 			$fieldType=        $param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
 			$fieldParamForward=$param->forwardToSubqueryName;                                 //to be used in subquery
-			debug("fillCreateQuery: checking existence of: name: $param->name, dbcolumn: $param->dbcolumn,
-				field: $field, type: $param->type, to be forwarded as: $fieldParamForward");
+			debug("fillCreateQuery: checking parameter for column: \"$param->dbtable\".\"$param->dbcolumn\" (
+				parameter name: $field, type: $param->type, to be forwarded tu subqueries as: $fieldParamForward )");
 
 			$fieldType = str_replace(" ", "__20__", $fieldType);
 			$field     = str_replace(" ", "__20__", $field);     //temporarily replace space
 
 			$paramFound = False;
+			$internalParameters = array("submit_cycle", "targetQueryNum", "__page", "maxcount", "x", "y", "tablelist" );
 			foreach($_GET as $key => $value){
-				if( 0 == strcmp($key, $field . $param->type) ||
-					0 == strcmp($key, $field) ) {                     //this comes with links_to_next_screens
-					if(empty($value)) {
-						if($attrParamMandatory)
-							if( empty($mandatory) )
-								$mandatory = $param->name;
+				if (! in_array($key, $internalParameters) ) {
+					//debug("_________ $key with db field $field ...");
+					if( 0 == strcmp($key, $field . $param->type) ||
+						0 == strcmp($key, $field) ) {                     //this comes with links_to_next_screens
+						if(empty($value)) {
+							if($attrParamMandatory)
+								if( empty($mandatory) )
+									$mandatory = $param->name;
+								else
+									$mandatory .= ", " . $param->name;
+						} else {
+							$paramFound = True;
+							if(is_array($value))
+								debug("________________ found:&nbsp;&nbsp;" . $key . " = '" . $value[0] . "' ...\r\n");
 							else
-								$mandatory .= ", " . $param->name;
-					} else {
-						$paramFound = True;
-						if(is_array($value))
-							debug("(found!)&nbsp;&nbsp;" . $key . ": >" . $value[0] . "< ...\r\n");
-						else
-							debug("(found!)&nbsp;&nbsp;" . $key . ": >" . $value . "<\r\n");
+								debug("________________ found:&nbsp;&nbsp;" . $key . " = '" . $value . "'\r\n");
+						}
 					}
 				}
 			}
 			if ( $paramFound == False) {
-				debug("(not found)");
+				debug("________________ no such parameter");
 				continue;  //forget this one and check the next parameter
 			}
-			debug("(check param type): $param->type");
+
 			$quote=QUOTE_WHERE;   //since postgresql 8.4 no more '';
 			$equal='=';
 			if(0==strcmp("text", $param->type)) {
@@ -229,9 +234,9 @@ foreach ($xml->database->screens->screen as $screen) {
 			} else
 				debug("fillCreateQuery: UNKNOWN param->type: $param->type");
 
-			$and = is_where_already_here($screen->query);     //true=yes, put AND before for next search element
+			$and = is_where_already_here($screenQuery);     //true=yes, put AND before for next search element
 
-			debug("(checking) field=$field, fieldType=$fieldType");
+			//debug("(checking) field=$field, fieldType=$fieldType");
 			if (isset($_GET[$field]) || isset($_GET[$fieldType])) {
 						
 				if (isset($_GET[$field])) {
@@ -295,16 +300,21 @@ foreach ($xml->database->screens->screen as $screen) {
 			return;
 		}
 
+		$query = "$screenQuery $where";
+		$query = $query . appendOrderGroupBy("GROUP BY", $screen->selectGroup);
+		$csvquery = $query;
+		$query = $query . appendOrderGroupBy("ORDER BY", $screen->selectOrder);
+
 		//----------------------
 		foreach ($screen->ahrefs as $ahrefs) {
 			foreach ($ahrefs->ahref as $ahref) {
 				$f_ahrefs = true;
 				$ahref_column = array();
 				debug("fillCreateQuery: AHREF dbcolumnname: $ahref->dbcolumnname");
-				debug("fillCreateQuery:   AHREF atext:      $ahref->atext");
+				debug("______________________ atext:      $ahref->atext");
 				$ahref_column["atext"] = $ahref->atext;
 				if ( isset($ahref->URLprefix) ) {
-					debug("fillCreateQuery:   AHREF URLprefix:  $ahref->URLprefix");
+					debug("______________________ URLprefix:  $ahref->URLprefix");
 					$ahref_column["URLprefix"] = $ahref->URLprefix;
 				}
 				$ahref_columns[(string)$ahref->dbcolumnname] = $ahref_column;
@@ -316,7 +326,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			foreach ($images->image as $image) {
 				$f_images = true;
 				debug("fillCreateQuery: IMAGE dbcolumnname: $image->dbcolumnname");
-				debug("fillCreateQuery: IMAGE style:        $image->style");
+				debug("______________________ style:        $image->style");
 
 				$images_image_style[(string)$image->dbcolumnname] = $image->style;
 			}
@@ -329,7 +339,7 @@ foreach ($xml->database->screens->screen as $screen) {
 				$blob_column = array();
 								
 				debug("fillCreateQuery: BLOB dbcolumnname: $blob->dbcolumnname");
-				debug("fillCreateQuery: BLOB id:           $blob->id");
+				debug("_____________________ id:           $blob->id");
 
 				$blob_column["id"] = $blob->id;
 				$blob_columns[(string)$blob->dbcolumnname] = $blob_column;
@@ -343,11 +353,11 @@ foreach ($xml->database->screens->screen as $screen) {
 				$linknextscreen_column = array();
 
 				debug("fillCreateQuery: LINK column:   $link->dbcolumnname");
-				debug("fillCreateQuery: ____ value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
-				debug("fillCreateQuery: ____ next screen id:         $link->next_screen_id");
-				debug("fillCreateQuery: ____ next screen dbtable:    $link->dbtable");
-				debug("fillCreateQuery: ____ next screen dbcolumn:   $link->dbcolumn");
-				debug("fillCreateQuery: ____ next screen linkaction: $link->linkaction");
+				debug("_____________________ value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
+				debug("_____________________ next screen id:         $link->next_screen_id");
+				debug("_____________________ next screen dbtable:    $link->dbtable");
+				debug("_____________________ next screen dbcolumn:   $link->dbcolumn");
+				debug("_____________________ next screen linkaction: $link->linkaction");
 
 				$linknextscreen_column["next_screen_id"]  = $link->next_screen_id;
 				$linknextscreen_column["dbtable"]         = $link->dbtable;
@@ -363,8 +373,6 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			}
 		} //for each link to next screen
-		//----------------------
-		$query="$screen->query $where";
 
 		//-------------------
 		// subqeries are additional simple queries that will be executed separately AFTER the basic query.
@@ -431,7 +439,7 @@ foreach ($xml->database->screens->screen as $screen) {
 				foreach ($images->image as $image) {
 					$f_subqeries_images[$sqindex] = true;
 					debug("fillCreateQuery: subselect IMAGE dbcolumnname: $image->dbcolumnname");
-					debug("fillCreateQuery: subselect IMAGE style:        $image->style");
+					debug("________________________________ style:        $image->style");
 
 					$subqueries_images_image_style [$sqindex][(string)$image->dbcolumnname] = $image->style;
 				}
@@ -442,9 +450,9 @@ foreach ($xml->database->screens->screen as $screen) {
 					$f_subqeries_ahrefs[$sqindex] = true;
 					$ahref_column = array();
 					debug("fillCreateQuery: subselect AHREF dbcolumnname: $ahref->dbcolumnname");
-					debug("fillCreateQuery: subselect AHREF atext:        $ahref->atext");
+					debug("________________________________ atext:        $ahref->atext");
 					if ( isset($ahref->URLprefix) ) {
-						debug("fillCreateQuery:   AHREF URLprefix:  $ahref->URLprefix");
+						debug("________________________________ URLprefix:  $ahref->URLprefix");
 						$ahref_column["URLprefix"] = $ahref->URLprefix;
 					}
 					$ahref_column["atext"] = $ahref->atext;
@@ -457,11 +465,11 @@ foreach ($xml->database->screens->screen as $screen) {
 					$f_subqeries_links_to_next_screen[$sqindex] = true;
 					$linknextscreen_column = array();
 					debug("fillCreateQuery: LINKSUBQ column:   $link->dbcolumnname");
-					debug("&nbsp;&nbsp;&nbsp; value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
-					debug("&nbsp;&nbsp;&nbsp; next screen id:             $link->next_screen_id");
-					debug("&nbsp;&nbsp;&nbsp; next screen dbtable:        $link->dbtable");
-					debug("&nbsp;&nbsp;&nbsp; next screen dbcolumn:       $link->dbcolumn");
-					debug("&nbsp;&nbsp;&nbsp; next screen linkaction:     $link->linkaction");
+					debug("_____________________ value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
+					debug("_____________________ screen id:             $link->next_screen_id");
+					debug("_____________________ screen dbtable:        $link->dbtable");
+					debug("_____________________ next screen dbcolumn:       $link->dbcolumn");
+					debug("_____________________ next screen linkaction:     $link->linkaction");
 
 					$linknextscreen_column["next_screen_id"]  = $link->next_screen_id;
 					$linknextscreen_column["dbtable"]         = $link->dbtable;
@@ -488,12 +496,6 @@ foreach ($xml->database->screens->screen as $screen) {
 		} //for each subselect
 
 		
-		//continue with main select query, add missing parts
-		$query = $query . appendOrderGroupBy("GROUP BY", $screen->selectGroup);
-
-		$csvquery = $query;
-		$query = $query . appendOrderGroupBy("ORDER BY", $screen->selectOrder);
-
 		$maxcount = 0;
 		if (isset($_GET['maxcount'])) {
 			$maxcount = pg_escape_string($_GET['maxcount']);
@@ -510,7 +512,7 @@ foreach ($xml->database->screens->screen as $screen) {
 				$query = $query . " OFFSET " . $offset;
 		}
 
-		debug("fillCreateQuery <b>query</b>=$query");
+		debug("<b>query</b> = $query");
 
 		$tablelist = $_SESSION['tablelist'];
 		$hits=0;
@@ -533,7 +535,8 @@ foreach ($xml->database->screens->screen as $screen) {
 			if(isset($subTitle) && strlen($subTitle)>0 )
 				print($subTitle . "<br/>");
 
-			$newlist = qToTableWithLink($query,
+			if ( !empty($screenQuery) ) {
+				$newlist = qToTableWithLink($query,
 									$linknextscreen_columns,
 									$images_image_style,
 									$ahref_columns,
@@ -541,12 +544,13 @@ foreach ($xml->database->screens->screen as $screen) {
 									$totalCount,
 									"M");
 
-			print $newlist[0];
-			$hits = $newlist[1];
-			if ( empty($totalCount) )
-				$totalLines = $newlist[2];
-			else
-				$totalLines = $totalCount; //already known
+				print $newlist[0];
+				$hits = $newlist[1];
+				if ( empty($totalCount) )
+					$totalLines = $newlist[2];
+				else
+					$totalLines = $totalCount; //already known
+			}
 
 			//display subqueries
 			$sqindexLoop=0;
@@ -619,19 +623,21 @@ define('PRINTER_ICON', '&#x1f5b6;');
 				print ("<h5>".$screen->subtitle."</h5>" . PHP_EOL);
 			print ("<br/>");
 
-			$newlist=qToListWithLink($query,
-									$linknextscreen_columns,
-									$images_image_style,
-									$ahref_columns,
-									$blob_columns,
-									$totalCount);
+			if ( !empty($screenQuery) ) {
+				$newlist=qToListWithLink($query,
+										$linknextscreen_columns,
+										$images_image_style,
+										$ahref_columns,
+										$blob_columns,
+										$totalCount);
 
-			print $newlist[0];
-			$hits=$newlist[1];
-			if ( empty($totalCount) )
-				$totalLines = $newlist[2];
-			else
-				$totalLines = $totalCount; //already known
+				print $newlist[0];
+				$hits=$newlist[1];
+				if ( empty($totalCount) )
+					$totalLines = $newlist[2];
+				else
+					$totalLines = $totalCount; //already known
+			}
 
 			//display subqueries
 			$sqindexLoop=0;
