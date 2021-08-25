@@ -59,6 +59,7 @@ class ReportMenu {
 		$treemodestatus = array();
 		$currentMenuItem = 0;
 		$oldLevel = 0;
+		$treemodestatus[$oldLevel] = 0;
 
 		while(true) {
 			$screen = array_shift($this->screensArray);
