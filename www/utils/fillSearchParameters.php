@@ -28,7 +28,7 @@ function FunctionHelpToggle() {
 }
 </script>
 
-<form name="statusform" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' target='bottomframe' >
+<form name="statusform" action="<?php echo str_replace(".php","Load.php", htmlspecialchars($_SERVER["PHP_SELF"])); ?>" method='get' target='bottomframe' >
 <table border = 1>
 <tr>
 	<td colspan = 2>

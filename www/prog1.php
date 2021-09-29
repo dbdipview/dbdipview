@@ -28,11 +28,8 @@ switch ($submit_cycle) {
 			$code = trim($_GET['code']);
 			list($myDBname, $myXMLfile) = config_code2database($code);
 		} else {
-			if (array_key_exists("xmlfile", $_GET))
-				$myXMLfile = trim($_GET['xmlfile'] . ".xml");
-				
-			if (array_key_exists("dbname", $_GET))
-				$myDBname = trim($_GET['dbname']);
+			if (array_key_exists("xmlfile", $_GET) && array_key_exists("dbname", $_GET))
+				list($myDBname, $myXMLfile) = config_dv2database($_GET['dbname'], $_GET['xmlfile']);
 		}
 		
 		$mydebug="0";

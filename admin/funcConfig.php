@@ -231,6 +231,36 @@ function config_code2database($token) {
 }
 
 /**
+ * For a given database and viewer returns the same information
+ * if database is public!
+ *
+ * @param string $d                database
+ * @param string $v                viewer
+ *
+ * @return array $database, $xmlfile  pair needed for access
+ */
+function config_dv2database($d, $v) {
+	global $SERVERCONFIGJSON;
+	
+	$database = "_not_set";
+	$xmlfile =  "_not_set";
+
+	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
+	usort($array, "cmpRef");
+
+	foreach ($array as $index=>$line) {
+		if (array_key_exists('dbc', $line) && 0==strcmp($line['dbc'], trim($d)) &&
+			array_key_exists('ddv', $line) && 0==strcmp($line['ddv'], trim($v)) &&
+			                                  0==strcmp($line['access'], 'public')
+		) {
+			$database = $line['dbc'];
+			$xmlfile =  $line['queriesfile'];
+		} 
+	} 
+	return(array($database, $xmlfile));
+}
+
+/**
  * Display configuration information (as OPTION elements for the selection html form)
  * Show only public elements
  *

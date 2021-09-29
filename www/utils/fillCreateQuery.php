@@ -31,12 +31,12 @@ function printContent(frameID) {
 </script>
 
 <style type="text/css" media="print">
-    @page 
+    @page
     {
         size: auto;
         margin: 0mm 5mm 5mm 5mm;
     }
-    
+
     .no-print, .no-print *
     {
         display: none !important;
@@ -62,7 +62,7 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 	$csvtitle = "";
 	if(isset($_SESSION['title']))
 		$csvtitle .= '"' . $MSGSW17_Records .           ": " .  fbr($_SESSION['title']) .  '"' . ";\n";
-		
+
 	if($selectdescription && strlen($selectdescription) > 0 )
 		$csvtitle .= '"' . $MSGSW18_ReportDescription . ": " .  fbr($selectdescription)  . '"' . ";\n";
 
@@ -108,7 +108,7 @@ function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote
 		$exploded = explode("||", $input);
 	else
 		$exploded = explode("&&", $input);
-	
+
 	$op = "";
 	$text = "";
 	foreach($exploded as $key => $value){
@@ -126,7 +126,7 @@ function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote
 				$value = "%".$value."%";
 			$text = $text . $op . $field . " " . $equal . " " . $quote . trim($value) . $quote;
 		}
-		
+
 		$op=" $operator ";
 	}
 	return "(" . $text . ")";
@@ -155,20 +155,20 @@ foreach ($xml->database->screens->screen as $screen) {
 	$attrSkipCSVsave = false;
 	$f_ahrefs = false;
 	$ahref_columns = array();
-	
+
 	$f_images = false;
 	$images_image_style = array();
-	
+
 	$f_blobs = false;
 	$blob_columns = array();
 
 	$f_links_to_next_screen=false;
 	$linknextscreen_columns=array();
-	
+
 	if($screen->id  == $targetQueryNum) {
 		$attrSkipCSVsave = get_bool($screen->attributes()->skipCSVsave);
 		$subTitle=$screen->subtitle;
-		$screenQuery = trim($screen->query);
+		$screenQuery = get_query_from_xml($screen);
 		foreach ($screen->param as $param) {
 
 			$attrParamMandatory = get_bool($param->attributes()->mandatory);
@@ -238,13 +238,13 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			//debug("(checking) field=$field, fieldType=$fieldType");
 			if (isset($_GET[$field]) || isset($_GET[$fieldType])) {
-						
+
 				if (isset($_GET[$field])) {
 					$value = trim($_GET[$field], "\t\n\r\0\x0B");   //trim, but leave the blank
 				} else {
 					$valueIN = $_GET[$fieldType];
 					if(is_array($valueIN)) {
-						//multiple combo selection, simulate aaa || bbb entry for further processing						
+						//multiple combo selection, simulate aaa || bbb entry for further processing
 						$value="";
 						foreach($valueIN as $tmp)
 							if($value=="")
@@ -301,9 +301,11 @@ foreach ($xml->database->screens->screen as $screen) {
 		}
 
 		$query = "$screenQuery $where";
-		$query = $query . appendOrderGroupBy("GROUP BY", $screen->selectGroup);
+		if( ! isset($screen->querymacro) )
+			$query = $query . appendOrderGroupBy("GROUP BY", $screen->selectGroup);
 		$csvquery = $query;
-		$query = $query . appendOrderGroupBy("ORDER BY", $screen->selectOrder);
+		if( ! isset($screen->querymacro) )
+			$query = $query . appendOrderGroupBy("ORDER BY", $screen->selectOrder);
 
 		//----------------------
 		foreach ($screen->ahrefs as $ahrefs) {
@@ -337,7 +339,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			foreach ($blobs->blob as $blob) {
 				$f_blobs = true;
 				$blob_column = array();
-								
+
 				debug("fillCreateQuery: BLOB dbcolumnname: $blob->dbcolumnname");
 				debug("_____________________ id:           $blob->id");
 
@@ -381,7 +383,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		$subqueries = array();
 		$subqueriesTitle = array();
 		$subqueriesSubTitle = array();
-		
+
 		$f_subqeries_images = array();
 		$subqueries_images_image_style = array(array());
 
@@ -396,10 +398,10 @@ foreach ($xml->database->screens->screen as $screen) {
 		$sqindex = 0;
 
 		foreach ($screen->subselect as $subselect) {
-			$subquery = $subselect->query;
+			$subquery = get_query_from_xml($subselect);
 			$subqueriesTitle[$sqindex] = $subselect->title;
 			$subqueriesSubTitle[$sqindex] = $subselect->subtitle;
-			
+
 			debug("fillCreateQuery: subselect title: " . $subselect->title);
 			//-------------------------------------------------------------------
 			foreach ($subselect->param as $param) {
@@ -486,16 +488,18 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 
 			//-------------------------------------------------------------------
-			$subquery = $subquery . appendOrderGroupBy("GROUP BY", $subselect->selectGroup);
-			$subquery = $subquery . appendOrderGroupBy("ORDER BY", $subselect->selectOrder);
 
+			if( !isset($subselect->querymacro) ) {
+				$subquery = $subquery . appendOrderGroupBy("GROUP BY", $subselect->selectGroup);
+				$subquery = $subquery . appendOrderGroupBy("ORDER BY", $subselect->selectOrder);
+			}
 			$subqueries[$sqindex] = $subquery;
-			debug("<b>subquery". strval($sqindex+1) . " </b>= $subqueries[$sqindex]");	
+			debug("<b>subquery". strval($sqindex+1) . " </b>= $subqueries[$sqindex]");
 			debug(str_repeat(".",80));
 			$sqindex  += 1;
 		} //for each subselect
 
-		
+
 		$maxcount = 0;
 		if (isset($_GET['maxcount'])) {
 			$maxcount = pg_escape_string($_GET['maxcount']);
@@ -530,7 +534,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h4>");
 
 			if($screen->title && strlen($screen->title)>0 )
-				print ("<h4>" . $screen->title . "</h4>");	
+				print ("<h4>" . $screen->title . "</h4>");
 
 			if(isset($subTitle) && strlen($subTitle)>0 )
 				print($subTitle . "<br/>");
@@ -586,7 +590,7 @@ foreach ($xml->database->screens->screen as $screen) {
 
 							0,
 							$sqindexLoop);
-										
+
 				print $newlist[0];
 				$sqindexLoop  += 1;
 			}
@@ -598,7 +602,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 		}
 
-define('PRINTER_ICON', '&#x1f5b6;'); 
+define('PRINTER_ICON', '&#x1f5b6;');
 
 		if( strcmp($tablelist, "list") == 0 || strcmp($tablelist, "listAll") == 0) {
 			print "<table class=\"mydbtable\">" . PHP_EOL;   // force mydb color
@@ -615,7 +619,7 @@ define('PRINTER_ICON', '&#x1f5b6;');
 ?>
 		</tr>
 		</table>
-<?php			
+<?php
 
 			if($screen->title && strlen($screen->title)>0 )
 				print ("<h4>" . $screen->title . "</h4>" . PHP_EOL);
@@ -660,7 +664,7 @@ define('PRINTER_ICON', '&#x1f5b6;');
 							array_key_exists($sqindexLoop, $subqueries_blob_columns) ?
 								$subqueries_blob_columns[$sqindexLoop] : array(array()),
 										0);
-								
+
 				print $newlist[0];
 				$sqindexLoop  += 1;
 			}
@@ -758,6 +762,46 @@ if ($maxcount == $hits && ($hits > 0) && !(($page * $hits) == $totalLines) ) {
 <?php
 
 } // function  fillCreateQuery
+
+
+//get select statement from XML
+//for some special cases a macro can be defined, use it
+//this allows future porting of macros to other databases
+function get_query_from_xml($p) {
+
+	$allmacros = array();
+	$allmacros["NUMBER_OF_RECORDS_IN_TABLES"] = <<<EOD
+		CREATE OR REPLACE FUNCTION get_count(schema text, tablename text)
+		   RETURNS SETOF bigint AS
+		\$func\$
+		BEGIN
+		RETURN QUERY EXECUTE 'SELECT count(1) FROM ' || '"' || schema || '"."' || tablename || '"' ;
+		END
+		\$func\$ LANGUAGE plpgsql;
+
+		SELECT
+			 n.nspname AS "Schema",
+			 c.relname AS "Table",
+			 get_count(n.nspname, c.relname) AS "Records"
+		FROM pg_catalog.pg_class c
+			 JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+		WHERE c.relkind = 'r'
+			 AND n.nspname NOT IN ('pg_catalog','information_schema')
+		ORDER BY 2
+EOD;
+
+	$m = trim($p->querymacro);
+	if ( isset($m) && $m != '' ) {
+		if (array_key_exists($m, $allmacros) ) {
+			$qout = $allmacros[$m];
+		} else {
+			$qout = "SELECT 'ERROR: wrong macro in queries.xml'";
+		}
+	} else
+		$qout = trim($p->query);
+	return $qout;
+} //get_query_from_xml
+
 
 function is_where_already_here($selectStmnt) {
 	//if there is a WHERE part at the end, skip it now

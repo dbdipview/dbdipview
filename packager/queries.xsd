@@ -3,7 +3,7 @@
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
            vc:minVersion="2.0">
-	<!-- dbDIPview schema for queries.xml, 2021-05-27 -->
+	<!-- dbDIPview schema for queries.xml, 2021-09-17 -->
 	<xs:complexType name="revisions">
 		<xs:sequence>
 			<xs:element name="revision" type="revision" minOccurs="0" maxOccurs="unbounded" />
@@ -37,6 +37,7 @@
 			<xs:element name="title"             type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="subtitle"          type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="param"             type="param"     minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="querymacro"        type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="query"             type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="selectGroup"       type="xs:string" minOccurs="0" maxOccurs="1" />
 			<xs:element name="selectOrder"       type="xs:string" minOccurs="0" maxOccurs="1" />
@@ -51,6 +52,7 @@
 						<xs:element name="title"       type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="subtitle"    type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="param"       type="paramSubselect" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element name="querymacro"  type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="query"       type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="selectGroup" type="xs:string"      minOccurs="0" maxOccurs="1" />
 						<xs:element name="selectOrder" type="xs:string"      minOccurs="0" maxOccurs="1" />

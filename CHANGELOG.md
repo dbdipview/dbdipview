@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.7.0] - 2021-09-29
+### Added
+- access: macro has been introduced to display number of records in each table instead of a DBMS specific script
+- access: "Page loading" animation has been added for cases of long search in the database
+### Modified
+- test suite: TestAndDemo 2 now uses the new macro
+### Fixed
+- access: non-public database can now be accessed only via a ticket code
+
 ## [2.6.2] - 2021-08-25
 ### Modified
 - access: debugg messages for query parameters 
