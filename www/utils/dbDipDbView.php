@@ -4,7 +4,7 @@
  * dbDipDbView.php
  * functions that execute a database query and return formatted result
  */
- 
+
 /**
  * given a SELECT query, adds additional column with total count of hits to be used for pagination
  * To minimize risks of wrong inserting of COUNT(*) columns, complicated queries will not be changed:
@@ -45,7 +45,7 @@ function addCountTotal($string) {
  * Returns: index or 0
  */
 function findFirstFreeNeedle($string, $needle, $offset) {
-	
+
 	$pos = stripos($string, $needle, $offset);
 	if ($pos === false)
 		return( 0 );  //the keyword FROM not found??
@@ -60,7 +60,7 @@ function findFirstFreeNeedle($string, $needle, $offset) {
 
 
 /**
- * find the key in one line result from the database 
+ * find the key in one line result from the database
  *
  * Returns: the value for a given column
  */
@@ -74,7 +74,7 @@ function getKeyValue($arr, $key) {
 
 
 /**
- * execute a query 
+ * execute a query
  *
  * Returns: an array with all rows of the result
  */
@@ -105,7 +105,7 @@ function qRowsToArray($query){
  * Returns: part of the link
  */
 function makeParameterReferences($val, $row, $column){
-	
+
 	if ( $column["columnWithValue"] != "" ) {
 		$out = "";
 		$columns = $column["columnWithValue"];
@@ -127,31 +127,31 @@ function makeParameterReferences($val, $row, $column){
 	} else {
 		$out = makeParameterReferencesOne($column["dbtable"].TABLECOLUMN.$column["dbcolumn"], $val);
 	}
-	return($out);	
+	return($out);
 }
 
 function makeParameterReferencesOne($link, $linkval) {
-	$link = str_replace(" ", "__20__", $link);   //temporarily replace space 
+	$link = str_replace(" ", "__20__", $link);   //temporarily replace space
 	$out = "&" . $link . "=" . urlencode($linkval);
-	return($out);	
+	return($out);
 }
 
 
 /**
- * execute a query 
+ * execute a query
  *
  * Returns: an HTML table output
  */
-function qToListWithLink($query, 
-					$linknextscreen_columns, 
-					$images_image_style, 
+function qToListWithLink($query,
+					$linknextscreen_columns,
+					$images_image_style,
 					$ahref_columns,
 					$blob_columns,
 					$totalCount) {
 	global $dbConn;
 	global $filespath;
 	$output = "";
-	
+
 	if ( empty($totalCount) ) {
 		$totalLines = 0;
 		$queryWithCount = addCountTotal($query);
@@ -159,9 +159,9 @@ function qToListWithLink($query,
 		$totalLines = $totalCount;  //was calculated at first page
 		$queryWithCount = "";
 	}
-	$columnDescriptions = new ColumnDescriptions($query); 
-	
-	if( empty($queryWithCount) ) 
+	$columnDescriptions = new ColumnDescriptions($query);
+
+	if( empty($queryWithCount) )
 		$result = pg_query($dbConn, $query );
 	else
 		$result = pg_query($dbConn, $queryWithCount );
@@ -172,10 +172,10 @@ function qToListWithLink($query,
 	} else {
 
 		while ($row = pg_fetch_assoc($result)) {
-			
+
 			foreach ($row as $col=>$valnl) {
 				$val = nl2br($valnl);
-				
+
 				if ($col == "E2F7total7E8D233C") {
 					$totalLines = $val;
 					continue;     //hide column Total
@@ -185,7 +185,7 @@ function qToListWithLink($query,
 				if( strcmp($tablelist, "listAll") !== 0 )
 					if( empty($val) )
 						continue;
-					
+
 				$output .= showInfotipInline($columnDescriptions->getDescriptionForColumn($col), $col);
 				$output .= "<b>$col:</b> ";
 
@@ -202,7 +202,7 @@ function qToListWithLink($query,
 
 				if ( !is_null($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
 					$column = $ahref_columns[$col];
-					if ( !is_null($column) ) { 
+					if ( !is_null($column) ) {
 						$link = $val;
 						$link = str_replace("\\", "/", $link);   //folder path
 						if ( array_key_exists('URLprefix', $column) )
@@ -220,11 +220,11 @@ function qToListWithLink($query,
 						continue;
 					}
 				}
-				
-				if (!is_null($images_image_style) && 
-								array_key_exists("$col", $images_image_style) && 
+
+				if (!is_null($images_image_style) &&
+								array_key_exists("$col", $images_image_style) &&
 								$images_image_style[$col]!="") {
-									
+
 					if (strlen((string)$val)==0)
 						$output .= "<br />\n";
 					else {
@@ -234,7 +234,7 @@ function qToListWithLink($query,
 						$output .= "  <img src='$link' alt='$val' style='".$images_image_style[$col]."' /><br />\n";
 					}
 					continue;
-				} 
+				}
 
 				if ( isset($blob_columns) && array_key_exists($col, $blob_columns) ) {
 					$column = $blob_columns[$col];
@@ -248,15 +248,15 @@ function qToListWithLink($query,
 						continue;
 					}
 				}
-				
+
 				$output .= "  $val<br />\n";
-				
+
 			} // end foreach
 			$output .= "<hr /> \n" ;
 		} // end while
 
 		$hits = pg_num_rows($result);
-	
+
 	} // if result
 
 	if (strlen($output)==0)
@@ -264,20 +264,20 @@ function qToListWithLink($query,
 
 	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
-	
+
 }
 
 
 /**
- * execute a query 
+ * execute a query
  * results of query can be shown directy or they are used as parameters for a link
  *
  * Returns: an HTML table output
  */
-function qToTableWithLink($query, 
-					$linknextscreen_columns, 
-					$images_image_style, 
-					$ahref_columns, 
+function qToTableWithLink($query,
+					$linknextscreen_columns,
+					$images_image_style,
+					$ahref_columns,
 					$blob_columns,
 					$totalCount,
 					$queryId) {
@@ -288,7 +288,7 @@ function qToTableWithLink($query,
 	//$query = str_replace("'", "\"", $query);	// 'name'--> "name" _ _ SELECT _ AS "name"
 
 	$totalLines = 0;
-	
+
 	if ( empty($totalCount) ) {
 		$totalLines = 0;
 		$queryWithCount = addCountTotal($query);
@@ -296,23 +296,23 @@ function qToTableWithLink($query,
 		$totalLines = $totalCount;  //was calculated at first page
 		$queryWithCount = "";
 	}
-	$columnDescriptions = new ColumnDescriptions($query); 
-	
-	if( empty($queryWithCount) ) 
+	$columnDescriptions = new ColumnDescriptions($query);
+
+	if( empty($queryWithCount) )
 		$result = pg_query($dbConn, $query );
 	else
 		$result = pg_query($dbConn, $queryWithCount );
-	
+
 	if (!$result) {
 		debug(pg_last_error($dbConn));
 		$output .= "ERROR: qToTableWithLink<br />";
 	} else {
 		//$output .= "Added COUNT():" . $queryWithCount;
-		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">\n";  
+		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">\n"; 
 
 		$output .= "<thead><tr>" . PHP_EOL;
 		$i = pg_num_fields($result);
-		
+
 		if( !empty($queryWithCount) )
 			$i -= 1;   //there will be an additional column with with Total, hide it
 
@@ -333,14 +333,14 @@ function qToTableWithLink($query,
 		while ($row = pg_fetch_assoc($result)) {
 			$output .= "<tr>\n";
 			foreach ($row as $col=>$valnl) {
-				
+
 				$val = nl2br($valnl);
 
 				if ($col == "E2F7total7E8D233C") {
 					$totalLines = $val;
 					continue;     //hide column Total
 				}
-				
+
 				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
 					if ( !is_null($column) && $column["dbtable"]!="" ) {
@@ -354,7 +354,7 @@ function qToTableWithLink($query,
 
 				if ( !is_null($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
 					$column = $ahref_columns[$col];
-					if ( !is_null($column) ) { 
+					if ( !is_null($column) ) {
 						$link = $val;
 						$link = str_replace("\\", "/", $link);   //folder path
 						if ( array_key_exists('URLprefix', $column) )
@@ -372,9 +372,9 @@ function qToTableWithLink($query,
 						continue;
 					}
 				}
-				
-				if (!is_null($images_image_style) && 
-								array_key_exists("$col", $images_image_style) && 
+
+				if (!is_null($images_image_style) &&
+								array_key_exists("$col", $images_image_style) &&
 								$images_image_style[$col]!="") {
 					if (strlen((string)$val)==0)
 						$output .= "  <td></td>\n";

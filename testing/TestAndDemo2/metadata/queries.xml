@@ -16,6 +16,7 @@
 			<revision date="2020-08-27" version="1.3">Added a control report with count for all tables</revision>
 			<revision date="2020-12-13" version="1.4">Added selectGroup example</revision>
 			<revision date="2021-05-14" version="1.5">Added show column description</revision>
+			<revision date="2021-09-28" version="1.6">Use of macro</revision>
 		</revisions>
 		<ref_number>TestAndDemo2</ref_number>
 		<screens>
@@ -238,26 +239,9 @@
 				<id>10</id>
 				<selectDescription>Number of records in each table</selectDescription>
 				<title>This is a control report.</title>
-				<subtitle>This DBMS specific script can be used to check the content of the ingested material</subtitle>
-				<query>
-CREATE OR REPLACE FUNCTION get_count(schema text, tablename text) 
-   RETURNS SETOF bigint AS
-$func$
-BEGIN
-RETURN QUERY EXECUTE 'SELECT count(1) FROM ' || '"' || schema || '"."' || tablename || '"' ;
-END
-$func$ LANGUAGE plpgsql;
-
-SELECT
-     n.nspname AS "Schema",
-     c.relname AS "Table",
-     get_count(n.nspname, c.relname) AS "Records"
-FROM pg_catalog.pg_class c
-     JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-WHERE c.relkind = 'r'
-     AND n.nspname NOT IN ('pg_catalog','information_schema')
-ORDER BY 2
-				</query>
+				<subtitle>A macro is used instead of a DBMS specific script</subtitle>
+				<querymacro>NUMBER_OF_RECORDS_IN_TABLES</querymacro>
+				<query/>
 			</screen>
 
 		</screens>

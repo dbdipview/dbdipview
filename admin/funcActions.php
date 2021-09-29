@@ -738,7 +738,7 @@ function actions_DDV_showInfo() {
  * @return $OK or $NOK    
  */
 function actions_SIARD_install($siardFile, $tool) {
-	global $MSG29_EXECUTING;
+	global $MSG50_DEPLOYING;
 	global $DBC, $SIARDTOOLDEFAULT;
 	global $OK, $NOK;
 
@@ -747,7 +747,7 @@ function actions_SIARD_install($siardFile, $tool) {
 	if ( empty($tool) )
 		$tool = $SIARDTOOLDEFAULT;
 		
-	msgCyan($MSG29_EXECUTING . " ($tool): " .  basename($siardFile) . "...");
+	msgCyan($MSG50_DEPLOYING . ": " . basename($siardFile) . " ($tool)...");
 	if (installSIARD($DBC, $siardFile, $tool)) {
 		$ret = $OK;
 	}
