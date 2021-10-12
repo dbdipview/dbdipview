@@ -243,7 +243,10 @@ function qToListWithLink($query,
 							$output .= "<br />\n";
 						else {
 							$id=$column["id"];
-							$output .= "<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showBlob&id=$id&val=$val'><span style='text-decoration:underline;'>&#129123;</span></a><br />\n";
+							$output .= "<a href='" . $_SERVER["PHP_SELF"] .
+								"?submit_cycle=showBlob&id=$id&val=$val'>" .
+								"<span class='downloadArrow'>&#129123;</span>" .
+								"</a><br />\n";
 						}
 						continue;
 					}
@@ -308,7 +311,7 @@ function qToTableWithLink($query,
 		$output .= "ERROR: qToTableWithLink<br />";
 	} else {
 		//$output .= "Added COUNT():" . $queryWithCount;
-		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">\n"; 
+		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">\n";
 
 		$output .= "<thead><tr>" . PHP_EOL;
 		$i = pg_num_fields($result);
@@ -395,8 +398,10 @@ function qToTableWithLink($query,
 						else {
 							$id=$column["id"];
 							$output .= "  <td>" .
-							"<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showBlob&id=$id&val=$val' target='_blank'><div style='text-decoration:underline;text-align:center;'>&#129123;</div></a>" .
-							"</td>\n";
+							"<a href='" . $_SERVER["PHP_SELF"] .
+								"?submit_cycle=showBlob&id=$id&val=$val' target='_blank'>" .
+								"<div class='downloadArrow' style='text-align:center;'>&#129123;</div>" .
+								"</a></td>\n";
 						}
 						continue;
 					}

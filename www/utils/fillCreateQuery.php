@@ -78,7 +78,9 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 		"&s=" . rawurlencode(base64_encode($csvquery)) .
 		"&f=" . $filename .
 		"&t=" . rawurlencode(base64_encode($csvtitle)) .
-		"' aria-label='" . $MSGSW28_SAVESASCSV . "'><span style='text-decoration:underline;'>&#129123;</span></a></abbr>&nbsp;");
+		"' aria-label='" . $MSGSW28_SAVESASCSV . "'>" .
+		"<span class='downloadArrow'>&#129123;</span>" .
+		"</a></abbr>&nbsp;");
 }
 
 //add ORDER BY or GROUP BY part

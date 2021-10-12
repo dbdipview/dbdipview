@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.7.1] - 2021-10-12
+### Added
+- access: it is now possible to customize CSS per site; preview version
+
 ## [2.7.0] - 2021-09-29
 ### Added
 - access: macro has been introduced to display number of records in each table instead of a DBMS specific script

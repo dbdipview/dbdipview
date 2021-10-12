@@ -152,9 +152,10 @@ if($screenFields == 0)
 			<input type="hidden" name="submit_cycle" value="searchParametersReady"/>
 			<input type="hidden" name="__page" value="1"/>
 			<input type="hidden" name="targetQueryNum" value="<?php echo $targetQueryNum; ?>" />
-			<!--<input type="submit" value=<?php echo "\"$MSGSW16_Display\""; ?> class='button'/> -->
 			<abbr title="<?php echo $MSGSW16_Display; ?>"><br />
-				<input type="image" src="img/go.png" alt="<?php echo $MSGSW16_Display; ?>" /></abbr>
+				<input type="submit" value=<?php echo "\"&#x1F50D;\""; ?> class='button' style="font-size: 20px;" /></abbr>
+<!--		<abbr title="<?php echo $MSGSW16_Display; ?>"><br />
+				<input type="image" src="img/go.png" alt="<?php echo $MSGSW16_Display; ?>" /></abbr></abbr>-->
 		</center>
 
 	</td>
