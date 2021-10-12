@@ -100,11 +100,9 @@ switch ($submit_cycle) {
 <!doctype html public "-//W3C//DTD HTML 4.0 //EN"> 
 <html>
 <head>
-  <title>dbDIPview</title>
-  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+<?php include "head.php"; ?>
   <script language="JavaScript" src="js/sorttable.js" /></script>
   <script language="JavaScript" src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
-  <link rel="stylesheet" href="main.css" />
   <script language="JavaScript" src="js/calendar_db.js" /></script>
   <link rel="stylesheet" href="js/calendar.css" />
 </head>
@@ -138,7 +136,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 			</td>
 			<td style="text-align: right;">
 <?php
-			echo $myDBname . "&#x27a4;" . rtrim($myXMLfile, ".xml") . "&nbsp;&nbsp;";
+			echo $myDBname . "&#8672;" . rtrim($myXMLfile, ".xml") . "&nbsp;&nbsp;";
 			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . 
 				"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a></abbr>" .
 				"&nbsp;&nbsp;&nbsp;";
@@ -207,7 +205,7 @@ case "querySelected":
 				<div>
 					<label for="idback"><?php echo ''; ?>
 						<abbr title="<?php echo $MSGSW10_Back; ?>"
-							><input id="idback" type="submit" value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" /></abbr>
+							><input id="idback" type="submit" class='button' value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" /></abbr>
 					</label>
 				</div>
 			</form>

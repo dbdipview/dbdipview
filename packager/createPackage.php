@@ -229,5 +229,5 @@ if (is_file("$SOURCE/manifest-md5.txt"))
 if (is_file("$SOURCE/manifest-sha256.txt"))
 	unlink( "$SOURCE/manifest-sha256.txt");
 
-passthru("echo Done.  && ls -lrt $OUTDIR/$NAME$pkgtype");
+passthru("echo Done.  && ls -lrt  --time-style=long-iso $OUTDIR/$NAME$pkgtype");
 

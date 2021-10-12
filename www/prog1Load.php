@@ -1,22 +1,25 @@
 <!doctype html public "-//W3C//DTD HTML 4.0 //EN"> 
 <html>
 <head>
-	<link rel="stylesheet" href="main.css" />
+<?php include "head.php"; ?>
 	<script language="JavaScript" src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
+
 	<style>
 		#loader {
 			border: 12px solid var(--main-hrborder-color);
 			border-radius: 50%;
-			border-top: 12px solid var(--main-tablesortable-color);
+			border-top: 12px solid var(--main-boxbg-color);
 			width: 70px;
 			height: 70px;
 			animation: spin 1s linear infinite;
 		}
+		
 		@keyframes spin {
 			100% {
 				transform: rotate(360deg);
 			}
 		}
+		
 		.center {
 			position: absolute;
 			top: 0;
@@ -28,6 +31,7 @@
 	</style>
 </head>
 <body>
+	<img src="img/updown.png" />
 	<div id="loader" class="center"></div>
 	<script>
 		document.onreadystatechange = function () {
