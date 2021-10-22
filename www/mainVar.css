@@ -1,14 +1,21 @@
-/* can be overriden by local/mainVar.css */
+/* can be overriden by a copy of this file as local/mainVar.css */
 
 :root {
+  --main-font-size: 0.80rem;                       /* font size */
+  --main-font-h1-size: 1.4rem;                     /* font size */
+  --main-font-h2-size: 1rem;                       /* font size */
+  --main-font-h3-size: 0.875rem;                   /* font size */
+  --main-font-h4-size: 0.8rem;                     /* font size */
+  --main-font-h5-size: 0.6875rem;                  /* font size */
+
   --main-a-color: #4D4D4D;                         /* link */
   --main-a-hoover-color: FireBrick;                /* link hoover */
   --main-background-color: #D7E1EB;                /* main background */
   --main-body-color: Black;                        /* text */
   --main-boxbg-color: MintCream;                   /* hoover text for help */
   --main-boxborder-color: #CCC;                    /* ? */
-  --main-buttonbg-color: Gainsboro;                /* big buttons */ 
-  --main-buttonhoover-color: DarkGray;           /* big buttons when hoover */
+  --main-buttonbg-color: Gainsboro;                /* big buttons */
+  --main-buttonhoover-color: DarkGray;             /* big buttons when hoover */
   --main-fontfamily: Arial,Helvetica,sans-serif;   /* main font */
   --main-hrborder-color: LightGray;                /* loading circle */
   --main-htext-color: #00578F;                     /* header lines, titles, subtitles */

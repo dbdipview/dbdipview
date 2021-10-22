@@ -153,7 +153,7 @@ if($screenFields == 0)
 			<input type="hidden" name="__page" value="1"/>
 			<input type="hidden" name="targetQueryNum" value="<?php echo $targetQueryNum; ?>" />
 			<abbr title="<?php echo $MSGSW16_Display; ?>"><br />
-				<input type="submit" value=<?php echo "\"&#x1F50D;\""; ?> class='button' style="font-size: 20px;" /></abbr>
+				<input type="submit" value=<?php echo "\"&#x1F50D;\""; ?> class='button' style="font-size: 1rem;width: 100%;" /></abbr>
 <!--		<abbr title="<?php echo $MSGSW16_Display; ?>"><br />
 				<input type="image" src="img/go.png" alt="<?php echo $MSGSW16_Display; ?>" /></abbr></abbr>-->
 		</center>
@@ -178,10 +178,7 @@ if($screenFields == 0)
 			<?php echo $MHLP11; ?><pre></pre>
 &nbsp;&nbsp;<?php echo $MHLP12; ?><pre></pre>
 
-		<div style="font-family: Comic Sans MS, cursive, sans-serif;
-			font-size: 70%;text-align:right;
-			color: #333;background-color:#FFFFFF; ">dbDIPview
-		</div>
+		<div class="logo">dbDIPview</div>
 		<br />
 	</div>
 	</td>

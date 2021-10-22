@@ -100,6 +100,7 @@ switch ($submit_cycle) {
 <!doctype html public "-//W3C//DTD HTML 4.0 //EN"> 
 <html>
 <head>
+  <title>dbDIPview</title>
 <?php include "head.php"; ?>
   <script language="JavaScript" src="js/sorttable.js" /></script>
   <script language="JavaScript" src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
