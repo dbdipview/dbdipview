@@ -6,4 +6,4 @@ the exact column name with file name is in <dbcolumnname>.
 
 Example:
 
-dbdipview/www/files/registerX/picture1.png
+dbdipview/www/files/container__viewer/picture1.png

@@ -13,7 +13,7 @@ body {
 	background-color: var(--main-background-color);
 	color: var(--main-body-color);
 	font-family: var(--main-fontfamily);
-	font-size: 0.75rem;
+	font-size: var(--main-font-size);
 	text-align: left
 }
 
@@ -24,14 +24,14 @@ img {
 h1 {
 	color: var(--main-htext-color);
 	font-family: var(--main-fontfamily);
-	font-size: 1rem;
+	font-size: var(--main-font-h1-size);
 	margin-bottom: 0;
 }
 
 h2 {
 	color:var(--main-htext-color);
 	font-family: var(--main-fontfamily);
-	font-size:0.9rem;
+	font-size: var(--main-font-h2-size);
 	margin-top:0.2rem;
 	margin-bottom:0;
 }
@@ -39,7 +39,7 @@ h2 {
 h3 {
 	color: var(--main-htext-color);
 	font-family: var(--main-fontfamily);
-	font-size: 0.875rem;
+	font-size: var(--main-font-h3-size);
 	margin-top: 0.2rem;
 	margin-bottom: 0;
 }
@@ -47,7 +47,7 @@ h3 {
 h4 {
 	color: var(--main-htext-color);
 	font-family: var(--main-fontfamily);
-	font-size: 0.75rem;
+	font-size: var(--main-font-h4-size);
 	margin-top: 0.2rem;
 	margin-bottom: 0;
 }
@@ -55,7 +55,7 @@ h4 {
 h5 {
 	color:var(--main-body-color);
 	font-family: var(--main-fontfamily);
-	font-size: 0.6875rem;
+	font-size: var(--main-font-h5-size);
 	font-weight: normal;
 	margin-top: 0.2rem;
 	margin-bottom: 0;
@@ -82,7 +82,7 @@ hr {
 table.mydbtable {
 	color: var(--mydbtable-color);
 	font-family: var(--main-fontfamily);
-	font-size: 0.75rem;
+	font-size: var(--main-font-size);
 }
 
 table.mydbtable th {
@@ -99,31 +99,34 @@ table.mydbtable td {
 	border-width: 1px 1px 1px 1px;
 	padding: 5px 1px;
 	border-style: hidden;
-	border-color: white white white white;
 	background-color: var(--mydbtable-td-background-color);
 }
 
 table.sortable {
 	color: var(--mydbtable-color);
 	font-family: var(--main-fontfamily);
-	font-size: 0.75rem;
+	font-size: var(--main-font-size);
 }
 
 table.sortable th {
 	border-width: 1px 1px 1px 1px;
 	padding: 1px 1px 1px 1px;
 	border-style: solid solid solid solid;
-	border-color: gray gray gray gray;
+	border-color: var(--sortable-th-background-color);
 	background-color: var(--sortable-th-background-color);
 	text-align: center;
 	border-radius: 4px / 4px;
+}
+
+table.sortable th:hover {
+	border-color: var(--mydbtable-color);
+	cursor: pointer;
 }
 
 table.sortable td {
 	border-width: 1px 1px 1px 1px;
 	padding: 5px 1px;
 	border-style: hidden;
-	border-color: white white white white;
 	background-color: var(--sortable-td-background-color);
 }
 
@@ -132,13 +135,14 @@ table.sortable tbody tr:nth-child(even) td {
 }
 
 .button {
-	border: 1px gray solid;
+	border: 1px var(--main-buttonbg-color) solid;
 	border-radius: 4px;
 	background: var(--main-buttonbg-color);
+	padding: 0.25em 0.80em;
 }
 
 .button:hover {
-	border: 1px gray solid;
+	border: 1px var(--main-buttonhoover-color) solid;
 	background: var(--main-buttonhoover-color);
 }
 
@@ -161,6 +165,17 @@ input[type='checkbox']:checked
 input[type='radio']:checked
 {
 	-webkit-filter: grayscale(100%);
+}
+
+select {
+	font-size: var(--main-font-size);
+	border: 2px solid  var(--main-boxbg-color);
+}
+input {
+	font-size: var(--main-font-size);
+	padding: 1px;
+	margin: 1px 0;
+	border: 2px solid  var(--main-boxbg-color);
 }
 
 
@@ -211,4 +226,12 @@ ul.nested {
 .downloadArrow {
 	color: var(--main-htext-color);
 	text-decoration:underline;
+}
+
+.logo {
+	font-family: Comic Sans MS, cursive, sans-serif;
+	font-size: 70%;
+	text-align:right;
+	color: #333;
+	background-color:#FFFFFF;
 }

@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.7.2] - 2021-10-22
+### Added
+- access: customizable CSS; preview version
+
 ## [2.7.1] - 2021-10-12
 ### Added
 - access: it is now possible to customize CSS per site; preview version
