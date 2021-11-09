@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.7.3] - 2021-11-09
+### Added
+- access: read-only fields are now marked with an asterisk
+### Modified
+- packaging: relative folders can be used for input and output parameters
+- access: customizable CSS; preview version
+
 ## [2.7.2] - 2021-10-22
 ### Added
 - access: customizable CSS; preview version
@@ -133,7 +140,7 @@ Generally, the master branch is always stable. You can use it for installation o
 ### Added
 - packaging: XML queries file validation against the schema 
 - administration module: workflow-based menu for deployments and removal of databases
-- administration module: CLI for automized installation and uninstallation of packages based on an order file
+- administration module: CLI for automated installation and uninstallation of packages based on an order file
 - administration module: support of SIARD format added
 - administration module: combinations of an arbitrary number of different packages are possible
 - administration module: redacting is possible

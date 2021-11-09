@@ -28,9 +28,12 @@
  */
 
 $PROGDIR=__DIR__;
+$DDVDIR =  pathinfo($PROGDIR, PATHINFO_DIRNAME);
+$CURRENTDIR = getcwd();
+
 set_include_path($PROGDIR);
 
-$YES=false;
+$YES=False;
 
 function checkRemove($s, $file) {
 	global $YES;
@@ -43,7 +46,7 @@ function checkRemove($s, $file) {
 			$line = fgets($handle);
 			fclose($handle);
 			if(trim($line) == 'y')
-				$remove = true;
+				$remove = True;
 		}
 		if($remove) {
 			unlink($file);
@@ -83,16 +86,17 @@ function createAboutXML($file) {
 	fclose($fp); 
 }
 
-require $PROGDIR . "/../admin/funcXml.php";
-require $PROGDIR . "/../admin/funcMenu.php";
-require $PROGDIR . "/../admin/funcActions.php";
-require $PROGDIR . "/../admin/funcDb.php";
-require $PROGDIR . "/../admin/version.php";
+require $DDVDIR . "/admin/funcXml.php";
+require $DDVDIR . "/admin/funcMenu.php";
+require $DDVDIR . "/admin/funcActions.php";
+require $DDVDIR . "/admin/funcDb.php";
+require $DDVDIR . "/admin/version.php";
 
-$options = getopt("s:t:n:yi:h");
+$options = getopt("s:t:n:yvi:h");
 if ( array_key_exists('h', $options) || !array_key_exists('s', $options) )
 	showOptions();
 
+$VERBOSE=False;
 $SOURCE = "";
 $OUTDIR = "";
 $NAME = "";
@@ -101,16 +105,29 @@ $OUTFILE_ZIP = "";
 $infotext="";
 
 if (array_key_exists('y', $options))
-	$YES = true;
+	$YES = True;
+
+if (array_key_exists('v', $options))
+	$VERBOSE = True;
 
 if (array_key_exists('i', $options))
 	$infotext = $options['i'];
 
-if (array_key_exists('s', $options))
+if (array_key_exists('s', $options)) {
 	$SOURCE = $options['s'];
+	if ($SOURCE[0] != '/')
+		$SOURCE = $CURRENTDIR . "/" . $SOURCE;
+	if ( $VERBOSE == True )
+		echo "SOURCE = $SOURCE" . PHP_EOL;
+}
 
-if (array_key_exists('t', $options))
+if (array_key_exists('t', $options)) {
 	$OUTDIR = $options['t'];
+	if ($OUTDIR[0] != '/')
+		$OUTDIR = $CURRENTDIR . "/" . $OUTDIR;
+	if ( $VERBOSE == True )
+		echo "OUTDIR = $OUTDIR" . PHP_EOL;
+}
 
 if (array_key_exists('n', $options)) {
 	$NAME = $options['n'];
@@ -217,7 +234,7 @@ if ( $countDatafiles ===  0 ) {
 	echo "Creating EXT DDV package...". PHP_EOL;
 	$status = 0;
 	passthru("cd '" . $SOURCE . "' && " .
-		"tar czf $OUTFILE_TARGZ $ALLMETADATA $ALLDATA", $status);
+		"tar -czf $OUTFILE_TARGZ $ALLMETADATA $ALLDATA", $status);
 	if ($status != 0)
 		exit(1);
 	$pkgtype = ".tar.gz";
