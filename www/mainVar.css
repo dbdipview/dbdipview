@@ -1,4 +1,4 @@
-/* can be overriden by a copy of this file as local/mainVar.css */
+/* dbDIPview default; to override it, make and edit a copy of this file as local/mainVar.css */
 
 :root {
   --main-font-size: 0.80rem;                       /* font size */
@@ -7,6 +7,11 @@
   --main-font-h3-size: 0.875rem;                   /* font size */
   --main-font-h4-size: 0.8rem;                     /* font size */
   --main-font-h5-size: 0.6875rem;                  /* font size */
+  --main-font-h1-weight: normal;                   /* normal, bold */
+  --main-font-h2-weight: normal;                   /* normal, bold */
+  --main-font-h3-weight: normal;                   /* normal, bold */
+  --main-font-h4-weight: normal;                   /* normal, bold */
+  --main-font-h5-weight: normal;                   /* normal, bold */
 
   --main-a-color: #4D4D4D;                         /* link */
   --main-a-hoover-color: FireBrick;                /* link hoover */
@@ -23,7 +28,8 @@
   --mydbtable-color: #4D4D4D;                      /* table/list view text */
   --mydbtable-td-background-color: #F5F5F5;        /* table/list view background color */
  
-  --sortable-background-color: MintCream;          /* table view: background color for every 2nd line, 2,4,6 */
-  --sortable-td-background-color: White;           /* table view: background color for every 2nd line, 1,3,5 */
-  --sortable-th-background-color: LightBlue;       /* table view: title line background */
+  --sortable-background-color: MintCream;          /* table view: background color for every 2nd row, 2,4,6 */
+  --sortable-td-background-color: White;           /* table view: background color for every 2nd row, 1,3,5 */
+  --sortable-th-background-color: LightBlue;       /* table view: header row background */
+  --sortable-th-border-color: LightBlue;           /* table view: header row border */ 
 }

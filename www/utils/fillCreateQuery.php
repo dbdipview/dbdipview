@@ -524,7 +524,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		$hits=0;
 		if( strcmp($tablelist, "table") == 0) {
 
-			print ("<h4>");
+			print ("<h3>");
 			if($attrSkipCSVsave != true) {
 				$csvfilename = "export" . $targetQueryNum . ".csv";
 				createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
@@ -533,7 +533,7 @@ foreach ($xml->database->screens->screen as $screen) {
 								$csvquery,
 								$csvfilename);
 			}
-			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h4>");
+			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h3>");
 
 			if($screen->title && strlen($screen->title)>0 )
 				print ("<h4>" . $screen->title . "</h4>");

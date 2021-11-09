@@ -59,7 +59,13 @@ foreach ($xml->database->screens->screen as $screen) {
 			$screenFields+=1;
 			$field=$param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
 			$field = str_replace(" ","__20__", $field);		                      //temporarily replace space
-			echo "$param->name: ";
+			
+			$attrParamMandatory = get_bool($param->attributes()->mandatory);
+			if($attrParamMandatory)
+				echo "<label class=\"required\">" . $param->name . "</label> ";
+			else {
+				echo "$param->name ";
+			}
 			
 			$infotip = (string) $param->infotip;
 
@@ -151,11 +157,14 @@ if($screenFields == 0)
 		<center>
 			<input type="hidden" name="submit_cycle" value="searchParametersReady"/>
 			<input type="hidden" name="__page" value="1"/>
-			<input type="hidden" name="targetQueryNum" value="<?php echo $targetQueryNum; ?>" />
-			<abbr title="<?php echo $MSGSW16_Display; ?>"><br />
-				<input type="submit" value=<?php echo "\"&#x1F50D;\""; ?> class='button' style="font-size: 1rem;width: 100%;" /></abbr>
+			<input type="hidden" name="targetQueryNum" value="<?php echo $targetQueryNum; ?>" /><br />
+			<label for="idgo">
+			<abbr title="<?php echo $MSGSW16_Display; ?>">
+			<input id="idgo" type="submit" class='button' value="&#x1F50D;" alt="<?php echo $MSGSW16_Display; ?>" style="font-size: 1rem;width: 100%;"/>
+			</abbr>
+			</label>
 <!--		<abbr title="<?php echo $MSGSW16_Display; ?>"><br />
-				<input type="image" src="img/go.png" alt="<?php echo $MSGSW16_Display; ?>" /></abbr></abbr>-->
+				<input type="image" src="img/go.png" alt="<?php echo $MSGSW16_Display; ?>" /></abbr>-->
 		</center>
 
 	</td>

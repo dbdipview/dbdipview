@@ -25,13 +25,15 @@ h1 {
 	color: var(--main-htext-color);
 	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-h1-size);
+	font-weight: var(--main-font-h1-weight); 
 	margin-bottom: 0;
 }
 
 h2 {
-	color:var(--main-htext-color);
+	color: var(--main-htext-color);
 	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-h2-size);
+	font-weight: var(--main-font-h2-weight); 
 	margin-top:0.2rem;
 	margin-bottom:0;
 }
@@ -40,6 +42,7 @@ h3 {
 	color: var(--main-htext-color);
 	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-h3-size);
+	font-weight: var(--main-font-h3-weight); 
 	margin-top: 0.2rem;
 	margin-bottom: 0;
 }
@@ -48,15 +51,16 @@ h4 {
 	color: var(--main-htext-color);
 	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-h4-size);
+	font-weight: var(--main-font-h4-weight); 
 	margin-top: 0.2rem;
 	margin-bottom: 0;
 }
 
 h5 {
-	color:var(--main-body-color);
+	color: var(--main-body-color);
 	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-h5-size);
-	font-weight: normal;
+	font-weight: var(--main-font-h5-weight);
 	margin-top: 0.2rem;
 	margin-bottom: 0;
 }
@@ -112,7 +116,7 @@ table.sortable th {
 	border-width: 1px 1px 1px 1px;
 	padding: 1px 1px 1px 1px;
 	border-style: solid solid solid solid;
-	border-color: var(--sortable-th-background-color);
+	border-color: var(--sortable-th-border-color); 
 	background-color: var(--sortable-th-background-color);
 	text-align: center;
 	border-radius: 4px / 4px;
@@ -135,6 +139,7 @@ table.sortable tbody tr:nth-child(even) td {
 }
 
 .button {
+	font-family: var(--main-fontfamily);
 	border: 1px var(--main-buttonbg-color) solid;
 	border-radius: 4px;
 	background: var(--main-buttonbg-color);
@@ -142,6 +147,7 @@ table.sortable tbody tr:nth-child(even) td {
 }
 
 .button:hover {
+	font-family: var(--main-fontfamily);
 	border: 1px var(--main-buttonhoover-color) solid;
 	background: var(--main-buttonhoover-color);
 }
@@ -168,17 +174,23 @@ input[type='radio']:checked
 }
 
 select {
+	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-size);
-	border: 2px solid  var(--main-boxbg-color);
+	border: 2px solid var(--main-boxbg-color);
 }
 input {
+	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-size);
 	padding: 1px;
 	margin: 1px 0;
-	border: 2px solid  var(--main-boxbg-color);
+	border: 2px solid var(--main-boxbg-color);
 }
 
-
+.required:after {
+	content:"*";
+	color: red;
+}
+ 
 ul, #nestedList {
 	list-style-type: none;
 	padding-left: 14px;
@@ -225,13 +237,13 @@ ul.nested {
 
 .downloadArrow {
 	color: var(--main-htext-color);
-	text-decoration:underline;
+	text-decoration: underline;
 }
 
 .logo {
 	font-family: Comic Sans MS, cursive, sans-serif;
 	font-size: 70%;
-	text-align:right;
+	text-align: right;
 	color: #333;
-	background-color:#FFFFFF;
+	background-color: #FFFFFF;
 }
