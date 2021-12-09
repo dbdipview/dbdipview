@@ -86,7 +86,7 @@ include "../admin/version.php";
 			echo '<td style="text-align: center;" cellpadding="0" cellspacing="0">';
 			if(file_exists ("data/config.json")) {
 				echo '<select name="code" required> ';
-				echo '<option value="" disabled selected hidden>' . $MSGSW17_Records . '</option>';
+				echo '<option value="" disabled selected hidden>' . '</option>';
 				config_get_options_token();
 				print '</select>';
 			} else

@@ -1,7 +1,7 @@
 <?php
 
 if ( "$myLang" == "sl" ) {
-$MSGSW01_MainSubTitle="Dostop do gradiva: vsebina podatkovnih zbirk";
+$MSGSW01_MainSubTitle="Dostop do gradiva: podatkovne zbirke";
 $MSGSW02_Code="Koda za dostop";
 $MSGSW03_Database="Vsebnik za podatkovne zbirke";
 $MSGSW04_Viewer="Pregledovalnik";

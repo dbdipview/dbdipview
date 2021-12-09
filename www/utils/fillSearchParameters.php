@@ -30,7 +30,7 @@ function FunctionHelpToggle() {
 
 <form name="statusform" action="<?php echo str_replace(".php","Load.php", htmlspecialchars($_SERVER["PHP_SELF"])); ?>" method='get' target='bottomframe' >
 <table border = 1>
-<tr>
+<tr style="vertical-align: top;">
 	<td colspan = 2>
 		<left>
 <?php
