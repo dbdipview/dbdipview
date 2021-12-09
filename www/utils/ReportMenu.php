@@ -222,7 +222,7 @@ class ReportMenu {
 							$ddbg = "";
 						else
 							$ddbg = debug($screen->needed_permission." ", true);
-						echo $ddbg . "$screen->id - $screen->selectDescription" . "&nbsp;<br />";
+						echo $ddbg . " $screen->id - $screen->selectDescription" . "&nbsp;<br />";
 						echo "</label>";
 					echo '</li>' . PHP_EOL;
 				}
