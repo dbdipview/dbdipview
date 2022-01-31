@@ -7,8 +7,8 @@
  * Allows user to install or deinstall packages and check the status.
  *
  * Order processing can be done via CLI.
- * Mostly for testing of new packages, interactive menu can be used where the
- * displaying of menu options depends on the context.
+ * Mostly for testing of new packages, interactive menu can be used. The
+ * displaying of menu options is context based.
  *
  * @author     Boris Domajnko
  */
@@ -54,7 +54,7 @@ $DDV_DIR_UNPACKED = str_replace("admin/../", "", "$DDV_DIR_UNPACKED");
 $BFILES_DIR       = str_replace("admin/../", "", "$BFILES_DIR");
 
 $XB=' ';$XC=' ';$XD=' ';$X0=' ';$X1=' ';$X2=' ';$X3=' ';
-$XP=' ';$XS=' ';$XT=' ';
+$XP=' ';$XS=' ';$XT=' ';$XL=' ';
 $X3=' ';$X5=' ';$X6=' ';$X7=' ';$X8=' ';$X9=' ';
 $XOS=' ';$XOI=' ';$XOD=' ';
 $V1=' ';$V2=' ';$V3=' ';$V4=' ';
@@ -102,13 +102,14 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 }
 
 
-$options = getopt("hoesp:r:da");
+$options = getopt("hoesp:r:dal");
 if ( count($options) == 0 || array_key_exists('h', $options) ||
     (count($options) == 1 && array_key_exists('d', $options)) ) {
 	echo "Usage: php menu.php [OPTIONS]" . PHP_EOL;
 	echo "   -h         this help" . PHP_EOL;
 	echo "   -o         order workflow" . PHP_EOL;
 	echo "   -e         extended DDV package workflow" . PHP_EOL;
+	echo "   -l         append data using an additional list file" . PHP_EOL;
 	echo "   -s         SIARD workflow" . PHP_EOL;
 	echo "   -p <file>  deploy an order" . PHP_EOL;
 	echo "   -r <file>  remove an order" . PHP_EOL;
@@ -157,6 +158,12 @@ if (array_key_exists('r', $options)) {
 	exit(0);
 }
 
+
+if (array_key_exists('l', $options))
+	$appendList = "yes";    //process additional list file only
+else
+	$appendList = "";
+
 while ( "$answer" != "q" ) { 
 					echo "$TXT_CYAN $MSG_TITLE $TXT_RESET" . PHP_EOL;
 					echo "${XC}c  $MSG0_LISTDIRS" . PHP_EOL;
@@ -168,24 +175,34 @@ while ( "$answer" != "q" ) {
 	if ( !empty($all) || empty($om) )  {
 					echo "${XD}d  $MSGR_SELECT_DB" . PHP_EOL;
 	}
-	if ( !empty($all) || $XD == 'X' )  {
+	if ( !empty($all) || ($XD == 'X' && empty($appendList)) )  {
 					echo "${X0}0  $MSG0_CREATEDB [$DBC]" . PHP_EOL;
 	}
-	if ( !empty($all) || ($XD == 'X' && !empty($ext)) ) {
+	if ( !empty($all) || ($XD == 'X' && (!empty($ext) || !empty($appendList)) )) {
 					echo "${V1}V1 (EXT) $MSG1_SELECTPKG" . PHP_EOL;
 	}
-	if ( !empty($all) || $V1 == 'X' ) {
+
+	if ( !empty($all) || ($V1 == 'X' && empty($appendList)) ) {
 					echo "${V2}V2 (EXT) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 					echo "${V3}V3 (EXT) $MSG4_CREATEAPL" . PHP_EOL;
 					echo "${V4}V4 (EXT) $MSG5_MOVEDATA" . PHP_EOL;
 	}
+
+	if ( !empty($all) || ($V1 == 'X' && !empty($appendList)) ) {
+					echo "${XL}a  (EXT) $MSG54_APPENDDATA [$DBC] [$DDV]" . PHP_EOL;
+	}
+
 	if ( !empty($all) || $XD == 'X' )
 					echo "${X1}1  (DDV) $MSG1_SELECTPKG" . PHP_EOL;
-	if ( !empty($all) || ($X1 == 'X')) {
+	if ( !empty($all) || ($X1 == 'X' && empty($appendList)) ) {
 					echo "${X2}2  (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 					//echo "${X2}2o (DDV) $MSG2_UNPACKDDV [$DDV]" . PHP_EOL;
 	}
-	
+
+	if ( !empty($all) || ($X1 == 'X' && !empty($appendList)) ) {
+					echo "${XL}a  $MSG54_APPENDDATA [$DBC] [$DDV]" . PHP_EOL;
+	}
+
 	if ( !empty($all) || (!empty($srd) && $XD == 'X') )  {
 					echo "${XP}p  (SIARD) $MSG1_SELECTPKG" . PHP_EOL;
 					if( !empty($SIARDNAME) ) {
@@ -193,23 +210,23 @@ while ( "$answer" != "q" ) {
 						echo "${XT}t  (SIARD) $MSGS_INSTALLSIARD - DBPTK [$SIARDNAME]" . PHP_EOL;
 					}
 	}
-	
-	if ( !empty($all) || ($X2 == 'X')) {
+
+	if ( !empty($all) || ($X2 == 'X' && empty($appendList)) ) {
 					echo "${X3}3  (DDV) (VIEW) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
 	}
-	if ( !empty($all) || ($XD == 'X' && !empty($DDV)) )  {
+	if ( !empty($all) || ($XD == 'X' && !empty($DDV) && empty($appendList)) )  {
 					if ( file_exists($DDV_DIR_EXTRACTED . "/metadata/redactdb.sql") )
 						echo "${X5}5  $MSG46_REDACT [$DBC][$DDV] " . PHP_EOL;
 					echo "${X6}6  $MSG6_ACTIVATEDIP [$DBC][$DDV] " . PHP_EOL;
 					echo "${X7}7  $MSG7_DEACTAPL [$DBC][$DDV]" . PHP_EOL;
 	}
-	if ( !empty($all) || (empty($om) && !empty($DDV)) ) {
+	if ( !empty($all) || (empty($om) && !empty($DDV) && empty($appendList)) ) {
 					echo "${X8}8  $MSG8_RM_UNPACKED_DDV [$DDV]" . PHP_EOL;
 	}
-	if ( !empty($all) || (empty($om) && !empty($DDV)) ) {
+	if ( !empty($all) || (empty($om) && !empty($DDV) && empty($appendList)) ) {
 					echo "${X9}9  $MSG9_RMDDV" . PHP_EOL;
 	}
-	if ( !empty($all) || $XD == 'X' )  {
+	if ( !empty($all) || ($XD == 'X' && empty($appendList)) )  {
 					echo "${XB}B  $MSGB_RMDB [$DBC]" . PHP_EOL;
 	}
 	if ( !empty($all) || $debug )
@@ -270,8 +287,8 @@ while ( "$answer" != "q" ) {
 				echo $ORDER . PHP_EOL;
 				$XOS='X';$XOI=' ';$XOD=' ';
 			}
-            enter();
-            break;
+			enter();
+			break;
 
 		case "oi": 
 			if ($XOS == 'X') {
@@ -325,6 +342,8 @@ while ( "$answer" != "q" ) {
 				$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $DDV;
 				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
 				echo $DDV . PHP_EOL;
+				if (!empty($appendList))
+					break;
 				if (stopHere($MSG2_UNPACKDDV)) {
 					enter();
 					break;
@@ -394,7 +413,33 @@ while ( "$answer" != "q" ) {
 			} 
 			enter();
 			break;
+
+		case "a": $XL=' ';   //L
+			if (notSet($DBC))
+				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
+			else if (notSet($DDV))
+				err_msg($MSG18_DDV_NOT_SELECTED);
+			elseif ( !is_dir($DDV_DIR_EXTRACTED) ) {
+				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
+				break;
+			}
 			
+			echo $MSG54_APPENDDATAINFO . PHP_EOL;
+			$name="";
+			$file="";
+			getPackageName($name, $file, "txt", $DDV_DIR_EXTRACTED . "/metadata");
+			if ( empty($file) )
+				break;
+
+			$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/" . $file;
+			if ( !is_file($LISTFILE))
+				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
+			else if ($OK == actions_DDVEXT_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET)) {
+				$XL='X';
+			} 
+			enter();
+			break;
+
 		case "1":
 			$name="";
 			$file="";
@@ -416,6 +461,8 @@ while ( "$answer" != "q" ) {
 				$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
 				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
 				echo $DDV . PHP_EOL;
+				if (!empty($appendList))
+					break;
 				if (stopHere($MSG2_UNPACKDDV)) {
 					enter();
 					break;

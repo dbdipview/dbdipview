@@ -80,8 +80,8 @@ function notSet($var) {
  * @param string $outfilename   filename
  * @param string $extension     filename extension for search criteria, e.g. "siard"
  */
-function getPackageName(&$outname, &$outfilename, $extension) {
-	global $MSG19_DDV_PACKAGES, $MSG21_SELECT_DDV, $MSG36_NOPACKAGE;
+function getPackageName(&$outname, &$outfilename, $extension, $dir = NULL) {
+	global $MSG19_DDV_PACKAGES, $MSG21_SELECT_DDV, $MSG36_NOPACKAGE, $MSG16_FOLDER_NOT_FOUND;
 	global $handleKbd, $DDV_DIR_PACKED;
 	
 	$arrPkgName = array();
@@ -90,10 +90,17 @@ function getPackageName(&$outname, &$outfilename, $extension) {
 	$i=1;
 	$description="UNKNOWN";
 	
-	msgCyan($MSG19_DDV_PACKAGES);
+	if ( is_null($dir) )
+		$dir = $DDV_DIR_PACKED;
+
+	msgCyan($MSG19_DDV_PACKAGES . "(" . $extension . ")");
 	//$out = array_diff(scandir($DDV_DIR_PACKED), array('.', '..'));
 
-	if ($dh = opendir($DDV_DIR_PACKED)) {
+	if ( !is_dir($dir) ) {
+		err_msg($MSG16_FOLDER_NOT_FOUND . ":", $dir);
+		return;
+	}
+	if ($dh = opendir($dir)) {
 		$out = array();
 		while (($file = readdir($dh)) !== false) {
 			if (strcasecmp(substr($file, strlen($file) - strlen($extension)), $extension) == 0) {   //name.ext
@@ -101,7 +108,8 @@ function getPackageName(&$outname, &$outfilename, $extension) {
 			}
 		}
 		closedir($dh);
-	}
+	} else
+		return;
 
 	sort($out, SORT_LOCALE_STRING);
 	foreach($out as $key => $value) {
@@ -118,17 +126,24 @@ function getPackageName(&$outname, &$outfilename, $extension) {
 		} else if (isAtype($value, "tar.gz")) {
 			$description = "dbdipview extended viewer configuration file (.tar.gz)";
 			$val1 = substr($value, 0, -7);
+		} else if (isAtype($value, "txt")) {
+			$description = "dbdipview list file (.txt)";
+			$val1 = substr($value, 0, -4);
 		} else {
 			$description = "ERROR: unknown type!";
 			$val1 = $value;
 		}
 
-		$arrPkgName[$i] = $val1;
-		$arrFilename[$i] = $value;
-		echo str_pad($i,3, " ", STR_PAD_LEFT) . " ";
-		echo str_pad($arrPkgName[$i],35) . " ";
-		echo $description . PHP_EOL;
-		$i++;
+		if (!(0==strcmp($value, "list.txt")|| 
+			  0==strcmp($value, "info.txt")|| 
+			  0==strcmp($value, "description.txt"))) {    //these files bother in append mode
+			$arrPkgName[$i] = $val1;
+			$arrFilename[$i] = $value;
+			echo str_pad($i,3, " ", STR_PAD_LEFT) . " ";
+			echo str_pad($arrPkgName[$i],35) . " ";
+			echo $description . PHP_EOL;
+			$i++;
+		}
 	}
 
 	if ($i > 1) {
