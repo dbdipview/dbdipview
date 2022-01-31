@@ -103,6 +103,10 @@ function actions_Order_process($orderInfo) {
 	debug(__FUNCTION__ . ": install SIARD...");
 	foreach ($orderInfo['siardFiles'] as $file) {
 		$siardFile = $DDV_DIR_PACKED . $file; 
+		if ( !is_file($siardFile) ) {
+			err_msg($MSG17_FILE_NOT_FOUND . ":", $siardFile);
+			return($NOK);
+		}
 		if ( $OK != actions_SIARD_install($siardFile, $orderInfo['siardTool']) )
 			return($NOK);
 		$fsiard = true;

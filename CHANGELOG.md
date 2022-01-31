@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.8.0] - 2022-01-31
+### Added
+- administration module: incremental updating of DIPp is now possible
+
 ## [2.7.3] - 2021-11-09
 ### Added
 - access: read-only fields are now marked with an asterisk
