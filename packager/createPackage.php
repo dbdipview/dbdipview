@@ -40,7 +40,7 @@ function checkRemove($s, $file) {
 	$remove = $YES;
 	
 	if ( is_file($file) ) {
-		if(!$YES) {
+		if($YES == False) {
 			print($s . " Remove (y or n)?");
 			$handle = fopen ("php://stdin","r");
 			$line = fgets($handle);

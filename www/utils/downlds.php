@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BLOB and CSV downloads
+ * BLOB, CSV and attachment file downloads
  *
  * @author     Boris Domajnko
  *
@@ -111,6 +111,27 @@ include "config.txt";
 
 	fclose( $handle );
 	ob_flush();
+	exit();
+}
+
+
+function showFile($f, $folder) {
+
+include "config.txt";
+
+	$filename = $folder . base64_decode(rawurldecode($f));
+
+	clearstatcache();
+	if(file_exists($filename)) {
+		header("Content-Type: " . mime_content_type($filename));
+		header('Content-Disposition: inline; filename="' . basename($filename) . '"');
+		header('Content-Length: ' . filesize($filename));
+		flush();
+		readfile($filename);
+	} else {
+		echo "No file.";
+	}
+
 	exit();
 }
 
