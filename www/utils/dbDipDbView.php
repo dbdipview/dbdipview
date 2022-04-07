@@ -195,7 +195,7 @@ function qToListWithLink($query,
 						$parameters = makeParameterReferences($val, $row, $column);
 						$output .= "  <a href='?submit_cycle=" . $column["linkaction"].
 											"&targetQueryNum=" . $column["next_screen_id"].
-											$parameters . "'>$val</a><br />\n";
+											$parameters . "'>$val</a><br />" . PHP_EOL;
 						continue;
 					}
 				}
@@ -203,20 +203,20 @@ function qToListWithLink($query,
 				if ( !is_null($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
 					$column = $ahref_columns[$col];
 					if ( !is_null($column) ) {
-						$link = $val;
-						$link = str_replace("\\", "/", $link);   //folder path
-						if ( array_key_exists('URLprefix', $column) )
-							$link = $column["URLprefix"] . $link;
-						else
-							$link = $filespath . $link;
-
 						$text = $column["atext"];
 						if (strlen((string)$text)==0)
-							$text = $val;   //if no text
-						if (strlen((string)$val)==0)
-							$output .= "<br />\n";
-						else
-							$output .= "  <a href='$link' target='_blank'>$text</a><br />\n";
+							$text = $val;
+						$link = $val;
+						$link = str_replace("\\", "/", $link);
+						if (strlen((string)$val) > 0)
+							if ( array_key_exists('URLprefix', $column) ) {  //external link?
+								$link = $column["URLprefix"] . $link;
+								$output .= "  <a href='$link' target='_blank'>$text</a>";
+							} else {
+								$link = rawurlencode(base64_encode($link));
+								$output .= "  <a href='?submit_cycle=showFile&f=$link' target='_blank'>$text</a>";
+							}
+						$output .= "<br />" . PHP_EOL;
 						continue;
 					}
 				}
@@ -226,12 +226,12 @@ function qToListWithLink($query,
 								$images_image_style[$col]!="") {
 
 					if (strlen((string)$val)==0)
-						$output .= "<br />\n";
+						$output .= "<br />" . PHP_EOL;
 					else {
 						$link= $val;
-						$link= str_replace("\\", "/", $link);   //folder path
+						$link= str_replace("\\", "/", $link);
 						$link= $filespath . $link;
-						$output .= "  <img src='$link' alt='$val' style='".$images_image_style[$col]."' /><br />\n";
+						$output .= "  <img src='$link' alt='$val' style='".$images_image_style[$col]."' /><br />" . PHP_EOL;
 					}
 					continue;
 				}
@@ -240,22 +240,22 @@ function qToListWithLink($query,
 					$column = $blob_columns[$col];
 					if ( !is_null($column) && $column["id"]!="" ) {
 						if (strlen((string)$val)==0)
-							$output .= "<br />\n";
+							$output .= "<br />" . PHP_EOL;
 						else {
 							$id=$column["id"];
 							$output .= "<a href='" . $_SERVER["PHP_SELF"] .
 								"?submit_cycle=showBlob&id=$id&val=$val'>" .
 								"<span class='downloadArrow'>&#129123;</span>" .
-								"</a><br />\n";
+								"</a><br />" . PHP_EOL;
 						}
 						continue;
 					}
 				}
 
-				$output .= "  $val<br />\n";
+				$output .= "  $val<br />" . PHP_EOL;
 
 			} // end foreach
-			$output .= "<hr /> \n" ;
+			$output .= "<hr />" . PHP_EOL;
 		} // end while
 
 		$hits = pg_num_rows($result);
@@ -263,7 +263,7 @@ function qToListWithLink($query,
 	} // if result
 
 	if (strlen($output)==0)
-		$output .= "<hr /> \n" ;
+		$output .= "<hr />" . PHP_EOL;
 
 	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
@@ -311,7 +311,7 @@ function qToTableWithLink($query,
 		$output .= "ERROR: qToTableWithLink<br />";
 	} else {
 		//$output .= "Added COUNT():" . $queryWithCount;
-		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">\n";
+		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">" . PHP_EOL;
 
 		$output .= "<thead><tr>" . PHP_EOL;
 		$i = pg_num_fields($result);
@@ -331,10 +331,10 @@ function qToTableWithLink($query,
 		}
 		$output .= "</tr></thead>" . PHP_EOL;
 
-		$output .= "<tbody>\n";
+		$output .= "<tbody>" . PHP_EOL;
 
 		while ($row = pg_fetch_assoc($result)) {
-			$output .= "<tr>\n";
+			$output .= "<tr>" . PHP_EOL;
 			foreach ($row as $col=>$valnl) {
 
 				$val = nl2br($valnl);
@@ -350,7 +350,7 @@ function qToTableWithLink($query,
 						$parameters = makeParameterReferences($val, $row, $column);
 						$output .= "  <td><a href='?submit_cycle=" . $column["linkaction"].
 												"&targetQueryNum=" . $column["next_screen_id"].
-												$parameters . "'>$val</a></td>\n";
+												$parameters . "'>$val</a></td>" . PHP_EOL;
 						continue;
 					}
 				}
@@ -358,20 +358,21 @@ function qToTableWithLink($query,
 				if ( !is_null($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
 					$column = $ahref_columns[$col];
 					if ( !is_null($column) ) {
-						$link = $val;
-						$link = str_replace("\\", "/", $link);   //folder path
-						if ( array_key_exists('URLprefix', $column) )
-							$link = $column["URLprefix"] . $link;
-						else
-							$link = $filespath . $link;
-
 						$text = $column["atext"];
 						if (strlen((string)$text)==0)
 							$text = $val;
-						if (strlen((string)$val)==0)
-							$output .= "<td></td>\n";
-						else
-							$output .= "  <td><a href='".$link."' target='_blank'>".$text."</a></td>\n";
+						$link = $val;
+						$output .= "<td>";
+						$link = str_replace("\\", "/", $link);
+						if (strlen((string)$val) > 0)
+							if ( array_key_exists('URLprefix', $column) ) {  //external link?
+								$link = $column["URLprefix"] . $link;
+								$output .= "<a href='$link' target='_blank'>$text</a>";
+							} else {
+								$link = rawurlencode(base64_encode($link));
+								$output .= "<a href='?submit_cycle=showFile&f=$link' target='_blank'>$text</a>";
+							}
+						$output .= "</td>" . PHP_EOL;
 						continue;
 					}
 				}
@@ -380,12 +381,12 @@ function qToTableWithLink($query,
 								array_key_exists("$col", $images_image_style) &&
 								$images_image_style[$col]!="") {
 					if (strlen((string)$val)==0)
-						$output .= "  <td></td>\n";
+						$output .= "  <td></td>" . PHP_EOL;
 					else {
 						$link= $val;
-						$link= str_replace("\\", "/", $link);   //folder path
+						$link= str_replace("\\", "/", $link);
 						$link= $filespath . $link;
-						$output .= "  <td style='text-align: center;'><img src='$link' alt='$val' style='".$images_image_style[$col]."' /></td>\n";
+						$output .= "  <td style='text-align: center;'><img src='$link' alt='$val' style='".$images_image_style[$col]."' /></td>" . PHP_EOL;
 					}
 					continue;
 				}
@@ -394,29 +395,29 @@ function qToTableWithLink($query,
 					$column = $blob_columns[$col];
 					if ( !is_null($column) && $column["id"]!="" ) {
 						if (strlen((string)$val)==0)
-							$output .= "  <td></td>\n";
+							$output .= "  <td></td>" . PHP_EOL;
 						else {
 							$id=$column["id"];
 							$output .= "  <td>" .
 							"<a href='" . $_SERVER["PHP_SELF"] .
 								"?submit_cycle=showBlob&id=$id&val=$val' target='_blank'>" .
 								"<div class='downloadArrow' style='text-align:center;'>&#129123;</div>" .
-								"</a></td>\n";
+								"</a></td>" . PHP_EOL;
 						}
 						continue;
 					}
 				}
 
-				$output .= "  <td>$val</td>\n";
+				$output .= "  <td>$val</td>" . PHP_EOL;
 
 			} // end foreach
-			$output .= "</tr>\n\n";
+			$output .= "</tr>" . PHP_EOL;
 		} // end while
 
 	} // if result
 
-	$output .= "</tbody>\n";
-	$output .= "</table>\n";
+	$output .= "</tbody>" . PHP_EOL;
+	$output .= "</table>" . PHP_EOL;
 	if (!$result)
 		$hits = "";  //error above
 	else

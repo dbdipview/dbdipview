@@ -17,8 +17,8 @@ if (array_key_exists("submit_cycle", $_GET))
 else
 	$submit_cycle = "CheckLogin";  //first entry
 
-$myXMLfile="not_set";
-$myDBname="db_not_selected";
+$myXMLfile="";
+$myDBname="no_db";
 $myLang = "en";
 
 switch ($submit_cycle) {
@@ -69,9 +69,17 @@ switch ($submit_cycle) {
 		break;
 }
 
+if ( empty($myXMLfile) ) {
+	$submit_cycle = "noSession";
+}
+
 $myXMLpath = "data/";
 $myXMLfilePath = $myXMLpath . $myXMLfile;
 $myTXTfilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . ".txt";
+
+
+//folder for attachments/BLOB content that if referenced from a db column
+$filespath = "files/" . $myDBname . "__" . str_replace(".xml", "", $myXMLfile) . "/";
 
 include "utils/downlds.php";
 
@@ -93,6 +101,11 @@ switch ($submit_cycle) {
 		if ($tl == "table" || $tl == "list" || $tl == "listAll")
 			$_SESSION['tablelist'] = $tl;
 		exit(0);
+		break;
+	case "showFile":
+		$dbDIPview_dir = __DIR__ . "/";
+		$filename = pg_escape_string($_GET['f']);
+		showFile($filename, $dbDIPview_dir . $filespath);
 		break;
 }
 
@@ -148,7 +161,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 <?php
 } //if submit_cycle
 
-if ( empty($myXMLfile) || (strcmp($myXMLfile, "not_set") == 0) ) {
+if ( empty($myXMLfile) ) {
 	echo "</BR><h2>$MSGSW06_ErrorSessionExpired</h2></BR>";
 	$submit_cycle = "noSession";
 } elseif ( file_exists($myXMLfilePath) ) {
@@ -161,14 +174,11 @@ if ( empty($myXMLfile) || (strcmp($myXMLfile, "not_set") == 0) ) {
 if( (strcmp($submit_cycle, "noSession") !== 0) &&
 	( strlen($myXMLfile)== 0 || 
 	  strlen($myDBname) == 0 || 
-	  config_isPackageActivated( rtrim($myXMLfile, ".xml"), $myDBname) == 0 )
-	){
+	  config_isPackageActivated( rtrim($myXMLfile, ".xml"), $myDBname) == 0 ) )
+{
 		echo "</BR><h2>$MSGSW07_ErrorNoSuchCombination.</h2></BR>";
 		$submit_cycle = "noSession";
 }
-
-//folder for attachments/BLOB content that if referenced from a db column
-$filespath = "files/" . $myDBname . "__" . str_replace(".xml", "", $myXMLfile) . "/"; 
 
 $PARAMS = $_GET;
 
