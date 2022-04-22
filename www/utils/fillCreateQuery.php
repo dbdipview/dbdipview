@@ -143,6 +143,12 @@ global $MSGSW12_HitsOnPage, $MSGSW12_TotalRecords, $MSGSW13_PreviousPage, $MSGSW
 global $MSGSW15_Close, $MSGSW18_ReportDescription, $MSGSW23_PAGE, $MSGSW24_NOPARAMETER;
 global $MSGSW31_Print;
 
+$page = 0;
+$offset = 0;
+$maxcount = 0;
+$hits = 0;
+$sqindex = 0;
+
 $paramForwardNum = array();
 $paramForwardEqual = array();
 

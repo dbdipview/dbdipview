@@ -25,7 +25,7 @@ function getSQLfromXML($id, &$sql, &$mode) {
 function showBlobRaw($id, $val) {
 	global $myDBname;
 
-include "config.txt";
+include "config/config.php";
 
 	$sql=""; 
 	$mode="BLOB";
@@ -76,7 +76,7 @@ include "config.txt";
 function showCsv($usql64, $filename, $utitle64) {
 	global $myDBname;
 	
-include "config.txt";
+include "config/config.php";
 
 	$delimiter = ";";
 	$sql =   base64_decode(rawurldecode($usql64));
@@ -117,7 +117,7 @@ include "config.txt";
 
 function showFile($f, $folder) {
 
-include "config.txt";
+include "config/config.php";
 
 	$filename = $folder . base64_decode(rawurldecode($f));
 

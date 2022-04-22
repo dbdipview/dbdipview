@@ -17,7 +17,8 @@ $PROGDIR=__DIR__;  //e.g. /home/me/dbdipview/admin
 
 set_include_path($PROGDIR);
 
-$SERVERDATADIR = str_replace("admin/../", "", "$PROGDIR/../www/data/");
+$SERVERDATADIR = str_replace("admin/../", "",   "$PROGDIR/../www/data/");
+$SERVERCONFIGDIR = str_replace("admin/../", "", "$PROGDIR/../www/config/");
 
 $DDV_DIR_EXTRACTED = "";
 $BFILES_DIR_TARGET = "";
@@ -27,18 +28,30 @@ $SIARDFILE = "";
 
 $orderInfo = array('reference' => '', 'title' => '');
 
-if ( !is_file($PROGDIR . '/configa.txt')) {
-	echo    "File $PROGDIR/configa.txt is missing, please create it from configa.txt.template." . PHP_EOL;
-	exit(1);
+if ( !is_file($PROGDIR . '/configa.php') && is_file($PROGDIR . '/configa.txt') ) {
+		echo "Upgrade to 2.8.2, renaming configa.txt" . PHP_EOL;
+		rename($PROGDIR . '/configa.txt', $PROGDIR . '/configa.php');
 }
-if ( !is_file($PROGDIR . '/../www/config.txt')) {
-	echo    "File $PROGDIR/../www/config.txt is missing, please create it from config.txt.template." . PHP_EOL;
+
+if ( !is_file($PROGDIR . '/configa.php')) {
+	echo    "File $PROGDIR/configa.php is missing, create it from configa.php.template!" . PHP_EOL;
 	exit(1);
 }
 
-include 'configa.txt';
+if ( !is_file($SERVERCONFIGDIR . 'config.php') && is_file($SERVERCONFIGDIR . '../config.txt') ) {
+		echo "Upgrade to 2.8.2, renaming config.txt and moving it to www/config folder." . PHP_EOL;
+		rename($SERVERCONFIGDIR . '/../config.txt',    $SERVERCONFIGDIR . 'config.php');
+		rename($SERVERCONFIGDIR . '/../confighdr.txt', $SERVERCONFIGDIR . 'confighdr.php');
+}
 
-include $PROGDIR . '/../www/config.txt';
+if ( !is_file($SERVERCONFIGDIR . 'config.php')) {
+	echo    "File " . $SERVERCONFIGDIR . "config.php is missing, create it from config.php.template!" . PHP_EOL;
+	exit(1);
+}
+
+include 'configa.php';
+
+include $SERVERCONFIGDIR . 'config.php';
 $DBGUEST = $userName;
 
 include 'messagesm.php';
@@ -250,6 +263,7 @@ while ( "$answer" != "q" ) {
 				echo "DBADMINUSER="          . $DBADMINUSER . PHP_EOL;
 				echo "PROGDIR="              . $PROGDIR . PHP_EOL;
 				echo "SERVERDATADIR="        . $SERVERDATADIR . PHP_EOL;
+				echo "SERVERCONFIGDIR="      . $SERVERCONFIGDIR . PHP_EOL;
 				echo "DDV_DIR_EXTRACTED="    . $DDV_DIR_EXTRACTED . PHP_EOL;
 				echo "BFILES_DIR_EXTRACTED=" . $BFILES_DIR_TARGET . PHP_EOL;
 				echo "DDV="                  . $DDV . PHP_EOL;

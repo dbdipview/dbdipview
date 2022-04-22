@@ -2,7 +2,11 @@
 //dbUtilsView.php
 //connect to the database
 
-include 'config.txt';
+if (!is_file("config/config.php")) {
+	print("ERROR: no configuration file. Run menu.php.");
+	exit;
+}
+include 'config/config.php';
 
 $dbName = "unknown";
 $dbConn = "";

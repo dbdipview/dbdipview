@@ -41,7 +41,7 @@ function getQueryNumber() {
 	<tr>
 		<td style="white-space: nowrap;">
 	<?php
-		if (!is_numeric($menuFrameHeight))  //is set in the config.txt?
+		if (!is_numeric($menuFrameHeight))  //is set in the config.php?
 			$menuFrameHeight = 250;
 
 		if ($lines > 15)
