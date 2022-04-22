@@ -253,7 +253,7 @@ function hasPermissionForThis($needed) {
 /**
  * function debug
  * if debug is enabled displays debug text
- * see config.txt
+ * see config.php
  */
 function debug($mytxt, $return = false) {
 	global $debugCode;
