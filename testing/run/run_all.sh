@@ -15,8 +15,11 @@
 # Boris Domajnko
 #
 
-dir="$(dirname $0)"  #dbdipview/test/run
-MH="$dir/../.."      #dbdipview
+prog=$(readlink -f $0)
+dirR="$(dirname $prog)"
+dirT="$(dirname $dirR)"
+MH="$(dirname $dirT)"  #dbdipview
+
 DIP0=$MH/records/DIP0
 UNPACKED=$MH/records/DIP0unpacked
 INFO="Package created by run_all.sh"
@@ -106,5 +109,4 @@ xip=`hostname -I`
 ip=`echo $xip | sed 's/\s.*$//g'`
 echo "Now you can check http://$ip/dbdipview/login.htm"
 echo "To remove TestAndDemo databases run: ./run_all.sh -r"
-
 

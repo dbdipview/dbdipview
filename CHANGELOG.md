@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.8.3] - 2022-05-09
+### Modified
+- some minor improvements
+
 ## [2.8.2] - 2022-04-22
 ### Modified
 - administration module: config files moved to config folder

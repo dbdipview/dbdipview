@@ -33,24 +33,25 @@ $CURRENTDIR = getcwd();
 
 set_include_path($PROGDIR);
 
-$YES=False;
+$yes=False;
 
 function checkRemove($s, $file) {
-	global $YES;
-	$remove = $YES;
+	global $yes;
+	$remove = $yes;
 	
 	if ( is_file($file) ) {
-		if($YES == False) {
-			print($s . " Remove (y or n)?");
+		print($s);
+		if($yes == False) {
+			print(" Remove (y or n)?");
 			$handle = fopen ("php://stdin","r");
 			$line = fgets($handle);
 			fclose($handle);
-			if(trim($line) == 'y')
+			if($line[0] == 'y')
 				$remove = True;
 		}
 		if($remove) {
 			unlink($file);
-			if(!$YES)
+			if($yes == False)
 				echo "Removed." . PHP_EOL;
 		}
 	}
@@ -105,7 +106,7 @@ $OUTFILE_ZIP = "";
 $infotext="";
 
 if (array_key_exists('y', $options))
-	$YES = True;
+	$yes = True;
 
 if (array_key_exists('v', $options))
 	$VERBOSE = True;
@@ -201,8 +202,8 @@ if (empty($NAME)) {
 	showOptions();
 }
 
-checkRemove("Target package file $OUTFILE_TARGZ exists.", $OUTFILE_TARGZ);
-checkRemove("Target package file $OUTFILE_ZIP exists.", $OUTFILE_ZIP);
+checkRemove("Target package file $OUTFILE_TARGZ already exists.", $OUTFILE_TARGZ);
+checkRemove("Target package file $OUTFILE_ZIP already exists.", $OUTFILE_ZIP);
 createAboutXML($infofile);
 
 if ( $countDatafiles ===  0 ) {
