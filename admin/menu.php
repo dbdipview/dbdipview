@@ -115,14 +115,14 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 }
 
 
-$options = getopt("hoesp:r:dal");
+$options = getopt("hoesp:r:daL");
 if ( count($options) == 0 || array_key_exists('h', $options) ||
     (count($options) == 1 && array_key_exists('d', $options)) ) {
 	echo "Usage: php menu.php [OPTIONS]" . PHP_EOL;
 	echo "   -h         this help" . PHP_EOL;
 	echo "   -o         order workflow" . PHP_EOL;
 	echo "   -e         extended DDV package workflow" . PHP_EOL;
-	echo "   -l         append data using an additional list file" . PHP_EOL;
+	echo "   -L         append data using an additional list file" . PHP_EOL;
 	echo "   -s         SIARD workflow" . PHP_EOL;
 	echo "   -p <file>  deploy an order" . PHP_EOL;
 	echo "   -r <file>  remove an order" . PHP_EOL;
@@ -171,8 +171,7 @@ if (array_key_exists('r', $options)) {
 	exit(0);
 }
 
-
-if (array_key_exists('l', $options))
+if (array_key_exists('L', $options))
 	$appendList = "yes";    //process additional list file only
 else
 	$appendList = "";
@@ -202,7 +201,7 @@ while ( "$answer" != "q" ) {
 	}
 
 	if ( !empty($all) || ($V1 == 'X' && !empty($appendList)) ) {
-					echo "${XL}a  (EXT) $MSG54_APPENDDATA [$DBC] [$DDV]" . PHP_EOL;
+					echo "${XL}A  (EXT) $MSG54_APPENDDATA [$DBC] [$DDV]" . PHP_EOL;
 	}
 
 	if ( !empty($all) || $XD == 'X' )
@@ -428,7 +427,7 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 
-		case "a": $XL=' ';   //L
+		case "A": $XL=' ';
 			if (notSet($DBC))
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else if (notSet($DDV))
@@ -438,9 +437,10 @@ while ( "$answer" != "q" ) {
 				break;
 			}
 			
-			echo $MSG54_APPENDDATAINFO . PHP_EOL;
+			echo $MSG54_APPENDDATAINFO;
 			$name="";
 			$file="";
+			echo ": " . $DDV_DIR_EXTRACTED . "/metadata" . PHP_EOL;
 			getPackageName($name, $file, "txt", $DDV_DIR_EXTRACTED . "/metadata");
 			if ( empty($file) )
 				break;
@@ -454,7 +454,7 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 
-		case "1":
+		case "1":   //number
 			$name="";
 			$file="";
 			getPackageName($name, $file, "zip");

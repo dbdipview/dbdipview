@@ -434,7 +434,7 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 				} else if ( "$CSVMODE" == "TSV" ) {
 					$rv = dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE,             $HEADER, $encoding);
 				} else
-					err_msg(__FUNCTION__ . ": " . "Error, wrong CSVMODE:", $CSVMODE);
+					err_msg(__FUNCTION__ . ": " . "ERROR: wrong CSVMODE:", $CSVMODE);
 
 				if ( "$CODESET" == "UTF8BOM" )
 					unlink("$SRCFILE");
@@ -519,6 +519,7 @@ function checkListFile($folder) {
 	$lineNum = 0;
 	$filesMentioned = array();
 	$tablesMentioned = array();
+	$tablesMentionedDuplicate = array();
 	print("Validating the list.txt..." . PHP_EOL);
 	if ( file_exists($listfile) && (($handleList = fopen($listfile, "r")) !== FALSE) ) {
 		while ( ($line = fgets($handleList)) !== false ) {
@@ -533,26 +534,29 @@ function checkListFile($folder) {
 
 			if ( "$LTYPE" == "SCHEMA" ) {
 				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError($lineNum, "ERROR, no SCHEMA");
+					checkShowError($lineNum, "ERROR: no SCHEMA");
 					$retErrors++;
 				}
 			} elseif ("$LTYPE" == "TABLE") {
 				if ( count($tok) < 8 ) {
-					checkShowError($lineNum, "ERROR, not enough elements for TABLE");
+					checkShowError($lineNum, "ERROR: not enough elements for TABLE");
 					$retErrors++;
 				} else {
 					$TABLE = $tok[1];
 					$retErrors += checkIsTable($lineNum, $TABLE);
 					if (in_array($TABLE, $tablesMentioned)) {
-						checkShowError($lineNum, "WARNING, multiple definitions of a TABLE: " . $TABLE);
-						checkShowError($lineNum, "(or the content is loaded from more data files, which is allowed)");
+						if (!in_array($TABLE, $tablesMentionedDuplicate)) {
+							checkShowError($lineNum, "WARNING: this table is mentioned more than once: " . $TABLE);
+							checkShowError($lineNum, "         (or the content is loaded from more than one data file and that is allowed)");
+							$tablesMentionedDuplicate[] = $TABLE;
+						}
 					}
 					$tablesMentioned[] = $TABLE;
 					
 					$FILE = $tok[2];
 					$retErrors += checkIsFile($lineNum, $df, $FILE);
 					if (in_array($FILE, $filesMentioned)) {
-						checkShowError($lineNum, "WARNING, this file is already used: " . $FILE);
+						checkShowError($lineNum, "WARNING: this file is used more than once: " . $FILE);
 						$retErrors++;
 					}
 					$filesMentioned[] = $FILE;
@@ -571,12 +575,12 @@ function checkListFile($folder) {
 				}
 			} elseif ("$LTYPE" == "VIEW") {
 				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError($lineNum, "ERROR, no VIEW");
+					checkShowError($lineNum, "ERROR: no VIEW");
 					$retErrors++;
 				}
 			} elseif ("$LTYPE" == "BFILES") {
 				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError($lineNum, "ERROR, missing filename");
+					checkShowError($lineNum, "ERROR: missing filename");
 					$retErrors++;
 				} else {
 					$retErrors += checkIsFile($lineNum, $df, $tok[1]);
@@ -603,7 +607,7 @@ function checkListFile($folder) {
 			while (false !== ($entry = readdir($handle))) {
 				if ($entry != "." && $entry != "..") {
 					if ( !in_array("$entry", $filesMentioned) ) {
-						print("ERROR, file exists, but is not mentioned in list.txt: ". $entry . PHP_EOL);
+						print("ERROR: file exists, but is not mentioned in list.txt: ". $entry . PHP_EOL);
 						$retErrors++;
 					}
 				}
@@ -625,7 +629,7 @@ function checkIsInArray($lineNum, $s, $val, $a) {
 		foreach ($a as $item) {
 			$allowed .= " " . $item;
 		}
-		checkShowError($lineNum, "ERROR, " . $s . " (" . $val . "), allowed values are:" . $allowed);
+		checkShowError($lineNum, "ERROR: " . $s . " (" . $val . "), allowed values are:" . $allowed);
 		return(1);
 	} else 
 		return(0);
@@ -634,7 +638,7 @@ function checkIsInArray($lineNum, $s, $val, $a) {
 function checkIsTable($lineNum, $table) {
 	$pos = strrpos($table, ".");
 	if ( $pos === false || $pos == 0 ) {
-		checkShowError($lineNum, "ERROR, no schema will be assumed, schema name prefix is missing for table: " . $table);
+		checkShowError($lineNum, "ERROR: no schema will be assumed, schema name prefix is missing for table: " . $table);
 		return(1);
 	} else
 		return(0);
@@ -642,7 +646,7 @@ function checkIsTable($lineNum, $table) {
 
 function checkIsFile($lineNum, $dir, $f) {
 	if ( !is_file($dir . $f) ) {
-		checkShowError($lineNum, "ERROR, missing file: " . $f);
+		checkShowError($lineNum, "ERROR: missing file: " . $f);
 		return(1);
 	} else
 		return(0);
