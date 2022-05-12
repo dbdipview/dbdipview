@@ -48,6 +48,10 @@ function checkRemove($s, $file) {
 			fclose($handle);
 			if($line[0] == 'y')
 				$remove = True;
+			else {
+				echo "Aborted!" . PHP_EOL;
+				exit(1);
+			}
 		}
 		if($remove) {
 			unlink($file);
