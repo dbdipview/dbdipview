@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.8.4] - 2022-05-12
+### Modified
+- access: Some corrections for messages in Czech language modified (by Martin Rechtorik from NACR)
+
 ## [2.8.3] - 2022-05-09
 ### Modified
 - some minor improvements
