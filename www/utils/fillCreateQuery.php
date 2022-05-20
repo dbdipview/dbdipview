@@ -174,6 +174,7 @@ foreach ($xml->database->screens->screen as $screen) {
 	$linknextscreen_columns=array();
 
 	if($screen->id  == $targetQueryNum) {
+		debug("fillCreateQuery: screen id = " . $screen->id);
 		$attrSkipCSVsave = get_bool($screen->attributes()->skipCSVsave);
 		$subTitle=$screen->subtitle;
 		$screenQuery = get_query_from_xml($screen);
@@ -183,8 +184,8 @@ foreach ($xml->database->screens->screen as $screen) {
 			$field=            $param->dbtable.TABLECOLUMN.$param->dbcolumn;                  //cities.id -> cities_id
 			$fieldType=        $param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
 			$fieldParamForward=$param->forwardToSubqueryName;                                 //to be used in subquery
-			debug("fillCreateQuery: checking parameter for column: \"$param->dbtable\".\"$param->dbcolumn\" (
-				parameter name: $field, type: $param->type, to be forwarded tu subqueries as: $fieldParamForward )");
+			debug("________________ checking parameter for column: \"$param->dbtable\".\"$param->dbcolumn\" (
+				name: $field, type: $param->type, to be forwarded as: $fieldParamForward )");
 
 			$fieldType = str_replace(" ", "__20__", $fieldType);
 			$field     = str_replace(" ", "__20__", $field);     //temporarily replace space
@@ -192,17 +193,11 @@ foreach ($xml->database->screens->screen as $screen) {
 			$paramFound = False;
 			$internalParameters = array("submit_cycle", "targetQueryNum", "__page", "maxcount", "x", "y", "tablelist" );
 			foreach($_GET as $key => $value){
-				if (! in_array($key, $internalParameters) ) {
+				if (! in_array($key, $internalParameters) ) {             //skip other keywords
 					//debug("_________ $key with db field $field ...");
 					if( 0 == strcmp($key, $field . $param->type) ||
 						0 == strcmp($key, $field) ) {                     //this comes with links_to_next_screens
-						if(empty($value)) {
-							if($attrParamMandatory)
-								if( empty($mandatory) )
-									$mandatory = $param->name;
-								else
-									$mandatory .= ", " . $param->name;
-						} else {
+						if(!empty($value)) {
 							$paramFound = True;
 							if(is_array($value))
 								debug("________________ found:&nbsp;&nbsp;" . $key . " = '" . $value[0] . "' ...\r\n");
@@ -212,10 +207,20 @@ foreach ($xml->database->screens->screen as $screen) {
 					}
 				}
 			}
-			if ( $paramFound == False) {
-				debug("________________ no such parameter");
-				continue;  //forget this one and check the next parameter
-			}
+
+			if (! in_array($field, $internalParameters) )               //skip other keywords
+				if ( $paramFound == False) {
+					debug("________________ parameter not set: " . $field);
+
+					if($attrParamMandatory) {
+						if( empty($mandatory) )
+							$mandatory = $param->name;
+						else
+							$mandatory .= ", " . $param->name;
+					}
+
+					continue;  //forget this one and check the next parameter
+				}
 
 			$quote=QUOTE_WHERE;   //since postgresql 8.4 no more '';
 			$equal='=';
@@ -299,8 +304,10 @@ foreach ($xml->database->screens->screen as $screen) {
 					}
 				} //if strlen
 			} //if isset
-			else
+			else {
+				print("ERROR: wrong parameter to query " . $field);
 				debug("fillCreateQuery: parameter NOT SET: field=$field, fieldType=$fieldType");
+			}
 		} //for each param
 
 		if( !empty($mandatory) ) {
@@ -362,12 +369,12 @@ foreach ($xml->database->screens->screen as $screen) {
 				$f_links_to_next_screen = true;
 				$linknextscreen_column = array();
 
-				debug("fillCreateQuery: LINK column:   $link->dbcolumnname");
-				debug("_____________________ value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
-				debug("_____________________ next screen id:         $link->next_screen_id");
-				debug("_____________________ next screen dbtable:    $link->dbtable");
-				debug("_____________________ next screen dbcolumn:   $link->dbcolumn");
-				debug("_____________________ next screen linkaction: $link->linkaction");
+				debug("fillCreateQuery: adding hyperlink in column $link->dbcolumnname");
+				debug("_____________________ use value from column (attr.): " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
+				debug("_____________________ target screen id:  $link->next_screen_id");
+				debug("_____________________ target dbtable:    $link->dbtable");
+				debug("_____________________ target dbcolumn:   $link->dbcolumn");
+				debug("_____________________ target linkaction: $link->linkaction");
 
 				$linknextscreen_column["next_screen_id"]  = $link->next_screen_id;
 				$linknextscreen_column["dbtable"]         = $link->dbtable;
@@ -410,14 +417,15 @@ foreach ($xml->database->screens->screen as $screen) {
 			$subqueriesTitle[$sqindex] = $subselect->title;
 			$subqueriesSubTitle[$sqindex] = $subselect->subtitle;
 
+			debug(str_repeat(".",80));
 			debug("fillCreateQuery: subselect title: " . $subselect->title);
 			//-------------------------------------------------------------------
 			foreach ($subselect->param as $param) {
 
+				debug("________________  checking forwarded parameter: " . $param->forwardedParamName);
 				if( isset  ($paramForwardNum["$param->forwardedParamName"]) ) {
 					$value= $paramForwardNum["$param->forwardedParamName"];
-					debug("adding forwarded parameter to query: ".
-						$param->forwardedParamName . " " .
+					debug("________________ found, got: ".
 						$paramForwardEqual["$param->forwardedParamName"] . " " .
 						$paramForwardNum["$param->forwardedParamName"]);
 
@@ -441,7 +449,8 @@ foreach ($xml->database->screens->screen as $screen) {
 							$subquery .= " AND $wheretext";
 					} else
 						debug("&nbsp;&nbsp;&nbsp;Skipped!");
-				}
+				} else
+					debug("________________ not found!");
 
 			} //for each param
 					//----------------------
@@ -474,12 +483,12 @@ foreach ($xml->database->screens->screen as $screen) {
 				foreach ($links_to_next_screen->link as $link) {
 					$f_subqeries_links_to_next_screen[$sqindex] = true;
 					$linknextscreen_column = array();
-					debug("fillCreateQuery: LINKSUBQ column:   $link->dbcolumnname");
-					debug("_____________________ value from column:      " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
-					debug("_____________________ screen id:             $link->next_screen_id");
-					debug("_____________________ screen dbtable:        $link->dbtable");
-					debug("_____________________ next screen dbcolumn:       $link->dbcolumn");
-					debug("_____________________ next screen linkaction:     $link->linkaction");
+					debug("fillCreateQuery: adding hyperlink in column $link->dbcolumnname");
+					debug("_____________________ use value from column (attr.): " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
+					debug("_____________________ target screen id:  $link->next_screen_id");
+					debug("_____________________ target dbtable:    $link->dbtable");
+					debug("_____________________ target dbcolumn:   $link->dbcolumn");
+					debug("_____________________ target linkaction: $link->linkaction");
 
 					$linknextscreen_column["next_screen_id"]  = $link->next_screen_id;
 					$linknextscreen_column["dbtable"]         = $link->dbtable;
@@ -503,11 +512,11 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 			$subqueries[$sqindex] = $subquery;
 			debug("<b>subquery". strval($sqindex+1) . " </b>= $subqueries[$sqindex]");
-			debug(str_repeat(".",80));
+
 			$sqindex  += 1;
 		} //for each subselect
 
-
+		debug(str_repeat("-",80));
 		$maxcount = 0;
 		if (isset($_GET['maxcount'])) {
 			$maxcount = pg_escape_string($_GET['maxcount']);
