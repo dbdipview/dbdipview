@@ -6,11 +6,11 @@
 
 	<style>
 		#loader {
-			border: 12px solid var(--main-hrborder-color);
+			border: 0.75rem solid var(--main-hrborder-color);
 			border-radius: 50%;
-			border-top: 12px solid var(--main-boxbg-color);
-			width: 70px;
-			height: 70px;
+			border-top: 0.75rem solid var(--main-boxbg-color);
+			width: 4.4rem;
+			height: 4.4rem;
 			animation: spin 1s linear infinite;
 		}
 		

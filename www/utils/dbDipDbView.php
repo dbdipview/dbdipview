@@ -142,15 +142,19 @@ function makeParameterReferencesOne($link, $linkval) {
  *
  * Returns: an HTML table output
  */
-function qToListWithLink($query,
-					$linknextscreen_columns,
-					$images_image_style,
-					$ahref_columns,
-					$blob_columns,
-					$totalCount) {
+function qToListWithLink($queryInfo, $totalCount) {
+
+	$query =                  $queryInfo->query;
+	$linknextscreen_columns = $queryInfo->linknextscreen_columns;
+	$images_image_style =     $queryInfo->images_image_style;
+	$ahref_columns =          $queryInfo->ahref_columns;
+	$blob_columns =           $queryInfo->blob_columns;
+	$viewInfo =               $queryInfo->viewInfo;
+
 	global $dbConn;
 	global $filespath;
 	$output = "";
+	$currentColNumber;
 
 	if ( empty($totalCount) ) {
 		$totalLines = 0;
@@ -171,8 +175,18 @@ function qToListWithLink($query,
 		$output = "ERROR: qToListWithLink<br />";
 	} else {
 
+		$viewInfo->setNumbers4NewColumn( pg_num_fields($result) - 1);  //skip last column
+		if( $viewInfo->is_MC_active() )
+			$output .= "<table>" . PHP_EOL;
+
 		while ($row = pg_fetch_assoc($result)) {
 
+			if( $viewInfo->is_MC_active() )
+				$output .= "<tr><td style='border-top: 0.15rem solid var(--main-hrborder-color);'>" . PHP_EOL;
+			else
+				$output .= "<hr />" . PHP_EOL;
+
+			$currentColNumber = 1;
 			foreach ($row as $col=>$valnl) {
 				$val = nl2br($valnl);
 
@@ -182,12 +196,16 @@ function qToListWithLink($query,
 				}
 
 				$tablelist = $_SESSION['tablelist'];
-				if( strcmp($tablelist, "listAll") !== 0 )
+				if( strcmp($tablelist, "listAll") !== 0 && strcmp($tablelist, "listMC") !== 0 )
 					if( empty($val) )
 						continue;
 
+				if( $viewInfo->isNewColumn($col, $currentColNumber++) )
+					$output .= "</td><td style='border-top: 0.15rem solid var(--main-hrborder-color);'>". PHP_EOL;
+
 				$output .= showInfotipInline($columnDescriptions->getDescriptionForColumn($col), $col);
-				$output .= "<b>$col:</b> ";
+				if( ! $viewInfo->isNoLabel($col) )
+					$output .= "<b>$col:</b> ";
 
 				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
@@ -254,13 +272,22 @@ function qToListWithLink($query,
 
 				$output .= "  $val<br />" . PHP_EOL;
 
-			} // end foreach
-			$output .= "<hr />" . PHP_EOL;
-		} // end while
+			} // end one row
+
+			if( $viewInfo->is_MC_active() )
+				$output .= "</td></tr>". PHP_EOL;
+
+		} // end while fetching rows
+
+		if( $viewInfo->is_MC_active() ) {
+			$output .= "</table>". PHP_EOL;
+		}
+		$output .= "<hr />" . PHP_EOL;
 
 		$hits = pg_num_rows($result);
 
 	} // if result
+
 
 	if (strlen($output)==0)
 		$output .= "<hr />" . PHP_EOL;
@@ -277,15 +304,18 @@ function qToListWithLink($query,
  *
  * Returns: an HTML table output
  */
-function qToTableWithLink($query,
-					$linknextscreen_columns,
-					$images_image_style,
-					$ahref_columns,
-					$blob_columns,
+function qToTableWithLink($queryInfo,
 					$totalCount,
 					$queryId) {
 	global $dbConn;
 	global $filespath;
+
+	$query = $queryInfo->query;
+	$linknextscreen_columns = $queryInfo->linknextscreen_columns;
+	$images_image_style = $queryInfo->images_image_style;
+	$ahref_columns = $queryInfo->ahref_columns;
+	$blob_columns = $queryInfo->blob_columns;
+
 	$output = "";
 	$tableid = "table" . $queryId;
 	//$query = str_replace("'", "\"", $query);	// 'name'--> "name" _ _ SELECT _ AS "name"

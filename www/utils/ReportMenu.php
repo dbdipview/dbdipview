@@ -214,7 +214,7 @@ class ReportMenu {
 						echo $pref . '<li><span class="caretNone">' . "<b>$screen->selectDescription</b>" . '&nbsp;</span>' . PHP_EOL;
 					}
 				} else {
-					echo $pref . '<li style="padding-left: 4px;">';
+					echo $pref . '<li style="padding-left: 0.25rem;">';
 						echo "<label>";
 						input_radiocheck('radio','targetQueryNum', $_GET, $screen->id);
 						$this->screenCounter += 1;

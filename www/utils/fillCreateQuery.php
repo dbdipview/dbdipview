@@ -158,25 +158,17 @@ else
 	$totalCount = "";
 
 foreach ($xml->database->screens->screen as $screen) {
+
+	$queryInfo = new QueryData();
 	$where = "";
 	$mandatory = "";
 	$attrSkipCSVsave = false;
-	$f_ahrefs = false;
-	$ahref_columns = array();
-
-	$f_images = false;
-	$images_image_style = array();
-
-	$f_blobs = false;
-	$blob_columns = array();
-
-	$f_links_to_next_screen=false;
-	$linknextscreen_columns=array();
 
 	if($screen->id  == $targetQueryNum) {
 		debug("fillCreateQuery: screen id = " . $screen->id);
 		$attrSkipCSVsave = get_bool($screen->attributes()->skipCSVsave);
-		$subTitle=$screen->subtitle;
+		$queryInfo->title = $screen->title;
+		$queryInfo->subTitle = $screen->subtitle;
 		$screenQuery = get_query_from_xml($screen);
 		foreach ($screen->param as $param) {
 
@@ -325,7 +317,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		//----------------------
 		foreach ($screen->ahrefs as $ahrefs) {
 			foreach ($ahrefs->ahref as $ahref) {
-				$f_ahrefs = true;
+				$queryInfo->f_ahrefs = true;
 				$ahref_column = array();
 				debug("fillCreateQuery: AHREF dbcolumnname: $ahref->dbcolumnname");
 				debug("______________________ atext:      $ahref->atext");
@@ -334,39 +326,39 @@ foreach ($xml->database->screens->screen as $screen) {
 					debug("______________________ URLprefix:  $ahref->URLprefix");
 					$ahref_column["URLprefix"] = $ahref->URLprefix;
 				}
-				$ahref_columns[(string)$ahref->dbcolumnname] = $ahref_column;
+				$queryInfo->ahref_columns[(string)$ahref->dbcolumnname] = $ahref_column;
 			}
 		} //for each link to ahrefs
 
 		//----------------------
 		foreach ($screen->images as $images) {
 			foreach ($images->image as $image) {
-				$f_images = true;
+				$queryInfo->f_images = true;
 				debug("fillCreateQuery: IMAGE dbcolumnname: $image->dbcolumnname");
 				debug("______________________ style:        $image->style");
 
-				$images_image_style[(string)$image->dbcolumnname] = $image->style;
+				$queryInfo->images_image_style[(string)$image->dbcolumnname] = $image->style;
 			}
 		}
 
 		//----------------------
 		foreach ($screen->blobs as $blobs) {
 			foreach ($blobs->blob as $blob) {
-				$f_blobs = true;
+				$queryInfo->f_blobs = true;
 				$blob_column = array();
 
 				debug("fillCreateQuery: BLOB dbcolumnname: $blob->dbcolumnname");
 				debug("_____________________ id:           $blob->id");
 
 				$blob_column["id"] = $blob->id;
-				$blob_columns[(string)$blob->dbcolumnname] = $blob_column;
+				$queryInfo->blob_columns[(string)$blob->dbcolumnname] = $blob_column;
 			}
 		}
 
 		//----------------------
 		foreach ($screen->links_to_next_screen as $links_to_next_screen) {
 			foreach ($links_to_next_screen->link as $link) {
-				$f_links_to_next_screen = true;
+				$queryInfo->f_links_to_next_screen = true;
 				$linknextscreen_column = array();
 
 				debug("fillCreateQuery: adding hyperlink in column $link->dbcolumnname");
@@ -386,36 +378,47 @@ foreach ($xml->database->screens->screen as $screen) {
 				else
 					$linknextscreen_column["linkaction"] = $link->linkaction;         //special cases, see switch submit_cycle in main program
 
-				$linknextscreen_columns [(string)$link->dbcolumnname] = $linknextscreen_column;
+				$queryInfo->linknextscreen_columns [(string)$link->dbcolumnname] = $linknextscreen_column;
 
 			}
 		} //for each link to next screen
+
+		$queryInfo->viewInfo = new ViewData($screen);
+
+		$maxcount = 0;
+		if (isset($_GET['maxcount'])) {
+			$maxcount = pg_escape_string($_GET['maxcount']);
+			if ($maxcount != 0) {
+				$query = $query . " LIMIT " . $maxcount;    //limit only for main query
+			}
+		}
+
+		$page = 0;
+		$offset = 0;
+		if (isset($_GET['__page'])) {
+				$page = $_GET['__page'];
+				$offset = ($page-1) * $maxcount;
+				$query = $query . " OFFSET " . $offset;
+		}
+
+		$queryInfo->query = $query;
+		debug("<b>query</b> = $query");
 
 		//-------------------
 		// subqeries are additional simple queries that will be executed separately AFTER the basic query.
 		// The data for WHERE clause is the same value as in basic query.
 		// input subselect query, example "SELECT * FROM name WHERE"
-		$subqueries = array();
-		$subqueriesTitle = array();
-		$subqueriesSubTitle = array();
 
-		$f_subqeries_images = array();
-		$subqueries_images_image_style = array(array());
-
-		$f_subqeries_links_to_next_screen = array();
-		$subqueries_linknextscreen_columns = array(array());
-
-		$f_subqeries_ahrefs = array();
-		$subqueries_ahref_columns = array(array());
-
-		$subqueries_blob_columns  = array(array());
+		$subQueriesInfo = array();
 
 		$sqindex = 0;
 
 		foreach ($screen->subselect as $subselect) {
+			$subQueriesInfo[] = new QueryData();
+
 			$subquery = get_query_from_xml($subselect);
-			$subqueriesTitle[$sqindex] = $subselect->title;
-			$subqueriesSubTitle[$sqindex] = $subselect->subtitle;
+			$subQueriesInfo[$sqindex]->title = $subselect->title;
+			$subQueriesInfo[$sqindex]->subTitle = $subselect->subtitle;
 
 			debug(str_repeat(".",80));
 			debug("fillCreateQuery: subselect title: " . $subselect->title);
@@ -456,11 +459,11 @@ foreach ($xml->database->screens->screen as $screen) {
 					//----------------------
 			foreach ($subselect->images as $images) {
 				foreach ($images->image as $image) {
-					$f_subqeries_images[$sqindex] = true;
+					$subQueriesInfo[$sqindex]->f_subqeries_images = true;
 					debug("fillCreateQuery: subselect IMAGE dbcolumnname: $image->dbcolumnname");
 					debug("________________________________ style:        $image->style");
 
-					$subqueries_images_image_style [$sqindex][(string)$image->dbcolumnname] = $image->style;
+					$subQueriesInfo[$sqindex]->images_image_style[(string)$image->dbcolumnname] = $image->style;
 				}
 			}
 			//----------------------
@@ -475,13 +478,13 @@ foreach ($xml->database->screens->screen as $screen) {
 						$ahref_column["URLprefix"] = $ahref->URLprefix;
 					}
 					$ahref_column["atext"] = $ahref->atext;
-					$subqueries_ahref_columns [$sqindex][(string)$ahref->dbcolumnname] = $ahref_column;
+					$subQueriesInfo[$sqindex]->ahref_columns[(string)$ahref->dbcolumnname] = $ahref_column;
 				}
 			}
 			//----------------------
 			foreach ($subselect->links_to_next_screen as $links_to_next_screen) {
 				foreach ($links_to_next_screen->link as $link) {
-					$f_subqeries_links_to_next_screen[$sqindex] = true;
+					$subQueriesInfo[$sqindex]->f_subqeries_links_to_next_screen = true;
 					$linknextscreen_column = array();
 					debug("fillCreateQuery: adding hyperlink in column $link->dbcolumnname");
 					debug("_____________________ use value from column (attr.): " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
@@ -500,9 +503,11 @@ foreach ($xml->database->screens->screen as $screen) {
 					else
 						$linknextscreen_column["linkaction"] = $link->linkaction;         //special cases, see switch submit_cycle in main program
 
-					$subqueries_linknextscreen_columns [$sqindex][(string)$link->dbcolumnname] = $linknextscreen_column;
+					$subQueriesInfo[$sqindex]->linknextscreen_columns[(string)$link->dbcolumnname] = $linknextscreen_column;
 				}
 			}
+
+			$subQueriesInfo[$sqindex]->viewInfo = new ViewData($subselect);
 
 			//-------------------------------------------------------------------
 
@@ -510,61 +515,38 @@ foreach ($xml->database->screens->screen as $screen) {
 				$subquery = $subquery . appendOrderGroupBy("GROUP BY", $subselect->selectGroup);
 				$subquery = $subquery . appendOrderGroupBy("ORDER BY", $subselect->selectOrder);
 			}
-			$subqueries[$sqindex] = $subquery;
-			debug("<b>subquery". strval($sqindex+1) . " </b>= $subqueries[$sqindex]");
+			$subQueriesInfo[$sqindex]->query = $subquery;
+			debug("<b>subquery". strval($sqindex+1) . " </b> = $subquery");
 
 			$sqindex  += 1;
 		} //for each subselect
 
 		debug(str_repeat("-",80));
-		$maxcount = 0;
-		if (isset($_GET['maxcount'])) {
-			$maxcount = pg_escape_string($_GET['maxcount']);
-			if ($maxcount != 0) {
-				$query = $query . " LIMIT " . $maxcount;    //limit only for main query
-			}
-		}
 
-		$page = 0;
-		$offset = 0;
-		if (isset($_GET['__page'])) {
-				$page = $_GET['__page'];
-				$offset = ($page-1) * $maxcount;
-				$query = $query . " OFFSET " . $offset;
-		}
 
-		debug("<b>query</b> = $query");
+define('PRINTER_ICON', '&#x1f5b6;');
 
 		$tablelist = $_SESSION['tablelist'];
 		$hits=0;
 		if( strcmp($tablelist, "table") == 0) {
-
 			print ("<h3>");
 			if($attrSkipCSVsave != true) {
 				$csvfilename = "export" . $targetQueryNum . ".csv";
 				createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
 								$screen->title,
-								$subTitle,
+								$screen->subtitle,
 								$csvquery,
 								$csvfilename);
 			}
 			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h3>");
 
-			if($screen->title && strlen($screen->title)>0 )
-				print ("<h4>" . $screen->title . "</h4>");
-
-			if(isset($subTitle) && strlen($subTitle)>0 )
-				print($subTitle . "<br/>");
+			print ("<h4>");
+			$queryInfo->showHeader("</h4>");
 
 			if ( !empty($screenQuery) ) {
-				$newlist = qToTableWithLink($query,
-									$linknextscreen_columns,
-									$images_image_style,
-									$ahref_columns,
-									$blob_columns,
+				$newlist = qToTableWithLink($queryInfo,
 									$totalCount,
 									"M");
-
 				print $newlist[0];
 				$hits = $newlist[1];
 				if ( empty($totalCount) )
@@ -572,56 +554,7 @@ foreach ($xml->database->screens->screen as $screen) {
 				else
 					$totalLines = $totalCount; //already known
 			}
-
-			//display subqueries
-			$sqindexLoop=0;
-			while ($sqindexLoop < $sqindex) {
-				print("<br/>");
-
-				print("<h4>");
-				if($attrSkipCSVsave != true) {
-					$csvfilename = "export" . $targetQueryNum . "_" . $sqindexLoop . ".csv";
-					createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
-									$subqueriesTitle[$sqindexLoop],
-									$subqueriesSubTitle[$sqindexLoop],
-									$subqueries[$sqindexLoop],
-									$csvfilename);
-				}
-				print($subqueriesTitle[$sqindexLoop] . "</h4>");
-
-				if($subqueriesSubTitle[$sqindexLoop] && strlen($subqueriesSubTitle[$sqindexLoop])>0 )
-					print("$subqueriesSubTitle[$sqindexLoop]" . "<br/>");
-
-				$newlist=qToTableWithLink($subqueries[$sqindexLoop],
-							array_key_exists($sqindexLoop, $subqueries_linknextscreen_columns) ?
-								$subqueries_linknextscreen_columns[$sqindexLoop] : array(array()),
-
-							array_key_exists($sqindexLoop, $subqueries_images_image_style) ?
-								$subqueries_images_image_style[$sqindexLoop] : array(array()),
-
-							array_key_exists($sqindexLoop, $subqueries_ahref_columns) ?
-								$subqueries_ahref_columns[$sqindexLoop] : array(array()),
-
-							array_key_exists($sqindexLoop, $subqueries_blob_columns) ?
-								$subqueries_blob_columns[$sqindexLoop] : array(array()),
-
-							0,
-							$sqindexLoop);
-
-				print $newlist[0];
-				$sqindexLoop  += 1;
-			}
-			if($sqindex == 0) {    //show only when there are no subqueries involved
-				print ("<br/>" . $MSGSW12_HitsOnPage . ": " . $hits);
-				if ($totalLines > 0)
-					print(" (" . $MSGSW12_TotalRecords . ": " . $totalLines . ")");
-				print("<br/>\n");
-			}
-		}
-
-define('PRINTER_ICON', '&#x1f5b6;');
-
-		if( strcmp($tablelist, "list") == 0 || strcmp($tablelist, "listAll") == 0) {
+		} else {
 			print "<table class=\"mydbtable\">" . PHP_EOL;   // force mydb color
 			print "<tr><td>" . PHP_EOL;
 ?>
@@ -637,67 +570,71 @@ define('PRINTER_ICON', '&#x1f5b6;');
 		</tr>
 		</table>
 <?php
-
-			if($screen->title && strlen($screen->title)>0 )
-				print ("<h4>" . $screen->title . "</h4>" . PHP_EOL);
-			if($screen->subtitle && strlen($screen->subtitle)>0 )
-				print ("<h5>".$screen->subtitle."</h5>" . PHP_EOL);
+			print ("<h4>");
+			$queryInfo->showHeader("</h4>");
 			print ("<br/>");
 
 			if ( !empty($screenQuery) ) {
-				$newlist=qToListWithLink($query,
-										$linknextscreen_columns,
-										$images_image_style,
-										$ahref_columns,
-										$blob_columns,
-										$totalCount);
-
+				$newlist = qToListWithLink($queryInfo, 0);
 				print $newlist[0];
-				$hits=$newlist[1];
+				$hits = $newlist[1];
 				if ( empty($totalCount) )
 					$totalLines = $newlist[2];
 				else
 					$totalLines = $totalCount; //already known
 			}
+		}
 
-			//display subqueries
-			$sqindexLoop=0;
-			while ($sqindexLoop < $sqindex) {
-				print("<h4>" . $subqueriesTitle[$sqindexLoop] . "</h4>\n");
-				if($subqueriesSubTitle[$sqindexLoop] && strlen($subqueriesSubTitle[$sqindexLoop])>0)
-					print("<h5>".$subqueriesSubTitle[$sqindexLoop]."</h5>\n");
+
+		//display subqueries
+		$sqindexLoop=0;
+		while ($sqindexLoop < $sqindex) {
+			if( strcmp($tablelist, "table") == 0) {
+				print("<br/>");
+				print("<h4>");
+				if($attrSkipCSVsave != true) {
+					$csvfilename = "export" . $targetQueryNum . "_" . $sqindexLoop . ".csv";
+					createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
+									$subQueriesInfo[$sqindexLoop]->title,
+									$subQueriesInfo[$sqindexLoop]->subTitle,
+									$subQueriesInfo[$sqindexLoop]->query,
+									$csvfilename);
+				}
+
+				$subQueriesInfo[$sqindexLoop]->showHeader("</h4>");
+
+				$newlist = qToTableWithLink($subQueriesInfo[$sqindexLoop],
+							0,
+							$sqindexLoop);
+
+				print $newlist[0];
+				$sqindexLoop  += 1;
+			} else {
+				print("<h4>");
+				$subQueriesInfo[$sqindexLoop]->showHeader("</h4>");
 				print("<br/>");
 
-				$newlist=qToListWithLink($subqueries[$sqindexLoop],
-							array_key_exists($sqindexLoop, $subqueries_linknextscreen_columns) ?
-								$subqueries_linknextscreen_columns[$sqindexLoop] : array(array()),
-
-							array_key_exists($sqindexLoop, $subqueries_images_image_style) ?
-								$subqueries_images_image_style[$sqindexLoop] : array(array()),
-
-							array_key_exists($sqindexLoop, $subqueries_ahref_columns) ?
-								$subqueries_ahref_columns[$sqindexLoop] : array(array()),
-
-							array_key_exists($sqindexLoop, $subqueries_blob_columns) ?
-								$subqueries_blob_columns[$sqindexLoop] : array(array()),
-										0);
+				$newlist = qToListWithLink($subQueriesInfo[$sqindexLoop], 0);
 
 				print $newlist[0];
 				$sqindexLoop  += 1;
 			}
-			print "</td></tr></table>" . PHP_EOL;
-			if($sqindex == 0) {   //show only when there are no subqueries involved
-				print ("<br/>" . $MSGSW12_HitsOnPage  . ": " . $hits);
- 				if ($totalLines > 0)
-					print(" (" . $MSGSW12_TotalRecords . ": " . $totalLines . ")");
-				print("<br/>\n");
-			}
 		}
 
-	} //if screen->id
+		if( strcmp($tablelist, "table") != 0)
+			print "</td></tr></table>" . PHP_EOL;
+
+		if($sqindex == 0) {   //show only when there are no subqueries involved
+			print ("<br/>" . $MSGSW12_HitsOnPage  . ": " . $hits);
+			if ($totalLines > 0)
+				print(" (" . $MSGSW12_TotalRecords . ": " . $totalLines . ")");
+			print("<br/>" . PHP_EOL);
+		}
+		break;
+	} //if screen->id == targetQueryNum
 } //for each screen
 
-//get numbers for paging of output
+//paging of output
 $page_previous = 0;
 foreach ( $PARAMS as $key=>$value ){
 	if ( gettype( $value ) != "array" ){

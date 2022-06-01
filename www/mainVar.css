@@ -1,11 +1,11 @@
-/* dbDIPview default; to override it, make and edit a copy of this file as local/mainVar.css */
+/* can be overriden by a copy of this file as local/mainVar.css */
 
 :root {
-  --main-font-size: 0.80rem;                       /* font size */
+  --main-font-size: 0.9.rem;                       /* font size */
   --main-font-h1-size: 1.4rem;                     /* font size */
-  --main-font-h2-size: 1rem;                       /* font size */
-  --main-font-h3-size: 0.875rem;                   /* font size */
-  --main-font-h4-size: 0.8rem;                     /* font size */
+  --main-font-h2-size: 1.2rem;                     /* font size */
+  --main-font-h3-size: 1.0rem;                     /* font size */
+  --main-font-h4-size: 0.9rem;                     /* font size */
   --main-font-h5-size: 0.6875rem;                  /* font size */
   --main-font-h1-weight: normal;                   /* normal, bold */
   --main-font-h2-weight: normal;                   /* normal, bold */
