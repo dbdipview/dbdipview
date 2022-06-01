@@ -98,7 +98,7 @@ switch ($submit_cycle) {
 		break;
 	case "setDispMode":
 		$tl = pg_escape_string($_GET['tablelist']);
-		if ($tl == "table" || $tl == "list" || $tl == "listAll")
+		if ($tl == "table" || $tl == "list" || $tl == "listAll" || $tl == "listMC")
 			$_SESSION['tablelist'] = $tl;
 		exit(0);
 		break;
@@ -128,6 +128,8 @@ include "utils/dbUtilsInputFnc.php";
 include "utils/ColumnDescriptions.php";
 include "utils/getQueryNumber.php";
 include "utils/fillSearchParameters.php";
+include "utils/ViewData.php";
+include "utils/QueryData.php";
 include "utils/fillCreateQuery.php";
 include "utils/ReportMenu.php";
 
@@ -197,6 +199,7 @@ case "ShowMenu":
 case "CheckLogin":
 	echo "<h4>$MSGSW17_Records: " . $_SESSION['title'] . "</h4>";
 	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
+	$_SESSION['tablelist'] = "table";
 	getQueryNumber();
 	break;
 case "querySelected":

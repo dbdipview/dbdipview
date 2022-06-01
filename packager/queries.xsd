@@ -1,100 +1,97 @@
 <?xml version="1.0"?>
-<xs:schema xmlns:dbd="dbipview/schema" 
-           xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
-           vc:minVersion="2.0">
-	<!-- dbDIPview schema for queries.xml, 2021-09-17 -->
+<xs:schema xmlns:dbd="dbipview/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="2.0">
+	<!-- dbDIPview schema for queries.xml, 2022-05-25 -->
 	<xs:complexType name="revisions">
 		<xs:sequence>
-			<xs:element name="revision" type="revision" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="revision" type="revision" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
-
-	<xs:complexType name="revision" >
+	<xs:complexType name="revision">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="date" type="xs:date" />
-				<xs:attribute name="version" type="xs:string" />
+				<xs:attribute name="date" type="xs:date"/>
+				<xs:attribute name="version" type="xs:string"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
 
 	<xs:complexType name="link">
 		<xs:sequence>
-			<xs:element name="dbcolumnname"   type="dbcolumnname" minOccurs="1" maxOccurs="1" />
-			<xs:element name="next_screen_id" type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="dbtable"        type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="dbcolumn"       type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="linkaction"     type="xs:string" minOccurs="0" maxOccurs="1" />
+			<xs:element name="dbcolumnname" type="dbcolumnname" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="next_screen_id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="dbtable" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="dbcolumn" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="linkaction" type="xs:string" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="screen">
 		<xs:sequence>
-			<xs:element name="id"                type="id"        minOccurs="1" maxOccurs="1" />
-			<xs:element name="needed_permission" type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="selectDescription" type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="title"             type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="subtitle"          type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="param"             type="param"     minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="querymacro"        type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="query"             type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="selectGroup"       type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="selectOrder"       type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="ahrefs"            type="ahrefs"    minOccurs="0" maxOccurs="1" />
-			<xs:element name="images"            type="images"    minOccurs="0" maxOccurs="1" />
-			<xs:element name="blobs"             type="blobs"     minOccurs="0" maxOccurs="1" />
-			<xs:element name="links_to_next_screen" type="linkstns" minOccurs="0" maxOccurs="unbounded" />
-
+			<xs:element name="id" type="id" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="needed_permission" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="selectDescription" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="title" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="subtitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="param" type="param" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="querymacro" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="query" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="selectGroup" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="selectOrder" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ahrefs" type="ahrefs" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="images" type="images" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="blobs" type="blobs" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="links_to_next_screen" type="linkstns" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="view" type="view" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="subselect" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="title"       type="xs:string"      minOccurs="0" maxOccurs="1" />
-						<xs:element name="subtitle"    type="xs:string"      minOccurs="0" maxOccurs="1" />
-						<xs:element name="param"       type="paramSubselect" minOccurs="0" maxOccurs="unbounded" />
-						<xs:element name="querymacro"  type="xs:string"      minOccurs="0" maxOccurs="1" />
-						<xs:element name="query"       type="xs:string"      minOccurs="0" maxOccurs="1" />
-						<xs:element name="selectGroup" type="xs:string"      minOccurs="0" maxOccurs="1" />
-						<xs:element name="selectOrder" type="xs:string"      minOccurs="0" maxOccurs="1" />
-						<xs:element name="ahrefs"      type="ahrefs"         minOccurs="0" maxOccurs="1" />
-						<xs:element name="images"      type="images"         minOccurs="0" maxOccurs="1" />
-						<xs:element name="blobs"       type="blobs"          minOccurs="0" maxOccurs="1" />
-						<xs:element name="links_to_next_screen" type="linkstns" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element name="title" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="subtitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="param" type="paramSubselect" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="querymacro" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="query" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="selectGroup" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="selectOrder" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ahrefs" type="ahrefs" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="images" type="images" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="blobs" type="blobs" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="links_to_next_screen" type="linkstns" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="view" type="view" minOccurs="0" maxOccurs="1"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="level"       type="xs:integer" use="optional" />
-		<xs:attribute name="textOnly"    type="xs:boolean" use="optional" />
-		<xs:attribute name="skipCSVsave" type="xs:boolean" use="optional" />
+		<xs:attribute name="level" type="xs:integer" use="optional"/>
+		<xs:attribute name="textOnly" type="xs:boolean" use="optional"/>
+		<xs:attribute name="skipCSVsave" type="xs:boolean" use="optional"/>
 	</xs:complexType>
 
-	<xs:complexType name="id" >
+	<xs:complexType name="id">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
-				<xs:attribute name="size" type="xs:integer" />
-				<xs:attribute name="hide" type="xs:boolean" use="optional" />
+				<xs:attribute name="size" type="xs:integer"/>
+				<xs:attribute name="hide" type="xs:boolean" use="optional"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
 
-	<xs:complexType name="dbcolumnname" >
+	<xs:complexType name="dbcolumnname">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<!-- for link_to_next_screen more columns can be defined, use | as a delimiter, and same in dbcolumn -->
-				<xs:attribute name="valueFromColumn" type="xs:string" use="optional" />
+				<xs:attribute name="valueFromColumn" type="xs:string" use="optional"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
 
 	<xs:complexType name="ahrefs">
 		<xs:sequence>
-			<xs:element name="ahref" minOccurs="1" maxOccurs="unbounded" >
+			<xs:element name="ahref" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="dbcolumnname" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="atext"        type="xs:string" minOccurs="0" maxOccurs="1" />
-						<xs:element name="URLprefix"    type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="dbcolumnname" type="xs:string" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="atext" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="URLprefix" type="xs:string" minOccurs="0" maxOccurs="1"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -103,11 +100,11 @@
 
 	<xs:complexType name="images">
 		<xs:sequence>
-			<xs:element name="image" minOccurs="1" maxOccurs="unbounded" >
+			<xs:element name="image" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="dbcolumnname" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="style"        type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="dbcolumnname" type="xs:string" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="style" type="xs:string" minOccurs="1" maxOccurs="1"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -116,19 +113,19 @@
 
 	<xs:complexType name="blobs">
 		<xs:sequence>
-			<xs:element name="blob" minOccurs="1" maxOccurs="unbounded" >
+			<xs:element name="blob" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="id"           type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="dbcolumnname" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="query"        type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="dbcolumnname" type="xs:string" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="query" type="xs:string" minOccurs="1" maxOccurs="1"/>
 					</xs:sequence>
 					<xs:attribute name="mode">
 						<xs:simpleType>
 							<xs:restriction base="xs:string">
-								<xs:enumeration value="CLOB" />
-								<xs:enumeration value="BLOB" />
-								<xs:enumeration value="OID" />
+								<xs:enumeration value="CLOB"/>
+								<xs:enumeration value="BLOB"/>
+								<xs:enumeration value="OID"/>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>
@@ -139,45 +136,70 @@
 
 	<xs:complexType name="linkstns">
 		<xs:sequence>
-			<xs:element name="link" minOccurs="0" maxOccurs="unbounded" type="link" />
+			<xs:element name="link" minOccurs="0" maxOccurs="unbounded" type="link"/>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="param">
 		<xs:sequence>
-			<xs:element name="name"     type="xs:string"              minOccurs="1" maxOccurs="1" />
-			<xs:element name="infotip"  type="xs:string"              minOccurs="0" maxOccurs="1" />
-			<xs:element name="dbtable"  type="xs:string"              minOccurs="0" maxOccurs="1" />
-			<xs:element name="dbcolumn" type="xs:string"              minOccurs="0" maxOccurs="1" />
-			<xs:element name="select"   type="xs:string"              minOccurs="0" maxOccurs="1" />
-			<xs:element name="type"     type="paramType"              minOccurs="0" maxOccurs="1" />
-			<xs:element name="forwardToSubqueryName" type="xs:string" minOccurs="0" maxOccurs="1" />
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="infotip" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="dbtable" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="dbcolumn" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="select" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="type" type="paramType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forwardToSubqueryName" type="xs:string" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
-		<xs:attribute name="skipNewLine" type="xs:boolean" use="optional" />
-		<xs:attribute name="mandatory"   type="xs:boolean" use="optional" />
-		<xs:attribute name="size"        type="xs:integer" use="optional" />
-		<xs:attribute name="hr"          type="xs:boolean" use="optional" />
+		<xs:attribute name="skipNewLine" type="xs:boolean" use="optional"/>
+		<xs:attribute name="mandatory" type="xs:boolean" use="optional"/>
+		<xs:attribute name="size" type="xs:integer" use="optional"/>
+		<xs:attribute name="hr" type="xs:boolean" use="optional"/>
 	</xs:complexType>
 
 	<xs:complexType name="paramSubselect">
 		<xs:sequence>
-			<xs:element name="forwardedParamName" type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="dbtable"            type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="dbcolumn"           type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="forwardedParamName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="dbtable" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="dbcolumn" type="xs:string" minOccurs="1" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:simpleType name="paramType">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="text" />
-			<xs:enumeration value="textlike" />
-			<xs:enumeration value="integer" />
-			<xs:enumeration value="combotext" />
-			<xs:enumeration value="date" />
-			<xs:enumeration value="date_ge" />
-			<xs:enumeration value="date_lt" />
+			<xs:enumeration value="text"/>
+			<xs:enumeration value="textlike"/>
+			<xs:enumeration value="integer"/>
+			<xs:enumeration value="combotext"/>
+			<xs:enumeration value="date"/>
+			<xs:enumeration value="date_ge"/>
+			<xs:enumeration value="date_lt"/>
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:complexType name="view">
+		<xs:sequence>
+			<xs:element name="columnName" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="newCol" type="xs:boolean" use="optional"/>
+							<xs:attribute name="noLabel" type="xs:boolean" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="default">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="table"/>
+					<xs:enumeration value="list"/>
+					<xs:enumeration value="listAll"/>
+					<xs:enumeration value="listMC"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
 
 	<xs:element name="dbDIPview">
 		<xs:complexType>
@@ -185,14 +207,14 @@
 				<xs:element name="database">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="name"       type="xs:string" minOccurs="1" />
-							<xs:element name="overview"   type="xs:string" minOccurs="0" maxOccurs="1" />
-							<xs:element name="revisions"  type="revisions" minOccurs="0" maxOccurs="1" />
-							<xs:element name="ref_number" type="xs:string" minOccurs="1" />
-							<xs:element name="screens"                     minOccurs="1" maxOccurs="unbounded">
+							<xs:element name="name" type="xs:string" minOccurs="1"/>
+							<xs:element name="overview" type="xs:string" minOccurs="0" maxOccurs="1"/>
+							<xs:element name="revisions" type="revisions" minOccurs="0" maxOccurs="1"/>
+							<xs:element name="ref_number" type="xs:string" minOccurs="1"/>
+							<xs:element name="screens" minOccurs="1" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="screen" type="screen" minOccurs="0" maxOccurs="unbounded" />
+										<xs:element name="screen" type="screen" minOccurs="0" maxOccurs="unbounded"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
@@ -200,7 +222,7 @@
 					</xs:complexType>
 				</xs:element>
 			</xs:choice>
-			<xs:attribute name="schemaMajorVersion" type="xs:integer" use="required" fixed="2" />
+			<xs:attribute name="schemaMajorVersion" type="xs:integer" use="required" fixed="2"/>
 		</xs:complexType>
 	</xs:element>
 

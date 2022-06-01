@@ -12,9 +12,10 @@
 function fillSearchParameters() {
 global $xml;
 global $targetQueryNum;
-global $MSGSW16_Display, $MSGSW25_TABLEVIEW, $MSGSW26a_LISTVIEW, $MSGSW26b_LISTVIEW, $MSGSW12_RecordsPerPage;
-global $MHLP00,$MHLP01,$MHLP02,$MHLP03,$MHLP04,$MHLP05,$MHLP06,$MHLP07,$MHLP08,$MHLP09;
-global $MHLP10,$MHLP11,$MHLP12;
+global $MSGSW12_RecordsPerPage, $MSGSW16_Display;
+global $MSGSW25_TABLEVIEW, $MSGSW26a_LISTVIEW, $MSGSW26b_LISTVIEW, $MSGSW26c_LISTVIEW;
+global $MHLP00,$MHLP01,$MHLP02,$MHLP03,$MHLP04,$MHLP05;
+global $MHLP06,$MHLP07,$MHLP08,$MHLP09, $MHLP10,$MHLP11,$MHLP12;
 ?>
 
 <script>
@@ -106,6 +107,10 @@ foreach ($xml->database->screens->screen as $screen) {
 			echo "$stringNewLine";
 		} //for each param
 
+		$viewInfo = new ViewData($screen);
+		if( !is_null($viewInfo->getDefaultView()) )
+			$_SESSION['tablelist'] = "" . $viewInfo->getDefaultView();
+
 	} //if screnid=#
 } //for each screen
 if($screenFields == 0)
@@ -116,18 +121,32 @@ if($screenFields == 0)
 
 	<td>
 		<?php
+		//see queries.xsd
 		if ($_SESSION['tablelist'] == "table") {
 			$checkedT="checked";
 			$checkedL="";
 			$checkedLA="";
+			$checkedLMC="";
 		} else if ($_SESSION['tablelist'] == "list") {
 			$checkedT="";
 			$checkedL="checked";
 			$checkedLA="";
-		} else {
+			$checkedLMC="";
+		} else if ($_SESSION['tablelist'] == "listAll") {
 			$checkedT="";
 			$checkedL="";
 			$checkedLA="checked";
+			$checkedLMC="";
+		}else if ($_SESSION['tablelist'] == "listMC") {
+			$checkedT="";
+			$checkedL="";
+			$checkedLA="";
+			$checkedLMC="checked";
+		} else {
+			$checkedT="checked";
+			$checkedL="";
+			$checkedLA="";
+			$checkedLMC="";
 		}
 		?>
 
@@ -136,12 +155,17 @@ if($screenFields == 0)
 			       /><img src="img/table.png" alt="<?php echo $MSGSW25_TABLEVIEW; ?>"></img></label></abbr>
 
 		<abbr title="<?php echo $MSGSW26a_LISTVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="list"  onclick="setTreeOrList()"  id="wantList" <?php echo $checkedL; ?>
+			<label><input type="radio" name="tablelist" value="list" onclick="setTreeOrList()" id="wantList" <?php echo $checkedL; ?>
 			       /><img src="img/list.png"  alt="<?php echo $MSGSW26a_LISTVIEW; ?>"></img></label></abbr>
 
 		<abbr title="<?php echo $MSGSW26b_LISTVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="listAll"  onclick="setTreeOrList()"id="wantListAll" <?php echo $checkedLA; ?>
+			<label><input type="radio" name="tablelist" value="listAll" onclick="setTreeOrList()" id="wantListAll" <?php echo $checkedLA; ?>
 			       /><img src="img/listAll.png"  alt="<?php echo $MSGSW26b_LISTVIEW; ?>"></img></label></abbr>
+
+		<abbr title="<?php echo $MSGSW26c_LISTVIEW; ?>">
+			<label><input type="radio" name="tablelist" value="listMC" onclick="setTreeOrList()" id="wantListMC" <?php echo $checkedLMC; ?>
+			       /><img src="img/listMC.png"  alt="<?php echo $MSGSW26c_LISTVIEW; ?>"></img></label></abbr>
+
 		&nbsp;<br /><br />
 
 		<abbr title="<?php echo $MSGSW12_RecordsPerPage; ?>">
@@ -202,12 +226,14 @@ function setTreeOrList() {
 
     if (document.getElementById("wantTable").checked)
         request.open("GET", "prog1.php?tablelist=table&submit_cycle=setDispMode");
-    else {
-        if (document.getElementById("wantList").checked)
-            request.open("GET", "prog1.php?tablelist=list&submit_cycle=setDispMode");
-        else
-            request.open("GET", "prog1.php?tablelist=listAll&submit_cycle=setDispMode");
-    }
+    else if (document.getElementById("wantList").checked)
+        request.open("GET", "prog1.php?tablelist=list&submit_cycle=setDispMode");
+    else if (document.getElementById("wantListAll").checked)
+        request.open("GET", "prog1.php?tablelist=listAll&submit_cycle=setDispMode");
+    else if (document.getElementById("wantListMC").checked)
+		request.open("GET", "prog1.php?tablelist=listMC&submit_cycle=setDispMode");
+    else
+        request.open("GET", "prog1.php?tablelist=listMC&submit_cycle=setDispMode");
 
     request.onreadystatechange = function() {
         if(this.readyState === 4 && this.status === 200) {

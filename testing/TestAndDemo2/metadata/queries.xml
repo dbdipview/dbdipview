@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dbDIPview 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
-	schemaMajorVersion="2" >
+<dbDIPview
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
+           schemaMajorVersion="2">
 
 	<database>
 		<name>TestAndDemo2 regression test viewer</name>
@@ -17,6 +17,7 @@
 			<revision date="2020-12-13" version="1.4">Added selectGroup example</revision>
 			<revision date="2021-05-14" version="1.5">Added show column description</revision>
 			<revision date="2021-09-28" version="1.6">Use of macro</revision>
+			<revision date="2022-06-01" version="1.7">Use of multi-column view</revision>
 		</revisions>
 		<ref_number>TestAndDemo2</ref_number>
 		<screens>
@@ -24,9 +25,13 @@
 			<screen>
 				<id>1</id>
 				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
-				<title>TITLE: RC airplane pictures</title>   
-				<subtitle>SUBTITLE: Use of images as thumbnails and as links to the files (results pane). Example for external link.
-				If a parameter Name is set, it is also propagated to the subselects.
+				<title>TITLE: RC airplane pictures</title>
+				<subtitle>SUBTITLE: &lt;BR /&gt;
+				- Images shown as thumbnails &lt;BR /&gt;
+				- Links to external files shown in two columns. &lt;BR /&gt;
+				- Example for external linkwith URL prefix. &lt;BR /&gt;
+				- If a parameter Name is set in the Search pane, it is also propagated as a filter to the subqueries. &lt;BR /&gt;
+				- In multi-column view the default number of columns is used
 				</subtitle>
 				<param>
 					<name>Name</name>
@@ -76,14 +81,15 @@
 					</image>
 					<image>
 						<dbcolumnname>pictureimg1</dbcolumnname>
-						<style>width:31px;height:22px;</style>
+						<style>height:2rem</style>
 					</image>
 				</images>
 
 				<subselect>
-					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>   
-					<subtitle>This is a simplified version of the previous report above. 
-					In the ext_link column the link text is now different.
+					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>
+					<subtitle>Demonstration for: &lt;BR /&gt;
+					- ext_link column the link text has been set &lt;BR /&gt;
+					- in multi-column view two columns are set and there is no label for the column 'image'
 					</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
@@ -93,11 +99,13 @@
 					<query>SELECT 
 							"id",
 							"name Ü", 
-							"picture" AS image, 
 							"picture" AS link, 
-							"ext_link"
+							"ext_link",
+							"motors_text" AS "number of motors",
+							"picture" AS image
 							FROM "AirplanesLinks"."models"
 					</query>
+					<selectOrder>id</selectOrder>
 					<ahrefs>
 						<ahref>
 							<dbcolumnname>link</dbcolumnname>
@@ -112,15 +120,17 @@
 					<images>
 						<image>
 							<dbcolumnname>image</dbcolumnname>
-							<style>width:50px;height:30px;</style>
+							<style>height:12rem;</style>
 						</image>
 					</images>
+					<view default="listMC">
+						<columnName newCol="1" noLabel="1">image</columnName>
+					</view>
 				</subselect>
 
 				<subselect>
 					<title>TITLE: Summary</title>
-					<subtitle>Test of GROUP BY
-					</subtitle>
+					<subtitle>Test of GROUP BY motors_text</subtitle>
 					<query>SELECT COUNT(id) AS "number", 
 						"motors_text"
 						FROM "AirplanesLinks"."models" 
@@ -141,8 +151,8 @@
 				</query>
 				
 				<subselect>
-					<subtitle>Note: This view was created in createdb.sql.
-					Codes and values were derived from the main table. We need them for dropdown menu in Report 1.
+					<subtitle>Another view. Both columns (codes and values) were derived from the main table. 
+					We need this view for dropdown menu in Report 1.
 					</subtitle>
 					<query>SELECT *	
 						FROM "AirplanesLinks"."view_codes_NumOfEngines"
@@ -154,9 +164,10 @@
 			<screen skipCSVsave="1">
 				<id>3</id>
 				<selectDescription>Display tables that were loaded from sample CSV files. Test of redaction.</selectDescription>
-				<title>Test of table upload. These tables were uploaded from CSV files with 4 data lines.</title>   
-				<subtitle>This table has been loaded from Keys comma.csv:</subtitle>
-				<param  size='2'>
+				<title>Test of table upload. These tables were uploaded from CSV files with 4 data lines.</title>
+				<subtitle>- This table has been loaded from Keys comma.csv&lt;BR /&gt;
+						- Default view for this report is list view</subtitle>
+				<param size='2'>
 					<name>Id</name>
 					<dbtable>test1</dbtable>
 					<dbcolumn>id</dbcolumn>
@@ -166,39 +177,44 @@
 				<query>SELECT *	
 					FROM "TestCSV"."test1"
 				</query>
-				
+				<view default="list">
+				</view>
+
 				<subselect>
-					<subtitle>This table has been loaded from Keys semicolon.csv (this one also includes a header line).</subtitle>
+					<title>Data from semicolon.csv</title>
+					<subtitle>This table has been loaded from Keys semicolon.csv (that also includes a header line).</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>test2</dbtable>
 						<dbcolumn>id</dbcolumn>
-					</param> 
+					</param>
 					<query>SELECT *	
 						FROM "TestCSV"."test2"
 					</query>
 				</subselect>
 
 				<subselect>
+					<title>Data from Keys tab.csv</title>
 					<subtitle>This table has been loaded from Keys tab.csv (in CSV mode):</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>test3</dbtable>
 						<dbcolumn>id</dbcolumn>
-					</param>   
-					<query>SELECT *			
+					</param>
+					<query>SELECT *
 						FROM "TestCSV"."test3"
 					</query>
 				</subselect>
 
 				<subselect>
+					<title>Data from Keys tab.csv</title>
 					<subtitle>This table has been loaded from Keys tab.csv (in TSV mode). If redaction was enabled
 					in the order xml file or if you set it manualy in the menu, then check the column with X:</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>test4</dbtable>
 						<dbcolumn>id</dbcolumn>
-					</param>  
+					</param>
 					<query>SELECT *	
 						FROM "TestCSV"."test4"
 					</query>
@@ -207,10 +223,11 @@
 
 			<screen skipCSVsave="1">
 				<id>4</id>
-				<selectDescription>Retrieving database column descriptions</selectDescription>
-				<title>Column descriptions are displayed as infotip</title>   
-				<subtitle>For this test the descriptions are set in createdb01.sql. 
-						No description is shown where the value from the table has been modified in the SELECT statement.
+				<selectDescription>Retrieving database column descriptions.</selectDescription>
+				<title>Column descriptions are displayed as infotip</title>
+				<subtitle>- Column descriptions have been set in createdb01.sql. No description
+						is shown where the value from the table has been modified in the SELECT statement (example1, example2).&lt;BR /&gt;
+						- Demonstration of multi-column view. A label can be omitted. Values are shown in the same column until a new column is triggered.
 				</subtitle>
 				<query>SELECT
 					"test1".*, 
@@ -225,12 +242,21 @@
 					LEFT JOIN "TestCSV"."test3" AS "A" ON "test1"."id" = "A"."id"
 					LEFT JOIN "TestCSV"."test4" AS "B" ON "test1"."id" = "B"."id"
 				</query>
-				
+				<view default="listMC">
+					<columnName noLabel="1">dateX</columnName>
+					<columnName noLabel="1">dateY</columnName>
+					<columnName newCol="1">value 4</columnName>
+					<columnName newCol="1" noLabel="1">example2</columnName>
+				</view>
+
 				<subselect>
-					<subtitle>Additional test case</subtitle>
+					<title>This is a subselect</title>
+					<subtitle>Simple select *</subtitle>
 					<query>SELECT *	
 						FROM "TestCSV"."test1" AS "A"
 					</query>
+					<view>
+					</view>
 				</subselect>
 
 			</screen>
@@ -239,7 +265,7 @@
 				<id>10</id>
 				<selectDescription>Number of records in each table</selectDescription>
 				<title>This is a control report.</title>
-				<subtitle>A macro is used instead of a DBMS specific script</subtitle>
+				<subtitle>A macro is used instead of a DBMS specific script. This report is usually a standard part in all projects.</subtitle>
 				<querymacro>NUMBER_OF_RECORDS_IN_TABLES</querymacro>
 				<query/>
 			</screen>

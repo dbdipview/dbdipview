@@ -1,11 +1,13 @@
 
 html {
-	font-size: 100%;
+	font-size: var(--main-font-size);
+	font-family: var(--main-fontfamily);
 }
 
 @media screen and (max-width: 480px) {
 	html {
-		font-size: 100%;
+		font-size: var(--main-font-size);
+		font-family: var(--main-fontfamily);
 	}
 }
 
@@ -83,6 +85,11 @@ hr {
 	border-color: var(--main-hrborder-color);
 }
 
+table {
+	font-family: var(--main-fontfamily);
+	font-size: var(--main-font-size);
+}
+
 table.mydbtable {
 	color: var(--mydbtable-color);
 	font-family: var(--main-fontfamily);
@@ -90,8 +97,8 @@ table.mydbtable {
 }
 
 table.mydbtable th {
-	border-width: 1px 1px 1px 1px;
-	padding: 1px 1px 1px 1px;
+	border-width: 0.1rem 0.1rem 0.1rem 0.1rem;
+	padding: 0.1rem 0.1rem 0.1rem 0.1rem;
 	border-style: solid solid solid solid;
 	border-color: gray gray gray gray;
 	background-color: var(--mydbtable-th-background-color);
@@ -100,10 +107,11 @@ table.mydbtable th {
 }
 
 table.mydbtable td {
-	border-width: 1px 1px 1px 1px;
-	padding: 5px 1px;
+	border-width: 0.1rem 0.1rem 0.1rem 0.1rem;
+	padding: 0.1rem 0.3rem;
 	border-style: hidden;
 	background-color: var(--mydbtable-td-background-color);
+	vertical-align: top;
 }
 
 table.sortable {
@@ -113,8 +121,8 @@ table.sortable {
 }
 
 table.sortable th {
-	border-width: 1px 1px 1px 1px;
-	padding: 1px 1px 1px 1px;
+	border-width: 0.1rem 0.1rem 0.1rem 0.1rem;
+	padding: 0.1rem 0.1rem 0.1rem 0.1rem;
 	border-style: solid solid solid solid;
 	border-color: var(--sortable-th-border-color); 
 	background-color: var(--sortable-th-background-color);
@@ -128,8 +136,8 @@ table.sortable th:hover {
 }
 
 table.sortable td {
-	border-width: 1px 1px 1px 1px;
-	padding: 5px 1px;
+	border-width: 0.1rem 0.1rem 0.1rem 0.1rem;
+	padding: 0.1rem 0.3rem;
 	border-style: hidden;
 	background-color: var(--sortable-td-background-color);
 }
@@ -140,22 +148,23 @@ table.sortable tbody tr:nth-child(even) td {
 
 .button {
 	font-family: var(--main-fontfamily);
-	border: 1px var(--main-buttonbg-color) solid;
-	border-radius: 4px;
+	font-size: var(--main-font-size);
+	border: 0.1rem var(--main-buttonhoover-color) solid;
+	border-radius: 0.25rem;
 	background: var(--main-buttonbg-color);
 	padding: 0.25em 0.80em;
 }
 
 .button:hover {
 	font-family: var(--main-fontfamily);
-	border: 1px var(--main-buttonhoover-color) solid;
+	border: 0.1rem var(--main-buttonhoover-color) solid;
 	background: var(--main-buttonhoover-color);
 }
 
 .box {
 	background-color: var(--main-boxbg-color);
-	border: 1px solid var(--main-boxborder-color);
-	padding: 5px;
+	border: 0.1rem solid var(--main-boxborder-color);
+	padding: 0.3rem;
 	display: none;
 	position: absolute;
 }
@@ -176,14 +185,14 @@ input[type='radio']:checked
 select {
 	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-size);
-	border: 2px solid var(--main-boxbg-color);
+	border: 0.15rem solid var(--main-boxbg-color);
 }
 input {
 	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-size);
-	padding: 1px;
-	margin: 1px 0;
-	border: 2px solid var(--main-boxbg-color);
+	padding: 0.1rem;
+	margin: 0.1rem 0;
+	border: 0.15rem solid var(--main-boxbg-color);
 }
 
 .required:after {
@@ -193,7 +202,7 @@ input {
  
 ul, #nestedList {
 	list-style-type: none;
-	padding-left: 14px;
+	padding-left: 0.8rem;
 }
 #nestedList {
 	margin: 0;
@@ -207,7 +216,7 @@ ul, #nestedList {
 	content: "\B1";
 	color: var(--main-htext-color);
 	display: inline-block;
-	margin-right: 2px;
+	margin-right: 0.15rem;
 }
 .caret-down::before {
 	content: "–";
@@ -221,7 +230,7 @@ ul, #nestedList {
 	content: "\B1";
 	color: transparent;
 	display: inline-block;
-	margin-right: 3px;
+	margin-right: 0.2rem;
 }
 ul.nested {
 	display: none;

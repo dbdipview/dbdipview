@@ -36,9 +36,9 @@
 	var dd = document.getElementById(d);
 	AssignPosition(dd);
 	dd.style.display = "block";
-	dd.style.border = "1px solid var(--main-htext-color)";
+	dd.style.border = "0.1rem solid var(--main-htext-color)";
 	dd.style.backgroundColor = "var(--main-boxbg-color)";
-	dd.style.borderRadius = "5px";
+	dd.style.borderRadius = "0.3rem";
 	}
 	function ReverseContentDisplay(d) {
 	if(d.length < 1) { return; }
