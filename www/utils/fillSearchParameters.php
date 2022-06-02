@@ -47,7 +47,7 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			$attributeSkipNewLine = get_bool($param->attributes()->skipNewLine);
 			if($attributeSkipNewLine == true)
-				$stringNewLine = "&nbsp;" . "\r\n";
+				$stringNewLine = "\r\n";
 			else
 				$stringNewLine = "<br/>" . "\r\n";
 
@@ -166,7 +166,7 @@ if($screenFields == 0)
 			<label><input type="radio" name="tablelist" value="listMC" onclick="setTreeOrList()" id="wantListMC" <?php echo $checkedLMC; ?>
 			       /><img src="img/listMC.png"  alt="<?php echo $MSGSW26c_LISTVIEW; ?>"></img></label></abbr>
 
-		&nbsp;<br /><br />
+		<br /><br />
 
 		<abbr title="<?php echo $MSGSW12_RecordsPerPage; ?>">
 			<img src="img/linesperpage.png" alt="<?php echo $MSGSW12_RecordsPerPage; ?>" style="vertical-align:sub"></img></abbr>

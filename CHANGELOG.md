@@ -11,6 +11,7 @@ Generally, the master branch is always stable. You can use it for installation o
 - access: configurable multi-column view introduced
 ### Modified
 - test suite: TestAndDemo 2 shows usage of multi-column view
+- access: some CSS changes for tablet devices
 
 ## [2.8.5] - 2022-05-20
 ### Modified
