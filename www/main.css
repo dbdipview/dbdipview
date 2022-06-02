@@ -190,8 +190,8 @@ select {
 input {
 	font-family: var(--main-fontfamily);
 	font-size: var(--main-font-size);
-	padding: 0.1rem;
-	margin: 0.1rem 0;
+	padding: 0.01rem;
+	margin: 0.1rem 0.1rem;
 	border: 0.15rem solid var(--main-boxbg-color);
 }
 
