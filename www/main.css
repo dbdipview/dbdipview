@@ -249,10 +249,20 @@ ul.nested {
 	text-decoration: underline;
 }
 
+.helpMain {
+	display: none;
+	line-height: 1rem;
+}
+.helpExample {
+	font-family: Courier New, Courier;
+	line-height: 1.3rem;
+}
+
 .logo {
 	font-family: Courier, cursive, sans-serif;
-	font-size: 70%;
+	font-size: 0.7rem;
 	text-align: right;
 	color: #333;
 	background-color: #FFFFFF;
+	line-height:0.31rem;
 }

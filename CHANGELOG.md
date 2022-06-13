@@ -5,10 +5,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.9.0] - 2022-06-13
+### Added
+- access: configurable multi-column view
 
 ## [2.8.6] - 2022-06-01
 ### Added
-- access: configurable multi-column view introduced
+- access: configurable multi-column view (preview)
 ### Modified
 - test suite: TestAndDemo 2 shows usage of multi-column view
 - access: some CSS changes for tablet devices

@@ -21,10 +21,10 @@ global $MHLP06,$MHLP07,$MHLP08,$MHLP09, $MHLP10,$MHLP11,$MHLP12;
 <script>
 function FunctionHelpToggle() {
   var x = document.getElementById("SearchHelp");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
+  if (x.style.display === "block") {
     x.style.display = "none";
+  } else {
+    x.style.display = "block";
   }
 }
 </script>
@@ -197,22 +197,21 @@ if($screenFields == 0)
 		<button type="button" class='button' onclick="FunctionHelpToggle()">
 			<?php echo $MHLP00; ?> &darr;
 		</button>
-	<div id="SearchHelp" style="display: none; line-height:0.31"><br />
+	<div id="SearchHelp" class="helpMain"><br />
 			<?php echo $MHLP01; ?>
-<pre>&nbsp; <?php echo $MHLP02; ?></pre>
+<div class="helpExample">&nbsp;&nbsp; <?php echo $MHLP02; ?></div>
 			<?php echo $MHLP03; ?>
-<pre>&nbsp; <?php echo $MHLP04; ?></pre>
+<div class="helpExample">&nbsp;&nbsp; <?php echo $MHLP04; ?></div>
 			<?php echo $MHLP05; ?>
-<pre>&nbsp; <?php echo $MHLP06; ?></pre>
+<div class="helpExample">&nbsp;&nbsp; <?php echo $MHLP06; ?></div>
 			<?php echo $MHLP07; ?>
-<pre>&nbsp; <?php echo $MHLP08; ?></pre>
+<div class="helpExample">&nbsp;&nbsp; <?php echo $MHLP08; ?></div>
 			<?php echo $MHLP09; ?>
-<pre>&nbsp; <?php echo $MHLP10; ?></pre>
-			<?php echo $MHLP11; ?><pre></pre>
-&nbsp;&nbsp;<?php echo $MHLP12; ?><pre></pre>
+<div class="helpExample">&nbsp;&nbsp; <?php echo $MHLP10; ?></div>
+			<?php echo $MHLP11; ?><br />
+&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $MHLP12; ?><br /><br />
 
 		<div class="logo">dbDIPview</div>
-		<br />
 	</div>
 	</td>
 <?php } ?>
