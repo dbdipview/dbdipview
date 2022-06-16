@@ -135,12 +135,15 @@ include "utils/ReportMenu.php";
 
 include "messagesw.php";
 
+if ( empty($myXMLfile) ) {
+	echo "<br /><h3>$MSGSW06_ErrorSessionExpired</h3><br />";
+	$submit_cycle = "noSession";
+	echo "<a href='index.html' class='button' target='_top'>$MSGSW08_Continue</a>";
+}
+
 setDBparams($myDBname);
 if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
-	strcmp($submit_cycle, "editStatus")            != 0 &&
-	strcmp($submit_cycle, "saveStatus")            != 0 &&
-	strcmp($submit_cycle, "editUser")              != 0 &&
-	strcmp($submit_cycle, "saveUser")              != 0
+	strcmp($submit_cycle, "noSession")             != 0
   ) {
 ?>
 	<table border="0" color="white" width="100%">
@@ -163,13 +166,10 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 <?php
 } //if submit_cycle
 
-if ( empty($myXMLfile) ) {
-	echo "</BR><h2>$MSGSW06_ErrorSessionExpired</h2></BR>";
-	$submit_cycle = "noSession";
-} elseif ( file_exists($myXMLfilePath) ) {
+if ( file_exists($myXMLfilePath) ) {
 	$xml = simplexml_load_file($myXMLfilePath);
 } else {
-	echo "</BR><h2>$MSGSW05_ErrorNoConfiguration</h2></BR>"; 
+	echo "<br /><h3>$MSGSW05_ErrorNoConfiguration</h3><br />"; 
 	$submit_cycle = "noSession";
 }
 
@@ -178,7 +178,7 @@ if( (strcmp($submit_cycle, "noSession") !== 0) &&
 	  strlen($myDBname) == 0 || 
 	  config_isPackageActivated( rtrim($myXMLfile, ".xml"), $myDBname) == 0 ) )
 {
-		echo "</BR><h2>$MSGSW07_ErrorNoSuchCombination.</h2></BR>";
+		echo "<br /><h3>$MSGSW07_ErrorNoSuchCombination.</h3><br />";
 		$submit_cycle = "noSession";
 }
 
@@ -241,7 +241,6 @@ case "searchParametersReady":
 	fillCreateQuery();
 	break;
 default:
-	//die("Wrong submit cycle:" . $submit_cycle);
 	break;
 }
 
