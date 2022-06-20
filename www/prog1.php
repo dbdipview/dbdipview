@@ -19,7 +19,8 @@ else
 
 $myXMLfile="";
 $myDBname="no_db";
-$myLang = "en";
+
+include "config/confighdr.php";  //get $myLang
 
 switch ($submit_cycle) {
 	case "CheckLogin":
