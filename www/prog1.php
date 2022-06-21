@@ -167,7 +167,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 <?php
 } //if submit_cycle
 
-if ( file_exists($myXMLfilePath) ) {
+if ( is_file($myXMLfilePath) ) {
 	$xml = simplexml_load_file($myXMLfilePath);
 } else {
 	echo "<br /><h3>$MSGSW05_ErrorNoConfiguration</h3><br />"; 
