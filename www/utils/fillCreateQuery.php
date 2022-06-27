@@ -530,6 +530,11 @@ define('PRINTER_ICON', '&#x1f5b6;');
 		$hits=0;
 		if( strcmp($tablelist, "table") == 0) {
 			print ("<h3>");
+
+			print "<span class='no-print'>";
+			print "<abbr style='text-decoration: none' title='" . $MSGSW31_Print . "'><a style='text-decoration: none;' href='#' onclick=\"printContent('bottomframe');\">" . PRINTER_ICON . "</a></abbr> ";
+			print "</span>";
+
 			if($attrSkipCSVsave != true) {
 				$csvfilename = "export" . $targetQueryNum . ".csv";
 				createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
@@ -539,6 +544,7 @@ define('PRINTER_ICON', '&#x1f5b6;');
 								$csvfilename);
 			}
 			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h3>");
+
 
 			print ("<h4>");
 			$queryInfo->showHeader("</h4>");
@@ -557,19 +563,13 @@ define('PRINTER_ICON', '&#x1f5b6;');
 		} else {
 			print "<table class=\"mydbtable\">" . PHP_EOL;   // force mydb color
 			print "<tr><td>" . PHP_EOL;
-?>
-		<table border="0" width="100%">
-		<tr>
-			<td style="text-align: left"><?php	print "<h3>" . $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h3>"; ?></td>
-			<td style="text-align: right;">
-<?php
-			print "<span class='no-print'><h3>";
+
+			print "<h3>";
+			print "<span class='no-print'>";
 			print "<abbr style='text-decoration: none' title='" . $MSGSW31_Print . "'><a style='text-decoration: none' href='#' onclick=\"printContent('bottomframe');\">" . PRINTER_ICON . "</a></abbr> ";
-			print "</h3></span>";
-?>
-		</tr>
-		</table>
-<?php
+			print "</span>";
+			print $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h3>";
+
 			print ("<h4>");
 			$queryInfo->showHeader("</h4>");
 			print ("<br/>");

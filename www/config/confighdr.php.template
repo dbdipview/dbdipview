@@ -1,6 +1,7 @@
 <?php
 
-$myLang = "en";  //ISO 639-1 language code
+$myLang = "en";      //en,sl,cs ISO 639-1 language code
+$loginMenuLevel = 0; //0:dropdown with all public databases, 1:database&viewer, 2:code
 
 $INSTITUTION = "My institution";
 

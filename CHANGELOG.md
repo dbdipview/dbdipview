@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.10.1] - 2022-06-27
+### Added
+- access: configure the start page: enable/disable the dropdown list of databases
+- access: print icon also for table view
+
 ## [2.9.1] - 2022-06-16
 ### Fixed
 - access: session time-out behaviour

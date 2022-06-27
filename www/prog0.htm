@@ -10,6 +10,7 @@ session_start();
 session_destroy();
 session_start();
 
+$loginMenuLevel = 0;
 include "config/confighdr.php";
 include "messagesw.php";
 include "../admin/funcConfig.php";
@@ -46,42 +47,44 @@ include "../admin/version.php";
     </tr>
   </table>
  
-<h2><?php echo $INSTITUTION; ?></h2>
-<h1><?php echo $MSGSW01_MainSubTitle; ?></h1>
 <?php
+	echo "<h2>$INSTITUTION</h2>";
+	echo "<h1>$MSGSW01_MainSubTitle</h1>";
+
 	$c = "";          //code (token)
 	$d = "";          //dbc
 	$v = "";          //viewer
 	$debug = "";
 	
 	if(isset($_GET['c']))
-		$c = $_GET['c'];   //remove GET for production
+		$c = htmlspecialchars($_GET['c']);   //remove GET for production
 	
-	if(isset($_GET['d']))
-		$d = $_GET['d'];
+	if ( !isset($loginMenuLevel) || $loginMenuLevel < 2 ) {
+		if(isset($_GET['d']))
+			$d = htmlspecialchars($_GET['d']);
 
-	if(isset($_GET['v']))
-		$v = $_GET['v'];
-
+		if(isset($_GET['v']))
+			$v = htmlspecialchars($_GET['v']);
+	}
 	if(isset($_GET['debug']))
-		$debug = $_GET['debug'];
+		$debug = htmlspecialchars($_GET['debug']);
 ?>
 <br />
 <form name="forma" action="prog1.php" method="get" target='topframe'>
 	<table>
 	<tbody>
-<?php if( strlen($c) > 0 ) { ?>
+<?php if( strlen($c) > 0 || $loginMenuLevel == 2 ) { ?>
 	<tr>
 		<td>
-			 <?php echo $MSGSW02_Code; ?>: 
+			 <?php echo $MSGSW02_Code; ?>
 		</td>
 		<td>
-			 <input type="text" name="code" size="15" value="<?php echo $c;?>" readonly/>
+			 <input type="text" name="code" size="15" value="<?php echo $c;?>" required />
 		</td>
 	</tr>
 
 <?php
-		} else if( !strlen($v) > 0 ) {
+		} else if( !(strlen($v) > 0 && strlen($v) > 0) && $loginMenuLevel == 0 ) {
 			echo "<tr>";
 			echo '<td style="text-align: center;" cellpadding="0" cellspacing="0">';
 			if(file_exists ("data/config.json")) {
@@ -93,28 +96,23 @@ include "../admin/version.php";
 				echo "<h2>$MSGSW05_ErrorNoConfiguration.</h2>";
 			echo "</td>";
 			echo "</tr>";
-		} else {
-?>
-	<tr>
-		<td>
-			<?php echo $MSGSW03_Database; ?>: 
-		</td>
-		<td>
-			 <input type="text" size="30" name="dbname" 
-				 value="<?php echo (strlen($d) > 0) ? $d : '';?>" 
-				       <?php echo (strlen($d) > 0) ? ' readonly' : '';?> 
-			 />
-		</td>
-	</tr>
-<?php
+		} else if (	$loginMenuLevel < 2 ) {
 			echo "<tr>";
-			echo "<td>$MSGSW04_Viewer:</td>";
+			echo "<td>$MSGSW03_Database</td>";
 			echo "<td>";
-			if(strlen($v) > 0) {
 ?>
-				<input type="text" size="30" name="xmlfile" value="<?php echo $v;?>" readonly />
+				<input type="text" size="30" name="dbname" 
+					value="<?php echo $d;?>" required />
 <?php
-			} 
+			echo "</td>";
+			echo "</tr>";
+			echo "<tr>";
+			echo "<td>$MSGSW04_Viewer</td>";
+			echo "<td>";
+?>
+				<input type="text" size="30" name="xmlfile" 
+					value="<?php echo $v;?>" required />
+<?php
 			echo "</td>";
 			echo "</tr>";
 		}
