@@ -17,7 +17,7 @@
 			<revision date="2020-12-13" version="1.4">Added selectGroup example</revision>
 			<revision date="2021-05-14" version="1.5">Added show column description</revision>
 			<revision date="2021-09-28" version="1.6">Use of macro</revision>
-			<revision date="2022-06-01" version="1.7">Use of multi-column view</revision>
+			<revision date="2022-06-29" version="1.7">Use of multi-column view</revision>
 		</revisions>
 		<ref_number>TestAndDemo2</ref_number>
 		<screens>
@@ -28,10 +28,10 @@
 				<title>TITLE: RC airplane pictures</title>
 				<subtitle>SUBTITLE: &lt;BR /&gt;
 				- Images shown as thumbnails &lt;BR /&gt;
-				- Links to external files shown in two columns. &lt;BR /&gt;
-				- Example for external linkwith URL prefix. &lt;BR /&gt;
-				- If a parameter Name is set in the Search pane, it is also propagated as a filter to the subqueries. &lt;BR /&gt;
-				- In multi-column view the default number of columns is used
+				- Links to external files are shown in two columns. &lt;BR /&gt;
+				- Example for external link with URL prefix. &lt;BR /&gt;
+				- If a parameters Name or Number of motors are set in the search pane, they are also propagated as a filter to the subqueries. &lt;BR /&gt;
+				- In multi-column view the default number of columns is used.
 				</subtitle>
 				<param>
 					<name>Name</name>
@@ -46,6 +46,7 @@
 					<dbcolumn>motors_code</dbcolumn>
 					<select>SELECT "motors_code", "motors_text" FROM "AirplanesLinks"."view_codes_NumOfEngines" ORDER BY "motors_text"</select>
 					<type>combotext</type>
+					<forwardToSubqueryName>param2</forwardToSubqueryName>
 				</param>
 				<query>SELECT id, 
 						"name Ü", 
@@ -88,13 +89,19 @@
 				<subselect>
 					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>
 					<subtitle>Demonstration for: &lt;BR /&gt;
-					- ext_link column the link text has been set &lt;BR /&gt;
-					- in multi-column view two columns are set and there is no label for the column 'image'
+					- Use of ext_link column with link text. &lt;BR /&gt;
+					- In multi-column view two columns are set with picture (without label) in the second column. &lt;BR /&gt;
+					- Parameters Name and Number of motors can be set in the main search pane.
 					</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>models</dbtable>
 						<dbcolumn>name Ü</dbcolumn>
+					</param>
+					<param>
+						<forwardedParamName>param2</forwardedParamName>
+						<dbtable>models</dbtable>
+						<dbcolumn>motors_code</dbcolumn>
 					</param>
 					<query>SELECT 
 							"id",
@@ -130,7 +137,7 @@
 
 				<subselect>
 					<title>TITLE: Summary</title>
-					<subtitle>Test of GROUP BY motors_text</subtitle>
+					<subtitle>Test of GROUP BY motors_text. No parameter passing is used here.</subtitle>
 					<query>SELECT COUNT(id) AS "number", 
 						"motors_text"
 						FROM "AirplanesLinks"."models" 
@@ -226,8 +233,10 @@
 				<selectDescription>Retrieving database column descriptions.</selectDescription>
 				<title>Column descriptions are displayed as infotip</title>
 				<subtitle>- Column descriptions have been set in createdb01.sql. No description
-						is shown where the value from the table has been modified in the SELECT statement (example1, example2).&lt;BR /&gt;
-						- Demonstration of multi-column view. A label can be omitted. Values are shown in the same column until a new column is triggered.
+				is shown where the value from the table has been modified in the SELECT statement (example1, example2).&lt;BR /&gt;
+				- Demonstration of multi-column view. A label can be omitted. Values are shown in the same column until a new column is triggered.&lt;BR /&gt;
+				no label: dateX, dateY&lt;BR /&gt;
+				new column: value 4, example2&lt;BR /&gt;
 				</subtitle>
 				<query>SELECT
 					"test1".*, 
