@@ -151,6 +151,9 @@ function qToListWithLink($queryInfo, $totalCount) {
 	$blob_columns =           $queryInfo->blob_columns;
 	$viewInfo =               $queryInfo->viewInfo;
 
+	if( empty($query) )
+		return;
+
 	global $dbConn;
 	global $filespath;
 	$output = "";
@@ -312,9 +315,12 @@ function qToTableWithLink($queryInfo,
 
 	$query = $queryInfo->query;
 	$linknextscreen_columns = $queryInfo->linknextscreen_columns;
-	$images_image_style = $queryInfo->images_image_style;
-	$ahref_columns = $queryInfo->ahref_columns;
-	$blob_columns = $queryInfo->blob_columns;
+	$images_image_style =     $queryInfo->images_image_style;
+	$ahref_columns =          $queryInfo->ahref_columns;
+	$blob_columns =           $queryInfo->blob_columns;
+
+	if( empty($query) )
+		return;
 
 	$output = "";
 	$tableid = "table" . $queryId;

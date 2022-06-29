@@ -59,6 +59,9 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 	global $MSGSW17_Records, $MSGSW18_ReportDescription, $MSGSW19_ReportTitle, $MSGSW20_ReportSubTitle;
 	global $MSGSW28_SAVESASCSV;
 
+	if ( empty($csvquery) )
+		return;
+
 	$csvtitle = "";
 	if(isset($_SESSION['title']))
 		$csvtitle .= '"' . $MSGSW17_Records .           ": " .  fbr($_SESSION['title']) .  '"' . ";\n";
@@ -307,12 +310,16 @@ foreach ($xml->database->screens->screen as $screen) {
 			return;
 		}
 
-		$query = "$screenQuery $where";
-		if( ! isset($screen->querymacro) )
-			$query = $query . appendOrderGroupBy("GROUP BY", $screen->selectGroup);
-		$csvquery = $query;
-		if( ! isset($screen->querymacro) )
-			$query = $query . appendOrderGroupBy("ORDER BY", $screen->selectOrder);
+		$csvquery = "";
+		if (! empty($screenQuery) ) {
+			$query = "$screenQuery $where";
+
+			if( ! isset($screen->querymacro) )
+				$query = $query . appendOrderGroupBy("GROUP BY", $screen->selectGroup);
+			$csvquery = $query;
+			if( ! isset($screen->querymacro) )
+				$query = $query . appendOrderGroupBy("ORDER BY", $screen->selectOrder);
+		}
 
 		//----------------------
 		foreach ($screen->ahrefs as $ahrefs) {
@@ -388,7 +395,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		$maxcount = 0;
 		if (isset($_GET['maxcount'])) {
 			$maxcount = pg_escape_string($_GET['maxcount']);
-			if ($maxcount != 0) {
+			if ( $maxcount != 0 && ! empty($query) ) {
 				$query = $query . " LIMIT " . $maxcount;    //limit only for main query
 			}
 		}

@@ -1,46 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dbDIPview 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
-	schemaMajorVersion="2" >
+<dbDIPview
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
+           schemaMajorVersion="2">
 
 	<database>
 		<name>TestAndDemo6 regression test viewer: DDV only (using data from TestAndDemo4); nested treeview</name>
-		<overview></overview>
+		<overview/>
 		<revisions>
 			<revision date="2020-05-11" version="0.1">First test</revision>
 			<revision date="2020-06-10" version="1.0">Added element overview</revision>
 			<revision date="2021-05-27" version="1.1">Added nested treeview testcase</revision>
+			<revision date="2021-06-29" version="1.2">Use of empty query and subquery</revision>
 		</revisions>
 		<ref_number>TestAndDemo6</ref_number>
 		<screens>
 
 			<screen>
 				<id>1</id>
-				<selectDescription>The report</selectDescription>
-				<title>See TestAndDemo4 for the creation of database DBC4.</title>
-				<subtitle>This DDV viewer has been installed without any database and enables access to a previously deployed database.</subtitle>  
+				<selectDescription>A structured report</selectDescription>
+				<title>MAIN QUERY. This report has an empty main query and two subselests. See TestAndDemo4 for the creation of database DBC4.</title>
+				<subtitle>This main query is just a placeholder for the title. It allows for passing more information to the user. &lt;BR /&gt;
+				- No SELECT statement has been defined. &lt;BR /&gt;
+				- This DDV viewer has been installed without any database and enables access to a previously deployed database.</subtitle>
 				<param size='4'>
-					<name>Date hired</name>
+					<name>Employed since</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>date Hired /hq</dbcolumn>
 					<type>date_ge</type>
+					<forwardToSubqueryName>param1</forwardToSubqueryName>
 				</param>
 				<param>
 					<name>Employee name</name>
 					<dbtable>HR employees</dbtable>
 					<dbcolumn>Employee Name</dbcolumn>
 					<type>textlike</type>
+					<forwardToSubqueryName>param2</forwardToSubqueryName>
 				</param>
-				<query>SELECT
+				<query />
+
+				<subselect>
+					<title>Subquery1</title>
+					<subtitle>The parameters from the Search pane are passed.</subtitle>
+		
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>HR employees</dbtable>
+						<dbcolumn>date Hired /hq</dbcolumn>
+					</param>
+					<param>
+						<forwardedParamName>param2</forwardedParamName>
+						<dbtable>HR employees</dbtable>
+						<dbcolumn>Employee Name</dbcolumn>
+					</param>
+					<query>SELECT
 					"HR employees"."Id" AS "ID",
 					"HR employees"."Employee Name" AS "Name",
 					"HR employees"."date Hired /hq" AS "Hired"
 						FROM "HR members"."HR employees"
-				</query>
+					</query>
+				</subselect>
+				
+				<subselect>
+					<title>Subquery2</title>
+					<subtitle>This is a demonstration of title and subtitle without any query.</subtitle>
+					<query />
+				</subselect>
 			</screen>
            
-  			<screen level="0" textOnly="1">
+			<screen level="0" textOnly="1">
 				<id>not used</id>
 				<selectDescription>Group0 at level 0</selectDescription>
 			</screen>
