@@ -167,14 +167,16 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 <?php
 } //if submit_cycle
 
-if ( is_file($myXMLfilePath) ) {
-	$xml = simplexml_load_file($myXMLfilePath);
-} else {
-	echo "<br /><h3>$MSGSW05_ErrorNoConfiguration</h3><br />"; 
-	$submit_cycle = "noSession";
+if ( strcmp($submit_cycle, "noSession") !== 0 ) {
+	if ( is_file($myXMLfilePath) ) {
+		$xml = simplexml_load_file($myXMLfilePath);
+	} else {
+		echo "<br /><h3>$MSGSW05_ErrorNoConfiguration</h3><br />"; 
+		$submit_cycle = "noSession";
+	}
 }
 
-if( (strcmp($submit_cycle, "noSession") !== 0) &&
+if( ( strcmp($submit_cycle, "noSession") !== 0 ) &&
 	( strlen($myXMLfile)== 0 || 
 	  strlen($myDBname) == 0 || 
 	  config_isPackageActivated( rtrim($myXMLfile, ".xml"), $myDBname) == 0 ) )

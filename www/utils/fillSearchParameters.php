@@ -184,7 +184,7 @@ if($screenFields == 0)
 			<input type="hidden" name="targetQueryNum" value="<?php echo $targetQueryNum; ?>" /><br />
 			<label for="idgo">
 			<abbr title="<?php echo $MSGSW16_Display; ?>">
-			<input id="idgo" type="submit" class='button' value="&#x1F50D;" alt="<?php echo $MSGSW16_Display; ?>" style="font-size: 1rem;width: 100%;"/>
+			<input id="idgo" type="submit" class='button' value="&#x1F50D;" alt="<?php echo $MSGSW16_Display; ?>" style="font-size: 1rem;width: 98%;"/>
 			</abbr>
 			</label>
 <!--		<abbr title="<?php echo $MSGSW16_Display; ?>"><br />
