@@ -3,6 +3,7 @@
 // Public Domain Software... You're welcome.
 // poslovenil Boris Domajnko, ARS, 25.5.2009
 //                    TCALSIDX bug fix 2.3.2010
+//                    icon.title: 28.7.2022 disabled and no translation is needed
 
 // default settins
 var A_TCALDEF = {
@@ -136,7 +137,7 @@ function f_tcalShow (d_date) {
 
 	// change icon and status
 	this.e_icon.src = this.a_tpl.imgpath + 'no_cal.gif';
-	this.e_icon.title = 'Zapri koledar';
+	this.e_icon.title = '';  //Close calendar
 	this.b_visible = true;
 }
 
@@ -158,7 +159,7 @@ function f_tcalHide (n_date) {
 	// change icon and status
 	this.e_icon = f_getElement(this.s_iconId);
 	this.e_icon.src = this.a_tpl.imgpath + 'cal.gif';
-	this.e_icon.title = 'Odpri koledar';
+	this.e_icon.title = '';  //Open calendar
 	this.b_visible = false;
 }
 
