@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.10.2] - 2022-07-28
+### Fixed
+- access: removed untranslated hover text over the calendar icon
+
 ## [2.10.1] - 2022-06-29
 ### Added
 - access: query and subquery can be without SQL code, only title and subtitle will be displayed
