@@ -163,6 +163,7 @@ else
 foreach ($xml->database->screens->screen as $screen) {
 
 	$queryInfo = new QueryData();
+	$query = "";
 	$where = "";
 	$mandatory = "";
 	$attrSkipCSVsave = false;
@@ -614,7 +615,8 @@ define('PRINTER_ICON', '&#x1f5b6;');
 							0,
 							$sqindexLoop);
 
-				print $newlist[0];
+				if( !empty($newlist) )
+					print $newlist[0];
 				$sqindexLoop  += 1;
 			} else {
 				print("<h4>");
@@ -623,12 +625,13 @@ define('PRINTER_ICON', '&#x1f5b6;');
 
 				$newlist = qToListWithLink($subQueriesInfo[$sqindexLoop], 0);
 
-				print $newlist[0];
+				if( !empty($newlist) )
+					print $newlist[0];
 				$sqindexLoop  += 1;
 			}
 		}
 
-		if( strcmp($tablelist, "table") != 0)
+		if( strcmp($tablelist, "table") != 0 )
 			print "</td></tr></table>" . PHP_EOL;
 
 		if($sqindex == 0) {   //show only when there are no subqueries involved

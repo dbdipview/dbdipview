@@ -62,7 +62,6 @@ include "config/config.php";
 		case "OID":
 			header("Content-Type: $contenttype");
 			header("Content-Disposition: inline; filename=" . $filename);
-			$db->pgsqlLOBOpen($lob, 'r');
 			echo stream_get_contents($lob);
 			break;
 		default:
