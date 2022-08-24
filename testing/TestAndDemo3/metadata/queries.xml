@@ -24,6 +24,7 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 			<revision date="2020-12-13" version="1.4">Link to next query/subquery with parameter from other column added</revision>
 			<revision date="2021-05-27" version="1.6">Level attribute added</revision>
 			<revision date="2021-06-22" version="1.7">Composite key example added</revision>
+			<revision date="2022-08-24" version="1.8">OID replaced with BLOB</revision>
 		</revisions>
 		<ref_number>TestAndDemo3</ref_number>
 		<screens>
@@ -331,7 +332,7 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 						FROM "dbo"."table10" 
 						WHERE "poradi" = ?</query>
 					</blob>
-					<blob mode="OID">
+					<blob mode="BLOB">
 						<id>2_2</id>
 						<dbcolumnname>JPG</dbcolumnname>
 						<query>SELECT 
@@ -341,7 +342,7 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 						FROM "dbo"."table10" 
 						WHERE "poradi" = ?</query>
 					</blob>
-					<blob mode="OID">
+					<blob mode="BLOB">
 						<id>2_3</id>
 						<dbcolumnname>PDF</dbcolumnname>
 						<query>SELECT 
