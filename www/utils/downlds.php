@@ -41,9 +41,17 @@ include "config/config.php";
 	$db->beginTransaction();
 
 	$stmt = $db->prepare($sql);
-
 	$stmt->execute(array($val));  //record id
-	$stmt->bindColumn('blob',        $lob,         PDO::PARAM_LOB);
+
+	switch ($mode) {
+		case "OID":
+			$stmt->bindColumn('blob',        $oid,         PDO::PARAM_STR);
+			break;
+		default:
+			$stmt->bindColumn('blob',        $lob,         PDO::PARAM_LOB);
+			break;
+	}
+
 	$stmt->bindColumn('ContentType', $contenttype, PDO::PARAM_STR);
 	$stmt->bindColumn('filename',    $filename,    PDO::PARAM_STR);
 	$stmt->fetch(PDO::FETCH_BOUND);
@@ -62,7 +70,8 @@ include "config/config.php";
 		case "OID":
 			header("Content-Type: $contenttype");
 			header("Content-Disposition: inline; filename=" . $filename);
-			echo stream_get_contents($lob);
+			$stream = $db->pgsqlLOBOpen($oid, 'r');
+			fpassthru($stream);
 			break;
 		default:
 			echo "blob.php: unknown mode: $mode";
