@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.11.0] - 2022-09-16
+### Modified
+- access: PHP PDO data-access abstraction layer is now used (but not in deployment scripts)
+
 ## [2.10.3] - 2022-08-23
 ### Fixed
 - access: download files (ubuntu 22.04)

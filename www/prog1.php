@@ -18,7 +18,7 @@ else
 	$submit_cycle = "CheckLogin";  //first entry
 
 $myXMLfile="";
-$myDBname="no_db";
+$dbName="no_db";
 
 include "config/confighdr.php";  //get $myLang
 
@@ -27,10 +27,10 @@ switch ($submit_cycle) {
 		session_regenerate_id();
 		if (array_key_exists("code", $_GET)) {
 			$code = trim($_GET['code']);
-			list($myDBname, $myXMLfile) = config_code2database($code);
+			list($dbName, $myXMLfile) = config_code2database($code);
 		} else {
 			if (array_key_exists("xmlfile", $_GET) && array_key_exists("dbname", $_GET))
-				list($myDBname, $myXMLfile) = config_dv2database($_GET['dbname'], $_GET['xmlfile']);
+				list($dbName, $myXMLfile) = config_dv2database($_GET['dbname'], $_GET['xmlfile']);
 		}
 		
 		$mydebug="0";
@@ -40,11 +40,11 @@ switch ($submit_cycle) {
 		if (array_key_exists("lang", $_GET))
 			$myLang = trim($_GET['lang']);
 
-		$recordsInfo = configGetInfo( rtrim($myXMLfile, ".xml"), $myDBname );  //filename without .xml
+		$recordsInfo = configGetInfo( rtrim($myXMLfile, ".xml"), $dbName );  //filename without .xml
 		session_regenerate_id();
 		$_SESSION['myXMLfile'] = $myXMLfile;
-		$_SESSION['myDBname'] = $myDBname;
-		$_SESSION['myLang'] = $myLang;
+		$_SESSION['myDBname']  = $dbName;
+		$_SESSION['myLang']    = $myLang;
 		if ( array_key_exists('ref', $recordsInfo) && array_key_exists('title', $recordsInfo) )
 			$_SESSION['title'] = $recordsInfo['ref'] . " " . $recordsInfo['title'];
 		else
@@ -64,9 +64,9 @@ switch ($submit_cycle) {
 		if (isset       ($_SESSION['myXMLfile']))
 			$myXMLfile = $_SESSION['myXMLfile'];
 		if (isset       ($_SESSION['myDBname']))
-			$myDBname =  $_SESSION['myDBname'];
+			$dbName    = $_SESSION['myDBname'];
 		if (isset       ($_SESSION['myLang']))
-			$myLang=     $_SESSION['myLang'];
+			$myLang    = $_SESSION['myLang'];
 		break;
 }
 
@@ -80,8 +80,9 @@ $myTXTfilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . ".txt";
 
 
 //folder for attachments/BLOB content that if referenced from a db column
-$filespath = "files/" . $myDBname . "__" . str_replace(".xml", "", $myXMLfile) . "/";
+$filespath = "files/" . $dbName . "__" . str_replace(".xml", "", $myXMLfile) . "/";
 
+include "dbUtilsView.php";
 include "utils/downlds.php";
 
 switch ($submit_cycle) {
@@ -123,7 +124,6 @@ switch ($submit_cycle) {
 </head>
 <body>
 <?php
-include "dbUtilsView.php";
 include "utils/dbDipDbView.php";
 include "utils/dbUtilsInputFnc.php";
 include "utils/ColumnDescriptions.php";
@@ -142,7 +142,6 @@ if ( empty($myXMLfile) ) {
 	echo "<a href='index.html' class='button' target='_top'>$MSGSW08_Continue</a>";
 }
 
-setDBparams($myDBname);
 if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 	strcmp($submit_cycle, "noSession")             != 0
   ) {
@@ -156,7 +155,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 			</td>
 			<td style="text-align: right;">
 <?php
-			echo $myDBname . "&#8672;" . rtrim($myXMLfile, ".xml") . "&nbsp;&nbsp;";
+			echo $dbName . "&#8672;" . rtrim($myXMLfile, ".xml") . "&nbsp;&nbsp;";
 			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . 
 				"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a></abbr>" .
 				"&nbsp;&nbsp;&nbsp;";
@@ -178,8 +177,8 @@ if ( strcmp($submit_cycle, "noSession") !== 0 ) {
 
 if( ( strcmp($submit_cycle, "noSession") !== 0 ) &&
 	( strlen($myXMLfile)== 0 || 
-	  strlen($myDBname) == 0 || 
-	  config_isPackageActivated( rtrim($myXMLfile, ".xml"), $myDBname) == 0 ) )
+	  strlen($dbName) == 0 || 
+	  config_isPackageActivated( rtrim($myXMLfile, ".xml"), $dbName) == 0 ) )
 {
 		echo "<br /><h3>$MSGSW07_ErrorNoSuchCombination.</h3><br />";
 		$submit_cycle = "noSession";

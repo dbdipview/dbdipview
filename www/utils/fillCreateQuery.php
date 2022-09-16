@@ -735,14 +735,6 @@ function get_query_from_xml($p) {
 
 	$allmacros = array();
 	$allmacros["NUMBER_OF_RECORDS_IN_TABLES"] = <<<EOD
-		CREATE OR REPLACE FUNCTION get_count(schema text, tablename text)
-		   RETURNS SETOF bigint AS
-		\$func\$
-		BEGIN
-		RETURN QUERY EXECUTE 'SELECT count(1) FROM ' || '"' || schema || '"."' || tablename || '"' ;
-		END
-		\$func\$ LANGUAGE plpgsql;
-
 		SELECT
 			 n.nspname AS "Schema",
 			 c.relname AS "Table",

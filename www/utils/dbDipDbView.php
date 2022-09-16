@@ -77,22 +77,21 @@ function getKeyValue($arr, $key) {
  * execute a query
  *
  * Returns: an array with all rows of the result
+ *          array is indexed by column number
  */
 function qRowsToArray($query){
 	global $dbConn;
 	$outarray = array();
-	$result = pg_query($dbConn, $query );
-	if (!$result) {
-		debug(pg_last_error($dbConn), false);
-		return(array(array("ERROR: qRowsToArray<br/>")));
+	//$result = $dbConn->query()->fetch(PDO::FETCH_NUM);
+	$stmt = $dbConn->prepare($query);
+	$stmt->execute();
+
+	if ($dbConn->errorCode() != 0) {
+		debug( implode(",", $dbConn->errorInfo()) );
+		return(array(array("ERROR: qRowsToArray<br />")));
 	} else {
-		$rows = pg_num_rows($result);
-		$i=0;
-		if ($rows > 0) {
-			while ($row = pg_fetch_row($result)) {
-				array_push($outarray, $row);
-				$i += 1;
-			}
+		while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+			array_push($outarray, $row);
 		}
 		return($outarray);
 	}
@@ -157,6 +156,7 @@ function qToListWithLink($queryInfo, $totalCount) {
 	global $dbConn;
 	global $filespath;
 	$output = "";
+	$hits = 0;
 	$currentColNumber;
 
 	if ( empty($totalCount) ) {
@@ -169,20 +169,21 @@ function qToListWithLink($queryInfo, $totalCount) {
 	$columnDescriptions = new ColumnDescriptions($query);
 
 	if( empty($queryWithCount) )
-		$result = pg_query($dbConn, $query );
+		$result = $dbConn->query($query);
 	else
-		$result = pg_query($dbConn, $queryWithCount );
+		$result = $dbConn->query($queryWithCount);
 
-	if (!$result) {
-		debug(pg_last_error($dbConn));
+	if ($dbConn->errorCode() != 0) {
+		debug( implode(",", $dbConn->errorInfo()) );
 		$output = "ERROR: qToListWithLink<br />";
 	} else {
+		$hits = $result->rowCount();
 
-		$viewInfo->setNumbers4NewColumn( pg_num_fields($result) - 1);  //skip last column
+		$viewInfo->setNumbers4NewColumn( $result->columnCount() - 1);  //skip last column
 		if( $viewInfo->is_MC_active() )
 			$output .= "<table>" . PHP_EOL;
 
-		while ($row = pg_fetch_assoc($result)) {
+		foreach ($result as $row) {
 
 			if( $viewInfo->is_MC_active() )
 				$output .= "<tr><td style='border-top: 0.15rem solid var(--main-hrborder-color);'>" . PHP_EOL;
@@ -191,6 +192,7 @@ function qToListWithLink($queryInfo, $totalCount) {
 
 			$currentColNumber = 1;
 			foreach ($row as $col=>$valnl) {
+
 				$val = nl2br($valnl);
 
 				if ($col == "E2F7total7E8D233C") {
@@ -265,7 +267,7 @@ function qToListWithLink($queryInfo, $totalCount) {
 						else {
 							$id=$column["id"];
 							$output .= "<a href='" . $_SERVER["PHP_SELF"] .
-								"?submit_cycle=showBlob&id=$id&val=$val'>" .
+								"?submit_cycle=showBlob&id=$id&val=$val' target='_blank'>" .
 								"<span class='downloadArrow'>&#129123;</span>" .
 								"</a><br />" . PHP_EOL;
 						}
@@ -286,8 +288,6 @@ function qToListWithLink($queryInfo, $totalCount) {
 			$output .= "</table>". PHP_EOL;
 		}
 		$output .= "<hr />" . PHP_EOL;
-
-		$hits = pg_num_rows($result);
 
 	} // if result
 
@@ -318,6 +318,7 @@ function qToTableWithLink($queryInfo,
 	$images_image_style =     $queryInfo->images_image_style;
 	$ahref_columns =          $queryInfo->ahref_columns;
 	$blob_columns =           $queryInfo->blob_columns;
+	$hits = "";
 
 	if( empty($query) )
 		return;
@@ -338,25 +339,26 @@ function qToTableWithLink($queryInfo,
 	$columnDescriptions = new ColumnDescriptions($query);
 
 	if( empty($queryWithCount) )
-		$result = pg_query($dbConn, $query );
+		$result = $dbConn->query($query);
 	else
-		$result = pg_query($dbConn, $queryWithCount );
+		$result = $dbConn->query($queryWithCount);
 
-	if (!$result) {
-		debug(pg_last_error($dbConn));
+	if ($dbConn->errorCode() != 0) {
+		debug( implode(",", $dbConn->errorInfo()) );
 		$output .= "ERROR: qToTableWithLink<br />";
 	} else {
-		//$output .= "Added COUNT():" . $queryWithCount;
+		$hits = $result->rowCount();
 		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">" . PHP_EOL;
 
 		$output .= "<thead><tr>" . PHP_EOL;
-		$i = pg_num_fields($result);
+		$i = $result->columnCount();
 
 		if( !empty($queryWithCount) )
-			$i -= 1;   //there will be an additional column with with Total, hide it
+			$i -= 1;   //hide additional column with with Total
 
 		for ($j = 0; $j < $i; $j++) {
-			$field = pg_field_name($result, $j);
+			$fields = $result->getColumnMeta($j);
+			$field = $fields['name'];
 			$hcol = $j + 1;
 			if (strlen($queryId) > 0 && ($j !== 0)) {
 				$mycheckbox = "<input type=\"checkbox\" name=\"". $tableid . "_col$hcol\" checked=\"checked\" class=\"noClipboard\" />";
@@ -369,8 +371,9 @@ function qToTableWithLink($queryInfo,
 
 		$output .= "<tbody>" . PHP_EOL;
 
-		while ($row = pg_fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$output .= "<tr>" . PHP_EOL;
+
 			foreach ($row as $col=>$valnl) {
 
 				$val = nl2br($valnl);
@@ -454,10 +457,7 @@ function qToTableWithLink($queryInfo,
 
 	$output .= "</tbody>" . PHP_EOL;
 	$output .= "</table>" . PHP_EOL;
-	if (!$result)
-		$hits = "";  //error above
-	else
-		$hits = pg_num_rows($result);
+
 	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
 }

@@ -23,19 +23,12 @@ function getSQLfromXML($id, &$sql, &$mode) {
 }
 
 function showBlobRaw($id, $val) {
-	global $myDBname;
-
-include "config/config.php";
 
 	$sql=""; 
 	$mode="BLOB";
 	getSQLfromXML($id, $sql, $mode);
 	
-	try {
-		$db = new PDO('pgsql:dbname=' . $myDBname . ' host=' . $serverName, $userName, $password);
-	} catch (PDOException $e) {
-		print "Error!: " . $e->getMessage() . "<br/>";
-	}
+	$db = connectToDB();
 
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$db->beginTransaction();
@@ -82,10 +75,7 @@ include "config/config.php";
 
 
 function showCsv($usql64, $filename, $utitle64) {
-	global $myDBname;
 	
-include "config/config.php";
-
 	$delimiter = ";";
 	$sql =   base64_decode(rawurldecode($usql64));
 	$title = base64_decode(rawurldecode($utitle64));
@@ -102,7 +92,7 @@ include "config/config.php";
 
 	$first = true;
 	try {
-		$db = new PDO('pgsql:dbname=' . $myDBname . ' host=' . $serverName, $userName, $password);
+		$db = connectToDB();
 		$stmt = $db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
 		$stmt->execute();
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT)) {
@@ -124,8 +114,6 @@ include "config/config.php";
 
 
 function showFile($f, $folder) {
-
-include "config/config.php";
 
 	$filename = $folder . base64_decode(rawurldecode($f));
 
