@@ -811,6 +811,8 @@ function actions_access_on($orderInfo, $ddv) {
 	global $SERVERDATADIR,$DDV_DIR_EXTRACTED;
 	global $DBC;
 
+	add_db_functions();
+
 	$token = "";
 	$XMLFILESRC = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 	$DESCFILESRC = $DDV_DIR_EXTRACTED . "/metadata/description.txt";
@@ -987,5 +989,46 @@ function actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 		} 
 	} else
 		debug(__FUNCTION__ . ": " . $MSG16_FOLDER_NOT_FOUND . ": " . $DDV_DIR_EXTRACTED);
+}
+
+/**
+ * Functions to be used by sql queries
+ * Currently not portable
+ * get_count(): used for macro NUMBER_OF_RECORDS_IN_TABLES
+ */
+function add_db_functions() {
+	global $MSG_ERROR, $userName; 
+	global $OK, $NOK;
+	global $DBC;
+
+	debug(__FUNCTION__ . ": adding DB functions...");
+
+	$FUNCT = <<<EOD
+CREATE OR REPLACE FUNCTION public.get_count\(schema text, tablename text\) \
+		RETURNS SETOF bigint  \
+		LANGUAGE \'plpgsql\'  \
+	AS \\\$BODY\\\$           \
+	BEGIN             \
+		RETURN QUERY EXECUTE \'SELECT count\(1\) FROM \' \|\| \'\"\' \|\| schema \|\| \'\".\"\' \|\| tablename \|\| \'\"\' \; \
+	END               \
+	\\\$BODY\\\$
+EOD;	
+
+	$rv = dbf_run_sql_p($DBC, $FUNCT);
+	if ( $rv != 0 ) {
+		err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		return($NOK);
+	}
+
+	$FUNCT = <<<EOD
+GRANT EXECUTE ON FUNCTION public.get_count\(schema text, tablename text\) TO $userName
+EOD;
+	$rv = dbf_run_sql_p($DBC, $FUNCT);
+	if ( $rv != 0 ) {
+		err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		return($NOK);
+	}
+
+	return($OK);
 }
 ?>

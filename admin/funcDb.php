@@ -284,7 +284,7 @@ function dbf_encoding_params_get() {
 }
 
  /**
- *  Run script 
+ *  Run script from a file
  *
  */
  function  dbf_run_sql($DBC, $SQL) {
@@ -292,6 +292,18 @@ function dbf_encoding_params_get() {
 	
 	$rv = "";
 	passthru("cat " . $SQL . "| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
+	return($rv);
+ }
+ 
+  /**
+ *  Run script using a parameter
+ *
+ */
+ function  dbf_run_sql_p($DBC, $SQL) {
+	global $DBADMINPASS, $DBADMINUSER, $DEVNULL; 
+	
+	$rv = "";
+	passthru("echo " . $SQL . "| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
  
