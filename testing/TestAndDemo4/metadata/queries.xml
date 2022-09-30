@@ -18,7 +18,9 @@
 				<id>1</id>
 				<selectDescription>A basic report</selectDescription>
 				<title>Employees</title>
-				<subtitle>An empty database was created from a SIARD package, and the table was then populated from an EXT DDV package with two CSV files.</subtitle>  
+				<subtitle>An empty database was created from a SIARD package, and the table was then populated from an EXT DDV package with two CSV files. Redaction
+				is enabled in the order file, therefore the names are not displayed.
+				</subtitle>  
 				<param size='4'>
 					<name>Date hired (from)</name>
 					<dbtable>HR employees</dbtable>
