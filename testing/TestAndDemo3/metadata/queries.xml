@@ -41,12 +41,12 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 
 			<screen>
 				<id>2</id>
-				<selectDescription>Simple search; use of forwarded parameters</selectDescription>
+				<selectDescription>Use of forwarded parameters</selectDescription>
 				<title>Various examples for use of link to next screen with forwarded parameters</title>
 				<subtitle>A link is made to &lt;B&gt;another&lt;/B&gt; report (screen), with &lt;BR /&gt;
 				- column "ID" value is used as a link parameter in ID column &lt;BR /&gt; 
 				- in the "The name" column, another column (i.e. ID) value is used as a parameter &lt;BR /&gt; 
-				- in the "Composite key" column, two columns will be passed as parameters, please select each of Jan Novak line &lt;BR /&gt; 
+				- in the "Composite key" column, more columns are passed as parameters, please check with a Jan Novak line &lt;BR /&gt; 
 				- Use of ORDER.</subtitle> 
 				<param size='4'>
 					<name>ID</name>

@@ -5,9 +5,15 @@
  * In the right frame, display Overview (if set) and content of the txt file
  * A query is selected.
  */
+ 
 
-function get_bool($value){
-	switch( strtolower($value) ){
+/**
+* @param string $txt
+*
+* @return bool
+*/
+function get_bool($txt): bool{
+	switch( strtolower($txt) ){
 		case '1': 
 		case 'true': return true;
 	}
@@ -15,7 +21,7 @@ function get_bool($value){
 }
 
 
-function getQueryNumber() { 
+function getQueryNumber(): void {
 	global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue, $MSGSW30_Overview;
 	global $myTXTfilePath;
 	global $screensArray, $menuFrameHeight;

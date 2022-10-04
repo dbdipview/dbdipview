@@ -51,26 +51,40 @@
 </script>
 
 <?php
-
-//print a single-line text box
-//   print 'Name: '; input_text('name', $_GET);
-//   print '<br/>';
-function input_text($element_name, $param_type, $values) {
+/**
+ * print a single-line text box
+ *   print 'Name: '; input_text('name', $_GET);
+ *   print '<br/>';
+ * @param string $element_name
+ */
+function input_text($element_name): void {
 	print '<input type="text" name="' . $element_name .'" value=""'  . ' />';
 	//print htmlentities($values[$element_name]) . '">';
 }
 
-//should allow only integers
-//copy from clipboard does not work therefore isNumberKey() it temporarily disabled
-function input_integer($element_name, $param_size, $param_type, $values) {
+
+/**
+ * should allow only integers
+ * copy from clipboard does not work therefore isNumberKey() is temporarily disabled
+ * @param string $element_name
+ * @param int $param_size
+ */
+function input_integer($element_name, $param_size): void {
 	print '<input type="text" pattern="[0-9]{0,}" size="' . $param_size .'" name="' . $element_name .'" value=""'  . ' />';
 }
 
-// IN:  input_text_size("permissions", 5, "abc"], true)
-// OUT: <input type="text" size="5" name="permissions" value="abc" />
-function input_text_size($element_name, $param_size, $value, $enabled) {
+
+/**
+ * IN:  input_text_size("permissions", 5, "abc"], true)
+ * OUT: <input type="text" size="5" name="permissions" value="abc" />
+ * @param string $element_name
+ * @param int    $param_size
+ * @param string $value
+ * @param bool   $enabled
+ */
+function input_text_size($element_name, $param_size, $value, $enabled): void {
 	if($enabled) {
-		if(is_numeric($param_size)) 
+		if( $param_size > 0 ) 
 			print '<input type="text" size="' . $param_size .'" name="' . $element_name . '" value="' . $value . '"'  . ' />';
 		else 
 			print '<input type="text"                           name="' . $element_name . '" value="' . $value . '"'  . ' />';
@@ -79,18 +93,31 @@ function input_text_size($element_name, $param_size, $value, $enabled) {
 	}
 }
 
-function input_textarea($element_name, $cols, $rows, $value) {
+/**
+ * @param string $element_name
+ * @param int    $cols
+ * @param int    $rows
+ * @param string $value
+ */
+function input_textarea($element_name, $cols, $rows, $value): void {
 	print '<textarea name="' . $element_name .'" cols="' . $cols .'" rows="' . $rows .'">';
 	print $value;
 	print '</textarea>';
 }
 
-//print a radio button or checkbox
-//  print 'Size: O  Big ';
-//  input_radiocheck('radio','size', $_GET, 'big');
-//  print '      O  Small ';
-//  input_radiocheck('radio','size', $_GET, 'small');
-function input_radiocheck($type, $element_name, $values, $element_value) {
+
+/**
+ * print a radio button or checkbox
+ *   print 'Size: O  Big ';
+ *   input_radiocheck('radio','size', $_GET, 'big');
+ *   print '      O  Small ';
+ *   input_radiocheck('radio','size', $_GET, 'small');
+ * @param string $type
+ * @param string $element_name
+ * @param string[] $values
+ * @param string $element_value
+ */
+function input_radiocheck($type, $element_name, $values, $element_value): void {
 	print '<input type="' . $type . '" name="' .
 		$element_name .'" value="' . $element_value . '" ';
 	if (array_key_exists($element_name, $values) && $element_value == $values[$element_name]) {
@@ -99,13 +126,24 @@ function input_radiocheck($type, $element_name, $values, $element_value) {
 	print '/>';
 }
 
-function input_radiocheck_checked($type, $element_name, $element_value) {
+/**
+ * @param string $type
+ * @param string $element_name
+ * @param string $element_value
+ */
+function input_radiocheck_checked($type, $element_name, $element_value): void {
 	print '<input type="' . $type . '" name="' .
 		$element_name .'" value="' . $element_value . '" '  . ' checked="checked"';
 	print '/>';
 }
 
-function input_select($myval, $mytxt, $default, $writable = true) {
+/**
+ * @param string $myval
+ * @param string $mytxt
+ * @param string $default
+ * @param bool   $writable
+ */
+function input_select($myval, $mytxt, $default, $writable = true): void {
 	if(strcmp($default, $myval) == 0  && strlen($myval) > 0)
 		print     '<option value="' . $myval . '" selected="selected" >' . $mytxt . '</option>' . "\n";
 	else 
@@ -115,14 +153,25 @@ function input_select($myval, $mytxt, $default, $writable = true) {
 			print '<option value="' . $myval . '" disabled="disabled" >' . $mytxt . '</option>' . "\n";
 }
 
-function input_date_rw ($field, $default, $form, $rw) {
+/**
+ * @param string $field
+ * @param string $default
+ * @param string $form
+ * @param bool   $rw
+ */
+function input_date_rw ($field, $default, $form, $rw): void {
 	if($rw)
 		input_date ($field, $default, $form);
 	else
 		echo "$default" . "&nbsp;";  //"<br />";
 }
 
-function input_date($field, $default, $form) {
+/**
+ * @param string $field
+ * @param string $default
+ * @param string $form
+ */
+function input_date($field, $default, $form): void {
 	global $MSGSW21_YYYYMMDD;
 ?>
 	<input type="text" maxlength="10" placeholder="<?php echo "$MSGSW21_YYYYMMDD"; ?>" 
@@ -136,8 +185,17 @@ function input_date($field, $default, $form) {
 <?php
 }
 
-//creates select form
-function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true) {
+
+/**
+ * creates select form
+ * @param string $fieldname
+ * @param string $paramname
+ * @param string $paramselect
+ * @param string $default
+ * @param bool   $allowEmptyString
+ * @param bool   $writable
+ */
+function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true): void {
 	global $MSGSW29_MULTIPLESELECT;
 ?>
 	<label for="<?php echo "$fieldname"; ?>">
@@ -162,8 +220,18 @@ function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default
 }
 
 
-//creates select form
-function input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true, $multiple="") {
+
+/**
+ * creates select form
+ * @param string $fieldname
+ * @param string $paramname
+ * @param string $paramselect
+ * @param string $default
+ * @param bool   $allowEmptyString
+ * @param bool   $writable
+ * @param string $multiple
+ */
+function input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true, $multiple=""): void {
 
 		if($writable)
 			$disabler = "";
@@ -218,26 +286,18 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 
 } //input_combotext_db
 
-
-//returns date for valid YYYY-MM-DD date
-function checkmydate($date) {	
-	if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
-		$tempDate = explode('-', $date);
-		//MM DD YYYY
-		return checkdate($tempDate[1], $tempDate[2], $tempDate[0]);
-	} else
-		return false;
-}
-
-
 $infoTipNumber = 0;
 
-function showInfotipInline($text, $id) {
+/**
+ * @param string $text
+ * @param string $id
+ */
+function showInfotipInline($text, $id): string {
 	global $infoTipNumber;
 	$msgid="MSG" . $id . $infoTipNumber;
 	$infoTipNumber++;
 
-	if ( is_null($text) || $text == "" )
+	if ( $text == "" )
 		return("");
 
 	$out =  "<span class=\"noClipboard\" \n";

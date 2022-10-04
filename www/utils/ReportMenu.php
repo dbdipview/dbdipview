@@ -6,22 +6,33 @@
  * @author: Boris Domajnko
  */
 
-
 class ReportMenu {
 	
 	const TREE_IN_CARET = 1;
 	const TREE_IN_CARETAFTER = 2;
 	const TREE_IN_NESTED = 4;
 	const TREE_IN_SKIPCARET = 8;
-
+	/**
+	* @var array<int, SimpleXMLElement>
+	*/
 	private $screensArray = array();
+	/**
+	* @var int
+	*/
 	private $screenCounter = 0;
+	/**
+	* @var int
+	*/
 	private $numberOfScreens = 0;
 
+	/**
+	 * @param SimpleXMLElement $xml
+	 */
 	function __construct($xml) {
 		foreach ($xml->database->screens->screen as $screen) {
 			array_push($this->screensArray, $screen);
-			$attributeHide = get_bool($screen->id->attributes()->hide);
+			if ( ! is_null($screen->id->attributes()) ) 
+				$attributeHide = get_bool($screen->id->attributes()->hide);
 			if($attributeHide != true)
 				$this->numberOfScreens +=1;
 		}
@@ -37,7 +48,7 @@ class ReportMenu {
 	/**
 	 * display the nested menu with all visible reports
 	 */
-	public function show() {
+	public function show(): void {
 		echo PHP_EOL;
 		echo '<ul id="nestedList">' . PHP_EOL;
 		$this->showReportMenu();
@@ -54,6 +65,7 @@ class ReportMenu {
 	/**
 	 * show line by line in the reports menu as nested treeview
 	 *
+	 * @return void
 	 */
 	private function showReportMenu() {
 		$treemodestatus = array();
@@ -82,16 +94,16 @@ class ReportMenu {
 
 			$currentMenuItem += 1;
 
-			$attributeHide =	 get_bool($screen->id->attributes()->hide);
-			$attributeTextOnly = get_bool($screen->attributes()->textOnly);
-			$nowLevel = $screen->attributes()->level;
-
+			if ( ! is_null($screen->id->attributes()) )
+				$attributeHide =	 get_bool($screen->id->attributes()->hide);
+			if ( ! is_null($screen->attributes()) ) {
+				$attributeTextOnly = get_bool($screen->attributes()->textOnly);
+				$nowLevel = (int)$screen->attributes()->level;
+			}
 			if (is_null($nowLevel))
 				$nowLevel = 0;
 
-			if ( !hasPermissionForThis($screen->needed_permission) )
-				$attributeHide = true;
-			else {
+			if ( hasPermissionForThis($screen->needed_permission) ) {
 				$nowLevel = intval($nowLevel);
 				if ($nowLevel > ($oldLevel + 1)) {
 					if( $attributeTextOnly == true )
@@ -99,7 +111,8 @@ class ReportMenu {
 					else
 						$nowLevel = $oldLevel + 1;
 				}
-			}
+			} else
+				$attributeHide = true;
 
 			if($attributeHide != true) {
 
@@ -181,16 +194,14 @@ class ReportMenu {
 				$loop = true;
 				while($loop) {
 					if( array_key_exists($i, $this->screensArray) ) {
-						$attributeHide = $this->screensArray[$i]->attributes()->hide;
+						if ( ! is_null($this->screensArray[$i]->attributes()) ) 
+							$attributeHide = $this->screensArray[$i]->attributes()->hide;
 						if($attributeHide != true) {
 							$loop = false;
-							$nextLevel = $this->screensArray[$i]->attributes()->level;
-							if (is_null($nextLevel)) {
-								$nextLevel = 0;
-							} else {
-								if ($nextLevel > $nowLevel)
-									$useCaret = true;
-							}
+							if ( ! is_null($this->screensArray[$i]->attributes()) ) 
+								$nextLevel = intval($this->screensArray[$i]->attributes()->level);
+							if ($nextLevel > $nowLevel)
+								$useCaret = true;
 						}
 						$i++;
 					} else
@@ -221,7 +232,7 @@ class ReportMenu {
 						if (empty($screen->needed_permission))
 							$ddbg = "";
 						else
-							$ddbg = debug($screen->needed_permission." ", true);
+							$ddbg = debugReturn($screen->needed_permission." ");
 						echo $ddbg . " $screen->id - $screen->selectDescription" . "&nbsp;<br />";
 						echo "</label>";
 					echo '</li>' . PHP_EOL;
@@ -237,17 +248,16 @@ class ReportMenu {
 	/**
 	 * call: $this->dbg("M1", $nowLevel, $oldLevel, $treemodestatus)
 	 */
-	private function dbg($marker, $nowLevel, $oldLevel, $treemodestatus) {
-		return("");
-		$r = " $marker L=".$nowLevel.$oldLevel. " ";
-		$j = 0;
-		$i = count($treemodestatus);
-		while ($j < $i) {
-			$r .= decbin($treemodestatus[$j])."_"; 
-			$j += 1;
-		}
-		return($r); 
-	}
+	// private function dbg($marker, $nowLevel, $oldLevel, $treemodestatus) {
+		// $r = " $marker L=".$nowLevel.$oldLevel. " ";
+		// $j = 0;
+		// $i = count($treemodestatus);
+		// while ($j < $i) {
+			// $r .= decbin($treemodestatus[$j])."_"; 
+			// $j += 1;
+		// }
+		// return($r); 
+	// }
 }
 
 ?>

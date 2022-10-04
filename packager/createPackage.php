@@ -33,34 +33,44 @@ $CURRENTDIR = getcwd();
 
 set_include_path($PROGDIR);
 
-$yes=False;
+$yes = false;
 
-function checkRemove($s, $file) {
+/**
+ * @param string $s     message
+ * @param string $file  file to be removed
+ */
+function checkRemove($s, $file): void {
 	global $yes;
 	$remove = $yes;
 	
 	if ( is_file($file) ) {
 		print($s);
-		if($yes == False) {
+		if ($yes === false) {
 			print(" Remove (y or n)?");
 			$handle = fopen ("php://stdin","r");
+			if ( false === $handle )
+				exit(1);
+
 			$line = fgets($handle);
 			fclose($handle);
-			if($line[0] == 'y')
+			if ( false !== $line && $line[0] == 'y')
 				$remove = True;
 			else {
 				echo "Aborted!" . PHP_EOL;
 				exit(1);
 			}
 		}
-		if($remove) {
+		if ($remove) {
 			unlink($file);
-			if($yes == False)
+			if ($yes === false)
 				echo "Removed." . PHP_EOL;
 		}
 	}
 }
 
+/**
+ * @return never
+ */
 function showOptions() {
 	echo "Usage: php " . basename(__FILE__) . " -s <source_dir> [-t <target_dir> -n <target_package_name>] [-y] -i [info]" . PHP_EOL;
 	echo "Examples:" . PHP_EOL;
@@ -71,12 +81,16 @@ function showOptions() {
 	exit(-2);
 }
 
-function createAboutXML($file) {
+/**
+ * create the header
+ * @param string $file    target file
+ */
+function createAboutXML($file): void {
 	global $version, $infotext;
 	$date = date('c');
 	if ( is_file($file) )
 		unlink($file);
-	if( $fp=fopen($file,'w+') ) { 
+	if ( $fp=fopen($file,'w+') ) { 
 		fwrite($fp,"<?xml version='1.0' ?>\n");
 		fwrite($fp,"<pkginfo>\n");
 		fwrite($fp,"  <type>dbDIPview</type>\n"); 
@@ -97,11 +111,13 @@ require $DDVDIR . "/admin/funcActions.php";
 require $DDVDIR . "/admin/funcDb.php";
 require $DDVDIR . "/admin/version.php";
 
-$options = getopt("s:t:n:yvi:h");
+if ( ($options = getopt("s:t:n:yvi:h")) === false )
+	showOptions();
+
 if ( array_key_exists('h', $options) || !array_key_exists('s', $options) )
 	showOptions();
 
-$VERBOSE=False;
+$VERBOSE = false;
 $SOURCE = "";
 $OUTDIR = "";
 $NAME = "";
@@ -120,7 +136,9 @@ if (array_key_exists('i', $options))
 
 if (array_key_exists('s', $options)) {
 	$SOURCE = $options['s'];
-	if ($SOURCE[0] != '/')
+	if ( ! is_string($SOURCE) )
+		showOptions();
+	if ( false !== $SOURCE && $SOURCE[0] != '/')
 		$SOURCE = $CURRENTDIR . "/" . $SOURCE;
 	if ( $VERBOSE == True )
 		echo "SOURCE = $SOURCE" . PHP_EOL;
@@ -128,7 +146,9 @@ if (array_key_exists('s', $options)) {
 
 if (array_key_exists('t', $options)) {
 	$OUTDIR = $options['t'];
-	if ($OUTDIR[0] != '/')
+	if ( ! is_string($OUTDIR) )
+		showOptions();
+	if ( false !== $OUTDIR && $OUTDIR[0] != '/')
 		$OUTDIR = $CURRENTDIR . "/" . $OUTDIR;
 	if ( $VERBOSE == True )
 		echo "OUTDIR = $OUTDIR" . PHP_EOL;
@@ -136,8 +156,13 @@ if (array_key_exists('t', $options)) {
 
 if (array_key_exists('n', $options)) {
 	$NAME = $options['n'];
-	$OUTFILE_TARGZ = "$OUTDIR/$NAME" . ".tar.gz";
-	$OUTFILE_ZIP = "$OUTDIR/$NAME" . ".zip";
+	if ( ! is_string($NAME) )
+		showOptions();
+
+	if ( false !== $NAME ) {
+		$OUTFILE_TARGZ = "$OUTDIR/$NAME" . ".tar.gz";
+		$OUTFILE_ZIP = "$OUTDIR/$NAME" . ".zip";
+	}
 }
 
 if (!is_dir($SOURCE)) {
@@ -175,14 +200,17 @@ if ( is_file($SOURCE . "/metadata/redactdb01.sql") )
 	$ALLMETADATA = "$ALLMETADATA metadata/redactdb01.sql";
 
 $datadir = $SOURCE . "/data";
+$countDatafiles = 0;
 if ( !is_dir($datadir) ) {
 	echo "No folder: $datadir". PHP_EOL;
-	$countDatafiles = 0; 
 } else {
-	$countDatafiles = count(scandir($datadir));
-	if ( $countDatafiles ===  2 ) {
-		echo "No files in $datadir/" . PHP_EOL;
-		$countDatafiles = 0;
+	if ( ($sd = scandir($datadir)) !== false ) {
+		$countDatafiles = count($sd);
+		if ( $countDatafiles ===  2 )
+			echo "No files in $datadir/" . PHP_EOL;
+	} else {
+		echo "    Aborted. Cannot read : " . $datadir . PHP_EOL;
+		exit(1);
 	}
 }
 

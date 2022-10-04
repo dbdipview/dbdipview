@@ -10,13 +10,16 @@
  * To minimize risks of wrong inserting of COUNT(*) columns, complicated queries will not be changed:
  *   - WITH ... SELECT
  *   - ... UNION ...
- *
+ * @param string $string
  * Returns: a query with added a column with Total, or ""
  */
-function addCountTotal($string) {
+function addCountTotal($string): string {
 	$useCountTotal = true;
 
 	$haystack = preg_replace('~[\r\n\t]+~', ' ', trim($string));
+	if ( is_null($haystack) )
+		return("");
+
 	if (stripos($haystack, ' COUNT(*) OVER() ') === 0)
 		$useCountTotal = false;
 	if (stripos($haystack, 'SELECT ') === false || stripos($haystack, 'SELECT ') > 0) {
@@ -34,15 +37,18 @@ function addCountTotal($string) {
 		else
 			return ("");
 	}
+
 	return("");
 }
-
 
 /**
  * finds a keyword that is not in parenthesis
  * SELECT a,b,( ... FROM ...   ) FROM ....
  *
- * Returns: index or 0
+ * @param string $string
+ * @param string $needle
+ * @param int    $offset
+ * @return int   Returns index or 0
  */
 function findFirstFreeNeedle($string, $needle, $offset) {
 
@@ -58,11 +64,12 @@ function findFirstFreeNeedle($string, $needle, $offset) {
 		return( findFirstFreeNeedle($string, $needle, $pos + 1) );
 }
 
-
 /**
  * find the key in one line result from the database
  *
- * Returns: the value for a given column
+ * @param array<string> $arr
+ * @param string $key
+ * @return string      the value for a given column
  */
 function getKeyValue($arr, $key) {
 	$key = htmlspecialchars($key);
@@ -72,14 +79,15 @@ function getKeyValue($arr, $key) {
 		return("UNKNOWN_COLUMN_" . $key);
 }
 
-
 /**
  * execute a query
  *
  * Returns: an array with all rows of the result
  *          array is indexed by column number
+ * @param string $query
+ * @psalm-return list<mixed>
  */
-function qRowsToArray($query){
+function qRowsToArray($query): array{
 	global $dbConn;
 	$outarray = array();
 	//$result = $dbConn->query()->fetch(PDO::FETCH_NUM);
@@ -97,13 +105,16 @@ function qRowsToArray($query){
 	}
 }
 
-
 /**
  * create part of link
  *
+ * @param string $val
+ * @param array<string, string> $row
+ * @param string[] $column
+ *
  * Returns: part of the link
  */
-function makeParameterReferences($val, $row, $column){
+function makeParameterReferences($val, $row, array $column): string{
 
 	if ( $column["columnWithValue"] != "" ) {
 		$out = "";
@@ -126,20 +137,30 @@ function makeParameterReferences($val, $row, $column){
 	} else {
 		$out = makeParameterReferencesOne($column["dbtable"].TABLECOLUMN.$column["dbcolumn"], $val);
 	}
+
 	return($out);
 }
 
-function makeParameterReferencesOne($link, $linkval) {
+/**
+ *
+ * @param string $link
+ * @param string $linkval
+ */
+function makeParameterReferencesOne($link, $linkval): string {
 	$link = str_replace(" ", "__20__", $link);   //temporarily replace space
 	$out = "&" . $link . "=" . urlencode($linkval);
 	return($out);
 }
 
-
 /**
  * execute a query
  *
- * Returns: an HTML table output
+ * @param QueryData $queryInfo
+ * @param int $totalCount
+ *
+ * @return (int|mixed|string)[]    an HTML table output
+ *
+ * @psalm-return array{0: string, 1: int, 2: int}
  */
 function qToListWithLink($queryInfo, $totalCount) {
 
@@ -148,18 +169,17 @@ function qToListWithLink($queryInfo, $totalCount) {
 	$images_image_style =     $queryInfo->images_image_style;
 	$ahref_columns =          $queryInfo->ahref_columns;
 	$blob_columns =           $queryInfo->blob_columns;
-	$viewInfo =               $queryInfo->viewInfo;
+	$viewData =               $queryInfo->viewData;
 
 	if( empty($query) )
-		return;
+		return(array("", 0, 0));
 
 	global $dbConn;
 	global $filespath;
 	$output = "";
 	$hits = 0;
-	$currentColNumber;
 
-	if ( empty($totalCount) ) {
+	if ( 0 == $totalCount ) {
 		$totalLines = 0;
 		$queryWithCount = addCountTotal($query);
 	} else {
@@ -179,13 +199,13 @@ function qToListWithLink($queryInfo, $totalCount) {
 	} else {
 		$hits = $result->rowCount();
 
-		$viewInfo->setNumbers4NewColumn( $result->columnCount() - 1);  //skip last column
-		if( $viewInfo->is_MC_active() )
+		$viewData->setNumbers4NewColumn( $result->columnCount() - 1);  //skip last column
+		if( $viewData->is_MC_active() )
 			$output .= "<table>" . PHP_EOL;
 
 		foreach ($result as $row) {
 
-			if( $viewInfo->is_MC_active() )
+			if( $viewData->is_MC_active() )
 				$output .= "<tr><td style='border-top: 0.15rem solid var(--main-hrborder-color);'>" . PHP_EOL;
 			else
 				$output .= "<hr />" . PHP_EOL;
@@ -193,28 +213,28 @@ function qToListWithLink($queryInfo, $totalCount) {
 			$currentColNumber = 1;
 			foreach ($row as $col=>$valnl) {
 
-				$val = nl2br($valnl);
-
 				if ($col == "E2F7total7E8D233C") {
-					$totalLines = $val;
+					$totalLines = intval($val);
 					continue;     //hide column Total
 				}
+
+				$val = nl2br($valnl);
 
 				$tablelist = $_SESSION['tablelist'];
 				if( strcmp($tablelist, "listAll") !== 0 && strcmp($tablelist, "listMC") !== 0 )
 					if( empty($val) )
 						continue;
 
-				if( $viewInfo->isNewColumn($col, $currentColNumber++) )
+				if( $viewData->isNewColumn($col, $currentColNumber++) )
 					$output .= "</td><td style='border-top: 0.15rem solid var(--main-hrborder-color);'>". PHP_EOL;
 
 				$output .= showInfotipInline($columnDescriptions->getDescriptionForColumn($col), $col);
-				if( ! $viewInfo->isNoLabel($col) )
+				if( ! $viewData->isNoLabel($col) )
 					$output .= "<b>$col:</b> ";
 
-				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
+				if ( !empty($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
-					if ( !is_null($column) && $column["dbtable"]!="" ) {
+					if ( !empty($column) && $column["dbtable"] != "" ) {
 						$parameters = makeParameterReferences($val, $row, $column);
 						$output .= "  <a href='?submit_cycle=" . $column["linkaction"].
 											"&targetQueryNum=" . $column["next_screen_id"].
@@ -223,11 +243,11 @@ function qToListWithLink($queryInfo, $totalCount) {
 					}
 				}
 
-				if ( !is_null($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
+				if ( !empty($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
 					$column = $ahref_columns[$col];
-					if ( !is_null($column) ) {
+					if ( !empty($column) ) {
 						$text = $column["atext"];
-						if (strlen((string)$text)==0)
+						if (strlen((string)$text) == 0)
 							$text = $val;
 						$link = $val;
 						$link = str_replace("\\", "/", $link);
@@ -244,11 +264,10 @@ function qToListWithLink($queryInfo, $totalCount) {
 					}
 				}
 
-				if (!is_null($images_image_style) &&
-								array_key_exists("$col", $images_image_style) &&
-								$images_image_style[$col]!="") {
+				if (array_key_exists("$col", $images_image_style) &&
+					$images_image_style[$col] != "") {
 
-					if (strlen((string)$val)==0)
+					if (strlen((string)$val) == 0)
 						$output .= "<br />" . PHP_EOL;
 					else {
 						$link= $val;
@@ -259,10 +278,10 @@ function qToListWithLink($queryInfo, $totalCount) {
 					continue;
 				}
 
-				if ( isset($blob_columns) && array_key_exists($col, $blob_columns) ) {
+				if ( array_key_exists($col, $blob_columns) ) {
 					$column = $blob_columns[$col];
-					if ( !is_null($column) && $column["id"]!="" ) {
-						if (strlen((string)$val)==0)
+					if ( !empty($column) && $column["id"] != "" ) {
+						if (strlen((string)$val) == 0)
 							$output .= "<br />" . PHP_EOL;
 						else {
 							$id=$column["id"];
@@ -279,33 +298,32 @@ function qToListWithLink($queryInfo, $totalCount) {
 
 			} // end one row
 
-			if( $viewInfo->is_MC_active() )
+			if( $viewData->is_MC_active() )
 				$output .= "</td></tr>". PHP_EOL;
 
 		} // end while fetching rows
 
-		if( $viewInfo->is_MC_active() ) {
+		if( $viewData->is_MC_active() ) {
 			$output .= "</table>". PHP_EOL;
 		}
 		$output .= "<hr />" . PHP_EOL;
 
 	} // if result
 
-
-	if (strlen($output)==0)
-		$output .= "<hr />" . PHP_EOL;
-
 	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
-
 }
-
 
 /**
  * execute a query
  * results of query can be shown directy or they are used as parameters for a link
  *
- * Returns: an HTML table output
+ * @param QueryData $queryInfo,
+ * @param int $totalCount,
+ * @param string $queryId          "M" or id
+ * @return (int|mixed|string)[]    an HTML table output
+ *
+ * @psalm-return array{0: string, 1: int, 2: int}
  */
 function qToTableWithLink($queryInfo,
 					$totalCount,
@@ -318,10 +336,10 @@ function qToTableWithLink($queryInfo,
 	$images_image_style =     $queryInfo->images_image_style;
 	$ahref_columns =          $queryInfo->ahref_columns;
 	$blob_columns =           $queryInfo->blob_columns;
-	$hits = "";
+	$hits = 0;
 
 	if( empty($query) )
-		return;
+		return(array("", 0, 0));
 
 	$output = "";
 	$tableid = "table" . $queryId;
@@ -329,7 +347,7 @@ function qToTableWithLink($queryInfo,
 
 	$totalLines = 0;
 
-	if ( empty($totalCount) ) {
+	if ( 0 == $totalCount ) {
 		$totalLines = 0;
 		$queryWithCount = addCountTotal($query);
 	} else {
@@ -360,7 +378,7 @@ function qToTableWithLink($queryInfo,
 			$fields = $result->getColumnMeta($j);
 			$field = $fields['name'];
 			$hcol = $j + 1;
-			if (strlen($queryId) > 0 && ($j !== 0)) {
+			if ( strlen($queryId) > 0 && ($j !== 0)) {
 				$mycheckbox = "<input type=\"checkbox\" name=\"". $tableid . "_col$hcol\" checked=\"checked\" class=\"noClipboard\" />";
 			} else
 				$mycheckbox = "";
@@ -376,16 +394,16 @@ function qToTableWithLink($queryInfo,
 
 			foreach ($row as $col=>$valnl) {
 
-				$val = nl2br($valnl);
-
 				if ($col == "E2F7total7E8D233C") {
-					$totalLines = $val;
+					$totalLines = intval($val);
 					continue;     //hide column Total
 				}
 
-				if ( !is_null($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
+				$val = nl2br($valnl);
+
+				if ( !empty($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
-					if ( !is_null($column) && $column["dbtable"]!="" ) {
+					if ( !empty($column) && $column["dbtable"]!="" ) {
 						$parameters = makeParameterReferences($val, $row, $column);
 						$output .= "  <td><a href='?submit_cycle=" . $column["linkaction"].
 												"&targetQueryNum=" . $column["next_screen_id"].
@@ -394,11 +412,11 @@ function qToTableWithLink($queryInfo,
 					}
 				}
 
-				if ( !is_null($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
+				if ( !empty($ahref_columns) && array_key_exists($col, $ahref_columns) ) {
 					$column = $ahref_columns[$col];
-					if ( !is_null($column) ) {
+					if ( !empty($column) ) {
 						$text = $column["atext"];
-						if (strlen((string)$text)==0)
+						if ( strlen((string)$text) == 0 )
 							$text = $val;
 						$link = $val;
 						$output .= "<td>";
@@ -416,7 +434,7 @@ function qToTableWithLink($queryInfo,
 					}
 				}
 
-				if (!is_null($images_image_style) &&
+				if (!empty($images_image_style) &&
 								array_key_exists("$col", $images_image_style) &&
 								$images_image_style[$col]!="") {
 					if (strlen((string)$val)==0)
@@ -430,9 +448,9 @@ function qToTableWithLink($queryInfo,
 					continue;
 				}
 
-				if ( isset($blob_columns) && array_key_exists($col, $blob_columns) ) {
+				if ( array_key_exists($col, $blob_columns) ) {
 					$column = $blob_columns[$col];
-					if ( !is_null($column) && $column["id"]!="" ) {
+					if ( !empty($column) && $column["id"] != "" ) {
 						if (strlen((string)$val)==0)
 							$output .= "  <td></td>" . PHP_EOL;
 						else {
@@ -461,5 +479,3 @@ function qToTableWithLink($queryInfo,
 	$returnarray = array($output, $hits, $totalLines);
 	return $returnarray;
 }
-
-?>

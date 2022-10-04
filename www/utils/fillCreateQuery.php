@@ -44,8 +44,10 @@ function printContent(frameID) {
 </style>
 
 <?php
-
-function fbr($in) {
+/**
+ * @param string    $in
+ */
+function fbr($in): string {
 	$out = htmlspecialchars_decode($in);
 	$out = str_ireplace('<B>',    "",   $out);  //ignore for csv ouput
 	$out = str_ireplace('</B>',   "",   $out);
@@ -55,6 +57,14 @@ function fbr($in) {
 	return($out);
 }
 
+/**
+ * @param string $selectdescription
+ * @param string $title
+ * @param string $subtitle
+ * @param string $csvquery
+ * @param string $filename
+ * @return void
+ */
 function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filename) {
 	global $MSGSW17_Records, $MSGSW18_ReportDescription, $MSGSW19_ReportTitle, $MSGSW20_ReportSubTitle;
 	global $MSGSW28_SAVESASCSV;
@@ -63,18 +73,14 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 		return;
 
 	$csvtitle = "";
-	if(isset($_SESSION['title']))
+	if (isset($_SESSION['title']))
 		$csvtitle .= '"' . $MSGSW17_Records .           ": " .  fbr($_SESSION['title']) .  '"' . ";\n";
 
-	if($selectdescription && strlen($selectdescription) > 0 )
-		$csvtitle .= '"' . $MSGSW18_ReportDescription . ": " .  fbr($selectdescription)  . '"' . ";\n";
+	$csvtitle .= '"' . $MSGSW18_ReportDescription . ": " .  fbr($selectdescription)  . '"' . ";\n";
 
-	if($title && strlen($title) > 0 )
-		$csvtitle .= '"' . $MSGSW19_ReportTitle .       ": " .  fbr($title) .              '"' . ";\n";
+	$csvtitle .= '"' . $MSGSW19_ReportTitle .       ": " .  fbr($title) .              '"' . ";\n";
 
-	if($subtitle && strlen($subtitle) > 0 )
-		$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  fbr($subtitle) .           '"' . ";\n";
-
+	$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  fbr($subtitle) .           '"' . ";\n";
 
 	print("<abbr title='" . $MSGSW28_SAVESASCSV . "'>" .
 		"<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv" .
@@ -86,8 +92,13 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 		"</a></abbr>&nbsp;");
 }
 
-//add ORDER BY or GROUP BY part
-function appendOrderGroupBy($what, $criteria) {
+/**
+ * add ORDER BY or GROUP BY part
+ * @param string $what
+ * @param string $criteria
+ * @return string
+ */
+function appendOrderGroupBy($what, $criteria): string {
 	$queryTail = "";
 	$criteria = chop($criteria);   //remove white space characters
 	if ( strlen($criteria) > 0 ) {
@@ -103,13 +114,22 @@ function appendOrderGroupBy($what, $criteria) {
 	return($queryTail);
 }
 
-
-// operator = "||" or "&&"
-// 'aaa || bbb || ccc' -> (x='%aaa%' OR x='%bbb%' OR x='%ccc%')
-// 'aaa || bbb || !ccc' is also allowed
 // textlike
-function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote, $addPercentage) {
-	if(strcmp("OR", $operator) == 0)
+/**
+ * operator = "||" or "&&"
+ * 'aaa || bbb || ccc' -> (x='%aaa%' OR x='%bbb%' OR x='%ccc%')
+ * 'aaa || bbb || !ccc' is also allowed
+ * @param string $operator
+ * @param string $field
+ * @param string $input
+ * @param string $equal
+ * @param string $quote
+ * @param bool   $addPercentage
+
+ * @return string
+ */
+function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote, $addPercentage): string {
+	if (strcmp("OR", $operator) == 0)
 		$exploded = explode("||", $input);
 	else
 		$exploded = explode("&&", $input);
@@ -120,14 +140,14 @@ function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote
 		debug("&nbsp;processSimpleOR_ANDqueryParam&nbsp;" . $key . " : " . $value . PHP_EOL);
 		$value = trim($value);
 
-		if(strlen($value)>1 && substr( $value, 0, 1 ) === "!") {   //is negation? e.g. !ABC
+		if (strlen($value)>1 && substr( $value, 0, 1 ) === "!") {   //is negation? e.g. !ABC
 			$value = substr($value, 1);                            //'!' found, remove it
 			$value = trim($value);                                 // treat "! ABC" as "!ABC"
-			if($addPercentage && strpos("$value",'%') === false)
+			if ($addPercentage && strpos($value,'%') === false)
 				$value = "%".$value."%";
 			$text = $text . $op . "(" . $field . " IS NULL OR " . $field . " NOT " . $equal . " " . $quote . trim($value) . $quote . ")";
 		} else {
-			if($addPercentage && strpos("$value",'%') === false)
+			if ($addPercentage && strpos($value,'%') === false)
 				$value = "%".$value."%";
 			$text = $text . $op . $field . " " . $equal . " " . $quote . trim($value) . $quote;
 		}
@@ -137,7 +157,9 @@ function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote
 	return "(" . $text . ")";
 }
 
-
+/**
+ * @return void
+ */
 function fillCreateQuery() {
 global $xml;
 global $targetQueryNum;
@@ -168,7 +190,7 @@ foreach ($xml->database->screens->screen as $screen) {
 	$mandatory = "";
 	$attrSkipCSVsave = false;
 
-	if($screen->id  == $targetQueryNum) {
+	if ($screen->id  == $targetQueryNum) {
 		debug("fillCreateQuery: screen id = " . $screen->id);
 		$attrSkipCSVsave = get_bool($screen->attributes()->skipCSVsave);
 		$queryInfo->title = $screen->title;
@@ -191,11 +213,11 @@ foreach ($xml->database->screens->screen as $screen) {
 			foreach($_GET as $key => $value){
 				if (! in_array($key, $internalParameters) ) {             //skip other keywords
 					//debug("_________ $key with db field $field ...");
-					if( 0 == strcmp($key, $field . $param->type) ||
+					if ( 0 == strcmp($key, $field . $param->type) ||
 						0 == strcmp($key, $field) ) {                     //this comes with links_to_next_screens
-						if(!empty($value)) {
+						if (!empty($value)) {
 							$paramFound = True;
-							if(is_array($value))
+							if (is_array($value))
 								debug("________________ found:&nbsp;&nbsp;" . $key . " = '" . $value[0] . "' ...\r\n");
 							else
 								debug("________________ found:&nbsp;&nbsp;" . $key . " = '" . $value . "'\r\n");
@@ -208,8 +230,8 @@ foreach ($xml->database->screens->screen as $screen) {
 				if ( $paramFound == False) {
 					debug("________________ parameter not set: " . $field);
 
-					if($attrParamMandatory) {
-						if( empty($mandatory) )
+					if ($attrParamMandatory) {
+						if ( empty($mandatory) )
 							$mandatory = $param->name;
 						else
 							$mandatory .= ", " . $param->name;
@@ -220,24 +242,24 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			$quote=QUOTE_WHERE;   //since postgresql 8.4 no more '';
 			$equal='=';
-			if(0==strcmp("text", $param->type)) {
+			if (0==strcmp("text", $param->type)) {
 				$quote = QUOTE_WHERE;
 				$equal = '=';
-			} else if(0==strcmp("textlike", $param->type)) {
+			} else if (0==strcmp("textlike", $param->type)) {
 				$quote=QUOTE_WHERE;
 				$equal='ILIKE';
 				$addPercentage = true;
-			} else if(0==strcmp("integer", $param->type)) {
+			} else if (0==strcmp("integer", $param->type)) {
 				$quote=QUOTE_WHERE;
-			} else if(0==strcmp("combotext", $param->type)) {
+			} else if (0==strcmp("combotext", $param->type)) {
 				$quote=QUOTE_WHERE;
 				$addPercentage = false;
-			} else if(0==strcmp("date", $param->type)) {
+			} else if (0==strcmp("date", $param->type)) {
 				$quote=QUOTE_WHERE;
-			} else if(0==strcmp("date_ge", $param->type)) {
+			} else if (0==strcmp("date_ge", $param->type)) {
 				$quote=QUOTE_WHERE;
 				$equal='>=';
-			} else if(0==strcmp("date_lt", $param->type)) {
+			} else if (0==strcmp("date_lt", $param->type)) {
 				$quote=QUOTE_WHERE;
 				$equal='<';
 			} else
@@ -252,11 +274,11 @@ foreach ($xml->database->screens->screen as $screen) {
 					$value = trim($_GET[$field], "\t\n\r\0\x0B");   //trim, but leave the blank
 				} else {
 					$valueIN = $_GET[$fieldType];
-					if(is_array($valueIN)) {
+					if (is_array($valueIN)) {
 						//multiple combo selection, simulate aaa || bbb entry for further processing
 						$value="";
 						foreach($valueIN as $tmp)
-							if($value=="")
+							if ($value=="")
 								$value = $tmp;
 							else
 								$value = $value . "||" . $tmp;
@@ -264,36 +286,37 @@ foreach ($xml->database->screens->screen as $screen) {
 						$value = trim($valueIN, "\t\n\r\0\x0B");   //trim, but leave the blank
 				}
 
-				if(strlen($value)>0) {
+				if ( is_string($value) && strlen($value)>0 ) {
 					$value = str_replace("'", '', $value); // ' not needed
 					$value = str_replace('"', '', $value); // " not needed
 					$myColumn = '"' . $param->dbtable . '"."' . $param->dbcolumn . '"';  // "table"."column" = ...
 
-					if    ((0==strcmp("textlike", $param->type) || 0==strcmp("combotext", $param->type)) && strpos("$value",'||') > 0)
+					if    ((0==strcmp("textlike", $param->type) || 0==strcmp("combotext", $param->type)) && 
+						strpos($value,'||') > 0)
 						$wheretext = processSimpleOR_ANDqueryParam("OR", $myColumn, $value, $equal, $quote, $addPercentage);
-					else if(0==strcmp("textlike", $param->type) && strpos("$value", "&&") > 0)
+					else if (0==strcmp("textlike", $param->type) && strpos($value, "&&") > 0)
 						$wheretext = processSimpleOR_ANDqueryParam("AND",$myColumn, $value, $equal, $quote, $addPercentage);
-					else if(strlen($value)>1 && substr( $value, 0, 1 ) === "!") {   //is negation? e.g. !ABC
+					else if (strlen($value)>1 && substr( $value, 0, 1 ) === "!") {   //is negation? e.g. !ABC
 						$value = substr($value, 1);                                 //'!' found, remove it
 						$value = trim($value);                                      // treat "! ABC" as "!ABC"
-						if(0==strcmp("textlike", $param->type) && strpos("$value",'%') === false)
+						if (0==strcmp("textlike", $param->type) && strpos($value,'%') === false)
 							$value = "%".$value."%";
 						$wheretext = " ($myColumn IS NULL OR $myColumn NOT $equal $quote$value$quote)";
 					} else {
-						if(0==strcmp("textlike", $param->type) && strpos("$value",'%') === false) {  //check if user is already using %
+						if (0==strcmp("textlike", $param->type) && strpos($value,'%') === false) {  //check if user is already using %
 							$value = "%".$value."%";     //SQL ILIKE: user does not need this help any more: %ARHIV%, ARHIV%, STEKL_RSTVO
 						}
 						$wheretext = $myColumn . " " . $equal . " " . $quote . $value . $quote;
 					}
 
-					if(!$and && $where=="") {
+					if (!$and && $where=="") {
 						$where = " WHERE $wheretext";
 						$and=true;
 					} else {
 						$where .= " AND $wheretext";
 					}
 
-					if(strlen("$fieldParamForward") > 0) {
+					if (strlen("$fieldParamForward") > 0) {
 						$paramForwardNum["$fieldParamForward"] = "$quote$value$quote";
 						$paramForwardEqual["$fieldParamForward"] = $equal;
 						debug("(prepared)&nbsp;&nbsp;" . $fieldParamForward . ": " . $value . "\r\n");
@@ -306,7 +329,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 		} //for each param
 
-		if( !empty($mandatory) ) {
+		if ( !empty($mandatory) ) {
 			echo "$MSGSW24_NOPARAMETER: " . $mandatory;
 			return;
 		}
@@ -315,10 +338,10 @@ foreach ($xml->database->screens->screen as $screen) {
 		if (! empty($screenQuery) ) {
 			$query = "$screenQuery $where";
 
-			if( ! isset($screen->querymacro) )
+			if ( ! isset($screen->querymacro) )
 				$query = $query . appendOrderGroupBy("GROUP BY", $screen->selectGroup);
 			$csvquery = $query;
-			if( ! isset($screen->querymacro) )
+			if ( ! isset($screen->querymacro) )
 				$query = $query . appendOrderGroupBy("ORDER BY", $screen->selectOrder);
 		}
 
@@ -391,7 +414,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			}
 		} //for each link to next screen
 
-		$queryInfo->viewInfo = new ViewData($screen);
+		$queryInfo->viewData = new ViewData($screen);
 
 		$maxcount = 0;
 		if (isset($_GET['maxcount'])) {
@@ -434,21 +457,21 @@ foreach ($xml->database->screens->screen as $screen) {
 			foreach ($subselect->param as $param) {
 
 				debug("________________  checking forwarded parameter: " . $param->forwardedParamName);
-				if( isset  ($paramForwardNum["$param->forwardedParamName"]) ) {
+				if ( isset  ($paramForwardNum["$param->forwardedParamName"]) ) {
 					$value= $paramForwardNum["$param->forwardedParamName"];
 					debug("________________ found, got: ".
 						$paramForwardEqual["$param->forwardedParamName"] . " " .
 						$paramForwardNum["$param->forwardedParamName"]);
 
 					$equal = $paramForwardEqual["$param->forwardedParamName"];
-					if(strlen($param->dbcolumn)>0 && strlen($param->forwardedParamName) > 0) {     //use 3 now: SELECT ... WHERE xyz = 3
+					if (strlen($param->dbcolumn)>0 && strlen($param->forwardedParamName) > 0) {     //use 3 now: SELECT ... WHERE xyz = 3
 						$value = str_replace("'", '', $value); // ' not needed
 						$value = str_replace('"', '', $value); // " not needed
 						$myColumn = '"' . $param->dbtable . '"."' . $param->dbcolumn . '"';  // "table"."column" = ...
 
-						if (strpos("$value", '||') > 0)
+						if (strpos($value, '||') > 0)
 							$wheretext = processSimpleOR_ANDqueryParam("OR", $myColumn, $value, $equal, $quote, false);
-						else if(strpos("$value", "&&") > 0)
+						else if (strpos($value, "&&") > 0)
 							$wheretext = processSimpleOR_ANDqueryParam("AND",$myColumn, $value, $equal, $quote, false);
 						else
 							$wheretext = $myColumn . " " . $equal . " " . $quote . $value . $quote;
@@ -515,11 +538,11 @@ foreach ($xml->database->screens->screen as $screen) {
 				}
 			}
 
-			$subQueriesInfo[$sqindex]->viewInfo = new ViewData($subselect);
+			$subQueriesInfo[$sqindex]->viewData = new ViewData($subselect);
 
 			//-------------------------------------------------------------------
 
-			if( !isset($subselect->querymacro) ) {
+			if ( !isset($subselect->querymacro) ) {
 				$subquery = $subquery . appendOrderGroupBy("GROUP BY", $subselect->selectGroup);
 				$subquery = $subquery . appendOrderGroupBy("ORDER BY", $subselect->selectOrder);
 			}
@@ -531,19 +554,18 @@ foreach ($xml->database->screens->screen as $screen) {
 
 		debug(str_repeat("-",80));
 
-
 define('PRINTER_ICON', '&#x1f5b6;');
 
 		$tablelist = $_SESSION['tablelist'];
 		$hits=0;
-		if( strcmp($tablelist, "table") == 0) {
+		if ( strcmp($tablelist, "table") == 0) {
 			print ("<h3>");
 
 			print "<span class='no-print'>";
 			print "<abbr style='text-decoration: none' title='" . $MSGSW31_Print . "'><a style='text-decoration: none;' href='#' onclick=\"printContent('bottomframe');\">" . PRINTER_ICON . "</a></abbr> ";
 			print "</span>";
 
-			if($attrSkipCSVsave != true) {
+			if ($attrSkipCSVsave != true) {
 				$csvfilename = "export" . $targetQueryNum . ".csv";
 				createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
 								$screen->title,
@@ -553,14 +575,14 @@ define('PRINTER_ICON', '&#x1f5b6;');
 			}
 			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h3>");
 
-
 			print ("<h4>");
 			$queryInfo->showHeader("</h4>");
 
 			if ( !empty($screenQuery) ) {
 				$newlist = qToTableWithLink($queryInfo,
-									$totalCount,
+									intval($totalCount),
 									"M");
+
 				print $newlist[0];
 				$hits = $newlist[1];
 				if ( empty($totalCount) )
@@ -593,14 +615,13 @@ define('PRINTER_ICON', '&#x1f5b6;');
 			}
 		}
 
-
 		//display subqueries
 		$sqindexLoop=0;
 		while ($sqindexLoop < $sqindex) {
-			if( strcmp($tablelist, "table") == 0) {
+			if ( strcmp($tablelist, "table") == 0) {
 				print("<br/>");
 				print("<h4>");
-				if($attrSkipCSVsave != true) {
+				if ($attrSkipCSVsave != true) {
 					$csvfilename = "export" . $targetQueryNum . "_" . $sqindexLoop . ".csv";
 					createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
 									$subQueriesInfo[$sqindexLoop]->title,
@@ -613,28 +634,24 @@ define('PRINTER_ICON', '&#x1f5b6;');
 
 				$newlist = qToTableWithLink($subQueriesInfo[$sqindexLoop],
 							0,
-							$sqindexLoop);
-
-				if( !empty($newlist) )
-					print $newlist[0];
-				$sqindexLoop  += 1;
+							(string)$sqindexLoop );
 			} else {
 				print("<h4>");
 				$subQueriesInfo[$sqindexLoop]->showHeader("</h4>");
 				print("<br/>");
 
 				$newlist = qToListWithLink($subQueriesInfo[$sqindexLoop], 0);
-
-				if( !empty($newlist) )
-					print $newlist[0];
-				$sqindexLoop  += 1;
 			}
+
+			if ( !empty($newlist[0]) )
+				print $newlist[0];
+			$sqindexLoop  += 1;
 		}
 
-		if( strcmp($tablelist, "table") != 0 )
+		if ( strcmp($tablelist, "table") != 0 )
 			print "</td></tr></table>" . PHP_EOL;
 
-		if($sqindex == 0) {   //show only when there are no subqueries involved
+		if ($sqindex == 0) {   //show only when there are no subqueries involved
 			print ("<br/>" . $MSGSW12_HitsOnPage  . ": " . $hits);
 			if ($totalLines > 0)
 				print(" (" . $MSGSW12_TotalRecords . ": " . $totalLines . ")");
@@ -648,8 +665,8 @@ define('PRINTER_ICON', '&#x1f5b6;');
 $page_previous = 0;
 foreach ( $PARAMS as $key=>$value ){
 	if ( gettype( $value ) != "array" ){
-		if($key == "__page") {
-			if($sqindex == 0) {   //do not show on a page with subqueires
+		if ($key == "__page") {
+			if ($sqindex == 0) {   //do not show on a page with subqueires
 				print("$MSGSW23_PAGE: $page");
 			}
 			$page_next = $page + 1;
@@ -671,7 +688,7 @@ if ($page_previous > 0) {
 <?php
 	foreach ( $PARAMS as $key=>$value ){
 		if ( gettype( $value ) != "array" ){
-			if($key == "__page") {
+			if ($key == "__page") {
 				$value = $page_previous;
 			}
 			print "       <input type=\"hidden\" name=\"$key\" value=\"$value\" />" . PHP_EOL;
@@ -695,7 +712,7 @@ if ($maxcount == $hits && ($hits > 0) && !(($page * $hits) == $totalLines) ) {
 <?php
 	foreach ( $PARAMS as $key=>$value ){
 		if ( gettype( $value ) != "array" ){
-			if($key == "__page") {
+			if ($key == "__page") {
 				$value = $page_next;
 			}
 			print "       <input type=\"hidden\" name=\"$key\" value=\"$value\" />" . PHP_EOL;
@@ -727,11 +744,13 @@ if ($maxcount == $hits && ($hits > 0) && !(($page * $hits) == $totalLines) ) {
 
 } // function  fillCreateQuery
 
-
-//get select statement from XML
-//for some special cases a macro can be defined, use it
-//this allows future porting of macros to other databases
-function get_query_from_xml($p) {
+/**
+ * get select statement from XML
+ * for some special cases a macro can be defined, use it
+ * this allows future porting of macros to other databases/**
+ * @param SimpleXMLElement $p
+ */
+function get_query_from_xml($p): string {
 
 	$allmacros = array();
 	$allmacros["NUMBER_OF_RECORDS_IN_TABLES"] = <<<EOD
@@ -747,7 +766,7 @@ function get_query_from_xml($p) {
 EOD;
 
 	$m = trim($p->querymacro);
-	if ( isset($m) && $m != '' ) {
+	if ( $m != '' ) {
 		if (array_key_exists($m, $allmacros) ) {
 			$qout = $allmacros[$m];
 		} else {
@@ -755,17 +774,26 @@ EOD;
 		}
 	} else
 		$qout = trim($p->query);
+
 	return $qout;
 } //get_query_from_xml
 
-
-function is_where_already_here($selectStmnt) {
+/**
+ * @param string $selectStmnt
+ **/
+function is_where_already_here($selectStmnt): bool {
 	//if there is a WHERE part at the end, skip it now
 	//do not count WHERE in situations like SELECT ... (SELECT COUNT(*) WHERE ...)
-	$left =   preg_replace("/\([^)]+\)/"," ",$selectStmnt);     // remove anything between ( and )
-	$right =  preg_replace("/\([^)]+\(/"," ",$left);            // remove anything between ( and (
-	$no_wrong_where = preg_replace("/\([^)]+\)/"," ",$right);   // remove anything between ( and )
-	$no_wrong_where = strtoupper(preg_replace('/\s+/', ' ', $no_wrong_where));  //new line -> ' '
+	
+	// remove anything between ( and )
+	if ( ($left =                   preg_replace("/\([^)]+\)/"," ",$selectStmnt)) !== null )
+		if ( ($right =              preg_replace("/\([^)]+\(/"," ",$left))        !== null )
+			if ( ($no_wrong_where = preg_replace("/\([^)]+\)/"," ",$right))       !== null )
+				if ( ($s =          preg_replace('/\s+/', ' ', $no_wrong_where))  !== null ) //new line -> ' '
+					$no_wrong_where = $s;
+
+	if ( ! isset($no_wrong_where) )
+		return (false);  //no error handling?
 
 	if (substr_count($no_wrong_where, " WHERE ")   > 0 ||
 			substr_count($no_wrong_where, " WHERE\t")  > 0 ||
@@ -777,4 +805,4 @@ function is_where_already_here($selectStmnt) {
 
 	return $and;
 } //is_where_already_here
-?>
+

@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.11.1] - 2022-10-04
+### Fixed
+- all: PHPStan static code analyses has been introduced to increase the quality of the code
+
 ## [2.11.0] - 2022-09-16
 ### Modified
 - access: PHP PDO data-access abstraction layer is now used (but not in deployment scripts)
