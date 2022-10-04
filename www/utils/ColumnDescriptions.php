@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ColumnDescriptions.php
  * handle the database column description property
@@ -12,13 +11,32 @@
 
 class ColumnDescriptions
 {
+	/**
+	 * @var array<string>
+	 */
 	private $columnsArrayL = array();
+	/**
+	 * @var array<string>
+	 */
 	private $columnsArrayR = array();
+	/**
+	 * @var array<string>
+	 */
 	private $columnsArrayAll = array();
-	private $fromDBArray = array();
+	/**
+	 * @var array
+	 *
+	 * @psalm-var list<mixed>
+	 */
+	private array $fromDBArray = array();
+	/**
+	 * @var array<string>
+	 */
 	private $columnsArrayDescriptions = array();
 
-
+	/**
+	 * @param string $query
+	 */
 	function __construct($query) {
 		$this->getListOfColumnsFromQuery($query);
 		$this->mergeLandRtoAll();
@@ -28,17 +46,21 @@ class ColumnDescriptions
 		}
 	}
 
-
 	/**
 	 * input: "aa"."bb" AS "cc", "dd"."ee", ff."gg"
 	 * output array:
-	 *		 |aa|bb|cc|
-	 *		 |dd|ee|ee|
-	 *		 |ff|gg|gg|
+	 *   |aa|bb|cc|
+	 *   |dd|ee|ee|
+	 *   |ff|gg|gg|
 	 * cc and ee are used when a column description is requested 
 	 * Columns with changed values (e.g. with a function or concatenation in SELECT) will be skipped.
+	 *
+	 * @param string $str
+	 * @param string &$outarray
+	 *
+	 * @return void
 	 */
-	private function getThree($str, &$outarray) {
+	private function getThree($str, &$outarray): void {
 
 		if ( empty($str) )
 			return;
@@ -86,6 +108,9 @@ class ColumnDescriptions
 				$asvalue = $column;	  								//default if no AS
 				if ($i !== false && $i == 0 ) {
 					$str = preg_replace('/^AS /i', '', $str);		//remove " AS "
+					if ( is_null($str) )
+						continue;
+
 					if ($str[0] == '"' ) {
 						$end	 = strpos($str, '"', 1);
 						$asvalue = substr($str, 1, $end - 1);		// AS "ddd" -> ddd
@@ -115,52 +140,60 @@ class ColumnDescriptions
 		}
 	}
 
-
 	/**
-	* given a SELECT query, find the COMMENT values for all columns so that they can be show in result header line
-	* Check the query and extract the pairs table-column.
-	* Use these pairs as input to get colum names.
-	* Input:
-	* SELECT
-	*	T1.C1 AS "alias",
-	*	T1.C2,
-	*	T2.C3 FROM ... JOIN ...
-	* Output: two arrays are set:
-	* 	columnsArrayL: table/columns from (SELECT ...) 
-	*   columnsArrayR: schema/table from (FROM ... JOIN ...)
-	*/
-	private function getListOfColumnsFromQuery($query) {
+	 * given a SELECT query, find the COMMENT values for all columns so that they can be show in result header line
+	 * Check the query and extract the pairs table-column.
+	 * Use these pairs as input to get colum names.
+	 * Input:
+	 * SELECT
+	 * T1.C1 AS "alias",
+	 * T1.C2,
+	 * T2.C3 FROM ... JOIN ...
+	 * Output: two arrays are set:
+	 *   columnsArrayL: table/columns from (SELECT ...) 
+	 *   columnsArrayR: schema/table from (FROM ... JOIN ...)
+	 *
+	 * @param string $query
+	 */
+	private function getListOfColumnsFromQuery($query): void {
 
-		$query = preg_replace('~[\r\n\t]+~', ' ', trim($query));	//remove formatting
-		$query = preg_replace('/\s\s+/', ' ', $query);			  //only one blank
-		$query = substr($query, stripos($query, 'SELECT ') + 7);	//remove "...select"
-		$sql4 = preg_replace("/\([^)]+\)/","",$query);			  // aaa(bbb) -> aaa()
-		$sql5 = substr($sql4, 0, stripos($sql4, " FROM "));		 //keep everything until FROM ...
-		$sql5 = str_ireplace( " CASE WHEN ", " ", $sql5); 
+		if ( empty($query) )
+			return;
+
+	if ( ($query = preg_replace('~[\r\n\t]+~', ' ', trim($query))) !== null )	 //remove formatting
+		if ( ($query = preg_replace('/\s\s+/', ' ', $query)) !== null )		     //only one blank
+			if ( ($query = substr($query, stripos($query, 'SELECT ') + 7)) !== false && $query !== null  )	//remove "...select"
+				if ( ($sql4 = preg_replace("/\([^)]+\)/","",$query)) !== null )  // aaa(bbb) -> aaa()
+					if ( ($i = stripos($sql4, " FROM ")) !== false )
+						if ( ($sql5 = substr($sql4, 0, $i )) !== false && $sql5 !== null  )	 //keep everything until FROM ...
+							$sql5 = str_ireplace( " CASE WHEN ", " ", $sql5); 
 		
-		$this->getThree($sql5, $this->columnsArrayL);
+		if (false !== $sql5)
+			$this->getThree($sql5, $this->columnsArrayL);
+		
+		if (null !== $sql4) {
+			$sql4 = str_ireplace( " LEFT JOIN ", ",  ", $sql4); 
+			$sql4 = str_ireplace( " RIGHT JOIN ", ", ", $sql4); 
+			$sql4 = str_ireplace( " INNER JOIN ", ", ", $sql4); 
+			$sql8 = substr($sql4, stripos($sql4, " FROM ")+6 );  //keep everything after FROM ...
+			$i = stripos($sql8, " WHERE ");
+			if ($i !== false)
+				$sql8 = substr($sql8, 0, $i);  //keep everything until WHERE ...
 
-		$sql4 = str_ireplace( " LEFT JOIN ", ",  ", $sql4); 
-		$sql4 = str_ireplace( " RIGHT JOIN ", ", ", $sql4); 
-		$sql4 = str_ireplace( " INNER JOIN ", ", ", $sql4); 
-		$sql8 = substr($sql4, stripos($sql4, " FROM ")+6 );  //keep everything after FROM ...
-		$i = stripos($sql8, " WHERE ");
-		if ($i !== false)
-			$sql8 = substr($sql8, 0, stripos($sql8, " WHERE "));  //keep everything until WHERE ...
-
-		$this->getThree($sql8, $this->columnsArrayR);
+			if (null !== $sql8)
+				$this->getThree($sql8, $this->columnsArrayR);
+		}
 	}
-
 
 	/**
 	 * Merge L and R
 	 * Input:
-	 * 	columnsArrayL: table/columns from (SELECT ...) 
+	 *  columnsArrayL: table/columns from (SELECT ...) 
 	 *  columnsArrayR: schema/table from (FROM ... JOIN ...)
 	 * Output:
 	 * columnsArrayAll: |schema|table|as_table|column|as_column|
 	 */
-	private function mergeLandRtoAll() {	   
+	private function mergeLandRtoAll(): void {	   
 		foreach ($this->columnsArrayL as $left) {
 			//debug("mergeLandRtoAll L: >$left[0]< >$left[1]<  >$left[2]< ");			  //(as)table|column|as_column
 			foreach ($this->columnsArrayR as $right) {
@@ -173,11 +206,10 @@ class ColumnDescriptions
 		}	  
 	}
 
-
 	/**
-	* PostgreSQL specific
-	*/
-	private function getCommentsFromDB() {
+	 * PostgreSQL specific
+	 */
+	private function getCommentsFromDB(): void {
 			$duplicatesArr = array();
 			$query = "SELECT 
 	cols.table_name AS \"table\",
@@ -203,12 +235,11 @@ class ColumnDescriptions
 			$this->fromDBArray = qRowsToArray($query);
 	}
 
-
 	/**
 	 * Consolidate column names and AS names and schema/table names
 	 * Output:
 	 */
-	private function mergeLRandDB() {
+	private function mergeLRandDB(): void {
 		foreach ($this->fromDBArray as $fromdb) {
 			//debug("mergeLRandDB: retrieved from DB: >$fromdb[0]< >$fromdb[1]<  >$fromdb[2]< ");   //|table|column|description|
 			foreach ($this->columnsArrayAll as $lr) {
@@ -229,9 +260,11 @@ class ColumnDescriptions
 		}	  
 	}
 
-
-	function getDescriptionForColumn($col) {
-		$ret = NULL;
+	/**
+	 * @param string $col
+	 */
+	function getDescriptionForColumn($col): string {
+		$ret = "";
 		//$x = json_encode($this->columnsArrayDescriptions);
 		//$ret = "wanted($col) columnsArrayDescriptions=".$x;
 		
@@ -244,4 +277,3 @@ class ColumnDescriptions
 	}
 }
 
-?>

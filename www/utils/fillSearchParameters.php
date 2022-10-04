@@ -6,10 +6,8 @@
  * Parameter names as compound from dbtable/dbcolumn/type
  * Type is used mainly because of date duplicates - date field can be used more times
  * Author: Boris Domajnko
- *
  */
-
-function fillSearchParameters() {
+function fillSearchParameters(): void {
 global $xml;
 global $targetQueryNum;
 global $MSGSW12_RecordsPerPage, $MSGSW16_Display;
@@ -72,27 +70,27 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			if(0==strcmp("text", $param->type)) {
 				if($bSize)
-					input_text_size($field, $attributeSize, "", TRUE);
+					input_text_size($field, (int) $attributeSize, "", TRUE);
 				else
-					input_text_size($field, "15",           "", TRUE);    //default
+					input_text_size($field, 15,                   "", TRUE);    //default
 			}
 
 			if(0==strcmp("textlike", $param->type)) {
 				if($bSize)
-					input_text_size($field, $attributeSize, "", TRUE);
+					input_text_size($field, (int) $attributeSize, "", TRUE);
 				else
-					input_text($field, "", TRUE);
+					input_text($field);
 			}
 
 			if(0==strcmp("integer", $param->type)) {
 				if($bSize)
-					input_integer($field, $attributeSize, "", TRUE);
+					input_integer($field, (int) $attributeSize);
 				else
-					input_integer($field, "15",           "", TRUE);    //default
+					input_integer($field, 15                  );    //default
 			}
 
 			if(0==strcmp("combotext", $param->type)) {
-				input_combotext_db_multi($field, $param->name, $param->select, "", TRUE, $param->name);
+				input_combotext_db_multi($field, $param->name, $param->select, "", TRUE); //!!!!!!!, $param->name);
 			}
 			
 			if( (0==strcmp("date",    $param->type)) ||
@@ -108,7 +106,7 @@ foreach ($xml->database->screens->screen as $screen) {
 		} //for each param
 
 		$viewInfo = new ViewData($screen);
-		if( !is_null($viewInfo->getDefaultView()) )
+		if( !empty($viewInfo->getDefaultView()) )
 			$_SESSION['tablelist'] = "" . $viewInfo->getDefaultView();
 
 	} //if screnid=#

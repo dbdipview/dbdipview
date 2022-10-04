@@ -3,12 +3,11 @@
 /**
  * BLOB, CSV and attachment file downloads
  *
- * @author     Boris Domajnko
- *
+ * @param string $id
+ * @param string &$sql
+ * @param string &$mode
  */
-
-// what kind of LOB do we have
-function getSQLfromXML($id, &$sql, &$mode) {
+function getSQLfromXML($id, &$sql, &$mode): void {
 	global $xml;
 
 	foreach ($xml->database->screens->screen as $screen) {
@@ -22,18 +21,25 @@ function getSQLfromXML($id, &$sql, &$mode) {
 	}
 }
 
-function showBlobRaw($id, $val) {
+/**
+ * @param string $id   queries screen number
+ * @param string $val  record id
+ *
+ * @return never
+ */
+function showBlobRaw($id, $val): void {
+	global $dbConn;
 
 	$sql=""; 
 	$mode="BLOB";
 	getSQLfromXML($id, $sql, $mode);
 	
-	$db = connectToDB();
+	connectToDB();
 
-	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	$db->beginTransaction();
+	$dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	$dbConn->beginTransaction();
 
-	$stmt = $db->prepare($sql);
+	$stmt = $dbConn->prepare($sql);
 	$stmt->execute(array($val));  //record id
 
 	switch ($mode) {
@@ -63,7 +69,7 @@ function showBlobRaw($id, $val) {
 		case "OID":
 			header("Content-Type: $contenttype");
 			header("Content-Disposition: inline; filename=" . $filename);
-			$stream = $db->pgsqlLOBOpen($oid, 'r');
+			$stream = $dbConn->pgsqlLOBOpen($oid, 'r');
 			fpassthru($stream);
 			break;
 		default:
@@ -74,17 +80,26 @@ function showBlobRaw($id, $val) {
 }
 
 
-function showCsv($usql64, $filename, $utitle64) {
-	
+/**
+ * @param string $usql64
+ * @param string $filename
+ * @param string $utitle64
+ * @return never
+ */
+function showCsv($usql64, $filename, $utitle64): void {
+	global $dbConn;
+
 	$delimiter = ";";
 	$sql =   base64_decode(rawurldecode($usql64));
 	$title = base64_decode(rawurldecode($utitle64));
-	
+
 	header( 'Content-Type: text/csv;charset=utf-8' );
 	header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
 
 	$handle = fopen( 'php://output', 'w' );
-	
+	if( false === $handle )
+		exit();
+
 	fwrite( $handle, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 	fwrite( $handle, $title . $delimiter );
 
@@ -92,8 +107,8 @@ function showCsv($usql64, $filename, $utitle64) {
 
 	$first = true;
 	try {
-		$db = connectToDB();
-		$stmt = $db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+		connectToDB();
+		$stmt = $dbConn->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
 		$stmt->execute();
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT)) {
 			if($first) {
@@ -113,6 +128,12 @@ function showCsv($usql64, $filename, $utitle64) {
 }
 
 
+/**
+ * @param string $f
+ * @param string $folder
+ * 
+ * @return never
+ */
 function showFile($f, $folder) {
 
 	$filename = $folder . base64_decode(rawurldecode($f));

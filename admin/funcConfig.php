@@ -4,7 +4,7 @@
  * about deployed and activated packages
  */
 
-if(! isset($SERVERDATADIR))
+if (! isset($SERVERDATADIR))
 	$SERVERDATADIR = "data/";
 
 $SERVERCONFIGJSON = "$SERVERDATADIR" . "config.json";
@@ -12,11 +12,10 @@ $SERVERCONFIGCSV  = "$SERVERDATADIR" . "configuration.dat";  //obsolete
 
 /**
  * Create an empty configuration file after installation
- *
  */
-function config_create() {
+function config_create(): void {
 	global $SERVERCONFIGJSON, $MSG43_INITCONFIG;
-	
+
 	if (!file_exists($SERVERCONFIGJSON)) {
 		msgCyan($MSG43_INITCONFIG . ": " . $SERVERCONFIGJSON);
 		if (($handleWrite = fopen("$SERVERCONFIGJSON", "w")) !== FALSE) {
@@ -25,9 +24,9 @@ function config_create() {
 			fclose($handleWrite);
 		}
 	}
-	
+
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
-	if( !is_array($array) ) {
+	if ( !is_array($array) ) {
 		err_msg("ERROR: corrupted file: " . $SERVERCONFIGJSON);
 		exit(1);
 	}
@@ -36,16 +35,18 @@ function config_create() {
 /**
  * Migrate configuration information from CSV to JSON
  * Used when CSV file was made obsolete.
- *
  */
-function config_migrate() {
+function config_migrate(): void {
 	global $SERVERCONFIGCSV;
-	if(file_exists ("$SERVERCONFIGCSV")) {
+	$configItemInfo = array();
+
+	if (file_exists ("$SERVERCONFIGCSV")) {
 		$fh = fopen("$SERVERCONFIGCSV", "r");
-		if(!$fh) {
+		if (!$fh) {
 			echo "Error";
 		} else {
-			while (list ($myval, $mydbc, $myxml, $mytoken, $myaccess) = fgetcsv($fh, 1024, "\t")) {
+			while ( ($data = fgetcsv($fh, 1024, "\t") ) !== false && $data !== null) {
+				list ($myval, $mydbc, $myxml, $mytoken, $myaccess) = $data;
 				$configItemInfo['dbc'] = $mydbc;
 				$configItemInfo['ddv'] = $myval;
 				$configItemInfo['queriesfile'] = $myxml;
@@ -58,27 +59,27 @@ function config_migrate() {
 				config_json_add_item($configItemInfo);
 			}
 		}
-		rename("$SERVERCONFIGCSV", $SERVERCONFIGCSV . ".migrated");  
+		rename("$SERVERCONFIGCSV", $SERVERCONFIGCSV . ".migrated");
 	}
 }
 
 /**
  * Display configuration information (for debug mode)
- *
  */
-function config_list() {
+function config_list(): void {
 	global $SERVERCONFIGJSON;
-	
+
 	msgCyan("SERVERCONFIGJSON=" . $SERVERCONFIGJSON . ":");
-	if(file_exists ("$SERVERCONFIGJSON"))
-		$out = passthru("cat $SERVERCONFIGJSON");
+	if (file_exists ("$SERVERCONFIGJSON"))
+		passthru("cat $SERVERCONFIGJSON");
 	echo PHP_EOL;
 }
 
 /**
  * Add an element to configuration information
  *
- * @param string $configItemInfo       array with values to be stored:
+ * @param array<string, mixed> $configItemInfo    values to be stored
+
  *     ddv           viewer package name
  *     dbcontainer   database container where a db is installed (it can hold more of them)
  *     queriesfile   filename for the viewer ddv package
@@ -88,8 +89,8 @@ function config_list() {
  *     ref           reference code of the unit of description
  *     title         title of the unit of description
  */
-function config_json_add_item($configItemInfo) {
-	global $SERVERCONFIGJSON;
+function config_json_add_item($configItemInfo): void {
+	global $SERVERCONFIGJSON, $MSG17_FILE_NOT_FOUND;
 
 	$newjson  = '{';
 	$newjson .= '"dbc":"' .                             $configItemInfo['dbc']         . '",';
@@ -103,26 +104,24 @@ function config_json_add_item($configItemInfo) {
 	$newjson .= '"order":"' .                           $configItemInfo['order']       . '"}';
 
 	$i = 0;
-	$json = "["; 
+	$json = "[";
 	if (($handleWrite = fopen("$SERVERCONFIGJSON.tmp", "w")) !== FALSE) {
-        
 		$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
-		
 		foreach ($array as $index=>$line) {
 			$json .= ($i++ > 0 ? ',' : '' ) ;
 			$json .= PHP_EOL . json_encode($line);
 		}
-	}
-	$json .= ($i++ > 0 ? ',' : '' );
-	$json .= PHP_EOL . $newjson;
-	$json .= PHP_EOL . "]"; 
+		$json .= ($i++ > 0 ? ',' : '' );
+		$json .= PHP_EOL . $newjson;
+		$json .= PHP_EOL . "]";
 
-	fwrite($handleWrite,$json);
-	fclose($handleWrite);
-	
-	rename("$SERVERCONFIGJSON.tmp", $SERVERCONFIGJSON);
+		fwrite($handleWrite,$json);
+		fclose($handleWrite);
+
+		rename("$SERVERCONFIGJSON.tmp", $SERVERCONFIGJSON);
+	} else
+		err_msg("ERROR: " . $MSG17_FILE_NOT_FOUND, $SERVERCONFIGJSON . ".tmp");
 }
-
 
 /**
  * Remove an element from configuration information
@@ -130,15 +129,15 @@ function config_json_add_item($configItemInfo) {
  * @param string $DDV       viewer package name
  * @param string $DBC       database container where the db is installed
  */
-function config_json_remove_item($DDV, $DBC) {
-	global $SERVERCONFIGJSON, $MSG28_DEACTIVATED;
-	
+function config_json_remove_item($DDV, $DBC): void {
+	global $SERVERCONFIGJSON, $MSG17_FILE_NOT_FOUND, $MSG28_DEACTIVATED;
+
 	if (($handleWrite = fopen("$SERVERCONFIGJSON.tmp", "w")) !== FALSE) {
-		
+
 		$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
-		
+
 		$i = 0;
-		$json = "["; 
+		$json = "[";
 		foreach ($array as $index=>$line) {
 			if ( array_key_exists('ddv', $line) && (0==strcmp($line['ddv'], $DDV)) && (0==strcmp($line['dbc'],$DBC)) ) {
 				msgCyan("$MSG28_DEACTIVATED $DBC->$DDV");
@@ -147,43 +146,44 @@ function config_json_remove_item($DDV, $DBC) {
 				$json .= PHP_EOL . json_encode($line);
 			}
 		}
-		$json .= PHP_EOL . "]"; 
+		$json .= PHP_EOL . "]";
+
 		fwrite($handleWrite,$json);
-	} 
-	fclose($handleWrite);
+		fclose($handleWrite);
 
-	rename("$SERVERCONFIGJSON.tmp", $SERVERCONFIGJSON);	
+		rename("$SERVERCONFIGJSON.tmp", $SERVERCONFIGJSON);
+	} else
+		err_msg("ERROR: " . $MSG17_FILE_NOT_FOUND, $SERVERCONFIGJSON . ".tmp");
 }
-
 
 /**
  * Check if a database is mentioned in the configuration information
  * Useful e.g. before deleting the database.
  *
  * @param string $DBC name of the database container
- * 
+ *
  * @return int $found    number of occurances of database container (0=none)
  */
 function config_isDBCactive($DBC) {
 	global $SERVERCONFIGJSON;
-	
+
 	$found = 0;
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
-	
+
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC)) {
 			$found++;
-		} 
-	} 
+		}
+	}
+
 	return($found);
 }
-
 
 /**
  * Checks if a given package has beed activated, based on information in the config file.
  * Returns number of lines with the same package (0..N) or with combination package+database (0..1).
  *
- * @param string $ddv            package name 
+ * @param string $ddv            package name
  * @param string $DBC            selected database (or any)
  *
  * @return int $found            number of occurencies
@@ -195,26 +195,26 @@ function config_isPackageActivated($ddv, $DBC="") {
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 
 	foreach ($array as $index=>$line) {
-		if ( 
+		if (
 			(array_key_exists('ddv', $line) && 0==strcmp($line['ddv'],$ddv)) &&
 			( $DBC == "" || (array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC)) )
 			) {
 			$found++;
-		} 
-	} 
+		}
+	}
 	return($found);
 }
 
 /**
  * For a given "token" code returns the active database configuration information
  *
- * @param string $code                code of a configuration entry
+ * @param string $token     code of a configuration entry
  *
- * @return array $database, $xmlfile  pair needed for access
+ * @return array<mixed, mixed>   database/xmlfile pair as needed for access
  */
 function config_code2database($token) {
 	global $SERVERCONFIGJSON;
-	
+
 	$database = "_not_set";
 	$xmlfile =  "_not_set";
 
@@ -225,8 +225,9 @@ function config_code2database($token) {
 		if ( array_key_exists('token', $line) && 0==strcmp($line['token'],$token)) {
 			$database = $line['dbc'];
 			$xmlfile =  $line['queriesfile'];
-		} 
-	} 
+		}
+	}
+
 	return(array($database, $xmlfile));
 }
 
@@ -237,11 +238,11 @@ function config_code2database($token) {
  * @param string $d                database
  * @param string $v                viewer
  *
- * @return array $database, $xmlfile  pair needed for access
+ * @return array<mixed, mixed>   database/xmlfile pair as needed for access
  */
 function config_dv2database($d, $v) {
 	global $SERVERCONFIGJSON;
-	
+
 	$database = "_not_set";
 	$xmlfile =  "_not_set";
 
@@ -255,35 +256,37 @@ function config_dv2database($d, $v) {
 		) {
 			$database = $line['dbc'];
 			$xmlfile =  $line['queriesfile'];
-		} 
-	} 
+		}
+	}
+
 	return(array($database, $xmlfile));
 }
 
 /**
  * Display configuration information (as OPTION elements for the selection html form)
  * Show only public elements
- *
  */
-function config_get_options_token() {
+function config_get_options_token(): void {
 	global $SERVERCONFIGJSON;
-		
+
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 	usort($array, "cmpRef");
 
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('access', $line) && 0==strcmp($line['access'],"public")) {
-			print '<option value="' . $line['token'] . '">' . 
-			$line['ref'] . " " . $line['title'] . " (DBC:" . $line['dbc'] . ") "  . 
+			print '<option value="' . $line['token'] . '">' .
+			$line['ref'] . " " . $line['title'] . " (DBC:" . $line['dbc'] . ") "  .
 			'</option>' . PHP_EOL;
-		} 
-	} 
+		}
+	}
 }
 
 /**
  * Display configuration information as a table
+ *
+ * @param int $titleMaxLength
  */
-function config_show( $titleMaxLength = 30 ) {
+function config_show( $titleMaxLength = 30 ): void {
 	global $SERVERCONFIGJSON, $TXT_GREEN,$TXT_RESET;
 	global $MSG34_NOACTIVEDB, $MSG_ACCESSDB, $MSG40_ACTIVATEDPKGS;
 	$length0 = strlen("DBC");
@@ -310,8 +313,8 @@ function config_show( $titleMaxLength = 30 ) {
 			$length4 = mb_strlen($line['ref']);
 		if (mb_strlen($line['title'])       > $length5)
 			$length5 = mb_strlen($line['title']);
-		
-		if( isset($line['order']) || array_key_exists('order', $line) ) {
+
+		if ( isset($line['order']) || array_key_exists('order', $line) ) {
 			if (mb_strlen($line['order'])   > $length6)
 				$length6 = mb_strlen($line['order']);
 		}
@@ -342,7 +345,7 @@ function config_show( $titleMaxLength = 30 ) {
 
 		echo mb_strimwidth($line['title'], 0, $length5, "...") . "|";
 
-		if( isset($line['order']) || array_key_exists('order', $line) )
+		if ( isset($line['order']) || array_key_exists('order', $line) )
 			echo mb_str_pad($line['order'],  $length6) . "|" .  PHP_EOL;
 		else
 			echo mb_str_pad("",  $length6) . "|" .  PHP_EOL;
@@ -352,19 +355,29 @@ function config_show( $titleMaxLength = 30 ) {
 		err_msg($MSG34_NOACTIVEDB);
 }
 
-function cmpRef($a, $b) {
+/**
+ * @param array<string, string> $a
+ * @param array<string, string> $b
+ */
+function cmpRef($a, $b): int {
 	return( strcmp($a['ref'], $b['ref']) );
 }
 
 /**
  * Display configuration information as a table
+ *
+ * @param string $ddv
+ * @param string $DBC
+ * @return (mixed|string)[]
+ *
+ * @psalm-return array{dbc?: mixed, ddv?: mixed, queriesfile?: mixed, ddvtext?: mixed, token?: mixed, access?: mixed, ref?: mixed, title?: mixed, order?: ''|mixed}
  */
-function configGetInfo($ddv, $DBC) {
+function configGetInfo($ddv, $DBC): array {
 	global $SERVERCONFIGJSON;
 
 	$configItemInfo = array();
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
-	
+
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('ddv', $line) && 0==strcmp($line['ddv'],$ddv) &&
 			 array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC) ) {
@@ -381,4 +394,3 @@ function configGetInfo($ddv, $DBC) {
 	}
 	return($configItemInfo);
 }
-

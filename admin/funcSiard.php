@@ -1,13 +1,19 @@
 <?php
 /**
  * funcSiard.php
- * 
+ *
  * Functions for handling SIARD packages
  *
- * @author     Boris Domajnko
+ * @author Boris Domajnko
  */
 
-function installSIARD($database, $siardfile, $tool) {
+/**
+ * @param string $database
+ * @param string $siardfile
+ * @param string $tool
+ *
+ */
+function installSIARD($database, $siardfile, $tool): bool {
 	global $MSG17_FILE_NOT_FOUND, $MSG48_NOTCONFIGURED;
 	global $DBADMINUSER, $DBADMINPASS, $DBPTKJAR, $SIARDSUITECMDJAR, $JAVA;
 	global $MEM, $HOST, $DBTYPE, $DBPORT;
@@ -48,7 +54,6 @@ function installSIARD($database, $siardfile, $tool) {
 		}
 		debug(   "$JAVA $MEM $ENCODING -jar $DBPTKJAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn $DBPORT -i siard-2 -if $siardfile");
 		passthru("$JAVA $MEM $ENCODING -jar $DBPTKJAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn $DBPORT -i siard-2 -if $siardfile");
-		return(true);
 	} else {
 		if ( empty($SIARDSUITECMDJAR) ) {
 			err_msg("SIARDSUITECMDJAR " . $MSG48_NOTCONFIGURED . " configa.txt, configa.txt.template");
@@ -61,14 +66,19 @@ function installSIARD($database, $siardfile, $tool) {
 		$JDBC="jdbc:" . $DBTYPE . "://" . $HOST . ":" . $DBPORT . "/" . $database;  //postgresql
 		debug(   "$JAVA -cp $SIARDSUITECMDJAR ch.admin.bar.siard2.cmd.SiardToDb -l=10 -s=$siardfile -j=$JDBC -u=$DBADMINUSER -p=$DBADMINPASS ");
 		passthru("$JAVA -cp $SIARDSUITECMDJAR ch.admin.bar.siard2.cmd.SiardToDb -l=10 -s=$siardfile -j=$JDBC -u=$DBADMINUSER -p=$DBADMINPASS ");
-		return(true);
 	}
-}
 
+	return(true);
+}
 
 /**
  * Get a value of a siard header element in header/metadata.xml
  * In case of corrupted file nothing is shown
+ *
+ * @param string $path
+ * @param string $xml_element
+ *
+ * @return false|string
  */
 function get_SIARD_header_element($path, $xml_element) {
 
@@ -76,13 +86,13 @@ function get_SIARD_header_element($path, $xml_element) {
 	$xmlend = "</" . $xml_element . ">";
 	$text = "";
 
-	$zip = zip_open($path);
-	if (is_resource($zip)) {
+	$zip = zip_open($path);  //This function has been DEPRECATED as of PHP 8.0.0.
+	if ( false !== $zip && is_resource($zip) ) {
 		do {
 			$entry = zip_read($zip);
-		} while ($entry && zip_entry_name($entry) != "header/metadata.xml");
+		} while ( is_resource($entry) && zip_entry_name($entry) != "header/metadata.xml");
 
-		if ( $entry && zip_entry_open($zip, $entry, "r") ) {
+		if ( is_resource($entry) && zip_entry_open($zip, $entry, "r") ) {
 			$entry_content = zip_entry_read($entry, zip_entry_filesize($entry));
 			$text_open_pos  = strpos($entry_content, $xmlstart);
 			$text_close_pos = strpos($entry_content, $xmlend, $text_open_pos);
@@ -103,5 +113,4 @@ function get_SIARD_header_element($path, $xml_element) {
 
 	return $text;
 }
-
 

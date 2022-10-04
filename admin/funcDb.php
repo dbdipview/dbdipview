@@ -1,13 +1,13 @@
 <?php
 /**
  * funcDb.php
- * 
+ *
  * Functions for configuring the database
  * PostgreSQL concept of database and schema is used
  *
  * @author     Boris Domajnko
  */
- 
+
 $DEVNULL=" 1>/dev/null";
 
  /**
@@ -15,26 +15,27 @@ $DEVNULL=" 1>/dev/null";
  *
  * @return void
  */
- function dbf_list_databases() {
+ function dbf_list_databases(): void {
 	global $DBADMINPASS, $DBADMINUSER;
-	
+
 	passthru("PGPASSWORD=$DBADMINPASS psql -P pager=off -l -U $DBADMINUSER");
  }
- 
+
 /**
  * Create a database container
- * This is a PostgreSQL database. 
- * Into it, one or more schemas may be installed if they do not interfere one with another 
+ * This is a PostgreSQL database.
+ * Into it, one or more schemas may be installed if they do not interfere one with another
+ * @param string $DBC
  */
-function dbf_create_dbc($DBC) {
+function dbf_create_dbc($DBC): bool {
 	global $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG11_DB_ALREADY_EXISTS, $MSG22_DB_CREATED;
 	global $DBADMINPASS, $DBADMINUSER;
 	global $OK, $NOK;
-	
+
 	$rv = "";
 	$retval = $NOK;
-	
-	if (notSet($DBC)) 
+
+	if (notSet($DBC))
 		err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 	else {
 		exec("PGPASSWORD=$DBADMINPASS psql -U " . $DBADMINUSER . ' -d postgres -c "SELECT datname FROM pg_database WHERE datname = \'' . $DBC . '\' ;" ', $rv);
@@ -44,19 +45,21 @@ function dbf_create_dbc($DBC) {
 			err_msg("$MSG11_DB_ALREADY_EXISTS:", $DBC);
 			$retval = $OK;
 		} else {
-			passthru("PGPASSWORD=$DBADMINPASS createdb " . $DBC . 
+			passthru("PGPASSWORD=$DBADMINPASS createdb " . $DBC .
 					" -U ". $DBADMINUSER . " -E UTF8 --template=template0", $rv);
 			if ( $rv == 0 ) {
 				exec("PGPASSWORD=$DBADMINPASS psql -P pager=off -l -U " . $DBADMINUSER . ' \'' . $DBC . '\' ;', $rv);
 				foreach ($rv as $index=>$line) {
 					if($index > 2) {
 						$pos = strpos(trim($line), "|");
-						$word = substr($line, 0, $pos);
-						if(trim($word) == $DBC) {
-							echo $rv[1] . PHP_EOL;   //header line
-							echo $line  . PHP_EOL;
-							msgCyan($MSG22_DB_CREATED . ": " . $DBC);
-							$retval = $OK;
+						if ( false !== $pos) {
+							$word = substr($line, 0, $pos);
+							if(trim($word) == $DBC) {
+								echo $rv[1] . PHP_EOL;   //header line
+								echo $line  . PHP_EOL;
+								msgCyan($MSG22_DB_CREATED . ": " . $DBC);
+								$retval = $OK;
+							}
 						}
 					}
 				}
@@ -69,22 +72,23 @@ function dbf_create_dbc($DBC) {
 /**
  * Delete a database container
  *
+ * @param string $DBC
  */
-function dbf_delete_dbc($DBC) {
+function dbf_delete_dbc($DBC): bool {
 	global $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG44_ISACTIVEDB, $MSG26_DELETING;
 	global $DBADMINPASS, $DBADMINUSER;
 	global $OK, $NOK;
-	
+
 	$rv = "";
 	$retval = $NOK;
-	
-	if (notSet($DBC)) 
+
+	if (notSet($DBC))
 		err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 	else if (config_isDBCactive($DBC) > 0)
 		err_msg($MSG44_ISACTIVEDB . ": " . $DBC);
 	else {
 		msgCyan($MSG26_DELETING . ": " . $DBC . "...");
-		passthru("PGPASSWORD=$DBADMINPASS dropdb " . $DBC . 
+		passthru("PGPASSWORD=$DBADMINPASS dropdb " . $DBC .
 			" -U ". $DBADMINUSER . " --if-exists", $rv);
 		$retval = $OK;
 	}
@@ -92,135 +96,162 @@ function dbf_delete_dbc($DBC) {
 }
 
  /**
- * Create schema
- * The existence of the schema is not checked as it might have been created fro a SIARD package
- *
+  * Create schema
+  * The existence of the schema is not checked as it might have been created fro a SIARD package
+ * @param string $DBC
+ * @param string $SCHEMA
  */
- function  dbf_create_schema($DBC, $SCHEMA) {
+ function  dbf_create_schema($DBC, $SCHEMA): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
-	
+
 	$rv = "";
 	debug(        "CREATE SCHEMA IF NOT EXISTS " . $SCHEMA . " AUTHORIZATION " . $DBADMINUSER);
-	passthru("echo CREATE SCHEMA IF NOT EXISTS " . $SCHEMA . " AUTHORIZATION " . $DBADMINUSER . 
-		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
-	return($rv);
- }
- 
-  /**
- *  Grant usage on schema 
- *
- */
- function  dbf_grant_usage_on_schema($DBC, $SCHEMA, $DBGUEST) {
-	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
-	
-	$rv = "";
-	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST);
-	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
+	passthru("echo CREATE SCHEMA IF NOT EXISTS " . $SCHEMA . " AUTHORIZATION " . $DBADMINUSER .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
 
- /**
- *  Drop schema 
- *
+/**
+ * Grant usage on schema
+ * @param string $DBC
+ * @param string $SCHEMA
+ * @param string $DBGUEST
  */
- function  dbf_drop_schema($DBC, $SCHEMA) {
+ function  dbf_grant_usage_on_schema($DBC, $SCHEMA, $DBGUEST): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
-	
+
+	$rv = "";
+	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST);
+	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST .
+		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
+	return($rv);
+ }
+
+/**
+ * Drop schema
+ * @param string $DBC
+ * @param string $SCHEMA
+ */
+ function  dbf_drop_schema($DBC, $SCHEMA): int {
+	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
+
 	$rv = "";
 	debug(        "DROP SCHEMA " . $SCHEMA);
-	passthru("echo DROP SCHEMA " . $SCHEMA . 
+	passthru("echo DROP SCHEMA " . $SCHEMA .
 		" CASCADE | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
- 
-  /**
- *  Grant select on table
+
+/**
+ * Grant select on table
  *
+ * @param string $DBC
+ * @param string $TABLE
+ * @param string $DBGUEST
+ * @psalm-return ''
  */
- function dbf_grant_select_on_table($DBC, $TABLE, $DBGUEST) {
+ function dbf_grant_select_on_table($DBC, $TABLE, $DBGUEST): string {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
-	
+
 	$rv = "";
 	debug(        "GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST);
-	passthru("echo GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST . 
+	passthru("echo GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 	return($rv);
  }
-									
- /**
- *  Grant select on all tables in schema for the user 
- *
+
+/**
+ * Grant select on all tables in schema for the user
+ * @param string $DBC
+ * @param string $SCHEMA
+ * @param string $DBGUEST
  */
- function dbf_grant_select_all_tables($DBC, $SCHEMA, $DBGUEST) {
+ function dbf_grant_select_all_tables($DBC, $SCHEMA, $DBGUEST): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
-	
+
 	$rv = "";
 	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST);
-	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
+	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
-	
+
 	debug(        "GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA);
-	passthru("echo GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA . " TO " . $DBGUEST . 
+	passthru("echo GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA . " TO " . $DBGUEST .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
 
- /**
- *  Load data into table from a CSV file
- *  header line, delimiter, and encoding are parameters
+/**
+ * Load data into table from a CSV file
+ * header line, delimiter, and encoding are parameters
+ *
+ * @param string $DBC
+ * @param string $DATEMODE
+ * @param string $TABLE
+ * @param string $SRCFILE
+ * @param string $DELIMITER
+ * @param string $HEADER
+ * @param string $ENCODING
+ * @psalm-return ''
  */
- function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER, $ENCODING) {
+ function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER, $ENCODING): string {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
 	$rv = "";
 	debug(__FUNCTION__ . ": Copy table data from CSV $SRCFILE to $TABLE...");
 	if ($DELIMITER == ";")
-		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\;\' CSV $HEADER ENCODING \'$ENCODING\' " . 
+		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\;\' CSV $HEADER ENCODING \'$ENCODING\' " .
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 
 	elseif ($DELIMITER == "|")
-		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\|\' CSV $HEADER ENCODING \'$ENCODING\' " . 
+		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\|\' CSV $HEADER ENCODING \'$ENCODING\' " .
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 
 	elseif ($DELIMITER == "tab")
-		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'\\\t\' CSV $HEADER ENCODING \'$ENCODING\' " . 
+		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'\\\t\' CSV $HEADER ENCODING \'$ENCODING\' " .
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 
 	else
-		passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' CSV $HEADER ENCODING \'$ENCODING\' " . 
+		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' CSV $HEADER ENCODING \'$ENCODING\' " .
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 	debug("Copy done.");
 	return($rv);
  }
 
- /**
- *  Load data into table from TAB delimited file
+/**
+ * Load data into table from TAB delimited file
  *
+ * @param string $DBC
+ * @param string $DATEMODE
+ * @param string $TABLE
+ * @param string $SRCFILE
+ * @param string $HEADER
+ * @param string $ENCODING
+ * @psalm-return ''
  */
- function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $HEADER, $ENCODING) {
+ function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $HEADER, $ENCODING): string {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
-	
-	$rv = ""; 
+
+	$rv = "";
 	debug("Copy table data from $SRCFILE to $TABLE...");
-	passthru("echo SET datestyle=" . $DATEMODE . "\;" . 
-		"COPY " . $TABLE . " FROM \'$SRCFILE\' $HEADER WITH NULL AS \'\'  ENCODING \'$ENCODING\' " . 
+	passthru("echo SET datestyle=" . $DATEMODE . "\;" .
+		"COPY " . $TABLE . " FROM \'$SRCFILE\' $HEADER WITH NULL AS \'\'  ENCODING \'$ENCODING\' " .
 		" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 	return($rv);
  }
- 
+
 /**
- * Translate CSV encoding name in the list.txt into target database parameter. 
+ * Translate CSV encoding name in the list.txt into target database parameter.
  * Currently only some values for PostgreSQL are listed, all are not tested as
  * UTF8 is suggested for AIP.
  *
- * @return encoding
+ * @param string $input
+ * @return string    encoding
  */
-function dbf_encoding_param($input) {
+function dbf_encoding_param($input): string {
 	$output = "UTF8";               //default
 
 	if ( $input == "UTF8" )
@@ -272,7 +303,7 @@ function dbf_encoding_param($input) {
 /**
  * Returns the list of possible CSV file encodings for the list.txt
  *
- * @return encoding
+ * @return array<string>    encodings
  */
 function dbf_encoding_params_get() {
 
@@ -283,27 +314,31 @@ function dbf_encoding_params_get() {
 		"windows-1250", "windows-1251", "windows-1252" );
 }
 
- /**
- *  Run script from a file
+/**
+ * Run script from a file
  *
+ * @param string $DBC
+ * @param string $SQL
  */
- function  dbf_run_sql($DBC, $SQL) {
-	global $DBADMINPASS, $DBADMINUSER, $DEVNULL; 
-	
+ function  dbf_run_sql($DBC, $SQL): int {
+	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
+
 	$rv = "";
 	passthru("cat " . $SQL . "| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
- 
-  /**
- *  Run script using a parameter
+
+/**
+ * Run script using a parameter
  *
+ * @param string $DBC
+ * @param string $SQL
  */
- function  dbf_run_sql_p($DBC, $SQL) {
-	global $DBADMINPASS, $DBADMINUSER, $DEVNULL; 
-	
+ function  dbf_run_sql_p($DBC, $SQL): int {
+	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
+
 	$rv = "";
 	passthru("echo " . $SQL . "| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
- 
+

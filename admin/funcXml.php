@@ -1,13 +1,16 @@
 <?php
 /**
  * funcXml.php
- * 
+ *
  * Some functions for handling XML files
  *
- * @author     Boris Domajnko
+ * @author Boris Domajnko
  */
-
-function getbool($value){
+ 
+ /**
+  * @param string $value
+  */
+function getbool($value): bool {
 	switch( strtolower($value) ){
 		case '1': 
 		case 'true': return true;
@@ -17,13 +20,16 @@ function getbool($value){
 
 /**
  * Parse XML Order file
- * 
+ * @param string $xmlinput
+ *
+ * @return OrderInfo
  */
 function loadOrder($xmlinput) {
 	global $PROGDIR, $MSG35_CHECKXML;
 	$asiardfiles = array();
 	$siardTool="";
 	$aextfiles = array();
+	$orderInfo = new OrderInfo();
 	
 	debug(__FUNCTION__ . "...");
 
@@ -31,19 +37,23 @@ function loadOrder($xmlinput) {
 	debug(__FUNCTION__ . ": " . $MSG35_CHECKXML . " " . $xmlinput);
 	msg_red_on();
 	validateXML($xmlinput, $schema);
+
+	$xml = simplexml_load_file($xmlinput);
+	if (false === $xml) {
+		print("xml file load error: " . $xmlinput);	
+		return($orderInfo);
+	}
 	msg_colour_reset();
-
-	$xml=simplexml_load_file($xmlinput);
-
-	$orderInfo['order'] =     "" . $xml->order;
-	$orderInfo['reference'] = "" . $xml->reference;
-	$orderInfo['title'] =     "" . $xml->title;
-	$orderInfo['dbc'] =       "" . $xml->dbcontainer;
-	$orderInfo['redact'] =    "" . getbool($xml->dbcontainer->attributes()->redact);
+	$orderInfo->order =     "" . $xml->order;
+	$orderInfo->reference = "" . $xml->reference;
+	$orderInfo->title =     "" . $xml->title;
+	$orderInfo->dbc =       "" . $xml->dbcontainer;
+	if ( ! is_null($xml->dbcontainer->attributes()) )
+		$orderInfo->redact = getbool($xml->dbcontainer->attributes()->redact);
 	
-	if(isset ($xml->siards)) {
-
-		$siardTool = $xml->siards->attributes()->tool;
+	if( isset ($xml->siards) ) {
+		if ( ! is_null($xml->siards->attributes()) )
+			$siardTool = $xml->siards->attributes()->tool;
 		debug(__FUNCTION__ . ": siardTool=" . $siardTool);
 
 		foreach ($xml->siards->siard as $s) {
@@ -53,8 +63,8 @@ function loadOrder($xmlinput) {
 			}
 		}
 	}
-	$orderInfo['siardFiles'] = $asiardfiles;
-	$orderInfo['siardTool'] = $siardTool;
+	$orderInfo->siardFiles = $asiardfiles;
+	$orderInfo->siardTool = $siardTool;
 	
 	if(isset    ($xml->viewers_extended)) 
 		foreach ($xml->viewers_extended->viewer_extended as $v) {
@@ -63,20 +73,21 @@ function loadOrder($xmlinput) {
 				array_push($aextfiles, $v);
 			}
 		}
-	$orderInfo['ddvExtFiles'] =  $aextfiles;
+	$orderInfo->ddvExtFiles =  $aextfiles;
 	
-	$orderInfo['ddvFile'] = "" . $xml->viewer;
-	$orderInfo['access'] =  "" . $xml->access;
+	$orderInfo->ddvFile = "" . $xml->viewer;
+	$orderInfo->access =  "" . $xml->access;
 	
 	return($orderInfo);
 }
 
-
 /**
  * Schema validation.
  * Any output is just displayed.
+ * @param string $file
+ * @param string $schema
  */
-function validateXML($file, $schema) {
+function validateXML($file, $schema): void {
 	libxml_use_internal_errors(true);
 	$xml = new DOMDocument();
 	$xml->load($file);
@@ -87,7 +98,10 @@ function validateXML($file, $schema) {
 	}
 }
 
-function libxml_display_error($error) {
+/**
+ * @param LibXMLError $error
+ */
+function libxml_display_error($error): string {
 	$return = "<br/>\n";
 	switch ($error->level) {
 		case LIBXML_ERR_WARNING:
@@ -108,7 +122,7 @@ function libxml_display_error($error) {
 	return $return;
 }
 
-function libxml_display_errors() {
+function libxml_display_errors(): void {
 	$errors = libxml_get_errors();
 	foreach ($errors as $error) {
 		print libxml_display_error($error);

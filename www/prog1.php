@@ -4,7 +4,7 @@
  * dbDIPview main loop
  * @author: Boris Domajnko
  */
-ini_set( 'session.cookie_httponly', 1 );
+ini_set( 'session.cookie_httponly', '1' );
 session_start();
 
 define("QUOTE_WHERE","'");     //portability: SELECT * FROM x WHERE name='Abc'
@@ -12,7 +12,7 @@ define("TABLECOLUMN","_");     //cities.id -> cities_id, needed for parameter pa
 
 include "../admin/funcConfig.php";
 
-if (array_key_exists("submit_cycle", $_GET)) 
+if (array_key_exists("submit_cycle", $_GET))
 	$submit_cycle = pg_escape_string($_GET['submit_cycle']);
 else
 	$submit_cycle = "CheckLogin";  //first entry
@@ -32,7 +32,7 @@ switch ($submit_cycle) {
 			if (array_key_exists("xmlfile", $_GET) && array_key_exists("dbname", $_GET))
 				list($dbName, $myXMLfile) = config_dv2database($_GET['dbname'], $_GET['xmlfile']);
 		}
-		
+
 		$mydebug="0";
 		if (array_key_exists("debug", $_GET))
 			$mydebug = trim($_GET['debug']);
@@ -56,7 +56,7 @@ switch ($submit_cycle) {
 		$_SESSION = array();
 		$session_name = session_name();
 		session_destroy();
-		
+
 		header("Location: prog0.htm");
 		break;
 	case "ShowMenu":
@@ -78,7 +78,6 @@ $myXMLpath = "data/";
 $myXMLfilePath = $myXMLpath . $myXMLfile;
 $myTXTfilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . ".txt";
 
-
 //folder for attachments/BLOB content that if referenced from a db column
 $filespath = "files/" . $dbName . "__" . str_replace(".xml", "", $myXMLfile) . "/";
 
@@ -88,31 +87,30 @@ include "utils/downlds.php";
 switch ($submit_cycle) {
 	case "showBlob":
 		$xml = simplexml_load_file($myXMLfilePath);
-		$id  = pg_escape_string($_GET['id']); 
-		$val = pg_escape_string($_GET['val']); 
+		$id  = pg_escape_string($_GET['id']);
+		$val = pg_escape_string($_GET['val']);
 		showBlobRaw($id, $val);
-		break;
+		exit(0);
 	case "showCsv":
-		$sql  =     pg_escape_string($_GET['s']); 
-		$filename = pg_escape_string($_GET['f']); 
-		$title =    pg_escape_string($_GET['t']); 
+		$sql  =     pg_escape_string($_GET['s']);
+		$filename = pg_escape_string($_GET['f']);
+		$title =    pg_escape_string($_GET['t']);
 		showCsv($sql, $filename, $title);
-		break;
+		exit(0);
 	case "setDispMode":
 		$tl = pg_escape_string($_GET['tablelist']);
 		if ($tl == "table" || $tl == "list" || $tl == "listAll" || $tl == "listMC")
 			$_SESSION['tablelist'] = $tl;
 		exit(0);
-		break;
 	case "showFile":
 		$dbDIPview_dir = __DIR__ . "/";
 		$filename = pg_escape_string($_GET['f']);
 		showFile($filename, $dbDIPview_dir . $filespath);
-		break;
+		exit(0);
 }
 
 ?>
-<!doctype html public "-//W3C//DTD HTML 4.0 //EN"> 
+<!doctype html public "-//W3C//DTD HTML 4.0 //EN">
 <html>
 <head>
   <title>dbDIPview</title>
@@ -150,13 +148,13 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 		<tr>
 			<td style="text-align: left;">
 				<abbr title="<?php echo $MSGSW27_HOME; ?>"
-				><a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) .'?submit_cycle=Logout';?>" 
+				><a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) .'?submit_cycle=Logout';?>"
 				><img src="img/gnome_go_home.png" height="18" width="18" alt="<?php echo $MSGSW27_HOME; ?>" /></a></abbr>&nbsp;
 			</td>
 			<td style="text-align: right;">
 <?php
 			echo $dbName . "&#8672;" . rtrim($myXMLfile, ".xml") . "&nbsp;&nbsp;";
-			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . 
+			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) .
 				"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a></abbr>" .
 				"&nbsp;&nbsp;&nbsp;";
 ?>
@@ -170,14 +168,14 @@ if ( strcmp($submit_cycle, "noSession") !== 0 ) {
 	if ( is_file($myXMLfilePath) ) {
 		$xml = simplexml_load_file($myXMLfilePath);
 	} else {
-		echo "<br /><h3>$MSGSW05_ErrorNoConfiguration</h3><br />"; 
+		echo "<br /><h3>$MSGSW05_ErrorNoConfiguration</h3><br />";
 		$submit_cycle = "noSession";
 	}
 }
 
 if( ( strcmp($submit_cycle, "noSession") !== 0 ) &&
-	( strlen($myXMLfile)== 0 || 
-	  strlen($dbName) == 0 || 
+	( strlen($myXMLfile)== 0 ||
+	  strlen($dbName) == 0 ||
 	  config_isPackageActivated( rtrim($myXMLfile, ".xml"), $dbName) == 0 ) )
 {
 		echo "<br /><h3>$MSGSW07_ErrorNoSuchCombination.</h3><br />";
@@ -187,7 +185,7 @@ if( ( strcmp($submit_cycle, "noSession") !== 0 ) &&
 $PARAMS = $_GET;
 
 if( isset($_GET['targetQueryNum']) )
-	$targetQueryNum = pg_escape_string($_GET['targetQueryNum']); 
+	$targetQueryNum = pg_escape_string($_GET['targetQueryNum']);
 else
 	$targetQueryNum = "";
 
@@ -195,7 +193,7 @@ date_default_timezone_set($timezone);
 
 if( strcmp($submit_cycle, "noSession") !== 0 )
 	connectToDB();
-	  
+	 
 switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
@@ -215,7 +213,7 @@ case "querySelected":
 	<table>
 		<tr>
 		<td>
-			<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' > 
+			<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' >
 				<input type="hidden" name="submit_cycle" value="ShowMenu"/>
 				<input type="hidden" name="targetQueryNum" value=<?php echo "\"$targetQueryNum\""; ?>/>
 				<div>
@@ -246,34 +244,45 @@ default:
 	break;
 }
 
-
 /**
  * input: $screen->needed_permission
+ *
+ * @param string $needed
+ * @return true
  */
-function hasPermissionForThis($needed) {
+function hasPermissionForThis($needed): bool {
 	return(true);
-}	
+}
 
 /**
- * function debug
  * if debug is enabled displays debug text
  * see config.php
+ * @param string $mytxt
  */
-function debug($mytxt, $return = false) {
+function debug($mytxt): void {
 	global $debugCode;
 	if (isset(   $_SESSION['mydebug']) && isset($debugCode)) {
 		$mydebug=$_SESSION['mydebug'];
-		if($mydebug == $debugCode) {
-			if($return)
-				return("DEBUG: $mytxt");
-			else
-				echo "<p style='font-family:courier;color:red;'>DEBUG: $mytxt</p>" . PHP_EOL;			
-		}
+		if($mydebug == $debugCode)
+			echo "<p style='font-family:courier;color:red;'>DEBUG: $mytxt</p>" . PHP_EOL;
 	}
-	if($return)
-		return("");
+
 }
 
+/**
+ * if debug is enabled displays return text
+ * see config.php
+ * @param string $mytxt
+ */
+function debugReturn($mytxt): string {
+	global $debugCode;
+	if (isset(   $_SESSION['mydebug']) && isset($debugCode)) {
+		$mydebug=$_SESSION['mydebug'];
+		if($mydebug == $debugCode)
+			return("DEBUG: $mytxt");
+	}
+	return("");
+}
 ?>
 </body>
 </html>
