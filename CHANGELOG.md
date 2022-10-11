@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [2.11.2] - 2022-10-11
+### Fixed
+- access: BLOBS are now possible also in subqueries; some refactoring
+
 ## [2.11.1] - 2022-10-04
 ### Fixed
 - all: PHPStan static code analyses has been introduced to increase the quality of the code

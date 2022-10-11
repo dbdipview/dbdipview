@@ -2,8 +2,10 @@
 
 /**
  * BLOB, CSV and attachment file downloads
+ * Search the queries.xml for blob based on its <id>
+ * Assumes each blob has a unique id
  *
- * @param string $id
+ * @param string $id      blob id in queries.xml
  * @param string &$sql
  * @param string &$mode
  */
@@ -11,28 +13,39 @@ function getSQLfromXML($id, &$sql, &$mode): void {
 	global $xml;
 
 	foreach ($xml->database->screens->screen as $screen) {
+
 		foreach ($screen->blobs as $blobs)
-			foreach ($blobs->blob as $blob) {
+			foreach ($blobs->blob as $blob)
 				if ($blob->id == $id) {
-					$sql=$blob->query;
+					$sql = $blob->query;
 					$mode = (string) $blob->attributes()->mode;
+					break;
 				}
-			}
+
+		foreach ($screen->subselect as $subselect)
+			foreach ($subselect->blobs as $blobs)
+				foreach ($blobs as $blob)
+					if ($blob->id == $id) {
+						$sql = $blob->query;
+						$mode = (string) $blob->attributes()->mode;
+						break;
+					}
+
 	}
 }
 
 /**
- * @param string $id   queries screen number
+ * @param string $blobId      blob id in queries.xml
  * @param string $val  record id
  *
  * @return never
  */
-function showBlobRaw($id, $val): void {
+function showBlobRaw($blobId, $val): void {
 	global $dbConn;
 
 	$sql=""; 
 	$mode="BLOB";
-	getSQLfromXML($id, $sql, $mode);
+	getSQLfromXML($blobId, $sql, $mode);
 	
 	connectToDB();
 

@@ -9,6 +9,7 @@ session_start();
 
 define("QUOTE_WHERE","'");     //portability: SELECT * FROM x WHERE name='Abc'
 define("TABLECOLUMN","_");     //cities.id -> cities_id, needed for parameter passing
+define("UNKNOWN",-1);          //int not set
 
 include "../admin/funcConfig.php";
 
