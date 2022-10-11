@@ -153,23 +153,23 @@ function makeParameterReferencesOne($link, $linkval): string {
 }
 
 /**
- * execute a query
+ * execute a query and display results
  *
- * @param QueryData $queryInfo
+ * @param QueryData $queryData
  * @param int $totalCount
  *
  * @return (int|mixed|string)[]    an HTML table output
  *
  * @psalm-return array{0: string, 1: int, 2: int}
  */
-function qToListWithLink($queryInfo, $totalCount) {
+function qToListWithLink($queryData, $totalCount) {
 
-	$query =                  $queryInfo->query;
-	$linknextscreen_columns = $queryInfo->linknextscreen_columns;
-	$images_image_style =     $queryInfo->images_image_style;
-	$ahref_columns =          $queryInfo->ahref_columns;
-	$blob_columns =           $queryInfo->blob_columns;
-	$viewData =               $queryInfo->viewData;
+	$query =                  $queryData->query;
+	$linknextscreen_columns = $queryData->linknextscreen_columns;
+	$images_image_style =     $queryData->images_image_style;
+	$ahref_columns =          $queryData->ahref_columns;
+	$blob_columns =           $queryData->blob_columns;
+	$viewData =               $queryData->viewData;
 
 	if( empty($query) )
 		return(array("", 0, 0));
@@ -179,13 +179,14 @@ function qToListWithLink($queryInfo, $totalCount) {
 	$output = "";
 	$hits = 0;
 
-	if ( 0 == $totalCount ) {
-		$totalLines = 0;
-		$queryWithCount = addCountTotal($query);
+	if ( UNKNOWN == $totalCount ) {
+		$totalLines = 0;   //will be set later
+		$queryWithCount = addCountTotal($query);  //extend the query
 	} else {
-		$totalLines = $totalCount;  //was calculated at first page
+		$totalLines = $totalCount;  //was calculated at first page, or in subquery mode
 		$queryWithCount = "";
 	}
+
 	$columnDescriptions = new ColumnDescriptions($query);
 
 	if( empty($queryWithCount) )
@@ -214,7 +215,7 @@ function qToListWithLink($queryInfo, $totalCount) {
 			foreach ($row as $col=>$valnl) {
 
 				if ($col == "E2F7total7E8D233C") {
-					$totalLines = intval($val);
+					$totalLines = intval($valnl);
 					continue;     //hide column Total
 				}
 
@@ -315,27 +316,24 @@ function qToListWithLink($queryInfo, $totalCount) {
 }
 
 /**
- * execute a query
- * results of query can be shown directy or they are used as parameters for a link
+ * execute a query and display results
  *
- * @param QueryData $queryInfo,
- * @param int $totalCount,
+ * @param QueryData $queryData
+ * @param int $totalCount          UNKNOWN at start, some value when we are in Prev/Next mode
  * @param string $queryId          "M" or id
  * @return (int|mixed|string)[]    an HTML table output
  *
  * @psalm-return array{0: string, 1: int, 2: int}
  */
-function qToTableWithLink($queryInfo,
-					$totalCount,
-					$queryId) {
+function qToTableWithLink($queryData, $totalCount, $queryId) {
 	global $dbConn;
 	global $filespath;
 
-	$query = $queryInfo->query;
-	$linknextscreen_columns = $queryInfo->linknextscreen_columns;
-	$images_image_style =     $queryInfo->images_image_style;
-	$ahref_columns =          $queryInfo->ahref_columns;
-	$blob_columns =           $queryInfo->blob_columns;
+	$query = $queryData->query;
+	$linknextscreen_columns = $queryData->linknextscreen_columns;
+	$images_image_style =     $queryData->images_image_style;
+	$ahref_columns =          $queryData->ahref_columns;
+	$blob_columns =           $queryData->blob_columns;
 	$hits = 0;
 
 	if( empty($query) )
@@ -345,15 +343,14 @@ function qToTableWithLink($queryInfo,
 	$tableid = "table" . $queryId;
 	//$query = str_replace("'", "\"", $query);	// 'name'--> "name" _ _ SELECT _ AS "name"
 
-	$totalLines = 0;
-
-	if ( 0 == $totalCount ) {
-		$totalLines = 0;
-		$queryWithCount = addCountTotal($query);
+	if ( UNKNOWN == $totalCount ) {
+		$totalLines = 0;  //will be set later
+		$queryWithCount = addCountTotal($query);  //extend the query
 	} else {
 		$totalLines = $totalCount;  //was calculated at first page
-		$queryWithCount = "";
+		$queryWithCount = "";       //no need to find out
 	}
+
 	$columnDescriptions = new ColumnDescriptions($query);
 
 	if( empty($queryWithCount) )
@@ -395,7 +392,7 @@ function qToTableWithLink($queryInfo,
 			foreach ($row as $col=>$valnl) {
 
 				if ($col == "E2F7total7E8D233C") {
-					$totalLines = intval($val);
+					$totalLines = intval($valnl);
 					continue;     //hide column Total
 				}
 
@@ -448,13 +445,14 @@ function qToTableWithLink($queryInfo,
 					continue;
 				}
 
-				if ( array_key_exists($col, $blob_columns) ) {
-					$column = $blob_columns[$col];
-					if ( !empty($column) && $column["id"] != "" ) {
+				if ( !empty($blob_columns) &&
+								array_key_exists($col, $blob_columns) ) {
+					$blob_column = $blob_columns[$col];
+					if ( $blob_column["id"] != "" ) {
 						if (strlen((string)$val)==0)
 							$output .= "  <td></td>" . PHP_EOL;
 						else {
-							$id=$column["id"];
+							$id=$blob_column["id"];
 							$output .= "  <td>" .
 							"<a href='" . $_SERVER["PHP_SELF"] .
 								"?submit_cycle=showBlob&id=$id&val=$val' target='_blank'>" .
@@ -477,5 +475,6 @@ function qToTableWithLink($queryInfo,
 	$output .= "</table>" . PHP_EOL;
 
 	$returnarray = array($output, $hits, $totalLines);
+
 	return $returnarray;
 }
