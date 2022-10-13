@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list.xsd" schemaMajorVersion="1">
+	<revisions>
+		<revision date="2022-11-13">Migration from list.txt to list.xml</revision>
+	</revisions>
+	<comment>TestAndDemo2 - dbDIPview regression test</comment>
+	<schemas>
+		<schema>AirplanesLinks</schema>
+		<schema>TestCSV</schema>
+	</schemas>
+	<views>
+		<view>AirplanesLinks.view_codes_NumOfEngines</view>
+		<view>AirplanesLinks.my_view</view>
+	</views>
+	<tables>
+		<table file="models.csv">AirplanesLinks.models</table>
+		<table file="Keys semicolon.csv" delimiter=";">TestCSV.test1</table>
+		<table file="Keys comma.csv" header="0">TestCSV.TEST2</table>
+		<table file="Keys tab.csv" delimiter="tab" header="0">TestCSV.test3</table>
+		<table file="Keys tab.txt" format="TSV" delimiter="tab" header="0">"TestCSV"."test4"</table>
+	</tables>
+	<bfiles>
+		<bfile>filesInTar.tar</bfile>
+		<bfile>filesInTarGz.tar.gz</bfile>
+		<bfile>filesInTgz.tgz</bfile>
+		<bfile>filesInZip.zip</bfile>
+	</bfiles>
+</configuration>
