@@ -1,5 +1,0 @@
-VERSION	2020-05-11
-COMMENT	TestAndDemo6 
-#	no SCHEMA and TABLE in this package
-COMMENT	Use with TestAndDemo5
-

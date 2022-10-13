@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list.xsd" schemaMajorVersion="1">
+	<revisions>
+		<revision date="2022-11-13">Migration from list.txt to list.xml</revision>
+	</revisions>
+	<comment>TestAndDemo6 - Use with TestAndDemo5</comment>
+</configuration>
