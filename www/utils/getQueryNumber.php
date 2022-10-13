@@ -6,21 +6,6 @@
  * A query is selected.
  */
  
-
-/**
-* @param string $txt
-*
-* @return bool
-*/
-function get_bool($txt): bool{
-	switch( strtolower($txt) ){
-		case '1': 
-		case 'true': return true;
-	}
-	return false;
-}
-
-
 function getQueryNumber(): void {
 	global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue, $MSGSW30_Overview;
 	global $myTXTfilePath;

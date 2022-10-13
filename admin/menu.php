@@ -54,13 +54,14 @@ require $SERVERCONFIGDIR . 'config.php';
 $DBGUEST = $userName;
 
 require 'messagesm.php';
+require 'OrderInfo.php';
 require 'funcConfig.php';
 require 'funcDb.php';
 require 'funcSiard.php';
 require 'funcXml.php';
 require 'funcMenu.php';
+require 'ListData.php';
 require 'funcActions.php';
-require 'OrderInfo.php';
 
 $DDV_DIR_PACKED   = str_replace("admin/../", "", "$DDV_DIR_PACKED");
 $DDV_DIR_UNPACKED = str_replace("admin/../", "", "$DDV_DIR_UNPACKED");
@@ -370,7 +371,7 @@ while ( "$answer" != "q" ) {
 				$PKGFILEPATH = $DDV_DIR_PACKED . $file;
 				$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
 				$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $DDV;
-				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 				echo $DDV . PHP_EOL;
 				if (!empty($appendList))
 					break;
@@ -488,7 +489,7 @@ while ( "$answer" != "q" ) {
 				$PACKAGEFILE = $file;
 				$PKGFILEPATH = $DDV_DIR_PACKED . $file;
 				$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
-				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 				echo $DDV . PHP_EOL;
 				if (!empty($appendList))
 					break;

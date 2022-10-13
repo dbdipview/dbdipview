@@ -182,19 +182,25 @@ function dbf_delete_dbc($DBC): bool {
 
 /**
  * Load data into table from a CSV file
- * header line, delimiter, and encoding are parameters
  *
  * @param string $DBC
  * @param string $DATEMODE
  * @param string $TABLE
  * @param string $SRCFILE
  * @param string $DELIMITER
- * @param string $HEADER
- * @param string $ENCODING
+ * @param bool   $BHEADER
+ * @param string $codeset
  * @psalm-return ''
  */
- function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER, $ENCODING): string {
+ function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $BHEADER, $codeset): string {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
+
+	if ( $BHEADER === true )
+		$HEADER="HEADER";
+	else
+		$HEADER="";
+
+	$ENCODING = dbf_encoding_param($codeset);
 
 	$rv = "";
 	debug(__FUNCTION__ . ": Copy table data from CSV $SRCFILE to $TABLE...");
@@ -228,12 +234,19 @@ function dbf_delete_dbc($DBC): bool {
  * @param string $DATEMODE
  * @param string $TABLE
  * @param string $SRCFILE
- * @param string $HEADER
- * @param string $ENCODING
+ * @param bool   $BHEADER
+ * @param string $codeset
  * @psalm-return ''
  */
- function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $HEADER, $ENCODING): string {
+ function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $BHEADER, $codeset): string {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
+
+	if ( $BHEADER )
+		$HEADER="HEADER";
+	else
+		$HEADER="";
+
+	$ENCODING = dbf_encoding_param($codeset);
 
 	$rv = "";
 	debug("Copy table data from $SRCFILE to $TABLE...");
@@ -244,7 +257,7 @@ function dbf_delete_dbc($DBC): bool {
  }
 
 /**
- * Translate CSV encoding name in the list.txt into target database parameter.
+ * Translate CSV encoding name in the list.xml into target database parameter.
  * Currently only some values for PostgreSQL are listed, all are not tested as
  * UTF8 is suggested for AIP.
  *
@@ -301,7 +314,7 @@ function dbf_encoding_param($input): string {
 }
 
 /**
- * Returns the list of possible CSV file encodings for the list.txt
+ * Returns the list of possible CSV file encodings for the list.xml
  *
  * @return array<string>    encodings
  */
@@ -342,3 +355,43 @@ function dbf_encoding_params_get() {
 	return($rv);
  }
 
+/**
+ * Functions to be used by sql queries
+ * Currently not portable
+ * get_count(): used for macro NUMBER_OF_RECORDS_IN_TABLES
+ */
+function add_db_functions(): bool {
+	global $MSG_ERROR, $userName;
+	global $OK, $NOK;
+	global $DBC;
+
+	debug(__FUNCTION__ . ": adding DB functions...");
+
+	$FUNCT = <<<EOD
+CREATE OR REPLACE FUNCTION public.get_count\(schema text, tablename text\) \
+		RETURNS SETOF bigint  \
+		LANGUAGE \'plpgsql\'  \
+	AS \\\$BODY\\\$           \
+	BEGIN             \
+		RETURN QUERY EXECUTE \'SELECT count\(1\) FROM \' \|\| \'\"\' \|\| schema \|\| \'\".\"\' \|\| tablename \|\| \'\"\' \; \
+	END               \
+	\\\$BODY\\\$
+EOD;
+
+	$rv = dbf_run_sql_p($DBC, $FUNCT);
+	if ( $rv != 0 ) {
+		err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		return($NOK);
+	}
+
+	$FUNCT = <<<EOD
+GRANT EXECUTE ON FUNCTION public.get_count\(schema text, tablename text\) TO $userName
+EOD;
+	$rv = dbf_run_sql_p($DBC, $FUNCT);
+	if ( $rv != 0 ) {
+		err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		return($NOK);
+	}
+
+	return($OK);
+}

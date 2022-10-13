@@ -58,7 +58,7 @@ function loadOrder($xmlinput) {
 
 		foreach ($xml->siards->siard as $s) {
 			if ( !empty($s) ) {
-				debug(__FUNCTION__ . ": siard=" . $s);
+				debug(__FUNCTION__ . ": siard file=" . $s);
 				array_push($asiardfiles, $s);
 			}
 		}
@@ -69,7 +69,7 @@ function loadOrder($xmlinput) {
 	if(isset    ($xml->viewers_extended)) 
 		foreach ($xml->viewers_extended->viewer_extended as $v) {
 			if ( !empty($v) ) {
-				debug(__FUNCTION__ . ": viewer_extended=" . $v);
+				debug(__FUNCTION__ . ": viewer_extended file=" . $v);
 				array_push($aextfiles, $v);
 			}
 		}

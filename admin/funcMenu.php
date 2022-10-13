@@ -154,7 +154,7 @@ function getPackageName(&$outname, &$outfilename, $extension, $dir = NULL): void
 			$val1 = $value;
 		}
 
-		if (!(0==strcmp($value, "list.txt")||
+		if (!(0==strcmp($value, "list.xml")||
 			  0==strcmp($value, "info.txt")||
 			  0==strcmp($value, "description.txt"))) {    //these files bother in append mode
 			$arrPkgName[$i] = $val1;

@@ -67,7 +67,7 @@ function actions_Order_read($name, $file) {
 	$PKGFILEPATH = $DDV_DIR_PACKED . $DDV;
 	$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
 	$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $DDV;
-	$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+	$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 
 	return($OK);
 }
@@ -125,7 +125,7 @@ function actions_Order_process() {
 			$ddvext = substr($file, 0, -7);       //filename w/o .tar.gz
 			$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $ddvext;
 			if ($OK == actions_DDVEXT_unpack($filepath, $DDV_DIR_EXTRACTED)) {
-				$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+				$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 				if ($OK == actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED))
 					actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
 			} else
@@ -141,7 +141,7 @@ function actions_Order_process() {
 		debug(__FUNCTION__ . ": unpack DDV...");
 		$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . substr($orderInfo->ddvFile, 0, -4);
 		if ( $OK == actions_DDV_unpack($DDV_DIR_PACKED . $orderInfo->ddvFile, $DDV_DIR_EXTRACTED) ) {
-			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 			if ($OK == actions_DDV_create_views($DDV_DIR_EXTRACTED))
 				actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
 		} else
@@ -154,7 +154,7 @@ function actions_Order_process() {
 	}
 
 	$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $ddv;   //ddv from DDV or last DDVEXT package
-	$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+	$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 	if ($fsiard) {
 		actions_SIARD_grant($LISTFILE);            //DDV info for SIARD grant
 	}
@@ -206,7 +206,7 @@ function actions_Order_remove(): bool {
 		if ( is_file($filepath) ) {
 			$ddvext = substr($file, 0, -7);          //filename w/o .tar.gz
 			$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $ddvext;
-			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 			actions_schema_drop($DBC, $ddvext, $listfile);
 			actions_remove_folders($ddvext, $DDV_DIR_EXTRACTED, "");
 		} else {
@@ -214,11 +214,11 @@ function actions_Order_remove(): bool {
 		}
 	}
 
-	$value = $orderInfo->ddvFile;                 //filename.zip
+	$value = $orderInfo->ddvFile;                   //filename.zip
 	if ( !empty($value) ) {
 		$DDV = substr($value, 0, -4);               //filename  w/o .zip
 		$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
-		$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.txt";
+		$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 		actions_schema_drop($DBC, $DDV, $LISTFILE);
 		actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, "");
 	}
@@ -272,6 +272,14 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 		validateXML($file, $schema);
 		msg_colour_reset();
 
+		$file = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
+		$schema = "$PROGDIR/../packager/list.xsd";
+		msgCyan($MSG35_CHECKXML . " (list.xml)...");
+		msg_red_on();
+		if (is_file($file))
+			validateXML($file, $schema);
+		msg_colour_reset();
+
 		# for i in *.csv; do
 		# file $i | grep "with BOM" --> clearBOM
 		#done
@@ -305,48 +313,39 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 
 	if ( is_file($listfile) ) {
 		msgCyan($MSG29_EXECUTING . " " . basename($listfile) . "...");
-		if (($handleList = fopen($listfile, "r")) !== FALSE) {
-			while (($line = fgets($handleList)) !== false) {
-				$line = rtrim($line);
-				$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-				if ( false === $tok ) {
-					err_msg(__FUNCTION__ . ": " . "ERROR in line: " . $line);
-					continue;
-				}
-				$LTYPE = $tok[0];
-				if ( "$LTYPE" == "SCHEMA" ) {
-					$SCHEMA = $tok[1];
-					$SCHEMA_Q = addQuotes($SCHEMA);
-					msgCyan($MSG49_CREATINGSCHEMA . " " . $SCHEMA . "...");
-					$rv = dbf_create_schema($DBC, $SCHEMA_Q);
-					if ( $rv != 0 )
-						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-					else {
-						$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA_Q, $DBGUEST);
-						if ( $rv != 0 )
-							err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-					}
-				}
-			}
-			fclose($handleList);
-
-			if ( is_file($CREATEDB0) ) {
-				msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . "...");
-				$rv = dbf_run_sql($DBC, $CREATEDB0);
-				if ( $rv != 0 )
-					err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-			} else
-				msgCyan($MSG17_FILE_NOT_FOUND . ": " . basename($CREATEDB0) . "...");
-
-			if ( is_file($CREATEDB1) ) {
-				msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
-				$rv = dbf_run_sql($DBC, $CREATEDB1);
+		$listData = new ListData($listfile);
+	
+		foreach ($listData->schemas as $schema) {
+			$SCHEMA = $schema;  //$tok[1];
+			$SCHEMA_Q = addQuotes($SCHEMA);
+			msgCyan($MSG49_CREATINGSCHEMA . " " . $SCHEMA . "...");
+			$rv = dbf_create_schema($DBC, $SCHEMA_Q);
+			if ( $rv != 0 )
+				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+			else {
+				$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA_Q, $DBGUEST);
 				if ( $rv != 0 )
 					err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 			}
-			msgCyan($MSG25_EMPTY_TABLES_CREATED);
-			$ret = $OK;
 		}
+
+		if ( is_file($CREATEDB0) ) {
+			msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . "...");
+			$rv = dbf_run_sql($DBC, $CREATEDB0);
+			if ( $rv != 0 )
+				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		} else
+			msgCyan($MSG17_FILE_NOT_FOUND . ": " . basename($CREATEDB0) . "...");
+
+		if ( is_file($CREATEDB1) ) {
+			msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
+			$rv = dbf_run_sql($DBC, $CREATEDB1);
+			if ( $rv != 0 )
+				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		}
+		msgCyan($MSG25_EMPTY_TABLES_CREATED);
+		$ret = $OK;
+
 	} else
 		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": ", $listfile);
 
@@ -402,269 +401,106 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 	global $PROGDIR;
 
 	$ret = $NOK;
-	debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $listfile);
-	if (($handleList = fopen($listfile, "r")) !== FALSE) {
-		msgCyan($MSG5_MOVEDATA . "...");
-		while (($line = fgets($handleList)) !== false) {
-			$line = rtrim($line);
-			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-			if ( false === $tok  ) {
-				err_msg(__FUNCTION__ . ": " . "ERROR in line: " . $line);
-				continue;
-			}
-			$LTYPE = $tok[0];
-			//LTYPE TABLE FILE CSVMODE DATEMODE DELIMITER CODESET HEADER TBD
-			//0		1		2	3		4		5			6		7		8
+	msgCyan($MSG5_MOVEDATA . "...");
+	$listData = new ListData($listfile);
 
-			if ( "$LTYPE" == "SCHEMA" )
-				$SCHEMA = addQuotes($tok[1]);
+	if (! empty($listData->views) )
+		foreach ($listData->views as $view) {
+			debug(__FUNCTION__ . ": granting acces to VIEW " . $view);
+			$rv = dbf_grant_select_on_table($DBC, addQuotes($view), $DBGUEST);
+			$ret = $OK;
+		}
 
-			elseif ("$LTYPE" == "TABLE") {
-				$TABLE = addQuotes($tok[1]);
-				$FILE = $tok[2];
-				$CSVMODE = $tok[3];
-				$DATEMODE = $tok[4];
-				$DELIMITER = $tok[5];
-				$CODESET = $tok[6];
-				if ($tok[7] == "y" )
-					$HEADER="HEADER";
-				else
-					$HEADER="";
+	if (! empty($listData->tables) )
+		foreach ($listData->tables as $table) {
 
-				$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
+			debug(__FUNCTION__ . ": processing table data file " . $table->file);
+			$TABLE = addQuotes($table->name);
+			$FILE = $table->file;
+			$CSVMODE = $table->format;
+			$DATEMODE = $table->date_format;
+			$DELIMITER = $table->delimiter;
+			$CODESET = $table->codeset;
+			$HEADER = $table->header;
 
-				debug("LTYPE=" . $tok[0] . "  TABLE=" . $TABLE);
-				debug("FILE=" . $FILE);
-				debug("CSVMODE=" . $CSVMODE . "  DELIMITER=" . $DELIMITER . "  codeset: " . $CODESET);
+			$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
 
-				if ("$CODESET" == "UTF8BOM") {
-					if ( !is_executable("$PROGDIR/removeBOM") ){
-						err_msg("ERROR: $PROGDIR/removeBOM executable binary is needed. ");
-						err_msg("       Please create it with command: cc removeBOM.c -o removeBOM");
-						fclose($handleList);
-						return($NOK);
-					}
-					passthru("$PROGDIR/removeBOM $SRCFILE " . $SRCFILE . "_noBOM");
-					$SRCFILE =                                $SRCFILE . "_noBOM";
+			debug("CSVMODE=" . $CSVMODE . "  DELIMITER=" . $DELIMITER . "  codeset: " . $CODESET);
+
+			if ("$CODESET" == "UTF8BOM") {
+				if ( !is_executable("$PROGDIR/removeBOM") ){
+					err_msg("ERROR: $PROGDIR/removeBOM executable binary is needed. ");
+					err_msg("       Please create it with command: cc removeBOM.c -o removeBOM");
+					return($NOK);
 				}
-				$encoding = dbf_encoding_param($CODESET);
-				passthru("chmod o+r '$SRCFILE'");
-				if ( "$CSVMODE" == "CSV" ) {
-					$rv = dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER, $encoding);
-				} else if ( "$CSVMODE" == "TSV" ) {
-					$rv = dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE,             $HEADER, $encoding);
-				} else
-					err_msg(__FUNCTION__ . ": " . "ERROR: wrong CSVMODE:", $CSVMODE);
-
-				if ( "$CODESET" == "UTF8BOM" )
-					unlink("$SRCFILE");
-
-				$cmd="";
-				$rv = dbf_grant_select_on_table($DBC, $TABLE, $DBGUEST);
-				$ret = $OK;
+				passthru("$PROGDIR/removeBOM $SRCFILE " . $SRCFILE . "_noBOM");
+				$SRCFILE =                                $SRCFILE . "_noBOM";
 			}
 
-			elseif ("$LTYPE" == "VIEW") {
-				$view = addQuotes($tok[1]);
-				$rv = dbf_grant_select_on_table($DBC, $view, $DBGUEST);
-				$ret = $OK;
-			}
+			passthru("chmod o+r '$SRCFILE'");
+			if ( "$CSVMODE" == "CSV" ) {
+				$rv = dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER, $CODESET);
+			} else if ( "$CSVMODE" == "TSV" ) {
+				$rv = dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE,             $HEADER, $CODESET);
+			} else
+				err_msg(__FUNCTION__ . ": " . "ERROR: wrong CSVMODE:", $CSVMODE);
 
-			elseif ("$LTYPE" == "BFILES") {
-				$FILE = $tok[1];
-				$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
+			if ( "$CODESET" == "UTF8BOM" )
+				unlink("$SRCFILE");
 
-				if (isAtype($SRCFILE, "tar"))
-					$cmd="tar -xf "  . $SRCFILE . " -C " . $BFILES_DIR_TARGET;
-				else
-				if (isAtype($SRCFILE, "tar.gz") || isAtype($SRCFILE, "tgz"))
-					$cmd="tar -xzf " . $SRCFILE . " -C " . $BFILES_DIR_TARGET;
-				else
-				if (isAtype($SRCFILE, "zip"))
-					$cmd="unzip -q -o " .  $SRCFILE . " -d " . $BFILES_DIR_TARGET;
-				else {
-					err_msg(__FUNCTION__ . ": " . "Error - unknown BFILES file type: " . $SRCFILE);
-					$cmd="";
-				}
+			$cmd="";
+			$rv = dbf_grant_select_on_table($DBC, $TABLE, $DBGUEST);
+			$ret = $OK;
 
-				if ( !empty($cmd) ) {
-					msgCyan($MSG45_EXTRACTBFILES . " ($FILE)...");
-					debug(__FUNCTION__ . ": $SRCFILE...");
-					if (!file_exists($BFILES_DIR_TARGET)) {
-						debug(__FUNCTION__ . ": Creating folder " . $BFILES_DIR_TARGET);
-						mkdir($BFILES_DIR_TARGET, 0777, true);
-					}
-					passthru($cmd);
-				}
+		}
 
-			}
+	if (! empty($listData->bfiles) )
+		foreach ($listData->bfiles as $bfile) {
+			$FILE = $bfile;  //$tok[1];
+			$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
 
-			elseif ( "$LTYPE" == "NOSCHEMA" ) {
-				err_msg(__FUNCTION__ . ": " . $MSG31_NOSCHEMA);
-			}
-
-			elseif ( "$LTYPE" == "VERSION" || "$LTYPE" == "COMMENT") {
-				echo $line . PHP_EOL;
-			}
-
-			elseif ( strpos($line, '#') === 0 || strpos($line, '//') === 0 || strlen($line) == 0 ){
-				;
-			} //commented out or an empty line
-
+			if (isAtype($SRCFILE, "tar"))
+				$cmd="tar -xf "  . $SRCFILE . " -C " . $BFILES_DIR_TARGET;
+			else
+			if (isAtype($SRCFILE, "tar.gz") || isAtype($SRCFILE, "tgz"))
+				$cmd="tar -xzf " . $SRCFILE . " -C " . $BFILES_DIR_TARGET;
+			else
+			if (isAtype($SRCFILE, "zip"))
+				$cmd="unzip -q -o " .  $SRCFILE . " -d " . $BFILES_DIR_TARGET;
 			else {
-				debug(__FUNCTION__ . ": $MSG33_SKIPPING $line");
-			} //UNKNOWN
+				err_msg(__FUNCTION__ . ": " . "Error - unknown BFILES file type: " . $SRCFILE);
+				$cmd="";
+			}
 
-		} //while
-		fclose($handleList);
-	} else
-		err_msg(__FUNCTION__ . ": " . $MSG_ERROR); //if handleList
+			if ( !empty($cmd) ) {
+				msgCyan($MSG45_EXTRACTBFILES . " ($FILE)...");
+				debug(__FUNCTION__ . ": $SRCFILE...");
+				if (!file_exists($BFILES_DIR_TARGET)) {
+					debug(__FUNCTION__ . ": Creating folder " . $BFILES_DIR_TARGET);
+					mkdir($BFILES_DIR_TARGET, 0777, true);
+				}
+				passthru($cmd);
+			}
+
+		}
 
 	return($ret);
 }
 
 /**
- * Will check the contents of list file for basic errors
- * To be used by packager
  *
- * See also function dbf_encoding_param()
- *
- * @param string $folder
- * @return int of errors
- */
-function checkListFile($folder): int {
-
-	$listfile = $folder . "/metadata/list.txt";
-	$df = $folder . "/data/";
-
-	$retErrors = 0;
-	$lineNum = 0;
-	$filesMentioned = array();
-	$tablesMentioned = array();
-	$tablesMentionedDuplicate = array();
-	print("Validating the list.txt..." . PHP_EOL);
-	if ( file_exists($listfile) && (($handleList = fopen($listfile, "r")) !== FALSE) ) {
-		while ( ($line = fgets($handleList)) !== false ) {
-			$lineNum++;
-			$line = rtrim($line);
-			if ( empty($line) )
-				continue;
-			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-			if ( false === $tok) {
-				checkShowError($lineNum, "ERROR: check the line");
-				$retErrors++;
-				continue;
-			}
-			$LTYPE = $tok[0];
-			//LTYPE TABLE FILE CSVMODE DATEMODE DELIMITER CODESET HEADER TBD
-			//0		1		2	3		4		5			6		7		8
-
-			if ( "$LTYPE" == "SCHEMA" ) {
-				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError($lineNum, "ERROR: no SCHEMA");
-					$retErrors++;
-				}
-			} elseif ("$LTYPE" == "TABLE") {
-				if ( count($tok) < 8 ) {
-					checkShowError($lineNum, "ERROR: not enough elements for TABLE");
-					$retErrors++;
-				} else {
-					$TABLE = $tok[1];
-					$retErrors += checkIsTable($lineNum, $TABLE);
-					if (in_array($TABLE, $tablesMentioned)) {
-						if (!in_array($TABLE, $tablesMentionedDuplicate)) {
-							checkShowError($lineNum, "WARNING: this table is mentioned more than once: " . $TABLE);
-							checkShowError($lineNum, "         (or the content is loaded from more than one data file and that is allowed)");
-							$tablesMentionedDuplicate[] = $TABLE;
-						}
-					}
-					$tablesMentioned[] = $TABLE;
-
-					$FILE = $tok[2];
-					$retErrors += checkIsFile($lineNum, $df, $FILE);
-					if (in_array($FILE, $filesMentioned)) {
-						checkShowError($lineNum, "WARNING: this file is used more than once: " . $FILE);
-						$retErrors++;
-					}
-					$filesMentioned[] = $FILE;
-
-					$CSVMODE = $tok[3];
-					$retErrors += checkIsInArray($lineNum, "CSVMODE", $CSVMODE, array("CSV", "TSV") );
-					$DATEMODE = $tok[4];
-					$retErrors += checkIsInArray($lineNum, "DATEMODE", $DATEMODE, array("YMD") );
-					$DELIMITER = $tok[5];
-					$retErrors += checkIsInArray($lineNum, "DELIMITER", $DELIMITER, array(",", ";", "tab", "|", "\\\\t") );
-					$CODESET = $tok[6];
-					$allEncodings = dbf_encoding_params_get();
-					$retErrors += checkIsInArray($lineNum, "CODESET", $CODESET, $allEncodings );
-					$HEADER = $tok[7];
-					$retErrors += checkIsInArray($lineNum, "HEADER", $HEADER, array("y", "n") );
-				}
-			} elseif ("$LTYPE" == "VIEW") {
-				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError($lineNum, "ERROR: no VIEW");
-					$retErrors++;
-				}
-			} elseif ("$LTYPE" == "BFILES") {
-				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError($lineNum, "ERROR: missing filename");
-					$retErrors++;
-				} else {
-					$retErrors += checkIsFile($lineNum, $df, $tok[1]);
-					$filesMentioned[] = $tok[1];
-				}
-			} elseif ( "$LTYPE" == "NOSCHEMA" ) {
-				//-print("NOSCHEMA . PHP_EOL");
-			} elseif ( "$LTYPE" == "COMMENT" ) {
-				//-print($line . PHP_EOL);
-			} elseif ( "$LTYPE" == "VERSION" ) {
-				//-print($line . PHP_EOL);
-			} elseif (strpos($line, '#') === 0 || strpos($line, '//') === 0){
-				//-print($line . PHP_EOL);
-			} else {
-				checkShowError($lineNum, "ERROR: unexpected start of line with: " . $LTYPE);
-				$retErrors++;
-			}
-
-		} //while
-		fclose($handleList);
-
-		//check for superfluous files
-		if ( is_dir($df) && ($handle = opendir($df)) ) {
-			while (false !== ($entry = readdir($handle))) {
-				if ($entry != "." && $entry != "..") {
-					if ( !in_array("$entry", $filesMentioned) ) {
-						print("ERROR: file exists, but is not mentioned in list.txt: ". $entry . PHP_EOL);
-						$retErrors++;
-					}
-				}
-			}
-			closedir($handle);
-		}
-
-	} else {
-		print("ERROR: cannot open " . $listfile . PHP_EOL);
-		$retErrors++;
-	}
-
-	return($retErrors);
-}
-
-/**
- *
- * @param int $lineNum
  * @param string $s
  * @param string $val
  * @param string[] $a   allowed values
  * @return int          number of errors
  */
-function checkIsInArray($lineNum, $s, $val, $a): int {
+function checkIsInArray($s, $val, $a): int {
 	if ( !in_array($val, $a ) ) {
 		$allowed = "";
 		foreach ($a as $item) {
 			$allowed .= " " . $item;
 		}
-		checkShowError($lineNum, "ERROR: " . $s . " (" . $val . "), allowed values are: " . $allowed);
+		checkShowError("ERROR: " . $s . " (" . $val . "), allowed values are: " . $allowed);
 		return(1);
 	} else
 		return(0);
@@ -672,14 +508,13 @@ function checkIsInArray($lineNum, $s, $val, $a): int {
 
 /**
  *
- * @param int $lineNum
  * @param string $table table name
  * @return int          number of errors
  */
-function checkIsTable($lineNum, $table): int {
+function checkIsTable($table): int {
 	$pos = strrpos($table, ".");
 	if ( $pos === false || $pos == 0 ) {
-		checkShowError($lineNum, "ERROR: no schema will be assumed, schema name prefix is missing for table: " . $table);
+		checkShowError("ERROR: no schema will be assumed, schema name prefix is missing for table: " . $table);
 		return(1);
 	} else
 		return(0);
@@ -687,14 +522,13 @@ function checkIsTable($lineNum, $table): int {
 
 /**
  *
- * @param int $lineNum
  * @param string $dir
  * @param string $f
  * @return int          number of errors
  */
-function checkIsFile($lineNum, $dir, $f): int {
+function checkIsFile($dir, $f): int {
 	if ( !is_file($dir . $f) ) {
-		checkShowError($lineNum, "ERROR: missing file: " . $f);
+		checkShowError("ERROR: missing file: " . $f);
 		return(1);
 	} else
 		return(0);
@@ -702,11 +536,10 @@ function checkIsFile($lineNum, $dir, $f): int {
 
 /**
  *
- * @param int $lineNum
  * @param string $s       error text
  */
-function checkShowError($lineNum, $s): void {
-	print("line " . $lineNum . ": " . $s . PHP_EOL);
+function checkShowError($s): void {
+	print($s . PHP_EOL);
 }
 
 /**
@@ -846,26 +679,14 @@ function actions_SIARD_grant($listfile): bool {
 	debug(__FUNCTION__ . ": " . $listfile);
 	msgCyan($MSG3_ENABLEACCESS . "...");
 	if ( is_file($listfile)) {
-		if (($handleList = fopen($listfile, "r")) !== FALSE) {
-			while (($line = fgets($handleList)) !== false) {
-				$line = rtrim($line);
-				$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-				if ( false === $tok ) {
-					err_msg(__FUNCTION__ . ": " . "ERROR in line: " . $line);
-					continue;
-				}
-				$LTYPE = $tok[0];
-				if ( "$LTYPE" == "SCHEMA" ) {
-					$SCHEMA = $tok[1];
-					msgCyan($MSG23_SCHEMA_ACCESS . " " . $SCHEMA);
-					$SCHEMA_Q = addQuotes($SCHEMA);
-					$rv = dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST);
-					if ( $rv != 0 )
-						err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-				}
-			}
-			fclose($handleList);
-			$ret = $OK;
+		$listData = new ListData($listfile);
+		foreach ($listData->schemas as $schema) {
+			$SCHEMA = $schema; //$tok[1];
+			msgCyan($MSG23_SCHEMA_ACCESS . " " . $SCHEMA);
+			$SCHEMA_Q = addQuotes($SCHEMA);
+			$rv = dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST);
+			if ( $rv != 0 )
+				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 		}
 	} else
 		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": ", $listfile);
@@ -1024,29 +845,17 @@ function actions_schema_drop($DBC, $DDV, $listfile): void {
 
 	debug(__FUNCTION__ . ": DBC=$DBC, DDV=$DDV...");
 	if ( is_file($listfile)) {
-		if (($handleList = fopen($listfile, "r")) !== FALSE) {
-			while (($line = fgets($handleList)) !== false) {
-				$line = rtrim($line);
-				$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
-				if ( false === $tok ) {
-					err_msg(__FUNCTION__ . ": " . "ERROR in line: " . $line);
-					continue;
-				}
-				$LTYPE = rtrim($tok[0]);
-				if ("$LTYPE" == "SCHEMA" ) {
-					$SCHEMA = $tok[1];
-					$SCHEMA_Q = addQuotes($SCHEMA);
-					if (notSet($SCHEMA_Q))
-						err_msg($MSG24_NO_SCHEMA);
-					else if (notSet($DBC))
-						err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
-					else {
-						msgCyan($MSG26_DELETING . " SCHEMA " . $SCHEMA . "...");
-						$rv = dbf_drop_schema($DBC, $SCHEMA_Q);
-					}
-				}
-			} //while
-			fclose($handleList);
+		$listData = new ListData($listfile);
+		foreach ($listData->schemas as $schema) {
+			$SCHEMA_Q = addQuotes($schema);
+			if (notSet($SCHEMA_Q))
+				err_msg($MSG24_NO_SCHEMA);
+			else if (notSet($DBC))
+				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
+			else {
+				msgCyan($MSG26_DELETING . " SCHEMA " . $schema . "...");
+				$rv = dbf_drop_schema($DBC, $SCHEMA_Q);
+			}
 		}
 	} else
 		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": ", $listfile);
@@ -1078,43 +887,3 @@ function actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET): v
 		debug(__FUNCTION__ . ": " . $MSG16_FOLDER_NOT_FOUND . ": " . $DDV_DIR_EXTRACTED);
 }
 
-/**
- * Functions to be used by sql queries
- * Currently not portable
- * get_count(): used for macro NUMBER_OF_RECORDS_IN_TABLES
- */
-function add_db_functions(): bool {
-	global $MSG_ERROR, $userName;
-	global $OK, $NOK;
-	global $DBC;
-
-	debug(__FUNCTION__ . ": adding DB functions...");
-
-	$FUNCT = <<<EOD
-CREATE OR REPLACE FUNCTION public.get_count\(schema text, tablename text\) \
-		RETURNS SETOF bigint  \
-		LANGUAGE \'plpgsql\'  \
-	AS \\\$BODY\\\$           \
-	BEGIN             \
-		RETURN QUERY EXECUTE \'SELECT count\(1\) FROM \' \|\| \'\"\' \|\| schema \|\| \'\".\"\' \|\| tablename \|\| \'\"\' \; \
-	END               \
-	\\\$BODY\\\$
-EOD;
-
-	$rv = dbf_run_sql_p($DBC, $FUNCT);
-	if ( $rv != 0 ) {
-		err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-		return($NOK);
-	}
-
-	$FUNCT = <<<EOD
-GRANT EXECUTE ON FUNCTION public.get_count\(schema text, tablename text\) TO $userName
-EOD;
-	$rv = dbf_run_sql_p($DBC, $FUNCT);
-	if ( $rv != 0 ) {
-		err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-		return($NOK);
-	}
-
-	return($OK);
-}
