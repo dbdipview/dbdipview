@@ -7,6 +7,10 @@
  * @author     Boris Domajnko
  */
 
+/**
+ * @var OrderInfo|null
+ */
+$orderInfo = null;
 
 /**
  * Find the last DDV or DDV EXT in XML.
@@ -266,19 +270,11 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 
 		$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 		$schema = "$PROGDIR/../packager/queries.xsd";
-
-		msgCyan($MSG35_CHECKXML . " (queries.xml)...");
-		msg_red_on();
-		validateXML($file, $schema);
-		msg_colour_reset();
+		checkValidateXml($file, $schema);
 
 		$file = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 		$schema = "$PROGDIR/../packager/list.xsd";
-		msgCyan($MSG35_CHECKXML . " (list.xml)...");
-		msg_red_on();
-		if (is_file($file))
-			validateXML($file, $schema);
-		msg_colour_reset();
+		checkValidateXml($file, $schema);
 
 		# for i in *.csv; do
 		# file $i | grep "with BOM" --> clearBOM
@@ -294,6 +290,27 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 }
 
 /**
+ * @param string $fileXml
+ * @param string $schema
+ */
+function checkValidateXml($fileXml, $schema):void {
+	global $MSG35_CHECKXML;
+
+	msgCyan($MSG35_CHECKXML . " " . basename($fileXml) . "...");
+	
+	$fileTxt = substr_replace($fileXml , 'txt', strrpos($fileXml , '.') +1);
+
+	//for packages from 2.x.x.
+	//if ( ! is_file($fileXml) && is_file($fileTxt) )
+	//	exportToXML (covertListTxtFile($fileTxt), $fileXml );
+
+	msg_red_on();
+	if (is_file($fileXml))
+		validateXML($fileXml, $schema);
+	msg_colour_reset();
+}
+
+/**
  * Create schema for a DDV EXTended package
  * The database may be already been created from SIARD therefore $CREATEDB0 is not mandatory..
  *
@@ -302,7 +319,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
  * @return bool        $OK or $NOK
  */
 function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
-	global $MSG_ERROR, $MSG29_EXECUTING, $MSG25_EMPTY_TABLES_CREATED, $MSG17_FILE_NOT_FOUND;
+	global $MSG_ERROR, $MSG29_EXECUTING, $MSG29_PROCESSING, $MSG25_EMPTY_TABLES_CREATED, $MSG17_FILE_NOT_FOUND;
 	global $MSG49_CREATINGSCHEMA;
 	global $OK, $NOK;
 	global $DBC, $DBGUEST;
@@ -312,7 +329,7 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 	$CREATEDB1 = $DDV_DIR_EXTRACTED . "/metadata/createdb01.sql";
 
 	if ( is_file($listfile) ) {
-		msgCyan($MSG29_EXECUTING . " " . basename($listfile) . "...");
+		msgCyan($MSG29_PROCESSING . " " . basename($listfile) . "...");
 		$listData = new ListData($listfile);
 	
 		foreach ($listData->schemas as $schema) {
@@ -581,11 +598,11 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 
 			$file = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 			$schema = "$PROGDIR/../packager/queries.xsd";
+			checkValidateXml($file, $schema);
 
-			msgCyan($MSG35_CHECKXML . " (queries.xml)...");
-			msg_red_on();
-			validateXML($file, $schema);
-			msg_colour_reset();
+			$file = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
+			$schema = "$PROGDIR/../packager/list.xsd";
+			checkValidateXml($file, $schema);
 
 			msgCyan($MSG14_DDV_UNPACKED);
 			$ret = $OK;
