@@ -10,6 +10,21 @@ if (! isset($SERVERDATADIR))
 $SERVERCONFIGJSON = "$SERVERDATADIR" . "config.json";
 $SERVERCONFIGCSV  = "$SERVERDATADIR" . "configuration.dat";  //obsolete
 
+
+/**
+* @param string $txt
+*
+* @return bool
+*/
+function get_bool($txt): bool{
+	switch( strtolower($txt) ){
+		case '1':
+		case 'y': 
+		case 'true': return true;
+	}
+	return false;
+}
+
 /**
  * Create an empty configuration file after installation
  */

@@ -21,7 +21,7 @@ CREATE TABLE "TestCSV"."test1" (
    "wingspan" DECIMAL(7, 2)
 );
 
-CREATE TABLE "TestCSV"."test2" (
+CREATE TABLE "TestCSV"."TEST2" (
    "id"     VARCHAR(1) NOT NULL PRIMARY KEY,
    "val"    VARCHAR(1),
    "value"  VARCHAR(100),

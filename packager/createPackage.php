@@ -6,7 +6,7 @@
  * Package content:
  * DDV package (file extension: .zip)
  *   A viewer for SIARD or other EXT DDV packages, also VIEWs and redaction functionality can be used 
- *   - metadata/list.txt
+ *   - metadata/list.xml
  *   - metadata/info.txt
  *   - [optional] metadata/description.txt
  *   - [optional] metadata/createdb.sql
@@ -15,7 +15,7 @@
  *   - [optional] redact.sql, redact01.sql
  * EXT DDV package (file extension: .tar.gz) 
  *   Complete content
- *   - metadata/list.txt
+ *   - metadata/list.xml
  *   - metadata/info.txt
  *   - [optional] metadata/description.txt
  *   - metadata/queries.xml
@@ -63,8 +63,9 @@ function checkRemove($s, $file): void {
 		if ($remove) {
 			unlink($file);
 			if ($yes === false)
-				echo "Removed." . PHP_EOL;
+				echo "Removed.";
 		}
+		echo PHP_EOL;
 	}
 }
 
@@ -105,8 +106,10 @@ function createAboutXML($file): void {
 	fclose($fp); 
 }
 
+require $DDVDIR . "/admin/funcConfig.php";
 require $DDVDIR . "/admin/funcXml.php";
 require $DDVDIR . "/admin/funcMenu.php";
+require $DDVDIR . "/admin/ListData.php";
 require $DDVDIR . "/admin/funcActions.php";
 require $DDVDIR . "/admin/funcDb.php";
 require $DDVDIR . "/admin/version.php";
@@ -169,19 +172,21 @@ if (!is_dir($SOURCE)) {
 	echo "ERROR: Source directory $SOURCE does not exist." . PHP_EOL;
 	exit(1);
 }
-echo "Validating xml..." . PHP_EOL;
+
 $file = $SOURCE . "/metadata/queries.xml";
-$schema = $PROGDIR . "/queries.xsd";
+$schemaQueries = $PROGDIR . "/queries.xsd";
+$schemaList = $PROGDIR . "/list.xsd";
 $infofile = $SOURCE . "/about.xml";
 
+echo "Validating " . basename($file) . "..." . PHP_EOL;
 msg_red_on();
 if (is_file($file))
-	validateXML($file, $schema);
+	validateXML($file, $schemaQueries);
 else
 	echo "ERROR: file not found: " . $file . PHP_EOL;
 msg_colour_reset();
 
-$ALLMETADATA="about.xml metadata/info.txt metadata/queries.xml metadata/list.txt";
+$ALLMETADATA="about.xml metadata/info.txt metadata/queries.xml metadata/list.xml";
 
 if ( is_file($SOURCE . "/metadata/description.txt") )
 	$ALLMETADATA = "$ALLMETADATA metadata/description.txt";
@@ -214,7 +219,20 @@ if ( !is_dir($datadir) ) {
 	}
 }
 
+$LISTFILE = $SOURCE . "/metadata/list.xml";
+echo "Validating " . basename($LISTFILE) . "..." . PHP_EOL;
+
+msg_red_on();
+if (is_file($LISTFILE))
+	validateXML($LISTFILE, $schemaList);
+else
+	echo "ERROR: file not found: " . $LISTFILE . PHP_EOL;
+msg_colour_reset();
+
+echo "Checking content of " . basename($LISTFILE) . "..." . PHP_EOL;
+msg_red_on();
 $errors = checkListFile($SOURCE);
+msg_colour_reset();
 if ( $errors > 0 ) {
 	echo "    Aborted. Number of errors: " . $errors . PHP_EOL;
 	exit(1);

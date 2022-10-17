@@ -1,9 +1,0 @@
-VERSION	2020-12-07
-COMMENT	TestAndDemo4 - dbDIPview regression test
-COMMENT	Make sure that the tables are created beforehand from a SIARD file!
-COMMENT	The table is loaded from two CSV files.
-# See order_TestAndDemo4.xml
-SCHEMA	HR members
-#TABLE	table	file	format	date_format	delimiter	encoding	header
-TABLE	HR members.HR employees	HRemployees.csv	CSV	YMD	,	UTF8	n
-TABLE	HR members.HR employees	HRemployeesPart2.csv	CSV	YMD	,	UTF8	n

@@ -1,6 +1,0 @@
-VERSION	2020-02-10
-COMMENT	TestAndDemo3 - dbDIPview regression test
-COMMENT	See order_TestAndDemo3.xml
-SCHEMA	HR members
-SCHEMA	dbo
-#TABLE	table	file	format	date_format	delimiter	encoding	header
