@@ -290,6 +290,9 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 }
 
 /**
+ * Called when a package has contenthas been copied to the disk
+ * The package might contain old list.txt
+ *
  * @param string $fileXml
  * @param string $schema
  */
@@ -301,8 +304,8 @@ function checkValidateXml($fileXml, $schema):void {
 	$fileTxt = substr_replace($fileXml , 'txt', strrpos($fileXml , '.') +1);
 
 	//for packages from 2.x.x.
-	//if ( ! is_file($fileXml) && is_file($fileTxt) )
-	//	exportToXML (covertListTxtFile($fileTxt), $fileXml );
+	if ( ! is_file($fileXml) && is_file($fileTxt) )
+		exportToXML (covertListTxtFile($fileTxt), $fileXml );
 
 	msg_red_on();
 	if (is_file($fileXml))
@@ -902,5 +905,188 @@ function actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET): v
 		}
 	} else
 		debug(__FUNCTION__ . ": " . $MSG16_FOLDER_NOT_FOUND . ": " . $DDV_DIR_EXTRACTED);
+}
+
+/**
+ * Import list.txt into $listData
+ * Will check the contents of list file for basic errors
+ * list txt content example (tab delimited!):
+VERSION	2022-10-17
+COMMENT	Aerial photos
+SCHEMA	aero
+TABLE	aero.register	register.csv	CSV	YMD	;	UTF8	n
+TABLE	aero.logs	logs.csv
+BFILES	photos.zip
+VIEW	"aero"."view_years"
+ *
+ * @param string $listfile
+ *
+ * @return ListData|false
+ */
+function covertListTxtFile($listfile) {
+
+	$listData = new ListData();
+
+	$retErrors = 0;
+	$lineNum = 0;
+
+	print("Converting list.txt to list.xml..." . PHP_EOL);
+	if ( file_exists($listfile) && (($handleList = fopen($listfile, "r")) !== FALSE) ) {
+		while ( ($line = fgets($handleList)) !== false ) {
+			$lineNum++;
+			$line = rtrim($line);
+			//print("Input: " . $line . PHP_EOL);
+			if ( empty($line) )
+				continue;
+			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
+			if ( false === $tok) {
+				checkShowError2($lineNum, "ERROR: check the line");
+				$retErrors++;
+				continue;
+			}
+			$LTYPE = $tok[0];
+			//LTYPE TABLE FILE CSVMODE DATEMODE DELIMITER CODESET HEADER TBD
+			//0		1		2	3		4		5			6		7		8
+
+			if ( "$LTYPE" == "SCHEMA" ) {
+				if ( count($tok) != 2 || empty($tok[1]) ) {
+					checkShowError2($lineNum, "ERROR: no SCHEMA");
+					$retErrors++;
+				} else
+					$listData->schemas[] = $tok[1];
+			} elseif ( "$LTYPE" == "VERSION" ) {
+				if ( count($tok) != 2 || empty($tok[1]) ) {
+					checkShowError2($lineNum, "ERROR: no VERSION");
+					$retErrors++;
+				} else
+					$listData->revisions[] = $tok[1];
+			} elseif ( "$LTYPE" == "COMMENT" ) {
+				if ( count($tok) != 2 || empty($tok[1]) ) {
+					checkShowError2($lineNum, "ERROR: no COMMENT");
+					$retErrors++;
+				} else
+					$listData->comment .= $tok[1];
+			} elseif ("$LTYPE" == "VIEW") {
+					if ( count($tok) != 2 || empty($tok[1]) ) {
+						checkShowError2($lineNum, "ERROR: no VIEW");
+						$retErrors++;
+					}  else
+						$listData->views[] = $tok[1];
+			} elseif ("$LTYPE" == "TABLE") {
+				if ( count($tok) > 2 ) {
+					$tableData = new TableData($tok[1]);
+					$tableData->file = $tok[2];
+				}
+				if ( count($tok) > 7 ) {
+					$tableData->format = $tok[3];
+					$tableData->date_format = $tok[4];
+					$tableData->delimiter = $tok[5];
+					$tableData->codeset = $tok[6];
+					$tableData->header = get_bool($tok[7]);
+				}
+				$listData->tables[] = $tableData;
+			} elseif ("$LTYPE" == "BFILES") {
+				if ( count($tok) != 2 || empty($tok[1]) ) {
+					checkShowError2($lineNum, "ERROR: missing filename");
+					$retErrors++;
+				} else 
+					$listData->bfiles[] = $tok[1];
+			}
+	
+		} //while
+		fclose($handleList);
+
+	} else {
+		print("ERROR: cannot open " . $listfile . PHP_EOL);
+		$retErrors++;
+	}
+
+	if ($retErrors > 0)
+		return(false);
+	else
+		return($listData);
+}
+
+/**
+ * export $listData content as list.xml file
+ *
+ * @param ListData|false $listData
+ * @param string $targetFile
+ *
+ */
+function exportToXML($listData, $targetFile): void {
+
+	if ($listData === false) {
+		print("Error: no XML generated.");
+		exit(1);
+	}
+
+	$xmlstr = <<<EOD
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list.xsd" schemaMajorVersion="1"></configuration>
+EOD;
+	$x_configuration = new SimpleXMLElement($xmlstr);
+
+	if ( ! empty($listData->revisions) ) {
+		$x_revisions = $x_configuration->addChild('revisions');
+		foreach ($listData->revisions as $revision) 
+			$x_revisions->addChild('revision', $revision);
+		$x_revision = $x_revisions->addChild('revision', "Migration from list.txt to list.xml");
+		$x_revision->addAttribute('date','2022-11-13'); 
+	}
+	
+	if ( ! empty($listData->comment) ) {
+		$x_comment = $x_configuration->addChild('comment', $listData->comment);
+	}
+	
+	if ( ! empty($listData->schemas) ) {
+		$x_schemas = $x_configuration->addChild('schemas');
+		foreach ($listData->schemas as $schema) 
+			$x_schemas->addChild('schema', $schema);
+	}
+	
+	if ( ! empty($listData->views) ) {
+		$x_views = $x_configuration->addChild('views');
+		foreach ($listData->views as $view) 
+			$x_views->addChild('view', $view);
+	}
+	
+	if ( ! empty($listData->tables) ) {
+		$x_tables = $x_configuration->addChild('tables');
+		foreach ($listData->tables as $table) {
+			$x_table = $x_tables->addChild('table', $table->name);
+				$x_table->addAttribute('file', $table->file);
+			if ( 0 != strcasecmp($table->format, "CSV") )
+				$x_table->addAttribute('format', $table->format);
+			if ( 0 != strcasecmp($table->date_format, "YMD") )
+				$x_table->addAttribute('date_format', $table->date_format);
+			if ( $table->delimiter != ",") {
+				if ( false === strpos($table->delimiter, "t") )
+					$x_table->addAttribute('delimiter', $table->delimiter);
+				else
+					$x_table->addAttribute('delimiter', "tab");
+			}
+			if ( 0 != strcasecmp($table->codeset, "UTF8") )
+				$x_table->addAttribute('encoding', $table->codeset);
+			if ( $table->header != true )
+				$x_table->addAttribute('header', "0");
+		}
+	}
+	
+	if ( ! empty($listData->bfiles) ) {
+		$x_bfiles = $x_configuration->addChild('bfiles');
+		foreach ($listData->bfiles as $bfile) 
+			$x_bfiles->addChild('bfile', $bfile);
+	}
+
+	$domi = dom_import_simplexml($x_configuration);
+	if ( $domi !== false) {
+		$dom = $domi->ownerDocument;
+		if ($dom != null) {
+			$dom->formatOutput = true;
+			$dom->save($targetFile);
+		} else 
+			print("ERROR: cannot create XML");
+	}
 }
 

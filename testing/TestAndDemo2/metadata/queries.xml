@@ -18,6 +18,7 @@
 			<revision date="2021-05-14" version="1.5">Added show column description</revision>
 			<revision date="2021-09-28" version="1.6">Use of macro</revision>
 			<revision date="2022-06-29" version="1.7">Use of multi-column view</revision>
+			<revision date="2022-10-12" version="1.8">TEST2 in upper case</revision>
 		</revisions>
 		<ref_number>TestAndDemo2</ref_number>
 		<screens>
@@ -192,11 +193,11 @@
 					<subtitle>This table has been loaded from Keys semicolon.csv (that also includes a header line).</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
-						<dbtable>test2</dbtable>
+						<dbtable>TEST2</dbtable>
 						<dbcolumn>id</dbcolumn>
 					</param>
 					<query>SELECT *	
-						FROM "TestCSV"."test2"
+						FROM "TestCSV"."TEST2"
 					</query>
 				</subselect>
 
@@ -241,13 +242,13 @@
 				<query>SELECT
 					"test1".*, 
 					"test1"."value" AS "value 1",
-					"test2"."value" AS "value 2",
+					"TEST2"."value" AS "value 2",
 					"A"."value"     AS "value 3",
 					"B"."value"     AS "value 4",
 					'no description here - ' || "B"."value" AS "example1",
 					upper("test1"."value") AS "example2"
 					FROM "TestCSV"."test1"
-					LEFT JOIN "TestCSV"."test2"        ON "test1"."id" = "test2"."id"
+					LEFT JOIN "TestCSV"."TEST2"        ON "test1"."id" = "TEST2"."id"
 					LEFT JOIN "TestCSV"."test3" AS "A" ON "test1"."id" = "A"."id"
 					LEFT JOIN "TestCSV"."test4" AS "B" ON "test1"."id" = "B"."id"
 				</query>
