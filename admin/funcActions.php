@@ -305,7 +305,7 @@ function checkValidateXml($fileXml, $schema):void {
 
 	//for packages from 2.x.x.
 	if ( ! is_file($fileXml) && is_file($fileTxt) )
-		exportToXML (covertListTxtFile($fileTxt), $fileXml );
+		exportToXML (convertListTxtFile($fileTxt), $fileXml );
 
 	msg_red_on();
 	if (is_file($fileXml))
@@ -355,7 +355,7 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 			if ( $rv != 0 )
 				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 		} else
-			msgCyan($MSG17_FILE_NOT_FOUND . ": " . basename($CREATEDB0) . "...");
+			debug(__FUNCTION__ . ": No file " . basename($CREATEDB0) . "...");
 
 		if ( is_file($CREATEDB1) ) {
 			msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
@@ -385,15 +385,7 @@ function actions_DDV_create_views($DDV_DIR_EXTRACTED) {
 	global $DBC;
 
 	$ret = $NOK;
-	$CREATEDB0 = $DDV_DIR_EXTRACTED . "/metadata/createdb.sql";
 	$CREATEDB1 = $DDV_DIR_EXTRACTED . "/metadata/createdb01.sql";
-
-	if ( is_file($CREATEDB0) ) {
-		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . "...");
-		$rv = dbf_run_sql($DBC, $CREATEDB0);
-		if ( $rv != 0 )
-			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-	}
 
 	if ( is_file($CREATEDB1) ) {
 		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
@@ -558,8 +550,8 @@ function checkIsFile($dir, $f): int {
  *
  * @param string $s       error text
  */
-function checkShowError($s): void {
-	print($s . PHP_EOL);
+function checkShowError($s, $prefix = ""): void {
+	print($prefix . $s . PHP_EOL);
 }
 
 /**
@@ -923,7 +915,7 @@ VIEW	"aero"."view_years"
  *
  * @return ListData|false
  */
-function covertListTxtFile($listfile) {
+function convertListTxtFile($listfile) {
 
 	$listData = new ListData();
 
@@ -940,7 +932,7 @@ function covertListTxtFile($listfile) {
 				continue;
 			$tok = preg_split("/[\t]/", $line, 0, PREG_SPLIT_DELIM_CAPTURE);  //tab delimited
 			if ( false === $tok) {
-				checkShowError2($lineNum, "ERROR: check the line");
+				checkShowError("ERROR: check the line", "line " . $lineNum . " ");
 				$retErrors++;
 				continue;
 			}
@@ -950,25 +942,25 @@ function covertListTxtFile($listfile) {
 
 			if ( "$LTYPE" == "SCHEMA" ) {
 				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError2($lineNum, "ERROR: no SCHEMA");
+					checkShowError("ERROR: no SCHEMA", "line " . $lineNum . " ");
 					$retErrors++;
 				} else
 					$listData->schemas[] = $tok[1];
 			} elseif ( "$LTYPE" == "VERSION" ) {
-				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError2($lineNum, "ERROR: no VERSION");
+				if ( count($tok) < 2 || empty($tok[1]) ) {
+					checkShowError("ERROR: no VERSION", "line " . $lineNum . " ");
 					$retErrors++;
 				} else
 					$listData->revisions[] = $tok[1];
 			} elseif ( "$LTYPE" == "COMMENT" ) {
-				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError2($lineNum, "ERROR: no COMMENT");
+				if ( count($tok) < 2 || empty($tok[1]) ) {
+					checkShowError("ERROR: no COMMENT", "line " . $lineNum . " ");
 					$retErrors++;
 				} else
 					$listData->comment .= $tok[1];
 			} elseif ("$LTYPE" == "VIEW") {
 					if ( count($tok) != 2 || empty($tok[1]) ) {
-						checkShowError2($lineNum, "ERROR: no VIEW");
+						checkShowError("ERROR: no VIEW", "line " . $lineNum . " ");
 						$retErrors++;
 					}  else
 						$listData->views[] = $tok[1];
@@ -987,7 +979,7 @@ function covertListTxtFile($listfile) {
 				$listData->tables[] = $tableData;
 			} elseif ("$LTYPE" == "BFILES") {
 				if ( count($tok) != 2 || empty($tok[1]) ) {
-					checkShowError2($lineNum, "ERROR: missing filename");
+					checkShowError("ERROR: missing filename", "line " . $lineNum . " ");
 					$retErrors++;
 				} else 
 					$listData->bfiles[] = $tok[1];
