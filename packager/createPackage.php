@@ -33,19 +33,19 @@ $CURRENTDIR = getcwd();
 
 set_include_path($PROGDIR);
 
-$yes = false;
+$yesOption = false;
 
 /**
  * @param string $s     message
  * @param string $file  file to be removed
  */
 function checkRemove($s, $file): void {
-	global $yes;
-	$remove = $yes;
+	global $yesOption;
+	$remove = $yesOption;
 	
 	if ( is_file($file) ) {
 		print($s);
-		if ($yes === false) {
+		if ($yesOption === false) {
 			print(" Remove (y or n)?");
 			$handle = fopen ("php://stdin","r");
 			if ( false === $handle )
@@ -54,7 +54,7 @@ function checkRemove($s, $file): void {
 			$line = fgets($handle);
 			fclose($handle);
 			if ( false !== $line && $line[0] == 'y')
-				$remove = True;
+				$remove = true;
 			else {
 				echo "Aborted!" . PHP_EOL;
 				exit(1);
@@ -62,8 +62,8 @@ function checkRemove($s, $file): void {
 		}
 		if ($remove) {
 			unlink($file);
-			if ($yes === false)
-				echo "Removed.";
+			if ($yesOption === true)
+				echo " Removed.";
 		}
 		echo PHP_EOL;
 	}
@@ -129,10 +129,10 @@ $OUTFILE_ZIP = "";
 $infotext="";
 
 if (array_key_exists('y', $options))
-	$yes = True;
+	$yesOption = true;
 
 if (array_key_exists('v', $options))
-	$VERBOSE = True;
+	$VERBOSE = true;
 
 if (array_key_exists('i', $options))
 	$infotext = $options['i'];
@@ -143,7 +143,7 @@ if (array_key_exists('s', $options)) {
 		showOptions();
 	if ( false !== $SOURCE && $SOURCE[0] != '/')
 		$SOURCE = $CURRENTDIR . "/" . $SOURCE;
-	if ( $VERBOSE == True )
+	if ( $VERBOSE == true )
 		echo "SOURCE = $SOURCE" . PHP_EOL;
 }
 
@@ -153,7 +153,7 @@ if (array_key_exists('t', $options)) {
 		showOptions();
 	if ( false !== $OUTDIR && $OUTDIR[0] != '/')
 		$OUTDIR = $CURRENTDIR . "/" . $OUTDIR;
-	if ( $VERBOSE == True )
+	if ( $VERBOSE == true )
 		echo "OUTDIR = $OUTDIR" . PHP_EOL;
 }
 
