@@ -549,6 +549,7 @@ function checkIsFile($dir, $f): int {
 /**
  *
  * @param string $s       error text
+ * @param string $prefix
  */
 function checkShowError($s, $prefix = ""): void {
 	print($prefix . $s . PHP_EOL);
