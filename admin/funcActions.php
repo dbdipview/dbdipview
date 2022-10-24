@@ -1025,7 +1025,7 @@ EOD;
 		foreach ($listData->revisions as $revision) 
 			$x_revisions->addChild('revision', $revision);
 		$x_revision = $x_revisions->addChild('revision', "Migration from list.txt to list.xml");
-		$x_revision->addAttribute('date','2022-11-13'); 
+		$x_revision->addAttribute('date', date('Y-m-d')); 
 	}
 	
 	if ( ! empty($listData->comment) ) {
