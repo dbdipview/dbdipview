@@ -19,6 +19,7 @@ BFILES	fileName
 
 $PROGDIR=__DIR__;
 require_once "$PROGDIR/../admin/ListData.php";
+require_once "$PROGDIR/../admin/funcConfig.php";
 require_once "$PROGDIR/../admin/funcActions.php";
 
 $targetFile = "./list.xml";
