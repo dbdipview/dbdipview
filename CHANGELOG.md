@@ -5,9 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
-## [3.0.0] - 2022-10-17
+## [3.0.0RC] - 2022-10-24
 ### Modified
 - packaging: list.txt has been replaced with list.xml. list.txt in old packages is still processed.
+### Added
+- packaging: utility for preparing list.xml (utilityListTxt2Xml.php)
 
 ## [2.11.2] - 2022-10-11
 ### Fixed

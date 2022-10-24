@@ -916,7 +916,7 @@ VIEW	"aero"."view_years"
  *
  * @return ListData|false
  */
-function convertListTxtFile($listfile) {
+function convertListTxtFile($listTxtFile) {
 
 	$listData = new ListData();
 
@@ -924,7 +924,7 @@ function convertListTxtFile($listfile) {
 	$lineNum = 0;
 
 	print("Converting list.txt to list.xml..." . PHP_EOL);
-	if ( file_exists($listfile) && (($handleList = fopen($listfile, "r")) !== FALSE) ) {
+	if ( file_exists($listTxtFile) && (($handleList = fopen($listTxtFile, "r")) !== FALSE) ) {
 		while ( ($line = fgets($handleList)) !== false ) {
 			$lineNum++;
 			$line = rtrim($line);
@@ -990,7 +990,7 @@ function convertListTxtFile($listfile) {
 		fclose($handleList);
 
 	} else {
-		print("ERROR: cannot open " . $listfile . PHP_EOL);
+		print("ERROR: cannot open " . $listTxtFile . PHP_EOL);
 		$retErrors++;
 	}
 
@@ -1010,7 +1010,7 @@ function convertListTxtFile($listfile) {
 function exportToXML($listData, $targetFile): void {
 
 	if ($listData === false) {
-		print("Error: no XML generated.");
+		print("ERROR: no XML generated." . PHP_EOL);
 		exit(1);
 	}
 
@@ -1079,7 +1079,7 @@ EOD;
 			$dom->formatOutput = true;
 			$dom->save($targetFile);
 		} else 
-			print("ERROR: cannot create XML");
+			print("ERROR: cannot create ". $targetFile . PHP_EOL);
 	}
 }
 
