@@ -44,11 +44,16 @@
 			<xs:simpleContent>
 				<xs:extension base="xs:string">
 					<xs:attribute type="xs:string" name="file" use="optional"/>
+					<!-- values: "CSV" (default), "TSV"                       -->
 					<xs:attribute type="xs:string" name="format" use="optional"/>
+					<!-- values: "YMD" (default)                                   -->
 					<xs:attribute type="xs:string" name="date_format" use="optional"/>
+					<!-- values: "," (default), ";", "tab", "|", ...             --> 
 					<xs:attribute type="xs:string" name="delimiter" use="optional"/>
+					<!-- values: "UTF8" (default), ...                          -->
 					<xs:attribute type="xs:string" name="encoding" use="optional"/>
-					<xs:attribute type="xs:string" name="header" use="optional"/>
+					<!-- values: "true" (default), "false", "1", "0"           -->
+					<xs:attribute type="xs:boolean" name="header" use="optional"/>
 				</xs:extension>
 			</xs:simpleContent>
 		</xs:complexType>
