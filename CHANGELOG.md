@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
-## [3.0.0RC] - 2022-10-24
+## [3.0.0] - 2022-10-28
 ### Modified
 - packaging: list.txt has been replaced with list.xml. list.txt in old packages is still processed.
 ### Added
