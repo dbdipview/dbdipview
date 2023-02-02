@@ -395,7 +395,8 @@ function configGetInfo($ddv, $DBC): array {
 
 	foreach ($array as $index=>$line) {
 		if ( array_key_exists('ddv', $line) && 0==strcmp($line['ddv'],$ddv) &&
-			 array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC) ) {
+			 array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC) )
+		{
 			$configItemInfo['dbc']         = $line['dbc'];
 			$configItemInfo['ddv']         = $line['ddv'];
 			$configItemInfo['queriesfile'] = $line['queriesfile'];
@@ -405,6 +406,8 @@ function configGetInfo($ddv, $DBC): array {
 			$configItemInfo['ref']         = $line['ref'];
 			$configItemInfo['title']       = $line['title'];
 			$configItemInfo['order']       = array_key_exists('order', $line) ? $line['order'] : "";
+			
+			return($configItemInfo);
 		}
 	}
 	return($configItemInfo);

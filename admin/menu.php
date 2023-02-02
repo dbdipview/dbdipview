@@ -457,7 +457,7 @@ while ( "$answer" != "q" ) {
 			$name="";
 			$file="";
 			echo ": " . $DDV_DIR_EXTRACTED . "/metadata" . PHP_EOL;
-			getPackageName($name, $file, "txt", $DDV_DIR_EXTRACTED . "/metadata");
+			getPackageName($name, $file, "xml", $DDV_DIR_EXTRACTED . "/metadata");
 			if ( empty($file) )
 				break;
 

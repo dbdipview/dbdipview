@@ -91,7 +91,7 @@
 					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>
 					<subtitle>Demonstration for: &lt;BR /&gt;
 					- Use of ext_link column with link text. &lt;BR /&gt;
-					- In multi-column view two columns are set with picture (without label) in the second column. &lt;BR /&gt;
+					- In multi-column view two columns are set with picture in the second column and no label. &lt;BR /&gt;
 					- Parameters Name and Number of motors can be set in the main search pane.
 					</subtitle>
 					<param>
@@ -231,7 +231,7 @@
 
 			<screen skipCSVsave="1">
 				<id>4</id>
-				<selectDescription>Retrieving database column descriptions.</selectDescription>
+				<selectDescription>Retrieving database column descriptions; multi-column view.</selectDescription>
 				<title>Column descriptions are displayed as infotip</title>
 				<subtitle>- Column descriptions have been set in createdb01.sql. No description
 				is shown where the value from the table has been modified in the SELECT statement (example1, example2).&lt;BR /&gt;
