@@ -1,5 +1,6 @@
--- Demonstration of use of this file
--- Do not forget to add the VIEWs to the list.txt
+-- additional commands that follow execution of createdb.sql or installation from a SIARD file
+-- for instance: CREATE VIEW or COMMENT ON COLUMN
+-- Do not forget to add the VIEWs to the list.xml
 
 CREATE VIEW "HR members"."my_test_viewA"
   AS

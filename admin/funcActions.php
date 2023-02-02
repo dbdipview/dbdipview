@@ -153,7 +153,8 @@ function actions_Order_process() {
 	} else {
 		debug(__FUNCTION__ . ": DDV not found, will check EXT...");
 		foreach ($orderInfo->ddvExtFiles as $file) {  //no ddv, therefore take the last ddvext
-			$ddv = substr($file, 0, -7);                //filename w/o .tar.gz
+			if (! empty($file) )
+				$ddv = substr($file, 0, -7);                //filename w/o .tar.gz
 		}
 	}
 
@@ -418,9 +419,11 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 
 	if (! empty($listData->views) )
 		foreach ($listData->views as $view) {
-			debug(__FUNCTION__ . ": granting acces to VIEW " . $view);
-			$rv = dbf_grant_select_on_table($DBC, addQuotes($view), $DBGUEST);
-			$ret = $OK;
+			if (! empty($view) ) {
+				debug(__FUNCTION__ . ": granting acces to VIEW " . $view);
+				$rv = dbf_grant_select_on_table($DBC, addQuotes($view), $DBGUEST);
+				$ret = $OK;
+			}
 		}
 
 	if (! empty($listData->tables) )
@@ -726,7 +729,7 @@ function actions_access_on($ddv): string {
 	$XMLFILESRC = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 	$DESCFILESRC = $DDV_DIR_EXTRACTED . "/metadata/description.txt";
 
-	msgCyan($MSG6_ACTIVATEDIP . " " . $ddv . "...");
+	msgCyan($MSG6_ACTIVATEDIP . ": " . $ddv . "...");
 	if (notSet($ddv))
 		err_msg($MSG18_DDV_NOT_SELECTED);
 	else if ( !is_dir($DDV_DIR_EXTRACTED) )

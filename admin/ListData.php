@@ -172,13 +172,15 @@ function checkListFile($folder): int {
 
 	if ( ! empty($listData->bfiles) ) {
 		foreach ($listData->bfiles as $bfile) {
-			$FILE = $bfile;
-			$retErrors += checkIsFile($df, $FILE);
-			if (in_array($FILE, $filesMentioned)) {
-				checkShowError("WARNING: this BFILE is used more than once: " . $FILE);
-				$retErrors++;
+			if (! empty($bfile) ) {
+				$FILE = $bfile;
+				$retErrors += checkIsFile($df, $FILE);
+				if (in_array($FILE, $filesMentioned)) {
+					checkShowError("WARNING: this BFILE is used more than once: " . $FILE);
+					$retErrors++;
+				}
+				$filesMentioned[] = $FILE;
 			}
-			$filesMentioned[] = $FILE;
 		}
 	}
 
