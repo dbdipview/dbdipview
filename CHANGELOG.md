@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+
+## [3.1.0] - 2023-02-14
+### Added
+- access: Element Description added for each screen to be displayed in the top frame
+- test suite: TestAndDemo 2 - Report 1, demonstration of Description element
+
+## [3.0.1] - 2023-02-02
+### Fixed
+- deployment: DIPp incremental update should also use listN.xml
+
 ## [3.0.0] - 2022-10-28
 ### Modified
 - packaging: list.txt has been replaced with list.xml. list.txt in old packages is still processed.

@@ -19,13 +19,14 @@
 			<revision date="2021-09-28" version="1.6">Use of macro</revision>
 			<revision date="2022-06-29" version="1.7">Use of multi-column view</revision>
 			<revision date="2022-10-12" version="1.8">TEST2 in upper case</revision>
+			<revision date="2023-02-03" version="1.9">Added element description</revision>
 		</revisions>
 		<ref_number>TestAndDemo2</ref_number>
 		<screens>
 
 			<screen>
 				<id>1</id>
-				<selectDescription>DESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
+				<selectDescription>SELECTDESCRIPTION: Use of header; external LOBs as files on file-system</selectDescription>
 				<title>TITLE: RC airplane pictures</title>
 				<subtitle>SUBTITLE: &lt;BR /&gt;
 				- Images shown as thumbnails &lt;BR /&gt;
@@ -34,6 +35,11 @@
 				- If a parameters Name or Number of motors are set in the search pane, they are also propagated as a filter to the subqueries. &lt;BR /&gt;
 				- In multi-column view the default number of columns is used.
 				</subtitle>
+				<description>
+				DESCRIPTION: Demonstration of additional description.
+				&lt;BR /&gt;&lt;BR /&gt;
+				Sometimes it can be useful.
+				</description>
 				<param>
 					<name>Name</name>
 					<dbtable>models</dbtable>
@@ -88,7 +94,7 @@
 				</images>
 
 				<subselect>
-					<title>TITLE: RC airplane pictures - with changed thumbnail size</title>
+					<title>RC airplane pictures - with changed thumbnail size</title>
 					<subtitle>Demonstration for: &lt;BR /&gt;
 					- Use of ext_link column with link text. &lt;BR /&gt;
 					- In multi-column view two columns are set with picture in the second column and no label. &lt;BR /&gt;
@@ -137,7 +143,7 @@
 				</subselect>
 
 				<subselect>
-					<title>TITLE: Summary</title>
+					<title>Summary</title>
 					<subtitle>Test of GROUP BY motors_text. No parameter passing is used here.</subtitle>
 					<query>SELECT COUNT(id) AS "number", 
 						"motors_text"

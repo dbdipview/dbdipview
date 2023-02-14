@@ -142,7 +142,11 @@ function actions_Order_process() {
 
 	debug(__FUNCTION__ . ": install DDV");
 	if ( isset($orderInfo->ddvFile ) && $orderInfo->ddvFile != "" ) {
-		debug(__FUNCTION__ . ": unpack DDV...");
+		debug(__FUNCTION__ . ": unpack DDV zip ...");
+		if(strcmp("zip", pathinfo($orderInfo->ddvFile, PATHINFO_EXTENSION)) !== 0) {
+			err_msg($orderInfo->ddvFile, "!= .zip");
+			return($NOK);
+		}
 		$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . substr($orderInfo->ddvFile, 0, -4);
 		if ( $OK == actions_DDV_unpack($DDV_DIR_PACKED . $orderInfo->ddvFile, $DDV_DIR_EXTRACTED) ) {
 			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
@@ -154,7 +158,7 @@ function actions_Order_process() {
 		debug(__FUNCTION__ . ": DDV not found, will check EXT...");
 		foreach ($orderInfo->ddvExtFiles as $file) {  //no ddv, therefore take the last ddvext
 			if (! empty($file) )
-				$ddv = substr($file, 0, -7);                //filename w/o .tar.gz
+				$ddv = substr($file, 0, -7);          //filename w/o .tar.gz
 		}
 	}
 
@@ -570,7 +574,7 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	global $PROGDIR;
 	global $OK, $NOK;
 
-	msgCyan($MSG51_EXTRACTING . " " . basename($packageFile) . "...");
+	msgCyan($MSG51_EXTRACTING . " " . basename($packageFile) . "-->" . $DDV_DIR_EXTRACTED . "...");
 	$ret = $NOK;
 
 	clearstatcache();

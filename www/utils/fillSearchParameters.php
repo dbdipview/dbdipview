@@ -28,15 +28,29 @@ function FunctionHelpToggle() {
 </script>
 
 <form name="statusform" action="<?php echo str_replace(".php","Load.php", htmlspecialchars($_SERVER["PHP_SELF"])); ?>" method='get' target='bottomframe' >
+<table border = 0 style="width: 100%" >
+<colgroup>
+	  <col />
+	  <col />
+	  <col />
+</colgroup>
+<tr>
+<td style="vertical-align:top; white-space: nowrap; width: 10%;" >
+
 <table border = 1>
 <tr style="vertical-align: top;">
 	<td colspan = 2>
 		<left>
 <?php
-$screenFields=0;
+$screenFields = 0;
+$description = "";
+
 foreach ($xml->database->screens->screen as $screen) {
 
 	if($screen->id == $targetQueryNum) {
+
+		if ( ! empty($screen->description) ) 
+			$description = $screen->description;
 
 		foreach ($screen->param as $param) {
 			$attributeHR = get_bool($param->attributes()->hr);
@@ -213,6 +227,16 @@ if($screenFields == 0)
 	</div>
 	</td>
 <?php } ?>
+</tr>
+</table>
+
+</td>
+<td style="width: 1%;">
+&nbsp;&nbsp;&nbsp;
+</td>
+<td style="text-align: left;vertical-align: top;">
+<?php echo $description; ?>
+</td>
 </tr>
 </table>
 </form>

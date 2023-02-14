@@ -16,7 +16,7 @@ function getQueryNumber(): void {
 
 ?>
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' >
-<table border = 0 style="width: 100%" />
+<table border = 0 style="width: 100%" >
 <colgroup>
 	  <col />
 	  <col />

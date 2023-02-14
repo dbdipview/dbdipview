@@ -42,7 +42,7 @@ function dbf_create_dbc($DBC): bool {
 		$rvdb = empty($rv) ? "" : trim($rv[2]);
 
 		if ( $rvdb == $DBC ) {
-			err_msg("$MSG11_DB_ALREADY_EXISTS:", $DBC);
+			echo "$MSG11_DB_ALREADY_EXISTS:" . $DBC . PHP_EOL;  
 			$retval = $OK;
 		} else {
 			passthru("PGPASSWORD=$DBADMINPASS createdb " . $DBC .
