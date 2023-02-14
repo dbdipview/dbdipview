@@ -32,6 +32,7 @@
 			<xs:element name="selectDescription" type="xs:string" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="title" type="xs:string" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="subtitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="param" type="param" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="querymacro" type="xs:string" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="query" type="xs:string" minOccurs="0" maxOccurs="1"/>
