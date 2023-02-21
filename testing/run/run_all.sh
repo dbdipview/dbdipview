@@ -25,18 +25,22 @@ UNPACKED=$MH/records/DIP0unpacked
 INFO="Package created by run_all.sh"
 DBG=
 RMONLY=false
+TESTCASE="all"
+ALLTESTCASES="TestAndDemo2 TestAndDemo3 TestAndDemo6 TestAndDemo5 TestAndDemo4"
 
 usage() {
-	echo "Usage: $0 [-r] [-d]" 1>&2;
-	echo "  -r       remove (uninstall) only" 1>&2;
-	echo "  -v       verbose mode" 1>&2;
-	exit 1;
+	echo "Usage: $0 [-r] [-d] [-t TestAndDemoN]" 1>&2
+	echo "  -r              remove (uninstall) only" 1>&2
+	echo "  -v              verbose mode" 1>&2
+	echo "  -t TestAndDemoN only test case N" 1>&2
+	exit 1
 }
 
-while getopts "rvh" o; do
+while getopts "rvht:" o; do
 	case "${o}" in
 		r)	RMONLY=true;;
 		v)	DBG="-d";;
+		t)	ALLTESTCASES=${OPTARG};;
 		*)	usage;;
 	esac
 done
@@ -51,7 +55,7 @@ then
 fi
 
 echo "== Removing previously installed databases ==========="
-for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo6 TestAndDemo5 TestAndDemo4
+for TESTCASE in $ALLTESTCASES
 do
 	echo "== deleting ${TESTCASE} ========================================="
 	#skip after first installation
@@ -66,38 +70,47 @@ fi
 
 echo "== Building and copying the packages ==========="
 sleep 2
+for TESTCASE in $ALLTESTCASES
+do
+	case $TESTCASE in
+		TestAndDemo2)
+			echo "== ${TESTCASE} ========================================="
+			php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
+			cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
+			;;
 
-TESTCASE=TestAndDemo2
-echo "== ${TESTCASE} ========================================="
-php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
-cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
+		TestAndDemo3)
+			echo "== ${TESTCASE} ========================================="
+			php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
+			cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
+			cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
+			;;
 
-TESTCASE=TestAndDemo3
-echo "== ${TESTCASE} ========================================="
-php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
-cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
-cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
+		TestAndDemo4)
+			echo "== ${TESTCASE} ========================================="
+			php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
+			cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
+			cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
+			;;
 
-TESTCASE=TestAndDemo4
-echo "== ${TESTCASE} ========================================="
-php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
-cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
-cp  ${MH}/testing/${TESTCASE}/package/*.siard $DIP0/
+		TestAndDemo5)
+			echo "== ${TESTCASE} ========================================="
+			php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
+			cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
+			;;
 
-TESTCASE=TestAndDemo5
-echo "== ${TESTCASE} ========================================="
-php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
-cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
-
-TESTCASE=TestAndDemo6
-echo "== ${TESTCASE} ========================================="
-php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
-cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
+		TestAndDemo6)
+			echo "== ${TESTCASE} ========================================="
+			php ${MH}/packager/createPackage.php -s ${MH}/testing/${TESTCASE} -t $DIP0 -n ${TESTCASE} -y -i "$INFO"
+			cp  ${MH}/testing/${TESTCASE}/package/order*  $DIP0/
+			;;
+	esac
+done
 
 echo "== Deployment ==========="
 sleep 2
 
-for TESTCASE in TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5 TestAndDemo6
+for TESTCASE in $ALLTESTCASES
 do
 	echo "== Deploying ${TESTCASE} ========================================="
 	php ${MH}/admin/menu.php $DBG -p order_${TESTCASE}.xml
