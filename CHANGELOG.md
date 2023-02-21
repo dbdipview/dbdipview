@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.1.1] - 2023-02-21
+### Modifed
+- test suite: a single test case can also be deployed now (for faster experimenting)
 
 ## [3.1.0] - 2023-02-14
 ### Added
