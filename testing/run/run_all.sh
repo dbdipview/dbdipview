@@ -26,7 +26,8 @@ INFO="Package created by run_all.sh"
 DBG=
 RMONLY=false
 TESTCASE="all"
-ALLTESTCASES="TestAndDemo2 TestAndDemo3 TestAndDemo6 TestAndDemo5 TestAndDemo4"
+ALLTESTCASES="TestAndDemo2 TestAndDemo3 TestAndDemo4 TestAndDemo5 TestAndDemo6"
+ALLTESTCASESRM="TestAndDemo2 TestAndDemo3 TestAndDemo6 TestAndDemo5 TestAndDemo4"
 
 usage() {
 	echo "Usage: $0 [-r] [-d] [-t TestAndDemoN]" 1>&2
@@ -55,7 +56,7 @@ then
 fi
 
 echo "== Removing previously installed databases ==========="
-for TESTCASE in $ALLTESTCASES
+for TESTCASE in $ALLTESTCASESRM
 do
 	echo "== deleting ${TESTCASE} ========================================="
 	#skip after first installation
