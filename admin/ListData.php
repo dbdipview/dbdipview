@@ -25,6 +25,10 @@ class TableData {
 	/**
 	* @var string
 	*/
+	public $nullas = "";
+	/**
+	* @var string
+	*/
 	public $codeset = "UTF8";
 	/**
 	* @var bool
@@ -96,19 +100,22 @@ class ListData {
 			if ( isset($xml->tables->table) )
 				foreach ($xml->tables->table as $table) {
 					$tableData = new TableData(strval($table));
-					if ( ! is_null( $table->attributes() ) && ! is_null( $table->attributes()->file) )
-						$tableData->file = strval($table->attributes()->file);
-					if ( ! is_null( $table->attributes() ) && ! is_null ( $table->attributes()->format ))
-						$tableData->format = strval($table->attributes()->format);
-					if ( ! is_null( $table->attributes() ) && ! is_null ( $table->attributes()->date_format) )
-						$tableData->date_format = strval($table->attributes()->date_format);
-					if ( ! is_null( $table->attributes() ) && ! is_null( $table->attributes()->delimiter ))
-						$tableData->delimiter = strval($table->attributes()->delimiter);
-					if ( ! is_null( $table->attributes() ) && ! is_null( $table->attributes()->encoding ))
-						$tableData->codeset = strval($table->attributes()->encoding);
-					if ( ! is_null( $table->attributes() ) && ! is_null( $table->attributes()->header ))
-						$tableData->header = get_bool($table->attributes()->header);
-
+					if ( ! is_null( $table->attributes() ) ) {
+						if ( ! is_null( $table->attributes()->file) )
+							$tableData->file = strval($table->attributes()->file);
+						if ( ! is_null ( $table->attributes()->format ))
+							$tableData->format = strval($table->attributes()->format);
+						if ( ! is_null ( $table->attributes()->date_format) )
+							$tableData->date_format = strval($table->attributes()->date_format);
+						if ( ! is_null( $table->attributes()->delimiter ))
+							$tableData->delimiter = strval($table->attributes()->delimiter);
+						if ( ! is_null( $table->attributes()->nullas ))
+							$tableData->nullas = strval($table->attributes()->nullas);
+						if ( ! is_null( $table->attributes()->encoding ))
+							$tableData->codeset = strval($table->attributes()->encoding);
+						if ( ! is_null( $table->attributes()->header ))
+							$tableData->header = get_bool($table->attributes()->header);
+					}
 					$this->tables[] = $tableData;
 				}
 

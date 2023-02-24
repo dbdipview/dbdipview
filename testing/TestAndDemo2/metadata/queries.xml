@@ -178,8 +178,8 @@
 			<screen skipCSVsave="1">
 				<id>3</id>
 				<selectDescription>Display tables that were loaded from sample CSV files. Test of redaction.</selectDescription>
-				<title>Test of table upload. These tables were uploaded from CSV files with 4 data lines.</title>
-				<subtitle>- This table has been loaded from Keys comma.csv&lt;BR /&gt;
+				<title>Data from input file: Keys semicolon.csv</title>
+				<subtitle>- The input file uses semicolon as a delimiter&lt;BR /&gt;
 						- Default view for this report is list view</subtitle>
 				<param size='2'>
 					<name>Id</name>
@@ -195,8 +195,8 @@
 				</view>
 
 				<subselect>
-					<title>Data from semicolon.csv</title>
-					<subtitle>This table has been loaded from Keys semicolon.csv (that also includes a header line).</subtitle>
+					<title>Data from input file: Keys comma.csv</title>
+					<subtitle>The input file uses comma as a delimiter and also includes a header line.</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>TEST2</dbtable>
@@ -208,8 +208,8 @@
 				</subselect>
 
 				<subselect>
-					<title>Data from Keys tab.csv</title>
-					<subtitle>This table has been loaded from Keys tab.csv (in CSV mode):</subtitle>
+					<title>Data from input file: Keys tab.csv</title>
+					<subtitle>The input file (in CSV mode) uses tab as a delimiter</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>test3</dbtable>
@@ -221,9 +221,9 @@
 				</subselect>
 
 				<subselect>
-					<title>Data from Keys tab.csv</title>
-					<subtitle>This table has been loaded from Keys tab.csv (in TSV mode). If redaction was enabled
-					in the order xml file or if you set it manualy in the menu, then check the column with X:</subtitle>
+					<title>Data from input file: Keys tab.txt</title>
+					<subtitle>The input file (in TSV mode) uses tab as a delimiter. If redaction is enabled
+					in the order xml file or if you set it manualy in the menu, there should be X in the second column.</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>test4</dbtable>

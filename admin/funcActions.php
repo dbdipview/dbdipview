@@ -439,12 +439,13 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 			$CSVMODE = $table->format;
 			$DATEMODE = $table->date_format;
 			$DELIMITER = $table->delimiter;
+			$NULLAS = $table->nullas;
 			$CODESET = $table->codeset;
 			$HEADER = $table->header;
 
 			$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
 
-			debug("CSVMODE=" . $CSVMODE . "  DELIMITER=" . $DELIMITER . "  codeset: " . $CODESET);
+			debug("CSVMODE=" . $CSVMODE . "  DELIMITER=" . $DELIMITER . "  nullas: " . $NULLAS . " codeset: " . $CODESET);
 
 			if ("$CODESET" == "UTF8BOM") {
 				if ( !is_executable("$PROGDIR/removeBOM") ){
@@ -458,9 +459,9 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 
 			passthru("chmod o+r '$SRCFILE'");
 			if ( "$CSVMODE" == "CSV" ) {
-				$rv = dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER, $CODESET);
+				$rv = dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $HEADER, $NULLAS, $CODESET);
 			} else if ( "$CSVMODE" == "TSV" ) {
-				$rv = dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE,             $HEADER, $CODESET);
+				$rv = dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE,             $HEADER, $NULLAS, $CODESET);
 			} else
 				err_msg(__FUNCTION__ . ": " . "ERROR: wrong CSVMODE:", $CSVMODE);
 
@@ -919,7 +920,7 @@ TABLE	aero.logs	logs.csv
 BFILES	photos.zip
 VIEW	"aero"."view_years"
  *
- * @param string $listfile
+ * @param string $listTxtFile
  *
  * @return ListData|false
  */
