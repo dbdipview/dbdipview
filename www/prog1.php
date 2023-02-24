@@ -90,14 +90,12 @@ switch ($submit_cycle) {
 		$xml = simplexml_load_file($myXMLfilePath);
 		$id  = pg_escape_string($_GET['id']);
 		$val = pg_escape_string($_GET['val']);
-		showBlobRaw($id, $val);
-		exit(0);
+		showBlobRaw($id, $val);  //and exit
 	case "showCsv":
 		$sql  =     pg_escape_string($_GET['s']);
 		$filename = pg_escape_string($_GET['f']);
 		$title =    pg_escape_string($_GET['t']);
-		showCsv($sql, $filename, $title);
-		exit(0);
+		showCsv($sql, $filename, $title);  //and exit
 	case "setDispMode":
 		$tl = pg_escape_string($_GET['tablelist']);
 		if ($tl == "table" || $tl == "list" || $tl == "listAll" || $tl == "listMC")
@@ -106,8 +104,7 @@ switch ($submit_cycle) {
 	case "showFile":
 		$dbDIPview_dir = __DIR__ . "/";
 		$filename = pg_escape_string($_GET['f']);
-		showFile($filename, $dbDIPview_dir . $filespath);
-		exit(0);
+		showFile($filename, $dbDIPview_dir . $filespath);  //and exit
 }
 
 ?>

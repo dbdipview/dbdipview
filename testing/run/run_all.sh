@@ -41,7 +41,8 @@ while getopts "rvht:" o; do
 	case "${o}" in
 		r)	RMONLY=true;;
 		v)	DBG="-d";;
-		t)	ALLTESTCASES=${OPTARG};;
+		t)	ALLTESTCASES=${OPTARG}
+			ALLTESTCASESRM=${OPTARG};;
 		*)	usage;;
 	esac
 done

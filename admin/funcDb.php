@@ -189,10 +189,11 @@ function dbf_delete_dbc($DBC): bool {
  * @param string $SRCFILE
  * @param string $DELIMITER
  * @param bool   $BHEADER
+ * @param string $NULLAS
  * @param string $codeset
  * @psalm-return ''
  */
- function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $BHEADER, $codeset): string {
+ function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $BHEADER, $NULLAS, $codeset): string {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
 	if ( $BHEADER === true )
@@ -206,22 +207,22 @@ function dbf_delete_dbc($DBC): bool {
 	debug(__FUNCTION__ . ": Copy table data from CSV $SRCFILE to $TABLE...");
 	if ($DELIMITER == ";")
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\;\' CSV $HEADER ENCODING \'$ENCODING\' " .
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\;\' CSV $HEADER NULL AS \'$NULLAS\' ENCODING \'$ENCODING\' " .
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 
 	elseif ($DELIMITER == "|")
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\|\' CSV $HEADER ENCODING \'$ENCODING\' " .
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\|\' CSV $HEADER NULL AS \'$NULLAS\' ENCODING \'$ENCODING\' " .
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 
 	elseif ($DELIMITER == "tab")
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'\\\t\' CSV $HEADER ENCODING \'$ENCODING\' " .
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'\\\t\' CSV $HEADER NULL AS \'$NULLAS\' ENCODING \'$ENCODING\' " .
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 
 	else
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
-			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' CSV $HEADER ENCODING \'$ENCODING\' " .
+			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER E\'$DELIMITER\' CSV $HEADER NULL AS \'$NULLAS\' ENCODING \'$ENCODING\' " .
 			" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 	debug("Copy done.");
 	return($rv);
@@ -235,10 +236,11 @@ function dbf_delete_dbc($DBC): bool {
  * @param string $TABLE
  * @param string $SRCFILE
  * @param bool   $BHEADER
+ * @param string $NULLAS
  * @param string $codeset
  * @psalm-return ''
  */
- function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $BHEADER, $codeset): string {
+ function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $BHEADER, $NULLAS, $codeset): string {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
 	if ( $BHEADER )
@@ -251,7 +253,7 @@ function dbf_delete_dbc($DBC): bool {
 	$rv = "";
 	debug("Copy table data from $SRCFILE to $TABLE...");
 	passthru("echo SET datestyle=" . $DATEMODE . "\;" .
-		"COPY " . $TABLE . " FROM \'$SRCFILE\' $HEADER WITH NULL AS \'\'  ENCODING \'$ENCODING\' " .
+		"COPY " . $TABLE . " FROM \'$SRCFILE\' $HEADER WITH NULL AS \'$NULLAS\' ENCODING \'$ENCODING\' " .
 		" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
 	return($rv);
  }
