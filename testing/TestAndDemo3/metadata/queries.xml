@@ -7,11 +7,11 @@
 	<database>
 		<name>TestAndDemo3 regression test viewer</name>
 		<overview>
-Demonstration with two SIARD packages and one DDV package with viewer information. Search with infotip. 
-Redirection to the next report with "forward parameters". Use of BLOB. Use of metadata/description.txt 
-with html &lt;B&gt;tags&lt;/B&gt;.
-&lt;BR /&gt;
-This text is from queries.xml. Here follows the content of the file metadata/description.txt:
+This text is from queries.xml. &lt;BR /&gt;
+Use of two SIARD packages and one DDV package with viewer information.&lt;BR /&gt;
+Search with infotip. &lt;BR /&gt;
+Redirection to the next report with "forward parameters". Use of "composite key". &lt;BR /&gt;
+Use of BLOB. Use of metadata/description.txt with html &lt;B&gt;tags&lt;/B&gt;.
 &lt;BR /&gt;
 &lt;BR /&gt;
 		</overview>
@@ -25,6 +25,7 @@ This text is from queries.xml. Here follows the content of the file metadata/des
 			<revision date="2021-05-27" version="1.6">Level attribute added</revision>
 			<revision date="2021-06-22" version="1.7">Composite key example added</revision>
 			<revision date="2022-08-24" version="1.8">OID replaced with BLOB</revision>
+			<revision date="2021-06-22" version="1.9">Composite key allows for more target tables</revision>
 		</revisions>
 		<ref_number>TestAndDemo3</ref_number>
 		<screens>

@@ -48,6 +48,10 @@ if ( !is_file($SERVERCONFIGDIR . 'config.php')) {
 	exit(1);
 }
 
+if (version_compare(phpversion(), '7.4.0', '<')) {
+    die("php version isn't high enough, at least PHP 7.4 is expected." . PHP_EOL);
+}
+
 require 'configa.php';
 
 require $SERVERCONFIGDIR . 'config.php';

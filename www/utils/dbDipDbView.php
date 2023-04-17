@@ -106,8 +106,15 @@ function qRowsToArray($query): array{
 }
 
 /**
- * create part of link
- *
+ * create part of a link using table name and column name
+ * multiple values (aka composite key) are also allowed and names are delimited with "|"
+ * Example: t1|t2, c1|c2 gives "t1"."c1" and "t2"."c2"
+ *			<link>
+ *				<dbcolumnname valueFromColumn='id|tax_num'>More details</dbcolumnname>
+ *				<next_screen_id>INV1</next_screen_id>
+ *				<dbtable>tableA|tb</dbtable>
+ *				<dbcolumn>ID|taxNum</dbcolumn>
+ *			</link>
  * @param string $val
  * @param array<string, string> $row
  * @param string[] $column
@@ -118,19 +125,25 @@ function makeParameterReferences($val, $row, array $column): string{
 
 	if ( $column["columnWithValue"] != "" ) {
 		$out = "";
-		$columns = $column["columnWithValue"];
-		$table   = $column["dbtable"];
-		$linkcol = $column["dbcolumn"];
-		$columnsArr = explode("|", $columns);
-		$linkColArr = explode("|", $linkcol);
-		$num = sizeof($columnsArr);
-		if ($num != sizeof($linkColArr))
+		$sourceColumns = $column["columnWithValue"];
+		$sourceColumnsArr = explode("|", $sourceColumns);
+		$targetTables  = $column["dbtable"];
+		$targetTablesArr = explode("|", $targetTables);
+		$targetColumns = $column["dbcolumn"];
+		$targetColumnsArr = explode("|", $targetColumns);
+		$num = sizeof($sourceColumnsArr);
+		$numTables = sizeof($targetTablesArr);
+		if ($num != sizeof($targetColumnsArr) || $numTables == 0)
 			$out = "ERROR: columnWithValue_PARAMETER_COUNT_DISCREPANCY_CHECK_XML";
 		else {
 			$i = 0;
 			while ($i < $num) {
-				$linkval = getKeyValue($row, $columnsArr[$i]);
-				$out .= makeParameterReferencesOne($column["dbtable"].TABLECOLUMN.$linkColArr[$i], $linkval);
+				if ($numTables == $num)
+					$table = $targetTablesArr[$i];
+				else
+					$table = $targetTablesArr[0]; //first one suits for all
+				$linkval = getKeyValue($row, $sourceColumnsArr[$i]);
+				$out .= makeParameterReferencesOne($table.TABLECOLUMN.$targetColumnsArr[$i], $linkval);
 				$i = $i + 1;
 			}
 		}
