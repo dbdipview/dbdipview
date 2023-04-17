@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.3.0] - 2023-04-17
+### Added
+- access: forwarded parameters as composite keys allow for search in more than one target table.
+- test suite: TestAndDemo 3 - Report 2, an example of this functionality
+
 ## [3.2.0] - 2023-02-24
 ### Added
 - packaging: list.xml allows null in CSV to be redefined as a string instead of default ''
