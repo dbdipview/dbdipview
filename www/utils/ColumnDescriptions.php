@@ -160,18 +160,18 @@ class ColumnDescriptions
 		if ( empty($query) )
 			return;
 
-	if ( ($query = preg_replace('~[\r\n\t]+~', ' ', trim($query))) !== null )	 //remove formatting
-		if ( ($query = preg_replace('/\s\s+/', ' ', $query)) !== null )		     //only one blank
-			if ( ($query = substr($query, stripos($query, 'SELECT ') + 7)) !== false && $query !== null  )	//remove "...select"
-				if ( ($sql4 = preg_replace("/\([^)]+\)/","",$query)) !== null )  // aaa(bbb) -> aaa()
-					if ( ($i = stripos($sql4, " FROM ")) !== false )
-						if ( ($sql5 = substr($sql4, 0, $i )) !== false && $sql5 !== null  )	 //keep everything until FROM ...
-							$sql5 = str_ireplace( " CASE WHEN ", " ", $sql5); 
+		if ( ($query = preg_replace('~[\r\n\t]+~', ' ', trim($query))) !== null )	 //remove formatting
+			if ( ($query = preg_replace('/\s\s+/', ' ', $query)) !== null )		     //only one blank
+				if ( ($query = substr($query, stripos($query, 'SELECT ') + 7)) !== false && $query !== null  )	//remove "...select"
+					if ( ($sql4 = preg_replace("/\([^)]+\)/","",$query)) !== null )  // aaa(bbb) -> aaa()
+						if ( ($i = stripos($sql4, " FROM ")) !== false )
+							if ( ($sql5 = substr($sql4, 0, $i )) !== false && $sql5 !== null  )	 //keep everything until FROM ...
+								$sql5 = str_ireplace( " CASE WHEN ", " ", $sql5); 
 		
-		if (false !== $sql5)
+		if ( isset($sql5) && false !== $sql5 )
 			$this->getThree($sql5, $this->columnsArrayL);
 		
-		if (null !== $sql4) {
+		if ( isset($sql4) ) {
 			$sql4 = str_ireplace( " LEFT JOIN ", ",  ", $sql4); 
 			$sql4 = str_ireplace( " RIGHT JOIN ", ", ", $sql4); 
 			$sql4 = str_ireplace( " INNER JOIN ", ", ", $sql4); 

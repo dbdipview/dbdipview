@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.3.1] - 2023-05-12
+### Fixed
+- access: CLOB download with python 8
+- access: BLOB column will not cause an error
+
 ## [3.3.0] - 2023-04-17
 ### Added
 - access: forwarded parameters as composite keys allow for search in more than one target table.

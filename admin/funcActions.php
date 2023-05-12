@@ -423,15 +423,19 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 
 	if (! empty($listData->views) )
 		foreach ($listData->views as $view) {
-			if (! empty($view) ) {
-				debug(__FUNCTION__ . ": granting acces to VIEW " . $view);
-				$rv = dbf_grant_select_on_table($DBC, addQuotes($view), $DBGUEST);
-				$ret = $OK;
-			}
+			if (empty($view))
+				continue;
+
+			debug(__FUNCTION__ . ": granting acces to VIEW " . $view);
+			$rv = dbf_grant_select_on_table($DBC, addQuotes($view), $DBGUEST);
+			$ret = $OK;
+
 		}
 
 	if (! empty($listData->tables) )
 		foreach ($listData->tables as $table) {
+			if (empty($table))
+				continue;
 
 			debug(__FUNCTION__ . ": processing table data file " . $table->file);
 			$TABLE = addQuotes($table->name);
@@ -476,6 +480,9 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 
 	if (! empty($listData->bfiles) )
 		foreach ($listData->bfiles as $bfile) {
+			if (empty($bfile))
+				continue;
+
 			$FILE = $bfile;  //$tok[1];
 			$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
 

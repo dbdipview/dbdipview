@@ -72,7 +72,10 @@ function showBlobRaw($blobId, $val): void {
 		case "CLOB":
 			header("Content-Type: $contenttype");
 			header("Content-Disposition: inline; filename=" . $filename);
-			echo $lob;
+			if (version_compare(phpversion(), '8.0.0', '<'))
+				echo $lob;
+			else
+				echo stream_get_contents($lob);
 			break;
 		case "BLOB":
 			header("Content-Type: $contenttype");
