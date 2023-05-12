@@ -232,7 +232,10 @@ function qToListWithLink($queryData, $totalCount) {
 					continue;     //hide column Total
 				}
 
-				$val = nl2br($valnl);
+				if ( !is_resource($valnl) )
+					$val = nl2br($valnl);
+				else
+					$val="(BLOB)";
 
 				$tablelist = $_SESSION['tablelist'];
 				if( strcmp($tablelist, "listAll") !== 0 && strcmp($tablelist, "listMC") !== 0 )
@@ -408,8 +411,10 @@ function qToTableWithLink($queryData, $totalCount, $queryId) {
 					$totalLines = intval($valnl);
 					continue;     //hide column Total
 				}
-
-				$val = nl2br($valnl);
+				if ( !is_resource($valnl) )
+					$val = nl2br($valnl);
+				else
+					$val="(BLOB)";
 
 				if ( !empty($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
