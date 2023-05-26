@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.3.2] - 2023-05-26
+### Fixed
+- access: database column description description is now shown also for a column without table name and also when keyword AS is not present
+- test suite: TestAndDemo 2 - Report 4, added use cases
+
 ## [3.3.1] - 2023-05-12
 ### Fixed
 - access: CLOB download with python 8

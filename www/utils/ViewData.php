@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Process <view> content from queries.xml
+ *
+ * Handle view type and number of columns
+ */
 class ViewData {
 	private string $view = "";
 	private bool $bdefault_is_listMC = False;
@@ -36,7 +40,7 @@ class ViewData {
 						array_push($this->arr_colNamesWithNewColumn, $ele);
 						$this->bhas_columnNames = True;
 					}
-					if(get_bool($ele->attributes()->noLabel))
+					if( get_bool($ele->attributes()->noLabel) )
 						array_push($this->arr_colNamesWithNoLabel, $ele);
 				}
 			}

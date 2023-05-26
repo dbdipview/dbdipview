@@ -133,7 +133,7 @@ function makeParameterReferences($val, $row, array $column): string{
 		$targetColumnsArr = explode("|", $targetColumns);
 		$num = sizeof($sourceColumnsArr);
 		$numTables = sizeof($targetTablesArr);
-		if ($num != sizeof($targetColumnsArr) || $numTables == 0)
+		if ( $num != sizeof($targetColumnsArr) )
 			$out = "ERROR: columnWithValue_PARAMETER_COUNT_DISCREPANCY_CHECK_XML";
 		else {
 			$i = 0;
