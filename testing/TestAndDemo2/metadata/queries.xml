@@ -20,6 +20,7 @@
 			<revision date="2022-06-29" version="1.7">Use of multi-column view</revision>
 			<revision date="2022-10-12" version="1.8">TEST2 in upper case</revision>
 			<revision date="2023-02-03" version="1.9">Added element description</revision>
+			<revision date="2023-05-19" version="1.10">Added column description without table name</revision>
 		</revisions>
 		<ref_number>TestAndDemo2</ref_number>
 		<screens>
@@ -238,38 +239,57 @@
 			<screen skipCSVsave="1">
 				<id>4</id>
 				<selectDescription>Retrieving database column descriptions; multi-column view.</selectDescription>
-				<title>Column descriptions are displayed as infotip</title>
-				<subtitle>- Column descriptions have been set in createdb01.sql. No description
-				is shown where the value from the table has been modified in the SELECT statement (example1, example2).&lt;BR /&gt;
-				- Demonstration of multi-column view. A label can be omitted. Values are shown in the same column until a new column is triggered.&lt;BR /&gt;
-				no label: dateX, dateY&lt;BR /&gt;
-				new column: value 4, example2&lt;BR /&gt;
+				<title>Use of column descriptions (in all columns). They are displayed as infotip values.</title>
+				<subtitle>Column descriptions have been set in createdb01.sql for all value X columns.&lt;BR /&gt;
+				- No description is shown where the value from the table has been modified in the SELECT statement (example1, example2).&lt;BR /&gt;
+				- Test case with AS keyword as optional.&lt;BR /&gt;
+				Multicolumn view&lt;BR /&gt;
+				- A new column must be triggered (see value 2 and example2).&lt;BR /&gt;
+				- A label can be omitted, see examples with: dateX, value 2, example2&lt;BR /&gt;
+				- A new column start with value 4 and example2&lt;BR /&gt;
 				</subtitle>
+				<description>
+				Various test cases for column descriptions, shown as (?)
+				&lt;BR /&gt;
+				Activation of a multi-column view
+				</description>
 				<query>SELECT
 					"test1".*, 
 					"test1"."value" AS "value 1",
 					"TEST2"."value" AS "value 2",
 					"A"."value"     AS "value 3",
-					"B"."value"     AS "value 4",
+					"B"."value"        "value 4",
 					'no description here - ' || "B"."value" AS "example1",
 					upper("test1"."value") AS "example2"
 					FROM "TestCSV"."test1"
 					LEFT JOIN "TestCSV"."TEST2"        ON "test1"."id" = "TEST2"."id"
 					LEFT JOIN "TestCSV"."test3" AS "A" ON "test1"."id" = "A"."id"
-					LEFT JOIN "TestCSV"."test4" AS "B" ON "test1"."id" = "B"."id"
+					LEFT JOIN "TestCSV"."test4"    "B" ON "test1"."id" = "B"."id"
 				</query>
 				<view default="listMC">
 					<columnName noLabel="1">dateX</columnName>
-					<columnName noLabel="1">dateY</columnName>
+					<columnName noLabel="1">value 2</columnName>
 					<columnName newCol="1">value 4</columnName>
 					<columnName newCol="1" noLabel="1">example2</columnName>
 				</view>
 
 				<subselect>
-					<title>This is a subselect</title>
+					<title>Subselect: column descriptions</title>
+					<subtitle>Column description without table name</subtitle>
+					<query>SELECT 
+					"id",
+					"value"	
+						FROM "TestCSV"."test1" AS "A"
+					</query>
+					<view>
+					</view>
+				</subselect>
+
+				<subselect>
+					<title>Subselect: the shortest one</title>
 					<subtitle>Simple select *</subtitle>
 					<query>SELECT *	
-						FROM "TestCSV"."test1" AS "A"
+						FROM "TestCSV"."test1"
 					</query>
 					<view>
 					</view>

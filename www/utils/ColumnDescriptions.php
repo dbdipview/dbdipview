@@ -3,7 +3,7 @@
  * ColumnDescriptions.php
  * handle the database column description property
  * - parse the SELECT statements and get all the tables and columns involved.
- * - get the database descriptions (comments) for these columns
+ * - get the database descriptions (comments) for these columns from the db
  * - the description for each column is then available per request with getDescriptionForColumn()
  *
  * @author:  Boris Domajnko
@@ -47,13 +47,14 @@ class ColumnDescriptions
 	}
 
 	/**
-	 * input: "aa"."bb" AS "cc", "dd"."ee", ff."gg"
+	 * input string: "aa"."bb" AS "cc", "dd"."ee", ff."gg", "hh"
 	 * output array:
 	 *   |aa|bb|cc|
 	 *   |dd|ee|ee|
 	 *   |ff|gg|gg|
+	 *   |* |hh|hh|
 	 * cc and ee are used when a column description is requested 
-	 * Columns with changed values (e.g. with a function or concatenation in SELECT) will be skipped.
+	 * Columns with changed values (e.g. with a function or concatenation in SELECT) will be skipped!
 	 *
 	 * @param string $str
 	 * @param string &$outarray
@@ -66,13 +67,17 @@ class ColumnDescriptions
 			return;
 
 		$myArray = explode(',', $str);
+		//debug(__CLASS__ . " " . __FUNCTION__ . ":str=" . $str);
 		foreach ($myArray as $str) {
+			$str = ltrim(rtrim($str));						//"aaa"."bb"
 			if ($str == "*") {
 				$table = "*";
 				$column = "*";
-				$asvalue = "*";
+				$alias = "*";
 			} else {
-				$str = ltrim(rtrim($str));						//"aaa"."bb"
+				if( strpos($str, '.') === false ) {
+					$str = '"*".' . $str;						//"bb"
+				}
 				if ($str[0] == '"' ) {
 					$start  = strpos($str, '"') + 1;
 					$end	= strpos($str, '"', $start + 1);
@@ -105,7 +110,7 @@ class ColumnDescriptions
 				}
 				$str = ltrim(rtrim($str));
 				$i = stripos($str, 'AS ');
-				$asvalue = $column;	  								//default if no AS
+				$alias = $column;	  								//default if no AS
 				if ($i !== false && $i == 0 ) {
 					$str = preg_replace('/^AS /i', '', $str);		//remove " AS "
 					if ( is_null($str) )
@@ -113,13 +118,19 @@ class ColumnDescriptions
 
 					if ($str[0] == '"' ) {
 						$end	 = strpos($str, '"', 1);
-						$asvalue = substr($str, 1, $end - 1);		// AS "ddd" -> ddd
+						$alias = substr($str, 1, $end - 1);		// "a"."b" AS "B" -> B
 					} else {
 						$wrds  = explode(" ", $str);
 						$length = strlen($wrds[0]);
-						$asvalue = substr($str, 0, $length);		// AS ddd something -> ddd
+						$alias = substr($str, 0, $length);		// "a"."b" AS ddd something -> ddd
 					}
-				} 
+				} else {
+					$i = stripos($str, '"');	
+					if ($i !== false && $i == 0 ) {
+						$end	 = strpos($str, '"', 1);
+						$alias = substr($str, 1, $end - 1);		// "a"."b" "B" -> B
+					}
+				}
 			}
 
 			if (empty($table))
@@ -134,21 +145,23 @@ class ColumnDescriptions
 				$ambigous = stripos($table, ")"); //don't know what is displayed
 
 			if ($ambigous === false) {
-				//debug("getThree: ______result: " . "Table:<b>$table</b>," . " column:<b>$column</b>," . " ASvalue:<b>$asvalue</b>");
-				array_push($outarray, array($table, $column, $asvalue));
+				debug(__CLASS__ . " " . __FUNCTION__ . ": ______result: " . "Table:<b>$table</b>," . " column:<b>$column</b>," . " alias:<b>$alias</b>");
+				array_push($outarray, array($table, $column, $alias));
 			} 
 		}
 	}
 
 	/**
-	 * given a SELECT query, find the COMMENT values for all columns so that they can be show in result header line
+	 * given a SELECT query, find the COMMENT values for all columns so that they can be shown in result header line
 	 * Check the query and extract the pairs table-column.
 	 * Use these pairs as input to get colum names.
 	 * Input:
 	 * SELECT
 	 * T1.C1 AS "alias",
 	 * T1.C2,
-	 * T2.C3 FROM ... JOIN ...
+	 * T2.C3,
+	 * C4  FROM t AS "T1" JOIN ...
+	 * 
 	 * Output: two arrays are set:
 	 *   columnsArrayL: table/columns from (SELECT ...) 
 	 *   columnsArrayR: schema/table from (FROM ... JOIN ...)
@@ -160,10 +173,10 @@ class ColumnDescriptions
 		if ( empty($query) )
 			return;
 
-		if ( ($query = preg_replace('~[\r\n\t]+~', ' ', trim($query))) !== null )	 //remove formatting
-			if ( ($query = preg_replace('/\s\s+/', ' ', $query)) !== null )		     //only one blank
-				if ( ($query = substr($query, stripos($query, 'SELECT ') + 7)) !== false && $query !== null  )	//remove "...select"
-					if ( ($sql4 = preg_replace("/\([^)]+\)/","",$query)) !== null )  // aaa(bbb) -> aaa()
+		if ( ($query = preg_replace('~[\r\n\t]+~', ' ', trim($query))) !== null )	        //remove formatting
+			if ( ($query = preg_replace('/\s\s+/', ' ', $query)) !== null )		            //only one blank
+				if ( ($query = substr($query, stripos($query, 'SELECT ') + 7)) !== false )	//remove "...select"
+					if ( ($sql4 = preg_replace("/\([^)]+\)/","",$query)) !== null )         // aaa(bbb) -> aaa()
 						if ( ($i = stripos($sql4, " FROM ")) !== false )
 							if ( ($sql5 = substr($sql4, 0, $i )) !== false && $sql5 !== null  )	 //keep everything until FROM ...
 								$sql5 = str_ireplace( " CASE WHEN ", " ", $sql5); 
@@ -181,7 +194,7 @@ class ColumnDescriptions
 				$sql8 = substr($sql8, 0, $i);  //keep everything until WHERE ...
 
 			if (null !== $sql8)
-				$this->getThree($sql8, $this->columnsArrayR);
+				$this->getThree($sql8, $this->columnsArrayR);	//FROM table AS alias ...
 		}
 	}
 
@@ -195,12 +208,12 @@ class ColumnDescriptions
 	 */
 	private function mergeLandRtoAll(): void {	   
 		foreach ($this->columnsArrayL as $left) {
-			//debug("mergeLandRtoAll L: >$left[0]< >$left[1]<  >$left[2]< ");			  //(as)table|column|as_column
+			//debug(__CLASS__ . " " . __FUNCTION__ . " L: >$left[0]< >$left[1]<  >$left[2]< ");			  //(as)table|column|as_column
 			foreach ($this->columnsArrayR as $right) {
-				//debug("mergeLandRtoAll ___checking R: >$right[0]< >$right[1]<  >$right[2]< ");	// |schema|table|as_table|
+				//debug(__CLASS__ . " " . __FUNCTION__ . "___checking R: >$right[0]< >$right[1]<  >$right[2]< ");	// |schema|table|as_table|
 				if ( $left[0] == $right[2] || $left[0] == "*" ) {
 					array_push($this->columnsArrayAll, array($right[0], $right[1], $right[2], $left[1], $left[2]));
-					//debug("mergeLandRtoAll ______merged: $right[0], $right[1], $right[2], $left[1], $left[2]");
+					//debug(__CLASS__ . " " . __FUNCTION__ . "______merged: $right[0], $right[1], $right[2], $left[1], $left[2]");
 				} 
 			}   
 		}	  
@@ -252,7 +265,7 @@ class ColumnDescriptions
 							$mycolumn = $fromdb[1]; 
 						else
 							$mycolumn = $lr[4];
-						debug("mergeLRandDB:______adding: $mycolumn -> $description");
+						debug(__CLASS__ . " " . __FUNCTION__ . ":___adding: $mycolumn -> $description");
 						$this->columnsArrayDescriptions[$mycolumn] = $description;   // |as_column|description|
 					}
 				}
