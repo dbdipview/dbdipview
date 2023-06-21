@@ -246,7 +246,6 @@ ul.nested {
 
 .downloadArrow {
 	color: var(--main-htext-color);
-	text-decoration: underline;
 }
 
 .helpMain {
@@ -260,8 +259,9 @@ ul.nested {
 
 .logo {
 	font-family: Courier, cursive, sans-serif;
-	font-size: 0.7rem;
+	font-size: var(--main-font-size);
 	text-align: right;
+	margin: 0.2rem;
 	color: #333;
 	background-color: #FFFFFF;
 	line-height:0.31rem;

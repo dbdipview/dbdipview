@@ -1,5 +1,10 @@
-<!doctype html public "-//W3C//DTD HTML 4.0 //EN"> 
-<html>
+<?php
+$loginMenuLevel = 2;
+include "config/confighdr.php";
+include "utils/HtmlElements.php";
+
+HtmlElements::htmlWithLanguage();
+?>
 <head>
    <title>dbDIPview</title>
 <?php include "head.php"; ?>
@@ -10,47 +15,51 @@ session_start();
 session_destroy();
 session_start();
 
-$loginMenuLevel = 0;
-include "config/confighdr.php";
 include "messagesw.php";
 include "../admin/funcConfig.php";
 include "../admin/version.php";
 ?>
 <body onload="bodyOnLoad()">
+
 <div style="line-height:0.31"><br />
 	<div class="logo">dbDIPview <?php print($version); ?></div>
 </div>
 <br />
+
 <center>
-
-  <table style="width: 100%" />
-    <colgroup>
-      <col style="width: 25%" />
-      <col style="width: 50%" />
-      <col />
-    </colgroup>
-    <tr>
-<?php 
-	if(file_exists ("local/logo1.png")) 
-		echo '<td style="text-align: left;"  ><img border="0" src="local/logo1.png" alt="logotip" height="65" /></td>';
-	else
-		echo '<td />';
-	if(file_exists ("local/logo2.png")) 
-		echo '<td style="text-align: center;"><img border="0" src="local/logo2.png" alt="logotip" height="65" /></td>';
-	else
-		echo '<td />';
-	if(file_exists ("local/logo3.png")) 
-		echo '<td style="text-align: right;" ><img border="0" src="local/logo3.png" alt="logotip" height="65" /></td>';
-	else
-		echo '<td />';
-?>
-    </tr>
-  </table>
- 
+<header>
+	<div style="display: table; width: 100%;">
+		<div style="display: table-row;">
 <?php
-	echo "<h2>$INSTITUTION</h2>";
-	echo "<h1>$MSGSW01_MainSubTitle</h1>";
+			if( ! isset($Logo1_alt_text) )
+						$Logo1_alt_text = "Logo 1";
+			if( ! isset($Logo2alt_text) )
+						$Logo2_alt_text = "Logo 2";
+			if( ! isset($Logo3_alt_text) )
+						$Logo3_alt_text = "Logo 3";
 
+			echo '<div style="display: table-cell; text-align: left;">' . PHP_EOL;
+				if( file_exists ("local/logo1.png") )
+					echo '<img border="0" src="local/logo1.png" alt="' . $Logo1_alt_text . '" height="65" />' . PHP_EOL;
+			echo '</div>' . PHP_EOL;
+
+			echo '<div style="display: table-cell; text-align: centerleft;">';
+				if( file_exists ("local/logo2.png") )
+					echo '<img border="0" src="local/logo2.png" alt="' . $Logo2_alt_text . '" height="65" />' . PHP_EOL;
+			echo '</div>' . PHP_EOL;
+
+			echo '<div style="display: table-cell; text-align: right;">';
+				if( file_exists ("local/logo3.png") )
+					echo '<img border="0" src="local/logo3.png" alt="' . $Logo3_alt_text . '" height="65" />' . PHP_EOL;
+			echo '</div>' . PHP_EOL;
+?>
+		</div>
+	</div>
+	<h1><?php echo $MSGSW01_MainTitle; ?></h1>
+	<h2><?php echo $INSTITUTION; ?></h2>
+</header>
+
+<?php
 	$c = "";          //code (token)
 	$d = "";          //dbc
 	$v = "";          //viewer
@@ -58,7 +67,7 @@ include "../admin/version.php";
 	
 	if(isset($_GET['c']))
 		$c = htmlspecialchars($_GET['c']);   //remove GET for production
-	
+
 	if ( !isset($loginMenuLevel) || $loginMenuLevel < 2 ) {
 		if(isset($_GET['d']))
 			$d = htmlspecialchars($_GET['d']);
@@ -69,75 +78,73 @@ include "../admin/version.php";
 	if(isset($_GET['debug']))
 		$debug = htmlspecialchars($_GET['debug']);
 ?>
+
 <br />
 <form name="forma" action="prog1.php" method="get" target='topframe'>
-	<table>
-	<tbody>
+	<div style="display: table;">
 <?php if( strlen($c) > 0 || $loginMenuLevel == 2 ) { ?>
-	<tr>
-		<td>
-			 <?php echo $MSGSW02_Code; ?>
-		</td>
-		<td>
+	<div style="display: table-row; text-align: center;">
+		<div style="display: table-cell;">
+			 <label><?php echo $MSGSW02_Code; ?>
 			 <input type="text" name="code" size="15" value="<?php echo $c;?>" required />
-		</td>
-	</tr>
+			 </label>
+		</div>
+	</div>
 
 <?php
 		} else if( !(strlen($v) > 0 && strlen($v) > 0) && $loginMenuLevel == 0 ) {
-			echo "<tr>";
-			echo '<td style="text-align: center;" cellpadding="0" cellspacing="0">';
+			echo '<div style="display: table-row;">' . PHP_EOL;
+			echo '<div style="display: table-cell; text-align: center; cellpadding="0" cellspacing="0">' . PHP_EOL;
 			if(file_exists ("data/config.json")) {
-				echo '<select name="code" required> ';
+				echo '<select name="code" required aria-label="' . $MSGSW03_Database . '">';
 				echo '<option value="" disabled selected hidden>' . '</option>';
 				config_get_options_token();
 				print '</select>';
 			} else
-				echo "<h2>$MSGSW05_ErrorNoConfiguration.</h2>";
-			echo "</td>";
-			echo "</tr>";
+				echo "<h2>$MSGSW05_ErrorNoConfiguration.</h2>". PHP_EOL;
+			echo "</div>" . PHP_EOL;
+			echo "</div>" . PHP_EOL;
 		} else if (	$loginMenuLevel < 2 ) {
-			echo "<tr>";
-			echo "<td>$MSGSW03_Database</td>";
-			echo "<td>";
 ?>
-				<input type="text" size="30" name="dbname" 
-					value="<?php echo $d;?>" required />
+			<div style="display: table-row; text-align: center;">
+				<div style="display: table-cell; text-align: left;">
+					<label for="idd"><?php echo $MSGSW03_Database; ?></label>
+				</div>
+				<div style="display: table-cell;">
+					<input type="text" size="30" name="dbname" id="idd"
+						value="<?php echo $d;?>" required />
+				</div>
+			</div>
+
+			<div style="display: table-row; text-align: center;">
+				<div style="display: table-cell; text-align: left;">
+					<label for="idv"><?php echo $MSGSW04_Viewer; ?></label>
+				</div>
+				<div style="display: table-cell;">
+					<input type="text" size="30" name="xmlfile" id="idv"
+						value="<?php echo $v;?>" required />
+				</div>
+			</div>
 <?php
-			echo "</td>";
-			echo "</tr>";
-			echo "<tr>";
-			echo "<td>$MSGSW04_Viewer</td>";
-			echo "<td>";
-?>
-				<input type="text" size="30" name="xmlfile" 
-					value="<?php echo $v;?>" required />
-<?php
-			echo "</td>";
-			echo "</tr>";
 		}
 ?>
-	</tbody>
-	</table>
+
+	</div>
 
 	<input type="hidden" name="submit_cycle" value="CheckLogin" /><br />
 	<input type="hidden" name="lang"         value="<?php echo $myLang; ?>" />
 	<input type="hidden" name="debug"        value="<?php echo $debug; ?>" readonly />
-			
-	<table>
-	<tbody>
-	<tr>
-		<td style="text-align:center">
-			<div>
-				<label for="but1"><?php echo ''; ?>
-					<abbr title="<?php echo $MSGSW08_Continue; ?>" 
-						><input id="but1" type="submit" value="&#x27a4;" alt="submit" class='button'/></abbr>
-				</label>
+
+	<div style="display: table; width: 100%;">
+		<div style="display: table-row;">
+			<div style="display: table-cell; text-align: center;">
+				<input id="but1" type="submit" value="&#x27a4;" alt="submit"
+						class='button' title="<?php echo $MSGSW08_Continue; ?>"
+						aria-label="<?php echo $MSGSW08_Continue; ?>"/>
 			</div>
-		</td>
-	</tr>
-	</tbody>
-	</table>
+		</div>
+	</div>
+
 
 </form>
 </center>

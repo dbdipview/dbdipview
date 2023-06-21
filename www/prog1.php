@@ -84,6 +84,7 @@ $filespath = "files/" . $dbName . "__" . str_replace(".xml", "", $myXMLfile) . "
 
 include "dbUtilsView.php";
 include "utils/downlds.php";
+include "utils/HtmlElements.php";
 
 switch ($submit_cycle) {
 	case "showBlob":
@@ -107,9 +108,8 @@ switch ($submit_cycle) {
 		showFile($filename, $dbDIPview_dir . $filespath);  //and exit
 }
 
+HtmlElements::htmlWithLanguage();
 ?>
-<!doctype html public "-//W3C//DTD HTML 4.0 //EN">
-<html>
 <head>
   <title>dbDIPview</title>
 <?php include "head.php"; ?>
@@ -142,23 +142,27 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 	strcmp($submit_cycle, "noSession")             != 0
   ) {
 ?>
-	<table border="0" color="white" width="100%">
-		<tr>
-			<td style="text-align: left;">
-				<abbr title="<?php echo $MSGSW27_HOME; ?>"
-				><a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) .'?submit_cycle=Logout';?>"
-				><img src="img/gnome_go_home.png" height="18" width="18" alt="<?php echo $MSGSW27_HOME; ?>" /></a></abbr>&nbsp;
-			</td>
-			<td style="text-align: right;">
+<header>
+	<div style="display: table; width: 100%;">
+		<div style="display: table-row;">
+			<div style="display: table-cell; text-align: left;">
+				<a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) .'?submit_cycle=Logout';?>"
+				><img src="img/gnome_go_home.png" height="18" width="18" alt="<?php echo $MSGSW27_HOME; ?>" /></a>
+			</div>
+			<div style="display: table-cell; text-align: center;">
+				<h1 style="display:table-cell; align: center;"><?php echo $INSTITUTION; ?></h1>
+			</div>
+			<div style="display: table-cell; text-align: right; vertical-align: text-top; padding-right: 10px;">
 <?php
-			echo $dbName . "&#8672;" . rtrim($myXMLfile, ".xml") . "&nbsp;&nbsp;";
-			echo "<abbr title='$MSGSW09_Logout'><a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) .
-				"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a></abbr>" .
-				"&nbsp;&nbsp;&nbsp;";
+				echo debugReturn($dbName . "&#8672;" . rtrim($myXMLfile, ".xml") . "&nbsp;&nbsp;");
+				echo "<a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) .
+					"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a>";
 ?>
-			</td>
-		</tr>
-	</table>
+			</div>
+		</div>
+	</div>
+</header>
+<br />
 <?php
 } //if submit_cycle
 
@@ -195,44 +199,40 @@ if( strcmp($submit_cycle, "noSession") !== 0 )
 switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
-	echo "<h4>$MSGSW17_Records: " . $_SESSION['title'] . "</h4>";
-	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
+	echo '<span style="color: var(--main-htext-color);">' . $MSGSW17_Records . ": " . $_SESSION['title'] . '</span><br />';
+	echo  '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer . ": " . $xml->database->name . " (" . $xml->database->ref_number . ")" . '</span>';
 	$_SESSION['tablelist'] = "table";
 	getQueryNumber();
 	break;
 case "querySelected":
-	echo "<h4>$MSGSW17_Records: " . $_SESSION['title'] . "</h4>";
-	echo "<h4>$MSGSW04_Viewer: " . $xml->database->name . " (" . $xml->database->ref_number . ")" . "</h4>";
+	echo '<span style="color: var(--main-htext-color);">' . $MSGSW17_Records . ": " . $_SESSION['title'] . '</span><br />';
+	echo '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer .  ": " . $xml->database->name . " (" . $xml->database->ref_number . ")"  . '</span>';
 	if( empty($targetQueryNum) ) {
 		getQueryNumber();
 		break;
 	}
-	?>
-	<table>
-		<tr>
-		<td>
+?>
+	<div>
+		<span style="display: inline-grid; ">
 			<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' >
 				<input type="hidden" name="submit_cycle" value="ShowMenu"/>
 				<input type="hidden" name="targetQueryNum" value=<?php echo "\"$targetQueryNum\""; ?>/>
 				<div>
-					<label for="idback"><?php echo ''; ?>
-						<abbr title="<?php echo $MSGSW10_Back; ?>"
-							><input id="idback" type="submit" class='button' value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" /></abbr>
-					</label>
+					<input id="idback" type="submit" class='button' value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" aria-label="<?php echo $MSGSW10_Back; ?>"/>
 				</div>
 			</form>
-		</td>
-		<td>
-		<?php
-		foreach ($xml->database->screens->screen as $screen) {
-			if($screen->id == $targetQueryNum)
-				echo "<h4>$MSGSW18_ReportDescription $targetQueryNum: $screen->selectDescription</h4>";
-		}
-	?>
-		</td>
-		</tr>
-	</table>
-	<?php
+		</span>
+		<span style="display: inline-grid; vertical-align: top"; >
+<?php
+			foreach ($xml->database->screens->screen as $screen) {
+				if($screen->id == $targetQueryNum)
+					echo "<h2>$MSGSW18_Search $targetQueryNum: $screen->selectDescription</h2>";
+			}
+?>
+		</span>
+	</div>
+
+<?php
 	fillSearchParameters();
 	break;
 case "searchParametersReady":

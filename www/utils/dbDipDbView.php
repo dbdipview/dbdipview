@@ -224,8 +224,9 @@ function qToListWithLink($queryData, $totalCount) {
 			else
 				$output .= "<hr />" . PHP_EOL;
 
-			$currentColNumber = 1;
+			$currentColNumber = 0;
 			foreach ($row as $col=>$valnl) {
+				$currentColNumber = $currentColNumber + 1;
 
 				if ($col == "E2F7total7E8D233C") {
 					$totalLines = intval($valnl);
@@ -242,20 +243,26 @@ function qToListWithLink($queryData, $totalCount) {
 					if( empty($val) )
 						continue;
 
-				if( $viewData->isNewColumn($col, $currentColNumber++) )
+				if( $viewData->isNewColumn($col, $currentColNumber) )
 					$output .= "</td><td style='border-top: 0.15rem solid var(--main-hrborder-color);'>". PHP_EOL;
 
 				$output .= showInfotipInline($columnDescriptions->getDescriptionForColumn($col), $col);
 				if( ! $viewData->isNoLabel($col) )
-					$output .= "<b>$col:</b> ";
+					if ($currentColNumber == 1) {
+						$output .= '<h4 style="font-weight: bold; color: var(--mydbtable-color); margin-top: 0rem;">' . $col . ":";
+						$break = "</h4>";
+					} else {
+						$output .= "<b>$col:</b>";
+						$break = "<br />";
+					}
 
 				if ( !empty($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
-					if ( !empty($column) && $column["dbtable"] != "" ) {
+					if ( !empty($val) && !empty($column) && $column["dbtable"] != "" ) {
 						$parameters = makeParameterReferences($val, $row, $column);
 						$output .= "  <a href='?submit_cycle=" . $column["linkaction"].
 											"&targetQueryNum=" . $column["next_screen_id"].
-											$parameters . "'>$val</a><br />" . PHP_EOL;
+											$parameters . "'>$val</a>" . $break . PHP_EOL;
 						continue;
 					}
 				}
@@ -276,7 +283,7 @@ function qToListWithLink($queryData, $totalCount) {
 								$link = rawurlencode(base64_encode($link));
 								$output .= "  <a href='?submit_cycle=showFile&f=$link' target='_blank'>$text</a>";
 							}
-						$output .= "<br />" . PHP_EOL;
+						$output .= $break . PHP_EOL;
 						continue;
 					}
 				}
@@ -285,12 +292,12 @@ function qToListWithLink($queryData, $totalCount) {
 					$images_image_style[$col] != "") {
 
 					if (strlen((string)$val) == 0)
-						$output .= "<br />" . PHP_EOL;
+						$output .= $break . PHP_EOL;
 					else {
 						$link= $val;
 						$link= str_replace("\\", "/", $link);
 						$link= $filespath . $link;
-						$output .= "  <img src='$link' alt='$val' style='".$images_image_style[$col]."' /><br />" . PHP_EOL;
+						$output .= "  <img src='$link' alt='$val' style='".$images_image_style[$col]."' />" . $break . PHP_EOL;
 					}
 					continue;
 				}
@@ -299,19 +306,19 @@ function qToListWithLink($queryData, $totalCount) {
 					$column = $blob_columns[$col];
 					if ( !empty($column) && $column["id"] != "" ) {
 						if (strlen((string)$val) == 0)
-							$output .= "<br />" . PHP_EOL;
+							$output .= $break . PHP_EOL;
 						else {
 							$id=$column["id"];
 							$output .= "<a href='" . $_SERVER["PHP_SELF"] .
 								"?submit_cycle=showBlob&id=$id&val=$val' target='_blank'>" .
 								"<span class='downloadArrow'>&#129123;</span>" .
-								"</a><br />" . PHP_EOL;
+								"</a>" . $break . PHP_EOL;
 						}
 						continue;
 					}
 				}
 
-				$output .= "  $val<br />" . PHP_EOL;
+				$output .= "  $val" . $break . PHP_EOL;
 
 			} // end one row
 
@@ -344,6 +351,7 @@ function qToListWithLink($queryData, $totalCount) {
 function qToTableWithLink($queryData, $totalCount, $queryId) {
 	global $dbConn;
 	global $filespath;
+	global $MSGSW33_TableOutput, $MSGSW34_HideColumn;
 
 	$query = $queryData->query;
 	$linknextscreen_columns = $queryData->linknextscreen_columns;
@@ -379,7 +387,7 @@ function qToTableWithLink($queryData, $totalCount, $queryId) {
 		$output .= "ERROR: qToTableWithLink<br />";
 	} else {
 		$hits = $result->rowCount();
-		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\">" . PHP_EOL;
+		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\" aria-label=\"" . $MSGSW33_TableOutput . "\">" . PHP_EOL;
 
 		$output .= "<thead><tr>" . PHP_EOL;
 		$i = $result->columnCount();
@@ -392,7 +400,9 @@ function qToTableWithLink($queryData, $totalCount, $queryId) {
 			$field = $fields['name'];
 			$hcol = $j + 1;
 			if ( strlen($queryId) > 0 && ($j !== 0)) {
-				$mycheckbox = "<input type=\"checkbox\" name=\"". $tableid . "_col$hcol\" checked=\"checked\" class=\"noClipboard\" />";
+				$mycheckbox = "<input type=\"checkbox\" name=\"" .
+								$tableid . "_col$hcol\" checked=\"checked\" aria-label=\"" .
+								$MSGSW34_HideColumn . "\" class=\"noClipboard\" />";
 			} else
 				$mycheckbox = "";
 			$description = showInfotipInline($columnDescriptions->getDescriptionForColumn($field), $field);
@@ -418,7 +428,7 @@ function qToTableWithLink($queryData, $totalCount, $queryId) {
 
 				if ( !empty($linknextscreen_columns) && array_key_exists($col, $linknextscreen_columns) ) {
 					$column = $linknextscreen_columns[$col];
-					if ( !empty($column) && $column["dbtable"]!="" ) {
+					if ( !empty($val) && !empty($column) && $column["dbtable"]!="" ) {
 						$parameters = makeParameterReferences($val, $row, $column);
 						$output .= "  <td><a href='?submit_cycle=" . $column["linkaction"].
 												"&targetQueryNum=" . $column["next_screen_id"].

@@ -3,42 +3,58 @@
 <head>
 <?php include "head.php"; ?>
 </head>
-<?php 
-//optional: c or d,s
-$c = $d = $v = $debug ="";
-
-if(isset($_POST['c']))
-	$c = $_POST['c'];
-else
-	if(isset($_GET['c']) )
-		$c = $_GET['c'];   //remove GET for production
-	
-if(isset($_POST['d']))
-	$d = $_POST['d'];
-else
-	if(isset($_GET['d']))
-		$d = $_GET['d'];
-
-if(isset($_POST['v']))
-	$v = $_POST['v'];
-else
-	if(isset($_GET['v']))
-		$v = $_GET['v'];
-
-if(isset($_GET['debug']))
-	$debug = $_GET['debug'];
-else
-	$debug =  "";
-
-?>
-<frameset border="3" frameborder="3" rows="40%,*">
-    <frame name="topframe"    src="prog0.htm?<?php echo 'c='  . $c . 
-														'&d=' . $d . 
-														'&v=' . $v .
-														'&debug=' . $debug ?>">
-    <frame name="bottomframe" src="empty.htm">
-</frameset>
-
 <body>
+<?php 
+	//optional: c or d,s
+	$c = $d = $v = $debug ="";
+
+	if(isset($_POST['c']))
+		$c = $_POST['c'];
+	else
+		if(isset($_GET['c']) )
+			$c = $_GET['c'];   //remove GET for production
+		
+	if(isset($_POST['d']))
+		$d = $_POST['d'];
+	else
+		if(isset($_GET['d']))
+			$d = $_GET['d'];
+
+	if(isset($_POST['v']))
+		$v = $_POST['v'];
+	else
+		if(isset($_GET['v']))
+			$v = $_GET['v'];
+
+	if(isset($_GET['debug']))
+		$debug = $_GET['debug'];
+	else
+		$debug =  "";
+?>
+
+	<div style="border: none;">
+		<iframe style="height: 300px; border: none; width: 100%; resize: auto;"
+				onload='javascript:(function(o){
+					o.style.height=(o.contentWindow.document.body.scrollHeight+30)+"px";
+				}(this));'
+				name="topframe"
+				src="prog0.htm?<?php echo 'c='  . $c .
+										'&d=' . $d .
+										'&v=' . $v .
+										'&debug=' . $debug ?>">
+		</iframe>
+	</div>
+
+	<div style="display: flex; margin: 0; padding: 0; resize: both; overflow: hidden; border: none;">
+		<iframe style="flex-grow:1; margin:0; padding:0; border:0"
+				onload='javascript:(function(o){
+					o.style.height=(o.contentWindow.document.body.scrollHeight+20)+"px";
+					o.style.width= (o.contentWindow.document.body.scrollWidth+20)+"px";
+				}(this));'
+				name="bottomframe"
+				src="empty.htm">
+		</iframe>
+	</div>
+
 </body>
 </html>
