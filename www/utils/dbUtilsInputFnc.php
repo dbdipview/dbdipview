@@ -1,7 +1,7 @@
 <?php
 ?>
 <script>
-<!-- 
+<!--
 	var cX = 0; var cY = 0; var rX = 0; var rY = 0;
 	function UpdateCursorPosition(e){ cX = e.pageX; cY = e.pageY;}
 	function UpdateCursorPositionDocAll(e){ cX = event.clientX; cY = event.clientY;}
@@ -56,9 +56,10 @@
  *   print 'Name: '; input_text('name', $_GET);
  *   print '<br/>';
  * @param string $element_name
+ * @param string $id
  */
-function input_text($element_name): void {
-	print '<input type="text" name="' . $element_name .'" value=""'  . ' />';
+function input_text($element_name, $id): void {
+	print '<input type="text" name="' . $element_name .'" id="' . $id . '" value=""'  . ' />';
 	//print htmlentities($values[$element_name]) . '">';
 }
 
@@ -68,9 +69,10 @@ function input_text($element_name): void {
  * copy from clipboard does not work therefore isNumberKey() is temporarily disabled
  * @param string $element_name
  * @param int $param_size
+ * @param string $id
  */
-function input_integer($element_name, $param_size): void {
-	print '<input type="text" pattern="[0-9]{0,}" size="' . $param_size .'" name="' . $element_name .'" value=""'  . ' />';
+function input_integer($element_name, $param_size, $id): void {
+	print '<input type="text" pattern="[0-9]{0,}" size="' . $param_size .'" name="' . $element_name . '" id="' . $id . '" value=""'  . ' />';
 }
 
 
@@ -81,13 +83,14 @@ function input_integer($element_name, $param_size): void {
  * @param int    $param_size
  * @param string $value
  * @param bool   $enabled
+ * @param string $id
  */
-function input_text_size($element_name, $param_size, $value, $enabled): void {
+function input_text_size($element_name, $param_size, $value, $enabled, $id): void {
 	if($enabled) {
-		if( $param_size > 0 ) 
-			print '<input type="text" size="' . $param_size .'" name="' . $element_name . '" value="' . $value . '"'  . ' />';
-		else 
-			print '<input type="text"                           name="' . $element_name . '" value="' . $value . '"'  . ' />';
+		if( $param_size > 0 )
+			print '<input type="text" size="' . $param_size .'" name="' . $element_name . '" id="' . $id . '" value="' . $value . '"'  . ' />';
+		else
+			print '<input type="text"                           name="' . $element_name . '" id="' . $id . '" value="' . $value . '"'  . ' />';
 	} else {
 		print $value . '&nbsp;';
 	}
@@ -98,9 +101,10 @@ function input_text_size($element_name, $param_size, $value, $enabled): void {
  * @param int    $cols
  * @param int    $rows
  * @param string $value
+ * @param string $id
  */
-function input_textarea($element_name, $cols, $rows, $value): void {
-	print '<textarea name="' . $element_name .'" cols="' . $cols .'" rows="' . $rows .'">';
+function input_textarea($element_name, $cols, $rows, $value, $id): void {
+	print '<textarea name="' . $element_name .'" id="' . $id . '" cols="' . $cols .'" rows="' . $rows .'">';
 	print $value;
 	print '</textarea>';
 }
@@ -146,7 +150,7 @@ function input_radiocheck_checked($type, $element_name, $element_value): void {
 function input_select($myval, $mytxt, $default, $writable = true): void {
 	if(strcmp($default, $myval) == 0  && strlen($myval) > 0)
 		print     '<option value="' . $myval . '" selected="selected" >' . $mytxt . '</option>' . "\n";
-	else 
+	else
 		if($writable)
 			print '<option value="' . $myval .                      '">' . $mytxt . '</option>' . "\n";
 		else
@@ -158,10 +162,11 @@ function input_select($myval, $mytxt, $default, $writable = true): void {
  * @param string $default
  * @param string $form
  * @param bool   $rw
+ * @param string $id
  */
-function input_date_rw ($field, $default, $form, $rw): void {
+function input_date_rw ($field, $default, $form, $rw, $id): void {
 	if($rw)
-		input_date ($field, $default, $form);
+		input_date ($field, $default, $form, $id);
 	else
 		echo "$default" . "&nbsp;";  //"<br />";
 }
@@ -170,12 +175,18 @@ function input_date_rw ($field, $default, $form, $rw): void {
  * @param string $field
  * @param string $default
  * @param string $form
+ * @param string $id
  */
-function input_date($field, $default, $form): void {
+function input_date($field, $default, $form, $id): void {
 	global $MSGSW21_YYYYMMDD;
 ?>
-	<input type="text" maxlength="10" placeholder="<?php echo "$MSGSW21_YYYYMMDD"; ?>" 
-	       size="10" name="<?php echo "$field"; ?>" value="<?php echo "$default"; ?>" />
+	<input type="text"
+			maxlength="10"
+			placeholder="<?php echo "$MSGSW21_YYYYMMDD"; ?>"
+			size="10"
+			id="<?php echo "$id"; ?>"
+			name="<?php echo "$field"; ?>"
+			value="<?php echo "$default"; ?>" />
 		<script language="JavaScript">
 			new tcal ({
 			'formname':    '<?php echo "$form"; ?>',
@@ -194,26 +205,28 @@ function input_date($field, $default, $form): void {
  * @param string $default
  * @param bool   $allowEmptyString
  * @param bool   $writable
+ * @param string $currentId
  */
-function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true): void {
+#function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true, $currentId): void {
+function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable, $currentId): void {
 	global $MSGSW29_MULTIPLESELECT;
 ?>
-	<label for="<?php echo "$fieldname"; ?>">
-		<abbr title="<?php echo $MSGSW29_MULTIPLESELECT; ?>"
-			><button 
-			type="button" 
-			style="padding: 0; border: none;border-radius: 40%;" 
-			onclick="ToggleCombo('<?php echo "$fieldname"; ?>',this)">+
-		</button></abbr>
-	</label>
-	<div id="<?php echo "$fieldname"; ?>" style="display: inline-block">
+
+		<button
+			title="<?php echo $MSGSW29_MULTIPLESELECT; ?>"
+			type="button"
+			style="padding: 0; border: none;border-radius: 40%;"
+			onclick="ToggleCombo('<?php echo "$currentId"; ?>',this)">+
+		</button>
+
+	<div id="<?php echo "$currentId"; ?>" style="display: inline-block">
 <?php
-		input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable, "");
+		input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable, "", $currentId);
 ?>
 	</div>
-	<div id="<?php echo "$fieldname"."M"; ?>" style="display: none">
+	<div id="<?php echo "$currentId"."M"; ?>" style="display: none">
 <?php
-		input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable, "multiple");
+		input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable, "multiple", $currentId."M");
 ?>
 	</div>
 <?php
@@ -230,8 +243,10 @@ function input_combotext_db_multi($fieldname, $paramname, $paramselect, $default
  * @param bool   $allowEmptyString
  * @param bool   $writable
  * @param string $multiple
+ * @param string $currentId
  */
-function input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true, $multiple=""): void {
+#function input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable = true, $multiple="", $currentId): void {
+function input_combotext_db($fieldname, $paramname, $paramselect, $default, $allowEmptyString, $writable, $multiple, $currentId): void {
 
 		if($writable)
 			$disabler = "";
@@ -247,19 +262,19 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 					$rowlines=$rows;
 				else if($rows < 10)
 					$rowlines=4;
-				else 
+				else
 					$rowlines=7;
 			} else
 				$rowlines=1;
 				
-			$fieldId = "$fieldname" . ($multiple != "" ? "M" : "") . "sel";
+			$fieldId = $currentId; //"$fieldname" . ($multiple != "" ? "M" : "") . "sel";
 			?>
-			<label for="<?php echo $fieldId; ?>"><?php echo ''; ?>
-				<abbr title="<?php echo $paramname; ?>" 
-					><select 
-				name="<?php echo "$fieldname". ($multiple != "" ? "[]" : ""); ?>" 
-				id=  "<?php echo "$fieldId"; ?>" 
-				      <?php echo "$multiple"; ?> 
+
+				<abbr title="<?php echo $paramname; ?>"
+					><select
+				name="<?php echo "$fieldname"; ?>"
+				id=  "<?php echo "$currentId"; ?>"
+				      <?php echo "$multiple"; ?>
 				size="<?php echo "$rowlines"; ?>">
 <?php
 			if($allowEmptyString && $writable)
@@ -276,7 +291,7 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 			}
 
 ?>
-			</select></abbr></label>
+			</select></abbr>
 <?php
 		} else {
 ?>
@@ -294,6 +309,7 @@ $infoTipNumber = 0;
  */
 function showInfotipInline($text, $id): string {
 	global $infoTipNumber;
+	global $MSGSW35_Infotip;
 	$msgid="MSG" . $id . $infoTipNumber;
 	$infoTipNumber++;
 
@@ -304,7 +320,7 @@ function showInfotipInline($text, $id): string {
 	$out .= "  onmouseover=\"ShowText('" . $msgid . "'); return true;\"" . PHP_EOL;
 	$out .= "  onmouseout= \"HideText('" . $msgid . "'); return true;\"" . PHP_EOL;
 	$out .= "  href=\"javascript:ShowText('" . $msgid . "')\">" . PHP_EOL;
-	$out .= "  <img src=\"img/question_mark.gif\">" . PHP_EOL;
+	$out .= "  <img src=\"img/question_mark.gif\" alt=\"" . $MSGSW35_Infotip . "\">" . PHP_EOL;
 	$out .= "</span>";
 	$out .= "<span id=\"" . $msgid . "\" class=\"box\">" . $text . "</span>" . PHP_EOL;
 	return($out);
@@ -312,10 +328,10 @@ function showInfotipInline($text, $id): string {
 
 ?>
 <script>
-function ToggleCombo(value1,value2, object){  
+function ToggleCombo(value1,value2, object){
   var x = document.getElementById(value1);
   var y = document.getElementById(value1+"M");
-  
+
   if (x.style.display === "none") {
     x.style.display = "inline-block";
     y.style.display = "none";
@@ -326,6 +342,6 @@ function ToggleCombo(value1,value2, object){
     document.getElementById(value1 + "sel").value = "";
   }
 
-} 
+}
 </script>
 <?php

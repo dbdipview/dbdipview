@@ -82,14 +82,13 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 
 	$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  fbr($subtitle) .           '"' . ";\n";
 
-	print("<abbr title='" . $MSGSW28_SAVESASCSV . "'>" .
-		"<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv" .
+	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv" .
 		"&s=" . rawurlencode(base64_encode($csvquery)) .
 		"&f=" . $filename .
 		"&t=" . rawurlencode(base64_encode($csvtitle)) .
 		"' aria-label='" . $MSGSW28_SAVESASCSV . "'>" .
 		"<span class='downloadArrow'>&#129123;</span>" .
-		"</a></abbr>&nbsp;");
+		"</a>&nbsp;");
 }
 
 /**
@@ -167,6 +166,7 @@ global $PARAMS;
 global $MSGSW12_HitsOnPage, $MSGSW12_TotalRecords, $MSGSW13_PreviousPage, $MSGSW14_NextPage;
 global $MSGSW15_Close, $MSGSW18_ReportDescription, $MSGSW23_PAGE, $MSGSW24_NOPARAMETER;
 global $MSGSW31_Print;
+global $MSGSW33_TableOutput;
 
 $page = 0;
 $offset = 0;
@@ -292,7 +292,7 @@ foreach ($xml->database->screens->screen as $screen) {
 					$value = str_replace('"', '', $value); // " not needed
 					$myColumn = '"' . $param->dbtable . '"."' . $param->dbcolumn . '"';  // "table"."column" = ...
 
-					if    ((0==strcmp("textlike", $param->type) || 0==strcmp("combotext", $param->type)) && 
+					if    ((0==strcmp("textlike", $param->type) || 0==strcmp("combotext", $param->type)) &&
 						strpos($value,'||') > 0)
 						$wheretext = processSimpleOR_ANDqueryParam("OR", $myColumn, $value, $equal, $quote, $addPercentage);
 					else if (0==strcmp("textlike", $param->type) && strpos($value, "&&") > 0)
@@ -447,10 +447,12 @@ define('PRINTER_ICON', '&#x1f5b6;');
 		$tablelist = $_SESSION['tablelist'];
 		$hitsOnPage = 0;
 		if ( strcmp($tablelist, "table") == 0) {
-			print ("<h3>");
 
 			print "<span class='no-print'>";
-			print "<abbr style='text-decoration: none' title='" . $MSGSW31_Print . "'><a style='text-decoration: none;' href='#' onclick=\"printContent('bottomframe');\">" . PRINTER_ICON . "</a></abbr> ";
+			print "<a style='text-decoration: none;' href='#' " .
+					"onclick=\"printContent('bottomframe');\" " .
+					"aria-label=\"$MSGSW31_Print\" >" .
+				PRINTER_ICON . "</a> ";
 			print "</span>";
 
 			if ($attrSkipCSVsave != true) {
@@ -461,25 +463,27 @@ define('PRINTER_ICON', '&#x1f5b6;');
 								$csvquery,
 								$csvfilename);
 			}
-			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h3>");
 
-			print ("<h4>");
-			$queryInfo->showHeader("</h4>");
+			print ('<h2 style="display: inline;">');
+			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h2>");
+
+			print ("<h3>");
+			$queryInfo->showHeader("</h3>");
 
 			if ( !empty($screenQuery) )
 				$newlist = qToTableWithLink($queryInfo, $totalCount, "M");
 		} else {
-			print "<table class=\"mydbtable\">" . PHP_EOL;   // force mydb color
+			print "<table class=\"mydbtable\" aria-label=\"$MSGSW33_TableOutput\" >" . PHP_EOL;   // force mydb color
 			print "<tr><td>" . PHP_EOL;
 
-			print "<h3>";
 			print "<span class='no-print'>";
-			print "<abbr style='text-decoration: none' title='" . $MSGSW31_Print . "'><a style='text-decoration: none' href='#' onclick=\"printContent('bottomframe');\">" . PRINTER_ICON . "</a></abbr> ";
+			print "<a style='text-decoration: none' href='#' onclick=\"printContent('bottomframe');\">" . PRINTER_ICON . "</a> ";
 			print "</span>";
-			print $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h3>";
+			print '<h2 style="display: inline;">';
+			print $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h2>";
 
-			print ("<h4>");
-			$queryInfo->showHeader("</h4>");
+			print ("<h3>");
+			$queryInfo->showHeader("</h3>");
 			print ("<br/>");
 
 			if ( !empty($screenQuery) )
@@ -501,7 +505,7 @@ define('PRINTER_ICON', '&#x1f5b6;');
 		foreach ( $aSubqueriesData as $cQD ) {
 			if ( strcmp($tablelist, "table") == 0) {
 				print("<br/>");
-				print("<h4>");
+
 				if ($attrSkipCSVsave != true) {
 					$csvfilename = "export" . $targetQueryNum . "_" . $sqindexLoop . ".csv";
 					createAhrefCSV("(#" . $targetQueryNum . ") " . $screen->selectDescription,
@@ -510,13 +514,13 @@ define('PRINTER_ICON', '&#x1f5b6;');
 									$cQD->query,
 									$csvfilename);
 				}
-
-				$cQD->showHeader("</h4>");
+				print ('<h3 style="display: inline;">');
+				$cQD->showHeader("</h3>");
 
 				$newlist = qToTableWithLink($cQD, 0, (string)$sqindexLoop );  //0: no counting of lines
 			} else {
-				print("<h4>");
-				$cQD->showHeader("</h4>");
+				print("<h3>");
+				$cQD->showHeader("</h3>");
 				print("<br/>");
 
 				$newlist = qToListWithLink($cQD, 0);   //0: no counting of lines
@@ -557,13 +561,13 @@ foreach ( $PARAMS as $key=>$value ){
 } //foreach
 ?>
 
-<table border = 0>
-<tr>
+<div style="display: table;">
+  <div style="display: table-row; text-align: center;">
+    <div style="display: table-cell;">
 <?php
 if ($page_previous > 0) {
 ?>
-   <td colspan = 2>
-    <center>
+
       <form name="statusform1" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' target='bottomframe' >
 <?php
 	foreach ( $PARAMS as $key=>$value ){
@@ -580,14 +584,13 @@ if ($page_previous > 0) {
 ?>
        <input type="submit" value="<?php echo $MSGSW13_PreviousPage; ?>" class='button' />
       </form>
-    </center>
-  </td>
+
 <?php
 }
 if ($maxcount == $hitsOnPage && ($hitsOnPage > 0) && !(($page * $hitsOnPage) == $totalLines) ) {
 ?>
-  <td colspan = 2>
-    <center>
+    </div>
+    <div style="display: table-cell;">
       <form name="statusform2" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' target='bottomframe' >
 <?php
 	foreach ( $PARAMS as $key=>$value ){
@@ -604,22 +607,20 @@ if ($maxcount == $hitsOnPage && ($hitsOnPage > 0) && !(($page * $hitsOnPage) == 
 ?>
        <input type="submit" value="<?php echo $MSGSW14_NextPage; ?>" class='button' />
       </form>
-    </center>
-  </td>
+
 <?php
 }
 ?>
-</tr>
-<tr>
-  <td colspan = 2>
-      <form style="display: inline;" action="empty.htm" method='get' >
-        <span class='no-print'>
-          <input type="submit" value="<?php echo (isset($MSGSW15_Close) ? $MSGSW15_Close : "Zapri"); ?>" class='button' />
-        </span>
-      </form>
-  </td>
-</tr>
-</table>
+    </div>
+  </div>
+</div>
+
+<form style="display: inline;" action="empty.htm" method='get' >
+  <span class='no-print'>
+     <input type="submit" value="<?php echo (isset($MSGSW15_Close) ? $MSGSW15_Close : "Zapri"); ?>" class='button' />
+  </span>
+</form>
+
 <?php
 
 } // function  fillCreateQuery

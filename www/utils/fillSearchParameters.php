@@ -14,6 +14,7 @@ global $MSGSW12_RecordsPerPage, $MSGSW16_Display;
 global $MSGSW25_TABLEVIEW, $MSGSW26a_LISTVIEW, $MSGSW26b_LISTVIEW, $MSGSW26c_LISTVIEW;
 global $MHLP00,$MHLP01,$MHLP02,$MHLP03,$MHLP04,$MHLP05;
 global $MHLP06,$MHLP07,$MHLP08,$MHLP09, $MHLP10,$MHLP11,$MHLP12;
+global $MSGSW32_TableInput;
 ?>
 
 <script>
@@ -28,18 +29,14 @@ function FunctionHelpToggle() {
 </script>
 
 <form name="statusform" action="<?php echo str_replace(".php","Load.php", htmlspecialchars($_SERVER["PHP_SELF"])); ?>" method='get' target='bottomframe' >
-<table border = 0 style="width: 100%" >
-<colgroup>
-	  <col />
-	  <col />
-	  <col />
-</colgroup>
-<tr>
-<td style="vertical-align:top; white-space: nowrap; width: 10%;" >
+<div style="display: table;">
+<div style="display: table-row;">
+<div style="display: table-cell; vertical-align: top; border: thin solid; border-color: var(--main-htext-color); padding: 0.2em;">
 
-<table border = 1>
-<tr style="vertical-align: top;">
-	<td colspan = 2>
+
+<div style="display: table; width: 100%;" aria-label="<?php echo $MSGSW32_TableInput; ?>">
+	<div style="display: table-row; float: left;">
+		<div style="display: table-cell; vertical-align:top; white-space: nowrap; border: thin solid; border-color: var(--main-htext-color); padding: 0.2em;">
 		<left>
 <?php
 $screenFields = 0;
@@ -49,10 +46,14 @@ foreach ($xml->database->screens->screen as $screen) {
 
 	if($screen->id == $targetQueryNum) {
 
-		if ( ! empty($screen->description) ) 
+		if ( ! empty($screen->description) )
 			$description = $screen->description;
 
+		$idNum = 0;
 		foreach ($screen->param as $param) {
+			$idNum = $idNum + 1;
+			$currentId = "myId" . $idNum;
+
 			$attributeHR = get_bool($param->attributes()->hr);
 			if($attributeHR == true)
 				echo "<hr/>" . "\r\n";
@@ -75,42 +76,43 @@ foreach ($xml->database->screens->screen as $screen) {
 			
 			$attrParamMandatory = get_bool($param->attributes()->mandatory);
 			if($attrParamMandatory)
-				echo "<label class=\"required\">" . $param->name . "</label> ";
+				echo "<label class=\"required\" for=\"" . $currentId . "\">" . $param->name . "</label> ";
 			else {
-				echo "$param->name ";
+				#echo "$param->name ";
+				echo "<label for=\"" . $currentId . "\">" . $param->name . "</label> ";
 			}
 			
 			$infotip = (string) $param->infotip;
 
 			if(0==strcmp("text", $param->type)) {
 				if($bSize)
-					input_text_size($field, (int) $attributeSize, "", TRUE);
+					input_text_size($field, (int) $attributeSize, "", TRUE, $currentId);
 				else
-					input_text_size($field, 15,                   "", TRUE);    //default
+					input_text_size($field, 15,                   "", TRUE, $currentId);    //default
 			}
 
 			if(0==strcmp("textlike", $param->type)) {
 				if($bSize)
-					input_text_size($field, (int) $attributeSize, "", TRUE);
+					input_text_size($field, (int) $attributeSize, "", TRUE, $currentId);
 				else
-					input_text($field);
+					input_text($field, $currentId);
 			}
 
 			if(0==strcmp("integer", $param->type)) {
 				if($bSize)
-					input_integer($field, (int) $attributeSize);
+					input_integer($field, (int) $attributeSize, $currentId);
 				else
-					input_integer($field, 15                  );    //default
+					input_integer($field, 15                  , $currentId);    //default
 			}
 
 			if(0==strcmp("combotext", $param->type)) {
-				input_combotext_db_multi($field, $param->name, $param->select, "", TRUE); //!!!!!!!, $param->name);
+				input_combotext_db_multi($field, $param->name, $param->select, "", TRUE, TRUE, $currentId);
 			}
 			
 			if( (0==strcmp("date",    $param->type)) ||
 				(0==strcmp("date_ge", $param->type)) ||
 				(0==strcmp("date_lt", $param->type))    ) {
-					input_date($field, '',"statusform");
+					input_date($field, '',"statusform", $currentId);
 			}
 
 			if(!empty($infotip))
@@ -129,9 +131,9 @@ if($screenFields == 0)
 	echo str_repeat("&nbsp;", 30) . "<BR />";
 ?>
 		</left>
-	</td>
+	</div>
 
-	<td>
+	<div style="display: table-cell; vertical-align:top; white-space: nowrap; border: thin solid; border-color: var(--main-htext-color); padding: 0.2em;">
 		<?php
 		//see queries.xsd
 		if ($_SESSION['tablelist'] == "table") {
@@ -162,27 +164,38 @@ if($screenFields == 0)
 		}
 		?>
 
-		<abbr title="<?php echo $MSGSW25_TABLEVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="table" onclick="setTreeOrList()" id="wantTable" <?php echo $checkedT; ?>
-			       /><img src="img/table.png" alt="<?php echo $MSGSW25_TABLEVIEW; ?>"></img></label></abbr>
+		<label><input type="radio" name="tablelist" value="table" onclick="setTreeOrList()" id="wantTable" <?php echo $checkedT; ?>
+				/><img src="img/table.png"
+						title="<?php echo $MSGSW25_TABLEVIEW; ?>"
+						alt="<?php echo $MSGSW25_TABLEVIEW . " "; ?>">
+				</img></label>
 
-		<abbr title="<?php echo $MSGSW26a_LISTVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="list" onclick="setTreeOrList()" id="wantList" <?php echo $checkedL; ?>
-			       /><img src="img/list.png"  alt="<?php echo $MSGSW26a_LISTVIEW; ?>"></img></label></abbr>
+		<label><input type="radio" name="tablelist" value="list" onclick="setTreeOrList()" id="wantList" <?php echo $checkedL; ?>
+				/><img src="img/list.png"
+						title="<?php echo $MSGSW26a_LISTVIEW; ?>"
+						alt="<?php echo $MSGSW26a_LISTVIEW . " "; ?>">
+				</img></label>
 
-		<abbr title="<?php echo $MSGSW26b_LISTVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="listAll" onclick="setTreeOrList()" id="wantListAll" <?php echo $checkedLA; ?>
-			       /><img src="img/listAll.png"  alt="<?php echo $MSGSW26b_LISTVIEW; ?>"></img></label></abbr>
+		<label><input type="radio" name="tablelist" value="listAll" onclick="setTreeOrList()" id="wantListAll" <?php echo $checkedLA; ?>
+				/><img src="img/listAll.png"
+						title="<?php echo $MSGSW26b_LISTVIEW; ?>"
+						alt="<?php echo $MSGSW26b_LISTVIEW . " "; ?>">
+				</img></label>
 
-		<abbr title="<?php echo $MSGSW26c_LISTVIEW; ?>">
-			<label><input type="radio" name="tablelist" value="listMC" onclick="setTreeOrList()" id="wantListMC" <?php echo $checkedLMC; ?>
-			       /><img src="img/listMC.png"  alt="<?php echo $MSGSW26c_LISTVIEW; ?>"></img></label></abbr>
+		<label><input type="radio" name="tablelist" value="listMC" onclick="setTreeOrList()" id="wantListMC" <?php echo $checkedLMC; ?>
+				/><img src="img/listMC.png"
+						title="<?php echo $MSGSW26c_LISTVIEW; ?>"
+						alt="<?php echo $MSGSW26c_LISTVIEW . " "; ?>">
+				</img></label>
 
 		<br /><br />
 
-		<abbr title="<?php echo $MSGSW12_RecordsPerPage; ?>">
-			<img src="img/linesperpage.png" alt="<?php echo $MSGSW12_RecordsPerPage; ?>" style="vertical-align:sub"></img></abbr>
-		<select name="maxcount" size="1">
+		<img src="img/linesperpage.png"
+			title="<?php echo $MSGSW12_RecordsPerPage; ?>"
+			alt="<?php echo $MSGSW12_RecordsPerPage . " "; ?>"
+			style="vertical-align: sub;">
+		</img>
+		<select name="maxcount" size="1" aria-label="<?php echo $MSGSW12_RecordsPerPage; ?>" >
 			<option value="10">10</option>
 			<option value="100" selected="selected" >100</option>
 			<option value="1000">1000</option>
@@ -194,18 +207,20 @@ if($screenFields == 0)
 			<input type="hidden" name="submit_cycle" value="searchParametersReady"/>
 			<input type="hidden" name="__page" value="1"/>
 			<input type="hidden" name="targetQueryNum" value="<?php echo $targetQueryNum; ?>" /><br />
-			<label for="idgo">
-			<abbr title="<?php echo $MSGSW16_Display; ?>">
-			<input id="idgo" type="submit" class='button' value="&#x1F50D;" alt="<?php echo $MSGSW16_Display; ?>" style="font-size: 1rem;width: 98%;"/>
-			</abbr>
-			</label>
-<!--		<abbr title="<?php echo $MSGSW16_Display; ?>"><br />
-				<input type="image" src="img/go.png" alt="<?php echo $MSGSW16_Display; ?>" /></abbr>-->
+			<input id="idgo"
+				type="submit"
+				class='button'
+				value="&#x1F50D;"
+				aria-label="<?php echo $MSGSW16_Display; ?>"
+				title="<?php echo $MSGSW16_Display; ?>"
+				alt="<?php echo $MSGSW16_Display; ?>"
+				style="font-size: 1rem; width: 98%;"/>
+<!--		<input type="image" src="img/go.png" alt="<?php echo $MSGSW16_Display; ?>" /> -->
 		</center>
 
-	</td>
+	</div>
 <?php if($screenFields > 0) { ?>
-	<td style="vertical-align:top">
+			<div style="display: table-cell; vertical-align:top; white-space: nowrap; border-color: var(--main-htext-color);padding-left: 0.2em;">
 		<button type="button" class='button' onclick="FunctionHelpToggle()">
 			<?php echo $MHLP00; ?> &darr;
 		</button>
@@ -225,20 +240,18 @@ if($screenFields == 0)
 
 		<div class="logo">dbDIPview</div>
 	</div>
-	</td>
+	</div>
 <?php } ?>
-</tr>
-</table>
+</div>
+</div>
 
-</td>
-<td style="width: 1%;">
-&nbsp;&nbsp;&nbsp;
-</td>
-<td style="text-align: left;vertical-align: top;">
+</div> <!-- table -->
+
+<div style="display: table-cell; text-align: left; vertical-align: top; padding-left: 0.8em; padding-right: 0.8em;">
 <?php echo $description; ?>
-</td>
-</tr>
-</table>
+</div>
+</div>
+</div>
 </form>
 
 <script>

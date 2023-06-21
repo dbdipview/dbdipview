@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.3.3] - 2023-06-21
+### Fixed
+- access: many, many fixes to enable use of visually impaired users
+- access: added logo alt text in confighdr.php.template
+- access: database column description description is now shown also for a columns without parenthesis (but this is not advised use)
+
 ## [3.3.2] - 2023-05-26
 ### Fixed
 - access: database column description description is now shown also for a column without table name and also when keyword AS is not present

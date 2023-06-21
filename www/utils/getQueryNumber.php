@@ -15,64 +15,59 @@ function getQueryNumber(): void {
 	$lines = $reportMenu->howManyLines();
 
 ?>
+<fieldset style="border: 0; padding: 0;">
+<h2><legend><?php echo $MSGSW22_REPORTS; ?></legend></h2>
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method='get' >
-<table border = 0 style="width: 100%" >
-<colgroup>
-	  <col />
-	  <col />
-	  <col />
-</colgroup>
-<tr>
-<td style="vertical-align:top; white-space: nowrap; width: 10%;" >
-	<table border = 1>
-	<tr>
-		<td style="text-align:center"><h4><?php echo $MSGSW22_REPORTS; ?></h4></td>
-	</tr>
+<div style="display: table; width: 100%;">
+	<div style="display: table-row;">
+		<div style="display: table-cell; vertical-align:top; white-space: nowrap; width: 10%;" >
+			<div style="display: table; width: 100%; border: 1;">
+				<div style="display: table-row;">
+					<div style="display: table-cell; text-align: left; white-space: nowrap; border: thin solid; border-color: var(--main-htext-color); overflow: auto;">
+<?php
+						if (!is_numeric($menuFrameHeight))  //is set in the config.php?
+							$menuFrameHeight = 250;
 
-	<tr>
-		<td style="white-space: nowrap;">
-	<?php
-		if (!is_numeric($menuFrameHeight))  //is set in the config.php?
-			$menuFrameHeight = 250;
+						if ($lines > 15)
+							echo '<div style="text-align:left; height:' . $menuFrameHeight . 'px; overflow-y:scroll; scrollbar-width: thin;">';
+						else
+							echo '<div style="text-align: left;">';
 
-		if ($lines > 15)
-			echo '<div style="text-align:left; height:' . $menuFrameHeight . 'px; overflow-y:scroll; scrollbar-width: thin;">';
-		else
-			echo '<div style="text-align:left;">';
+						$reportMenu->show();
+?>
+							</div>
+						</div>
 
-		$reportMenu->show();
-			echo '</div>';
-	?>
-		</td>
-
-		<td colspan = 2 valign="top">
-			<input type="hidden" name="submit_cycle" value="querySelected"/>
-			<div>
-				<label for="but1"><?php echo ''; ?>
-					<abbr title="<?php echo $MSGSW08_Continue; ?>" 
-						><input id="but1" type="submit" value="&#x27a4;" alt="<?php echo $MSGSW08_Continue; ?>" class='button'/></abbr>
-				</label>
+					<div style="display: table-cell; text-align: left; colspan: 2; valign: top; border: thin solid gray">
+						<input type="hidden" name="submit_cycle" value="querySelected"/>
+						<div>
+							<input id="but1"
+									type="submit"
+									value="&#x27a4;"
+									title="<?php echo $MSGSW08_Continue; ?>"
+									alt="<?php echo $MSGSW08_Continue; ?>"
+									aria-label="<?php echo $MSGSW08_Continue; ?>"
+									class='button'/>
+						</div>
+					</div>
+				</div>
 			</div>
-		</td>
-	</tr>
-	</table>
-</td>
-<td>
-&nbsp;&nbsp;&nbsp;
-</td>
+		</div>
 
 <?php 
 	$overview = $xml->database->overview;
 	$divused = false;
 	if ( empty($overview) && !file_exists($myTXTfilePath) )
-		echo "<td>";
+		echo '<div style="display: table-cell;">';
 	else {
-		echo '<td style="text-align:left; vertical-align: super;">';
+		echo '<div style="display: table-cell; text-align:left; vertical-align: top; padding-left: 0.8em; padding-right: 0.8em;">';
 		echo '<div style="height:250px; overflow-y:scroll; scrollbar-width: thin;">';
 		$divused = true;
 		if ( !empty($overview) && (strlen(trim($overview)) > 0) ) {
-			echo "<br /><br /><h4>$MSGSW30_Overview</h4><br />" ;
+			echo "<aside>" . PHP_EOL ;
+			echo "<h2>$MSGSW30_Overview</h2><br />" ;
 			echo $overview . "<br />";
+			echo "</aside>" . PHP_EOL ;
 		}
 	}
 
@@ -82,13 +77,13 @@ function getQueryNumber(): void {
 	}
 	if($divused)
 		echo '</div>';
-	echo "</td>";
+	echo "</div>";
 ?>
-</tr>
-</table>
+	</div>
+</div>
 
 </form>
-
+</fieldset>
 
 <?php
 
