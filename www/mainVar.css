@@ -1,7 +1,7 @@
 /* can be overriden by a copy of this file as local/mainVar.css */
 
 :root {
-  --main-font-size: 0.9rem;                       /* font size */
+  --main-font-size: 0.9rem;                        /* font size */
   --main-font-h1-size: 1.4rem;                     /* font size */
   --main-font-h2-size: 1.2rem;                     /* font size */
   --main-font-h3-size: 1.0rem;                     /* font size */
@@ -15,18 +15,17 @@
 
   --main-a-color: #4D4D4D;                         /* link */
   --main-a-hoover-color: FireBrick;                /* link hoover */
-  --main-background-color: #D7E1EB;                /* main background */
+  --main-background-color: #F0F7FA;                /* main background */
   --main-body-color: Black;                        /* text */
-  --main-boxbg-color: MintCream;                   /* hoover text for help */
-  --main-boxborder-color: #CCC;                    /* ? */
-  --main-buttonbg-color: Gainsboro;                /* big buttons */
-  --main-buttonhoover-color: DarkGray;             /* big buttons when hoover */
+  --main-boxbg-color: MintCream;                   /* hoover text for infotip help */
+  --main-buttonbg-color: #B7D8E7;                  /* big buttons */
+  --main-buttonhoover-color: #C0C5C8;              /* big buttons when hoover */
   --main-fontfamily: Arial,Helvetica,sans-serif;   /* main font */
   --main-hrborder-color: LightGray;                /* loading circle */
   --main-htext-color: #00578F;                     /* header lines, titles, subtitles */
   
-  --mydbtable-color: #4D4D4D;                      /* table/list view text */
-  --mydbtable-td-background-color: #F5F5F5;        /* table/list view background color */
+  --mydbtable-color: Black;                        /* table/list view text */
+  --mydbtable-td-background-color: White;          /* table/list view background color */
  
   --sortable-background-color: MintCream;          /* table view: background color for every 2nd row, 2,4,6 */
   --sortable-td-background-color: White;           /* table view: background color for every 2nd row, 1,3,5 */

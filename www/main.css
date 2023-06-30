@@ -163,7 +163,6 @@ table.sortable tbody tr:nth-child(even) td {
 
 .box {
 	background-color: var(--main-boxbg-color);
-	border: 0.1rem solid var(--main-boxborder-color);
 	padding: 0.3rem;
 	display: none;
 	position: absolute;

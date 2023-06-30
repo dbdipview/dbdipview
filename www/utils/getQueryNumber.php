@@ -5,7 +5,7 @@
  * In the right frame, display Overview (if set) and content of the txt file
  * A query is selected.
  */
- 
+
 function getQueryNumber(): void {
 	global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue, $MSGSW30_Overview;
 	global $myTXTfilePath;
@@ -25,13 +25,15 @@ function getQueryNumber(): void {
 				<div style="display: table-row;">
 					<div style="display: table-cell; text-align: left; white-space: nowrap; border: thin solid; border-color: var(--main-htext-color); overflow: auto;">
 <?php
-						if (!is_numeric($menuFrameHeight))  //is set in the config.php?
-							$menuFrameHeight = 250;
+						#if (!is_numeric($menuFrameHeight))  //removed from config.php?
+						#	$menuFrameHeight = 250;
 
-						if ($lines > 15)
-							echo '<div style="text-align:left; height:' . $menuFrameHeight . 'px; overflow-y:scroll; scrollbar-width: thin;">';
+						if ($lines > 16)
+							$lines = 16 * 1.3;
 						else
-							echo '<div style="text-align: left;">';
+							$lines = $lines * 1.3;
+
+						echo '<div style="text-align: left; height:' . $lines . 'em; overflow-y:scroll; scrollbar-width: thin;">';
 
 						$reportMenu->show();
 ?>
@@ -54,7 +56,7 @@ function getQueryNumber(): void {
 			</div>
 		</div>
 
-<?php 
+<?php
 	$overview = $xml->database->overview;
 	$divused = false;
 	if ( empty($overview) && !file_exists($myTXTfilePath) )
