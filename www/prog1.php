@@ -118,8 +118,8 @@ HtmlElements::htmlWithLanguage();
   <script language="JavaScript" src="js/calendar_db.js" /></script>
   <link rel="stylesheet" href="js/calendar.css" />
 </head>
-<body>
 <?php
+
 include "utils/dbDipDbView.php";
 include "utils/dbUtilsInputFnc.php";
 include "utils/ColumnDescriptions.php";
@@ -131,6 +131,11 @@ include "utils/fillCreateQuery.php";
 include "utils/ReportMenu.php";
 
 include "messagesw.php";
+
+if( strcmp($submit_cycle, "ShowMenu") == 0 )
+	echo '<body onload="bodyOnLoad()">';
+else
+	echo "<body>";
 
 if ( empty($myXMLfile) ) {
 	echo "<br /><h3>$MSGSW06_ErrorSessionExpired</h3><br />";
@@ -147,7 +152,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 		<div style="display: table-row;">
 			<div style="display: table-cell; text-align: left;">
 				<a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) .'?submit_cycle=Logout';?>"
-				><img src="img/gnome_go_home.png" height="18" width="18" alt="<?php echo $MSGSW27_HOME; ?>" /></a>
+				><img src="img/gnome_go_home.png" height="18" width="18" title="<?php echo $MSGSW27_HOME; ?>" alt="<?php echo $MSGSW27_HOME . ' '; ?>" /></a>
 			</div>
 			<div style="display: table-cell; text-align: center;">
 				<h1 style="display:table-cell; align: center;"><?php echo $INSTITUTION; ?></h1>
@@ -156,7 +161,7 @@ if( strcmp($submit_cycle, "searchParametersReady") != 0 &&
 <?php
 				echo debugReturn($dbName . "&#8672;" . rtrim($myXMLfile, ".xml") . "&nbsp;&nbsp;");
 				echo "<a href=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) .
-					"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"16\" width=\"18\" alt=\"$MSGSW09_Logout\"/></a>";
+					"?submit_cycle=Logout\"><img src=\"img/closeX.png\" height=\"18\" title=\"$MSGSW09_Logout\" alt=\"$MSGSW09_Logout \"/></a>";
 ?>
 			</div>
 		</div>
@@ -195,7 +200,7 @@ date_default_timezone_set($timezone);
 
 if( strcmp($submit_cycle, "noSession") !== 0 )
 	connectToDB();
-	 
+
 switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
@@ -218,7 +223,11 @@ case "querySelected":
 				<input type="hidden" name="submit_cycle" value="ShowMenu"/>
 				<input type="hidden" name="targetQueryNum" value=<?php echo "\"$targetQueryNum\""; ?>/>
 				<div>
-					<input id="idback" type="submit" class='button' value="&#x25c0;" alt="<?php echo $MSGSW10_Back ?>" aria-label="<?php echo $MSGSW10_Back; ?>"/>
+					<input id="idback" type="submit" class='button'
+						value="&#x25c0;"
+						title="<?php echo $MSGSW10_Back ?>"
+						alt="<?php echo $MSGSW10_Back . ' ' ?>"
+						aria-label="<?php echo $MSGSW10_Back; ?>"/>
 				</div>
 			</form>
 		</span>
@@ -282,5 +291,12 @@ function debugReturn($mytxt): string {
 	return("");
 }
 ?>
+
+<script>
+function bodyOnLoad() {
+	top.frames['bottomframe'].location.href = 'empty.htm';
+}
+</script>
+
 </body>
 </html>

@@ -35,15 +35,23 @@ class QueryData {
 	public $viewData = null;
 
 	/**
-	 * @param string $end
+	 *  Display title and subtitle for the report
+	 * 	@var boolan
 	 **/
-	public function showHeader(string $end): void {
+	 public function showHeader($inline): void {
+		if ( $inline )
+			print ('<h3 style="display: inline;">');
+		else
+			print ("<h3>");
+
 		if ( strlen($this->title) > 0 )
-			print($this->title);
-		print($end);
+			print($this->title . "<br />");
+		print ("</h3>");
+
 		if ( strlen($this->subTitle) > 0 )
-			print($this->subTitle . "<br/>");
+			print($this->subTitle . "<br />");
 	}
+
 
 	/**
 	 * @param SimpleXMLElement $xml[]

@@ -467,8 +467,7 @@ define('PRINTER_ICON', '&#x1f5b6;');
 			print ('<h2 style="display: inline;">');
 			print($MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h2>");
 
-			print ("<h3>");
-			$queryInfo->showHeader("</h3>");
+			$queryInfo->showHeader(false);
 
 			if ( !empty($screenQuery) )
 				$newlist = qToTableWithLink($queryInfo, $totalCount, "M");
@@ -482,8 +481,7 @@ define('PRINTER_ICON', '&#x1f5b6;');
 			print '<h2 style="display: inline;">';
 			print $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h2>";
 
-			print ("<h3>");
-			$queryInfo->showHeader("</h3>");
+			$queryInfo->showHeader(false);
 			print ("<br/>");
 
 			if ( !empty($screenQuery) )
@@ -514,15 +512,10 @@ define('PRINTER_ICON', '&#x1f5b6;');
 									$cQD->query,
 									$csvfilename);
 				}
-				print ('<h3 style="display: inline;">');
-				$cQD->showHeader("</h3>");
-
+				$cQD->showHeader(true);
 				$newlist = qToTableWithLink($cQD, 0, (string)$sqindexLoop );  //0: no counting of lines
 			} else {
-				print("<h3>");
-				$cQD->showHeader("</h3>");
-				print("<br/>");
-
+				$cQD->showHeader(false);
 				$newlist = qToListWithLink($cQD, 0);   //0: no counting of lines
 			}
 

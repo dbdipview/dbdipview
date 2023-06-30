@@ -5,15 +5,24 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.3.4] - 2023-06-30
+### Fixed
+- access: clear bottom frame with previous report when a menu is shown again
+### Changed
+- access: modified main menu size setting
+- access: default colours slightly modified
+
 ## [3.3.3] - 2023-06-21
 ### Fixed
-- access: many, many fixes to enable use of visually impaired users
-- access: added logo alt text in confighdr.php.template
+- access: many fixes to enable use of screen reader by visually impaired users
 - access: database column description description is now shown also for a columns without parenthesis (but this is not advised use)
+### Added
+- access: added logo alt text in confighdr.php.template
 
 ## [3.3.2] - 2023-05-26
 ### Fixed
 - access: database column description description is now shown also for a column without table name and also when keyword AS is not present
+### Added
 - test suite: TestAndDemo 2 - Report 4, added use cases
 
 ## [3.3.1] - 2023-05-12
@@ -24,20 +33,23 @@ Generally, the master branch is always stable. You can use it for installation o
 ## [3.3.0] - 2023-04-17
 ### Added
 - access: forwarded parameters as composite keys allow for search in more than one target table.
+### Added
 - test suite: TestAndDemo 3 - Report 2, an example of this functionality
 
 ## [3.2.0] - 2023-02-24
 ### Added
 - packaging: list.xml allows null in CSV to be redefined as a string instead of default ''
+### Added
 - test suite: TestAndDemo 2 - Report 3, string NULL is used for the last table
 
 ## [3.1.1] - 2023-02-21
-### Modifed
+### Changed
 - test suite: a single test case can also be deployed now (for faster experimenting)
 
 ## [3.1.0] - 2023-02-14
 ### Added
 - access: Element Description added for each screen to be displayed in the top frame
+### Added
 - test suite: TestAndDemo 2 - Report 1, demonstration of Description element
 
 ## [3.0.1] - 2023-02-02
@@ -45,7 +57,7 @@ Generally, the master branch is always stable. You can use it for installation o
 - deployment: DIPp incremental update should also use listN.xml
 
 ## [3.0.0] - 2022-10-28
-### Modified
+### Changed
 - packaging: list.txt has been replaced with list.xml. list.txt in old packages is still processed.
 ### Added
 - packaging: utility for preparing list.xml (utilityListTxt2Xml.php)
@@ -59,7 +71,7 @@ Generally, the master branch is always stable. You can use it for installation o
 - all: PHPStan static code analyses has been introduced to increase the quality of the code
 
 ## [2.11.0] - 2022-09-16
-### Modified
+### Changed
 - access: PHP PDO data-access abstraction layer is now used (but not in deployment scripts)
 
 ## [2.10.3] - 2022-08-23
@@ -73,6 +85,7 @@ Generally, the master branch is always stable. You can use it for installation o
 ## [2.10.1] - 2022-06-29
 ### Added
 - access: query and subquery can be without SQL code, only title and subtitle will be displayed
+### Added
 - test suite: TestAndDemo 6 demonstrates this possibility
 - test suite: TestAndDemo 2 - a parameter has been added
 
@@ -92,28 +105,28 @@ Generally, the master branch is always stable. You can use it for installation o
 ## [2.8.6] - 2022-06-01
 ### Added
 - access: configurable multi-column view (preview)
-### Modified
+### Changed
 - test suite: TestAndDemo 2 shows usage of multi-column view
 - access: some CSS changes for tablet devices
 
 ## [2.8.5] - 2022-05-20
-### Modified
+### Changed
 - access: Minor improvement in debugging information in area of hyperlink creation
 
 ## [2.8.4] - 2022-05-12
-### Modified
+### Changed
 - access: Some corrections for messages in Czech language modified (by Martin Rechtorik from NACR)
 
 ## [2.8.3] - 2022-05-09
-### Modified
+### Changed
 - some minor improvements
 
 ## [2.8.2] - 2022-04-22
-### Modified
+### Changed
 - administration module: config files moved to config folder
 
 ## [2.8.1] - 2022-04-07
-### Modified
+### Changed
 - access: changed the way how the attachments are downloaded
 
 ## [2.8.0] - 2022-01-31
@@ -123,7 +136,7 @@ Generally, the master branch is always stable. You can use it for installation o
 ## [2.7.3] - 2021-11-09
 ### Added
 - access: read-only fields are now marked with an asterisk
-### Modified
+### Changed
 - packaging: relative folders can be used for input and output parameters
 - access: customizable CSS; preview version
 
@@ -139,13 +152,13 @@ Generally, the master branch is always stable. You can use it for installation o
 ### Added
 - access: macro has been introduced to display number of records in each table instead of a DBMS specific script
 - access: "Page loading" animation has been added for cases of long search in the database
-### Modified
+### Changed
 - test suite: TestAndDemo 2 now uses the new macro
 ### Fixed
 - access: non-public database can now be accessed only via a ticket code
 
 ## [2.6.2] - 2021-08-25
-### Modified
+### Changed
 - access: debugg messages for query parameters 
 - access: main query before subqueries can be skipped (i.e. empty) now 
 ### Fixed
@@ -161,7 +174,7 @@ Generally, the master branch is always stable. You can use it for installation o
 ### Added
 - access: composite keys for links from one report to another one (values from more source columns used as parameters for matching a record)
 - access: print button for report in list view
-### Modified
+### Changed
 - test suite: TestAndDemo 3 enhanced to test new functionality
 ### Fixed
 - access: passing parameters from multiple input fields down to subqueries
@@ -171,7 +184,7 @@ Generally, the master branch is always stable. You can use it for installation o
 ### Added
 - access: nested treeview for menu with avaiable reports
 - access: in the list view it is possible to choose between showing all lines or non-empty lines
-### Modified
+### Changed
 - test suite: TestAndDemo 2 and 6 enhanced to test new functionality
 ### Fixed
 - access: copy to clipboard will now exclude the question mark icon
@@ -179,7 +192,7 @@ Generally, the master branch is always stable. You can use it for installation o
 ## [2.4.0] - 2021-05-15
 ### Added
 - access: database column descriptions are shown as infotip
-### Modified
+### Changed
 - test suite: TestAndDemo 2 enhanced to test new functionality
 
 ## [2.3.6] - 2021-04-20
@@ -187,15 +200,15 @@ Generally, the master branch is always stable. You can use it for installation o
 - access: exact parameter match for subquery call instead of LIKE
 
 ## [2.3.5] - 2021-04-08
-### Modified
+### Changed
 - access: link download as CSV moved to the first line of the header
 
 ## [2.3.4] - 2021-01-30
-### Modified
+### Changed
 - access: toggle between table and list view is now possible before any search
 
 ## [2.3.3] - 2021-01-22
-### Modified
+### Changed
 - test suite: run all options -v (verbose) and -r (remove only), no need to remove twice because of dependencies in TestAndDemo 4,5 and 6
 - packaging: stop processing sooner if a file missing (for easier debugging)
 
@@ -219,7 +232,7 @@ Generally, the master branch is always stable. You can use it for installation o
 - packaging: in addition to already available redacting, DDV package can now contain definitions of VIEWs for already existing database
 - administration module: VIEWs from DDV can now also be configured (not only from EXT DDV)
 - test suite: TestAndDemo5 now contains an example of VIEW to another table
-### Modified
+### Changed
 - access: improved search parameters passing (as forwarded values) for subqueries ( e.g. date >=, date < )
 
 ## [2.2.0] - 2020-09-07
@@ -230,7 +243,7 @@ Generally, the master branch is always stable. You can use it for installation o
 - access: the <overview> element has been added as a short alternative to description.txt
 - test suite: TestAndDemo2 report show number of records in each table added as a template
 - test suite: a sample control report has been added to display number of records in each table in a single report
-### Modified
+### Changed
 - administration module: the folder for attachment files (LOBs) is now created for each DBC/DDV pair, before it was for each DDV
 
 ## [2.1.0] - 2020-05-13
