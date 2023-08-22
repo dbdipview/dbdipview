@@ -67,7 +67,7 @@ class ColumnDescriptions
 			return;
 
 		$myArray = explode(',', $str);
-		debug(__CLASS__ . " " . __FUNCTION__ . ":str=" . $str);
+		debug(__CLASS__ . "->" . __FUNCTION__ . ":str=" . $str);
 		foreach ($myArray as $str) {
 			$str = ltrim(rtrim($str));						//"aaa"."bb"
 			if ($str == "*") {
@@ -157,7 +157,7 @@ class ColumnDescriptions
 				$ambigous = stripos($table, ")"); //don't know what is displayed
 
 			if ($ambigous === false) {
-				debug(__CLASS__ . " " . __FUNCTION__ . ": ______result: " . "Table:<b>$table</b>," . " column:<b>$column</b>," . " alias:<b>$alias</b>");
+				debug(__CLASS__ . "->" . __FUNCTION__ . ": ______result: " . "Table:<b>$table</b>," . " column:<b>$column</b>," . " alias:<b>$alias</b>");
 				array_push($outarray, array($table, $column, $alias));
 			}
 		}
@@ -220,12 +220,12 @@ class ColumnDescriptions
 	 */
 	private function mergeLandRtoAll(): void {
 		foreach ($this->columnsArrayL as $left) {
-			//debug(__CLASS__ . " " . __FUNCTION__ . " L: >$left[0]< >$left[1]<  >$left[2]< ");			  //(as)table|column|as_column
+			//debug(__CLASS__ . "->" . __FUNCTION__ . " L: >$left[0]< >$left[1]<  >$left[2]< ");			  //(as)table|column|as_column
 			foreach ($this->columnsArrayR as $right) {
-				//debug(__CLASS__ . " " . __FUNCTION__ . "___checking R: >$right[0]< >$right[1]<  >$right[2]< ");	// |schema|table|as_table|
+				//debug(__CLASS__ . "->" . __FUNCTION__ . "___checking R: >$right[0]< >$right[1]<  >$right[2]< ");	// |schema|table|as_table|
 				if ( $left[0] == $right[2] || $left[0] == "*" ) {
 					array_push($this->columnsArrayAll, array($right[0], $right[1], $right[2], $left[1], $left[2]));
-					//debug(__CLASS__ . " " . __FUNCTION__ . "______merged: $right[0], $right[1], $right[2], $left[1], $left[2]");
+					//debug(__CLASS__ . "->" . __FUNCTION__ . "______merged: $right[0], $right[1], $right[2], $left[1], $left[2]");
 				}
 			}
 		}
@@ -277,7 +277,7 @@ class ColumnDescriptions
 							$mycolumn = $fromdb[1];
 						else
 							$mycolumn = $lr[4];
-						debug(__CLASS__ . " " . __FUNCTION__ . ":___adding: $mycolumn -> $description");
+						debug(__CLASS__ . "->" . __FUNCTION__ . ":___adding: $mycolumn -> $description");
 						$this->columnsArrayDescriptions[$mycolumn] = $description;   // |as_column|description|
 					}
 				}

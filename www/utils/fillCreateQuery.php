@@ -144,16 +144,36 @@ function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote
 			$value = trim($value);                                 // treat "! ABC" as "!ABC"
 			if ($addPercentage && strpos($value,'%') === false)
 				$value = "%".$value."%";
-			$text = $text . $op . "(" . $field . " IS NULL OR " . $field . " NOT " . $equal . " " . $quote . trim($value) . $quote . ")";
-		} else {
+			$text =   $text . $op . processOperator($field, "NOT " . $equal, $value, $quote);
+		} else {                          //'!' found, remove it
+			$value = trim($value);       
 			if ($addPercentage && strpos($value,'%') === false)
 				$value = "%".$value."%";
-			$text = $text . $op . $field . " " . $equal . " " . $quote . trim($value) . $quote;
+			$text =  $text . $op . processOperator($field, $equal, $value, $quote);
 		}
 
 		$op=" $operator ";
 	}
 	return "(" . $text . ")";
+}
+
+/**
+ * ILIKE is not supported by all databases
+ * In case of LIKE compare using the same letter case
+ * @param string $field
+ * @param string $equal
+ * @param string $input
+ * @param string $quote
+ */
+function processOperator($field, $equal, $value, $quote) {
+	if ( strcmp("ILIKE", $equal) == 0 )
+		return("LOWER(" . $field . ") LIKE LOWER(" . $quote . $value . $quote . ")");
+	elseif ( strcmp("NOT ILIKE", $equal) == 0 )
+		return("( " . $field . " IS NULL OR LOWER(" . $field . ") NOT LIKE LOWER(" . $quote . $value . $quote . ") )");
+	elseif ( stripos($equal, 'NOT') !== false && stripos($equal, 'NOT') == 0 )
+		return("(" . $field . " IS NULL OR " . $field . ") NOT " . $equal . " " . $quote . $value . $quote . ")");
+	else
+		return($field . " " . $equal . " " . $quote . $value . $quote);
 }
 
 /**
@@ -197,14 +217,20 @@ foreach ($xml->database->screens->screen as $screen) {
 		$queryInfo->title = $screen->title;
 		$queryInfo->subTitle = $screen->subtitle;
 		$screenQuery = get_query_from_xml($screen);
+		$allowedTypes = array("text", "textlike", "integer", "combotext", "date", "date_ge", "date_lt");
+		$noParametersAvailable = True;
 		foreach ($screen->param as $param) {
 
 			$attrParamMandatory = get_bool($param->attributes()->mandatory);
 			$field=            $param->dbtable.TABLECOLUMN.$param->dbcolumn;                  //cities.id -> cities_id
 			$fieldType=        $param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
 			$fieldParamForward=$param->forwardToSubqueryName;                                 //to be used in subquery
-			debug("________________ checking parameter for column: \"$param->dbtable\".\"$param->dbcolumn\" (
+			debug("____________ checking parameter for column: \"$param->dbtable\".\"$param->dbcolumn\" (
 				name: $field, type: $param->type, to be forwarded as: $fieldParamForward )");
+
+
+			if ( ! in_array($param->type, $allowedTypes) ) 
+				debug("________________ ERROR: wrong type: " . $param->type . ". Allowed values: [" . implode(",",$allowedTypes) . "]");
 
 			$fieldType = str_replace(" ", "__20__", $fieldType);
 			$field     = str_replace(" ", "__20__", $field);     //temporarily replace space
@@ -218,6 +244,7 @@ foreach ($xml->database->screens->screen as $screen) {
 						0 == strcmp($key, $field) ) {                     //this comes with links_to_next_screens
 						if (!empty($value)) {
 							$paramFound = True;
+							$noParametersAvailable = False;
 							if (is_array($value))
 								debug("________________ found:&nbsp;&nbsp;" . $key . " = '" . $value[0] . "' ...\r\n");
 							else
@@ -302,12 +329,12 @@ foreach ($xml->database->screens->screen as $screen) {
 						$value = trim($value);                                      // treat "! ABC" as "!ABC"
 						if (0==strcmp("textlike", $param->type) && strpos($value,'%') === false)
 							$value = "%".$value."%";
-						$wheretext = " ($myColumn IS NULL OR $myColumn NOT $equal $quote$value$quote)";
+						$wheretext = processOperator($myColumn, "NOT $equal", $value, $quote);
 					} else {
 						if (0==strcmp("textlike", $param->type) && strpos($value,'%') === false) {  //check if user is already using %
 							$value = "%".$value."%";     //SQL ILIKE: user does not need this help any more: %ARHIV%, ARHIV%, STEKL_RSTVO
 						}
-						$wheretext = $myColumn . " " . $equal . " " . $quote . $value . $quote;
+						$wheretext =  processOperator($myColumn, $equal, $value, $quote);
 					}
 
 					if (!$and && $where=="") {
@@ -320,7 +347,7 @@ foreach ($xml->database->screens->screen as $screen) {
 					if (strlen("$fieldParamForward") > 0) {
 						$paramForwardNum["$fieldParamForward"] = "$quote$value$quote";
 						$paramForwardEqual["$fieldParamForward"] = $equal;
-						debug("(prepared)&nbsp;&nbsp;" . $fieldParamForward . ": " . $value . "\r\n");
+						debug("________________ (prepared)&nbsp;&nbsp;" . $fieldParamForward . ": " . $value . "\r\n");
 					}
 				} //if strlen
 			} //if isset
@@ -329,6 +356,9 @@ foreach ($xml->database->screens->screen as $screen) {
 				debug("fillCreateQuery: parameter NOT SET: field=$field, fieldType=$fieldType");
 			}
 		} //for each param
+
+		if ( $noParametersAvailable )
+			debug("____________ no parameters available!");
 
 		if ( !empty($mandatory) ) {
 			echo "$MSGSW24_NOPARAMETER: " . $mandatory;
@@ -407,7 +437,7 @@ foreach ($xml->database->screens->screen as $screen) {
 						else if (strpos($value, "&&") > 0)
 							$wheretext = processSimpleOR_ANDqueryParam("AND",$myColumn, $value, $equal, $quote, false);
 						else
-							$wheretext = $myColumn . " " . $equal . " " . $quote . $value . $quote;
+							$wheretext =  processOperator($myColumn, $equal, $value, $quote);
 
 						$and = is_where_already_here($subquery);  //true=yes, AND is needed
 						if ($and === false)

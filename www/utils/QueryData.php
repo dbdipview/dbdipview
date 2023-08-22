@@ -70,7 +70,7 @@ class QueryData {
 
 		foreach ($imagess as $images) {
 			foreach ($images->image as $image) {
-				debug(__FUNCTION__ . ": IMAGE dbcolumnname: $image->dbcolumnname");
+				debug(__CLASS__ . "->" . __FUNCTION__ . ": IMAGE dbcolumnname: $image->dbcolumnname");
 				debug("______________________ style:        $image->style");
 
 				$this->images_image_style[(string)$image->dbcolumnname] = (string) $image->style;
@@ -86,7 +86,7 @@ class QueryData {
 		foreach ($ahrefss as $ahrefs) {
 			foreach ($ahrefs->ahref as $ahref) {
 				$ahref_column = array();
-				debug(__FUNCTION__ . ":  AHREF dbcolumnname: $ahref->dbcolumnname");
+				debug(__CLASS__ . "->" . __FUNCTION__ . ":  AHREF dbcolumnname: $ahref->dbcolumnname");
 				debug("________________________ atext:        $ahref->atext");
 				if ( isset($ahref->URLprefix) ) {
 					debug("________________________________ URLprefix:  $ahref->URLprefix");
@@ -107,7 +107,7 @@ class QueryData {
 			foreach ($blobs->blob as $blob) {
 				$blob_column = array();
 
-				debug(__FUNCTION__ . ": BLOB dbcolumnname: $blob->dbcolumnname");
+				debug(__CLASS__ . "->" . __FUNCTION__ . ": BLOB dbcolumnname: $blob->dbcolumnname");
 				debug("_____________________ id:           $blob->id");
 
 				$blob_column["id"] = $blob->id;
@@ -126,7 +126,7 @@ class QueryData {
 			foreach ($links_to_next_screen->link as $link) {
 				$linknextscreen_column = array();
 
-				debug(__FUNCTION__ . ": adding hyperlink in column $link->dbcolumnname");
+				debug(__CLASS__ . "->" . __FUNCTION__ . ": adding hyperlink in column: $link->dbcolumnname");
 				if ( ! is_null($link->dbcolumnname->attributes()) )
 					debug("_____________________ use value from column (attr.): " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
 				debug("_____________________ target screen id:  $link->next_screen_id");

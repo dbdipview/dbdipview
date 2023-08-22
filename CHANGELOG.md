@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.3.5] - 2023-08-22
+### Fixed
+- access: got rid of ILIKE for future compatibility
+### Added
+- test suite: TestAndDemo 2 - Report 5, example implementation of simple full text search
+
 ## [3.3.4] - 2023-06-30
 ### Fixed
 - access: clear bottom frame with previous report when a menu is shown again
