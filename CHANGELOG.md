@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.3.6] - 2023-09-04
+### Fixed
+- deployment: got rid of compiler warnings during compilation of removeBOM
+
 ## [3.3.5] - 2023-08-22
 ### Fixed
 - access: got rid of ILIKE for future compatibility
