@@ -432,12 +432,13 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 
 		}
 
-	if (! empty($listData->tables) )
+	if (! empty($listData->tables) ) {
 		foreach ($listData->tables as $table) {
 			if (empty($table))
 				continue;
 
 			debug(__FUNCTION__ . ": processing table data file " . $table->file);
+			print(".");
 			$TABLE = addQuotes($table->name);
 			$FILE = $table->file;
 			$CSVMODE = $table->format;
@@ -477,6 +478,8 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 			$ret = $OK;
 
 		}
+		print(PHP_EOL);
+	}
 
 	if (! empty($listData->bfiles) )
 		foreach ($listData->bfiles as $bfile) {
@@ -1042,23 +1045,23 @@ EOD;
 		$x_revision = $x_revisions->addChild('revision', "Migration from list.txt to list.xml");
 		$x_revision->addAttribute('date', date('Y-m-d')); 
 	}
-	
+
 	if ( ! empty($listData->comment) ) {
 		$x_comment = $x_configuration->addChild('comment', $listData->comment);
 	}
-	
+
 	if ( ! empty($listData->schemas) ) {
 		$x_schemas = $x_configuration->addChild('schemas');
 		foreach ($listData->schemas as $schema) 
 			$x_schemas->addChild('schema', $schema);
 	}
-	
+
 	if ( ! empty($listData->views) ) {
 		$x_views = $x_configuration->addChild('views');
 		foreach ($listData->views as $view) 
 			$x_views->addChild('view', $view);
 	}
-	
+
 	if ( ! empty($listData->tables) ) {
 		$x_tables = $x_configuration->addChild('tables');
 		foreach ($listData->tables as $table) {
@@ -1080,7 +1083,7 @@ EOD;
 				$x_table->addAttribute('header', "0");
 		}
 	}
-	
+
 	if ( ! empty($listData->bfiles) ) {
 		$x_bfiles = $x_configuration->addChild('bfiles');
 		foreach ($listData->bfiles as $bfile) 

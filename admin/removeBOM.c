@@ -1,13 +1,12 @@
 /* 
- * Boris Domajnko: delete 3 bytes - UTF-8 BOM
+ * Delete 3 bytes from UTF-8 BOM file
  * Compile as:  cc -o removeBOM removeBOM.c
  * s/^\xEF\xBB\xBF/
  */
  
 #include <stdio.h>
-#include <sys/types.h>
+#include <stdlib.h>
 #include <sys/stat.h>
-#include <fcntl.h>
  
 void pHelp(char *me) {
   fprintf(stdout, "Removes first 3 bytes from a file: UTF-8 BOM marker!\n");
@@ -16,29 +15,37 @@ void pHelp(char *me) {
 }
  
 int main(int argc, char *argv[]) {
-  int inF, ouF;
-  char line[512];
-  int bytes;
- 
+  char c;
+
+  char bom[3] = {0xEF, 0xBB, 0xBF};
+
   if(argc < 3)
     pHelp(argv[0]);
  
-  if((inF = open(argv[1], O_RDONLY )) == -1) {
-    perror("open");
-    exit(-1);
+  FILE *inF = fopen(argv[1], "rb");
+  if (inF == NULL) {
+    perror("Error input file");
+    exit(1);
   }
- 
-  if((ouF = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC , 0700 )) == -1) {
-    perror("open");
-    exit(-1);
-  }
- 
-  read(inF, line, 3);
-  while((bytes = read(inF, line, sizeof(line))) > 0)
-    write(ouF, line, bytes);
- 
-  close(inF);
-  close(ouF);
-}
 
+  FILE *outF = fopen(argv[2], "wb");
+  if (outF == NULL) {
+    perror("Error output file");
+    exit(1);
+  }
+
+  fchmod(fileno(outF), 0600);
+
+  int nread = fread(bom, 1, 3, inF);
+  if (nread == 3 && bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF) {
+    fseek(inF, 3, SEEK_SET);
+  }
+
+  while ((c = fgetc(inF)) != EOF) {
+    fputc(c, outF);
+  }
+
+  fclose(inF);
+  fclose(outF);
+}
 
