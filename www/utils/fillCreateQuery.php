@@ -105,9 +105,13 @@ function appendOrderGroupBy($what, $criteria): string {
 		if ( substr_count($criteria, '"') > 0) {
 			$queryTail = " $what " . $criteria;
 		} else {
-			$criteriatmp0 = str_replace('.',  '"."',  $criteria);      //db.col --> "db"."col"
-			$criteriatmp1 = str_replace(', ', '", "', $criteriatmp0);  //db.col, --> db.col", "
-			$queryTail = " $what \"" . $criteriatmp1 . "\"";
+			//remove "unprintable" characters
+			$criteriatmp0 = preg_replace('/\s/', ' ', (string)$criteria);
+			$pattern = '~([ ])\1\1+~';
+			$criteriatmp1 = preg_replace($pattern,'\1',$criteriatmp0);
+			$criteriatmp2 = str_replace('.',  '"."',  $criteriatmp1);  //db.col --> "db"."col"
+			$criteriatmp3 = str_replace(', ', '", "', $criteriatmp2);  //db.col, --> db.col", "
+			$queryTail = " $what \"" . $criteriatmp3 . "\"";
 		}
 	}
 	return($queryTail);
@@ -225,7 +229,7 @@ foreach ($xml->database->screens->screen as $screen) {
 			$field=            $param->dbtable.TABLECOLUMN.$param->dbcolumn;                  //cities.id -> cities_id
 			$fieldType=        $param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
 			$fieldParamForward=$param->forwardToSubqueryName;                                 //to be used in subquery
-			debug("____________ checking parameter for column: \"$param->dbtable\".\"$param->dbcolumn\" (
+			debug("______ checking parameter for column: \"$param->dbtable\".\"$param->dbcolumn\" (
 				name: $field, type: $param->type, to be forwarded as: $fieldParamForward )");
 
 
@@ -239,16 +243,16 @@ foreach ($xml->database->screens->screen as $screen) {
 			$internalParameters = array("submit_cycle", "targetQueryNum", "__page", "maxcount", "x", "y", "tablelist" );
 			foreach($_GET as $key => $value){
 				if (! in_array($key, $internalParameters) ) {             //skip other keywords
-					//debug("_________ $key with db field $field ...");
+					//debug("_________ COMPARING KEY $key with db field $field ...");
 					if ( 0 == strcmp($key, $field . $param->type) ||
 						0 == strcmp($key, $field) ) {                     //this comes with links_to_next_screens
 						if (!empty($value)) {
 							$paramFound = True;
 							$noParametersAvailable = False;
 							if (is_array($value))
-								debug("________________ found:&nbsp;&nbsp;" . $key . " = '" . $value[0] . "' ...\r\n");
+								debug("________________ found keys:&nbsp;&nbsp;" . $key . " = '" . $value[0] . "' ...\r\n");
 							else
-								debug("________________ found:&nbsp;&nbsp;" . $key . " = '" . $value . "'\r\n");
+								debug("________________ found key:&nbsp;&nbsp;" . $key . " = '" . $value . "'\r\n");
 						}
 					}
 				}

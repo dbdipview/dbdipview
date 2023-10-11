@@ -272,7 +272,7 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 
 				<abbr title="<?php echo $paramname; ?>"
 					><select
-				name="<?php echo "$fieldname"; ?>"
+				name="<?php echo "$fieldname". ($multiple != "" ? "[]" : ""); ?>" 
 				id=  "<?php echo "$currentId"; ?>"
 				      <?php echo "$multiple"; ?>
 				size="<?php echo "$rowlines"; ?>">
