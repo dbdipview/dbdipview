@@ -375,9 +375,11 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			if ( ! isset($screen->querymacro) )
 				$query = $query . appendOrderGroupBy("GROUP BY", $screen->selectGroup);
-			$csvquery = $query;
+			
 			if ( ! isset($screen->querymacro) )
 				$query = $query . appendOrderGroupBy("ORDER BY", $screen->selectOrder);
+
+			$csvquery = $query;
 		}
 
 		$queryInfo->setAll($screen);
