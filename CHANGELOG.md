@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.3.7] - 2023-10-12
+### Fixed
+- access: multiple select in dropdown works again
+- access: export to CSV did not use order from queries.xml
+
 ## [3.3.6] - 2023-09-04
 ### Fixed
 - deployment: got rid of compiler warnings during compilation of removeBOM
