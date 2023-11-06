@@ -239,12 +239,13 @@ function qToListWithLink($queryData, $totalCount) {
 					$val="(BLOB)";
 
 				$tablelist = $_SESSION['tablelist'];
-				if( strcmp($tablelist, "listAll") !== 0 && strcmp($tablelist, "listMC") !== 0 )
-					if( empty($val) )
-						continue;
 
 				if( $viewData->isNewColumn($col, $currentColNumber) )
 					$output .= "</td><td style='border-top: 0.15rem solid var(--main-hrborder-color);'>". PHP_EOL;
+
+				if( strcmp($tablelist, "listAll") !== 0 && strcmp($tablelist, "listMCAll") !== 0 )
+					if( empty($val) )
+						continue;
 
 				$output .= showInfotipInline($columnDescriptions->getDescriptionForColumn($col), $col);
 				if( ! $viewData->isNoLabel($col) )

@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.4.0] - 2023-11-06
+### Added
+- access: multi-column view is now possible with empty or without empty elements
+### Added
+- test suite: TestAndDemo 2 - Report 4, modified use case
+
 ## [3.3.7] - 2023-10-12
 ### Fixed
 - access: multiple select in dropdown works again

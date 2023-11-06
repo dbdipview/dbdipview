@@ -99,7 +99,7 @@ switch ($submit_cycle) {
 		showCsv($sql, $filename, $title);  //and exit
 	case "setDispMode":
 		$tl = pg_escape_string($_GET['tablelist']);
-		if ($tl == "table" || $tl == "list" || $tl == "listAll" || $tl == "listMC")
+		if ($tl == "table" || $tl == "list" || $tl == "listAll" || $tl == "listMC" || $tl == "listMCAll")
 			$_SESSION['tablelist'] = $tl;
 		exit(0);
 	case "showFile":
