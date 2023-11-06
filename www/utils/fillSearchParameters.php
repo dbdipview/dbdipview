@@ -11,7 +11,7 @@ function fillSearchParameters(): void {
 global $xml;
 global $targetQueryNum;
 global $MSGSW12_RecordsPerPage, $MSGSW16_Display;
-global $MSGSW25_TABLEVIEW, $MSGSW26a_LISTVIEW, $MSGSW26b_LISTVIEW, $MSGSW26c_LISTVIEW;
+global $MSGSW25_TABLEVIEW, $MSGSW26a_LISTVIEW, $MSGSW26b_LISTVIEW, $MSGSW26c_LISTVIEW, $MSGSW26d_LISTVIEW;
 global $MHLP00,$MHLP01,$MHLP02,$MHLP03,$MHLP04,$MHLP05;
 global $MHLP06,$MHLP07,$MHLP08,$MHLP09, $MHLP10,$MHLP11,$MHLP12;
 global $MSGSW32_TableInput;
@@ -141,26 +141,37 @@ if($screenFields == 0)
 			$checkedL="";
 			$checkedLA="";
 			$checkedLMC="";
+			$checkedLMCA="";
 		} else if ($_SESSION['tablelist'] == "list") {
 			$checkedT="";
 			$checkedL="checked";
 			$checkedLA="";
 			$checkedLMC="";
+			$checkedLMCA="";
 		} else if ($_SESSION['tablelist'] == "listAll") {
 			$checkedT="";
 			$checkedL="";
 			$checkedLA="checked";
 			$checkedLMC="";
-		}else if ($_SESSION['tablelist'] == "listMC") {
+			$checkedLMCA="";
+		} else if ($_SESSION['tablelist'] == "listMC") {
 			$checkedT="";
 			$checkedL="";
 			$checkedLA="";
 			$checkedLMC="checked";
+			$checkedLMCA="";
+		} else if ($_SESSION['tablelist'] == "listMCAll") {
+			$checkedT="";
+			$checkedL="";
+			$checkedLA="";
+			$checkedLMC="";
+			$checkedLMCA="checked";
 		} else {
 			$checkedT="checked";
 			$checkedL="";
 			$checkedLA="";
 			$checkedLMC="";
+			$checkedLMCA="";
 		}
 		?>
 
@@ -188,6 +199,11 @@ if($screenFields == 0)
 						alt="<?php echo $MSGSW26c_LISTVIEW . " "; ?>">
 				</img></label>
 
+		<label><input type="radio" name="tablelist" value="listMCAll" onclick="setTreeOrList()" id="wantListMCAll" <?php echo $checkedLMCA; ?>
+				/><img src="img/listMCAll.png"
+						title="<?php echo $MSGSW26d_LISTVIEW; ?>"
+						alt="<?php echo $MSGSW26d_LISTVIEW . " "; ?>">
+				</img></label>
 		<br /><br />
 
 		<img src="img/linesperpage.png"
@@ -266,6 +282,8 @@ function setTreeOrList() {
         request.open("GET", "prog1.php?tablelist=listAll&submit_cycle=setDispMode");
     else if (document.getElementById("wantListMC").checked)
 		request.open("GET", "prog1.php?tablelist=listMC&submit_cycle=setDispMode");
+    else if (document.getElementById("wantListMCAll").checked)
+		request.open("GET", "prog1.php?tablelist=listMCAll&submit_cycle=setDispMode");
     else
         request.open("GET", "prog1.php?tablelist=listMC&submit_cycle=setDispMode");
 

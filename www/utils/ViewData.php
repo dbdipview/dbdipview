@@ -31,7 +31,7 @@ class ViewData {
 				if ( ! is_null($screen->view->attributes()->default ) )
 					$this->view = (string)$screen->view->attributes()->default;
 
-			if ( strcmp($this->view , "listMC") == 0 )
+			if ( strcmp($this->view , "listMC") == 0 || strcmp($this->view , "listMCAll") == 0 )
 				$this->bdefault_is_listMC = True;
 
 			foreach ($screen->view->columnName as $ele) {
@@ -73,7 +73,7 @@ class ViewData {
 	}
 
 	function is_MC_active(): bool {
-		if (strcmp( $_SESSION['tablelist'], "listMC") == 0 )
+		if (strcmp( $_SESSION['tablelist'], "listMC") == 0 || strcmp( $_SESSION['tablelist'], "listMCAll") == 0)
 			return(True);
 		else
 			return(False);

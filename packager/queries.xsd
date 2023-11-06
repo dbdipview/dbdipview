@@ -197,6 +197,7 @@
 					<xs:enumeration value="list"/>
 					<xs:enumeration value="listAll"/>
 					<xs:enumeration value="listMC"/>
+					<xs:enumeration value="listMCall"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
