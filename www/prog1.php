@@ -78,6 +78,9 @@ if ( empty($myXMLfile) ) {
 $myXMLpath = "data/";
 $myXMLfilePath = $myXMLpath . $myXMLfile;
 $myTXTfilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . ".txt";
+$myRedactionFilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . "_redaction.html";
+
+$package_redacted = config_isPackageRedacted( rtrim($myXMLfile, ".xml"), $dbName );
 
 //folder for attachments/BLOB content that if referenced from a db column
 $filespath = "files/" . $dbName . "__" . str_replace(".xml", "", $myXMLfile) . "/";
@@ -205,13 +208,13 @@ switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
 	echo '<span style="color: var(--main-htext-color);">' . $MSGSW17_Records . ": " . $_SESSION['title'] . '</span><br />';
-	echo  '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer . ": " . $xml->database->name . " (" . $xml->database->ref_number . ")" . '</span>';
+	echo  '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer . ": " . $xml->database->name . " (" . $xml->database->ref_number . ")" . check_redaction();'</span>';
 	$_SESSION['tablelist'] = "table";
 	getQueryNumber();
 	break;
 case "querySelected":
 	echo '<span style="color: var(--main-htext-color);">' . $MSGSW17_Records . ": " . $_SESSION['title'] . '</span><br />';
-	echo '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer .  ": " . $xml->database->name . " (" . $xml->database->ref_number . ")"  . '</span>';
+	echo '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer .  ": " . $xml->database->name . " (" . $xml->database->ref_number . ")"  . check_redaction();'</span>';
 	if( empty($targetQueryNum) ) {
 		getQueryNumber();
 		break;
@@ -289,6 +292,15 @@ function debugReturn($mytxt): string {
 			return("DEBUG: $mytxt");
 	}
 	return("");
+}
+
+function check_redaction(): string {
+	global $MSGSW36_Redacted, $MSGSW35_Infotip;
+	global $package_redacted, $myRedactionFilePath;
+	if ( $package_redacted )
+		return("   [" . $MSGSW36_Redacted . ", <a href=\"" . $myRedactionFilePath . "\" target=\"_blank\">" . $MSGSW35_Infotip . "</a>]");
+	else
+		return("");
 }
 ?>
 
