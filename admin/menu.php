@@ -124,7 +124,7 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 }
 
 
-$options = getopt("hoesp:r:daL");
+$options = getopt("hoesp:r:dc:aL");
 if ( false === $options) {
 	echo "Parse error..";
 	exit();
@@ -139,10 +139,12 @@ if ( count($options) == 0 || array_key_exists('h', $options) ||
 	echo "   -s         SIARD workflow" . PHP_EOL;
 	echo "   -p <file>  deploy an order" . PHP_EOL;
 	echo "   -r <file>  remove an order" . PHP_EOL;
+	echo "   -c <code>  set this access code instead of a calculated one" . PHP_EOL;
 	echo "   -d         debug mode" . PHP_EOL;
 	echo "   -a         show all options (for information only)" . PHP_EOL;
 	exit;
-} 
+}
+
 if (array_key_exists('o', $options))
 	$om = "yes";    //XML order mode: hide options for manual selection of packages
 else
@@ -163,6 +165,15 @@ if (array_key_exists('a', $options))
 else
 	$a = "";
 
+$access_code = null;
+if (array_key_exists('c', $options)) {
+	$access_code = $options['c'];
+	if ( false === $access_code || !is_string($access_code) ) {
+		echo "Error -c code";
+		exit(0);
+	} 
+}
+
 if (array_key_exists('d', $options)) {
 	$debug = true;
 	debug("debug mode");
@@ -174,7 +185,7 @@ if (array_key_exists('p', $options)) {
 	if ( false === $file || !is_string($file) ) {
 		echo "Error -p";
 	} else if ($OK == actions_Order_read($name, $file))
-		actions_Order_process();
+		actions_Order_process($access_code);
 	exit(0);
 }
 
@@ -244,7 +255,8 @@ while ( "$answer" != "q" ) {
 					echo "${X3}3  (DDV) (VIEW) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
 	}
 	if ( !empty($all) || ($XD == 'X' && !empty($DDV) && empty($appendList)) )  {
-					if ( file_exists($DDV_DIR_EXTRACTED . "/metadata/redactdb.sql") )
+					if ( config_isPackageActivated($DDV, $DBC) == 0 && 
+						file_exists($DDV_DIR_EXTRACTED . "/metadata/redactdb.sql") )
 						echo "${X5}5  $MSG46_REDACT [$DBC][$DDV] " . PHP_EOL;
 					echo "${X6}6  $MSG6_ACTIVATEDIP [$DBC][$DDV] " . PHP_EOL;
 					echo "${X7}7  $MSG7_DEACTAPL [$DBC][$DDV]" . PHP_EOL;
@@ -325,18 +337,18 @@ while ( "$answer" != "q" ) {
 
 		case "oi": 
 			if ($XOS == 'X') {
-				actions_Order_process();
+				actions_Order_process($access_code);
 				$XOI='X';
 			}
 			break;
-			
+
 		case "od": 
 			if ($XOS == 'X') {
 				actions_Order_remove();
 				$XOD='X';
 			}
 			break;
-			
+
 		case "d": $XD=' ';
 			$DBC = "";
 			echo "$MSG_ACCESSDB: ";
@@ -350,9 +362,9 @@ while ( "$answer" != "q" ) {
 			break;
 
 		case "0": $X0=' ';
-            if ($OK == dbf_create_dbc($DBC))
-                $X0='X';
-            enter();
+			if ($OK == dbf_create_dbc($DBC))
+				$X0='X';
+			enter();
 			break;
 
 		case "V1":
@@ -395,7 +407,7 @@ while ( "$answer" != "q" ) {
 				$V2='X';
 			} else if ($OK == actions_DDVEXT_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED))
 				$V2='X';
-			
+
 			if ($V2 == 'X') {
 				if (stopHere($MSG4_CREATEAPL)) {
 					enter();
@@ -456,7 +468,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 				break;
 			}
-			
+
 			echo $MSG54_APPENDDATAINFO;
 			$name="";
 			$file="";
@@ -510,7 +522,7 @@ while ( "$answer" != "q" ) {
 				enter();
 				break;
 			} 
-		
+
 		case "2o": $X2=' ';                         //overwrite the folder, needed for automated mode
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
@@ -608,8 +620,10 @@ while ( "$answer" != "q" ) {
 			else if ( !is_dir($DDV_DIR_EXTRACTED))
 				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
 			else {
-				if ($OK == actions_schema_redact($DDV_DIR_EXTRACTED))
+				if ($OK == actions_schema_redact($DDV_DIR_EXTRACTED)) {
 					$X5='X';
+					$orderInfo->redact = true;
+				}
 			}
 			enter();
 			break;
@@ -644,7 +658,7 @@ while ( "$answer" != "q" ) {
 						$orderInfo->title = $answer;
 				}
 			} 
-			if ($OK == actions_access_on($DDV)) {
+			if ($OK == actions_access_on($DDV, $access_code)) {
 				$X6='X';
 			}
 			enter();
@@ -715,12 +729,12 @@ while ( "$answer" != "q" ) {
 				$XB='X';
 			enter();
 			break;	
-			
+
 		default: err_msg($MSG10_UNKNOWNC . ":", $answer);
 			enter();
 			break;
 	} //case 
-	
+
 
 } //while
 

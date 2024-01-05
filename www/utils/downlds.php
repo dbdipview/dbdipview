@@ -163,8 +163,7 @@ function showFile($f, $folder) {
 		readfile($filename);
 	} else {
 		echo "No file.";
-		if ($_SESSION['dbg'] )
-			echo " " . $filename;
+		debug($filename);
 	}
 
 	exit();

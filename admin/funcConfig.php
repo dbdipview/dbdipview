@@ -16,7 +16,7 @@ $SERVERCONFIGCSV  = "$SERVERDATADIR" . "configuration.dat";  //obsolete
 *
 * @return bool
 */
-function get_bool($txt): bool{
+function get_bool($txt): bool {
 	switch( strtolower($txt) ){
 		case '1':
 		case 'y': 
@@ -71,6 +71,7 @@ function config_migrate(): void {
 				$configItemInfo['ref'] = "";
 				$configItemInfo['title'] = "";
 				$configItemInfo['order'] = "";
+				$configItemInfo['redacted'] = "";
 				config_json_add_item($configItemInfo);
 			}
 		}
@@ -116,7 +117,8 @@ function config_json_add_item($configItemInfo): void {
 	$newjson .= '"access":"' .                          $configItemInfo['access']      . '",';
 	$newjson .= '"ref":"' .        str_replace('"', "", $configItemInfo['ref'])        . '",';
 	$newjson .= '"title":"' .      str_replace('"', "", $configItemInfo['title'])      . '",';
-	$newjson .= '"order":"' .                           $configItemInfo['order']       . '"}';
+	$newjson .= '"order":"' .                           $configItemInfo['order']       . '",';
+	$newjson .= '"redacted":"' .                        $configItemInfo['redacted']    . '"}';
 
 	$i = 0;
 	$json = "[";
@@ -221,6 +223,32 @@ function config_isPackageActivated($ddv, $DBC="") {
 }
 
 /**
+ * Checks if a given package has beed redacted, based on information in the config file.
+ * Returns true or false.
+ *
+ * @param string $ddv            package name
+ * @param string $DBC            selected database (or any)
+ *
+ * @return bool $result       redaction status
+ */
+function config_isPackageRedacted($ddv, $dbc): bool {
+	global $SERVERCONFIGJSON;
+
+	$result = 0;
+	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
+
+	foreach ($array as $index=>$line) {
+		if (
+			( array_key_exists('ddv', $line) && 0==strcmp($line['ddv'],$ddv) ) &&
+			( array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$dbc) )
+			) {
+			$result = $line['redacted'];
+		}
+	}
+	return( get_bool($result) );
+
+}
+/**
  * For a given "token" code returns the active database configuration information
  *
  * @param string $token     code of a configuration entry
@@ -311,6 +339,7 @@ function config_show( $titleMaxLength = 30 ): void {
 	$length4 = strlen("REF");
 	$length5 = strlen("TITLE");
 	$length6 = strlen("ORDER");
+	$length7 = strlen("REDACTED");
 
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 	usort($array, "cmpRef");
@@ -339,13 +368,14 @@ function config_show( $titleMaxLength = 30 ): void {
 		$length5 = $titleMaxLength;
 
 	msgCyan($MSG40_ACTIVATEDPKGS . ":");
-	echo str_pad("DBC",    $length0, "_", STR_PAD_BOTH) . "|";
-	echo str_pad("DDV",    $length1, "_", STR_PAD_BOTH) . "|";
-	echo str_pad("ACCESS", $length2, "_", STR_PAD_BOTH) . "|";
-	echo str_pad("TOKEN",  $length3, "_", STR_PAD_BOTH) . "|";
-	echo str_pad("REF",    $length4, "_", STR_PAD_BOTH) . "|";
-	echo str_pad("TITLE",  $length5, "_", STR_PAD_BOTH) . "|";
-	echo str_pad("ORDER",  $length6, "_", STR_PAD_BOTH) . "|" .  PHP_EOL;
+	echo str_pad("DBC",     $length0, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("DDV",      $length1, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("ACCESS",   $length2, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("TOKEN",    $length3, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("REF",      $length4, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("TITLE",    $length5, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("ORDER",    $length6, "_", STR_PAD_BOTH) . "|";
+	echo str_pad("REDACTED", $length7, "_", STR_PAD_BOTH) . "|" .  PHP_EOL;
 
 	$i=0;
 	foreach ($array as $index=>$line) {
@@ -364,6 +394,12 @@ function config_show( $titleMaxLength = 30 ): void {
 			echo mb_str_pad($line['order'],  $length6) . "|" .  PHP_EOL;
 		else
 			echo mb_str_pad("",  $length6) . "|" .  PHP_EOL;
+
+		if ( isset($line['redacted']) || array_key_exists('redacted', $line) )
+			echo mb_str_pad($line['redacted'],  $length7) . "|" .  PHP_EOL;
+		else
+			echo mb_str_pad("",  $length7) . "|" .  PHP_EOL;
+
 		$i++;
 	}
 	if ($i == 0)
@@ -406,6 +442,7 @@ function configGetInfo($ddv, $DBC): array {
 			$configItemInfo['ref']         = $line['ref'];
 			$configItemInfo['title']       = $line['title'];
 			$configItemInfo['order']       = array_key_exists('order', $line) ? $line['order'] : "";
+			$configItemInfo['redacted']    = array_key_exists('redacted', $line) ? $line['redacted'] : "";
 			
 			return($configItemInfo);
 		}

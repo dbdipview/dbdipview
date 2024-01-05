@@ -12,7 +12,7 @@
  *   - [optional] metadata/createdb.sql
  *   - [optional] metadata/createdb01.sql
  *   - metadata/queries.xml 
- *   - [optional] redact.sql, redact01.sql
+ *   - [optional] redact.sql, redact01.sql, redaction.html
  * EXT DDV package (file extension: .tar.gz) 
  *   Complete content
  *   - metadata/list.xml
@@ -21,7 +21,7 @@
  *   - metadata/queries.xml
  *   - metadata/createdb.sql
  *   - [optional] metadata/createdb01.sql
- *   - [optional] metadata/redact.sql and redact01.sql
+ *   - [optional] metadata/redact.sql, redact01.sql, redaction.html
  *   - data/ folder with database content as CSV files
  *
  * @author     Boris Domajnko
@@ -191,18 +191,20 @@ $ALLMETADATA="about.xml metadata/info.txt metadata/queries.xml metadata/list.xml
 if ( is_file($SOURCE . "/metadata/description.txt") )
 	$ALLMETADATA = "$ALLMETADATA metadata/description.txt";
 	
-if ( is_file($SOURCE . "/metadata/createdb.sql") ) {
+if ( is_file($SOURCE . "/metadata/createdb.sql") )
 	$ALLMETADATA = "$ALLMETADATA metadata/createdb.sql";
-}
-if ( is_file($SOURCE . "/metadata/createdb01.sql") ) {
+
+if ( is_file($SOURCE . "/metadata/createdb01.sql") )
 	$ALLMETADATA = "$ALLMETADATA metadata/createdb01.sql";
-}
 
 if ( is_file($SOURCE . "/metadata/redactdb.sql") )
 	$ALLMETADATA = "$ALLMETADATA metadata/redactdb.sql";
 
 if ( is_file($SOURCE . "/metadata/redactdb01.sql") )
 	$ALLMETADATA = "$ALLMETADATA metadata/redactdb01.sql";
+
+if ( is_file($SOURCE . "/metadata/redaction.html") )
+	$ALLMETADATA = "$ALLMETADATA metadata/redaction.html";
 
 $datadir = $SOURCE . "/data";
 $countDatafiles = 0;

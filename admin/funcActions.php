@@ -84,9 +84,10 @@ function actions_Order_read($name, $file) {
  *   then deploy one or more DDVEXT packages
  *   then deploy DDV viewer package
  *
+ * @param $access_token force this value for access
  * @return bool        $OK or $NOK
  */
-function actions_Order_process() {
+function actions_Order_process($access_code) {
 	global $MSG30_ALREADY_ACTIVATED, $MSG17_FILE_NOT_FOUND;
 	global $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR_TARGET;
 	global $DBC, $orderInfo;
@@ -172,7 +173,7 @@ function actions_Order_process() {
 		if ( $OK != actions_schema_redact($DDV_DIR_EXTRACTED))
 			return($NOK);
 
-	$token = actions_access_on($ddv);  //DDV enable
+	$token = actions_access_on($ddv, $access_code);  //DDV enable
 	if ( $token != "" ) {
 		echo "TOKEN: " . $token . PHP_EOL;
 		return($OK);
@@ -210,17 +211,12 @@ function actions_Order_remove(): bool {
 	}
 
 	foreach ($orderInfo->ddvExtFiles as $file) {
-		$filepath = $DDV_DIR_PACKED . $file;
 		debug(__FUNCTION__ . ": DDVEXT=" . $file);
-		if ( is_file($filepath) ) {
-			$ddvext = substr($file, 0, -7);          //filename w/o .tar.gz
-			$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $ddvext;
-			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
-			actions_schema_drop($DBC, $ddvext, $listfile);
-			actions_remove_folders($ddvext, $DDV_DIR_EXTRACTED, "");
-		} else {
-			err_msg($MSG17_FILE_NOT_FOUND . ": ", $filepath);
-		}
+		$ddvext = substr($file, 0, -7);          //filename w/o .tar.gz
+		$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $ddvext;
+		$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
+		actions_schema_drop($DBC, $ddvext, $listfile);
+		actions_remove_folders($ddvext, $DDV_DIR_EXTRACTED, "");
 	}
 
 	$value = $orderInfo->ddvFile;                   //filename.zip
@@ -295,7 +291,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 }
 
 /**
- * Called when a package has contenthas been copied to the disk
+ * Called when a package content has been copied to the disk
  * The package might contain old list.txt
  *
  * @param string $fileXml
@@ -324,7 +320,7 @@ function checkValidateXml($fileXml, $schema):void {
  *
  * @param string $listfile
  * @param string $DDV_DIR_EXTRACTED
- * @return bool        $OK or $NOK
+ * @return bool  $OK or $NOK
  */
 function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 	global $MSG_ERROR, $MSG29_EXECUTING, $MSG29_PROCESSING, $MSG25_EMPTY_TABLES_CREATED, $MSG17_FILE_NOT_FOUND;
@@ -730,9 +726,10 @@ function actions_SIARD_grant($listfile): bool {
  * Precondition: the database is prepared
  *
  * @param string $ddv
- * @return string     token for quick user access
+ * @param string $access_token force this value
+ * @return string     access token for quick user access
  */
-function actions_access_on($ddv): string {
+function actions_access_on($ddv, $access_code): string {
 	global $MSG18_DDV_NOT_SELECTED, $MSG15_DDV_IS_NOT_UNPACKED, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG16_FOLDER_NOT_FOUND;
 	global $MSG17_FILE_NOT_FOUND, $MSG30_ALREADY_ACTIVATED, $MSG27_ACTIVATED, $MSG6_ACTIVATEDIP;
 	global $SERVERDATADIR,$DDV_DIR_EXTRACTED;
@@ -743,6 +740,7 @@ function actions_access_on($ddv): string {
 	$token = "";
 	$XMLFILESRC = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 	$DESCFILESRC = $DDV_DIR_EXTRACTED . "/metadata/description.txt";
+	$REDACTFILESRC = $DDV_DIR_EXTRACTED . "/metadata/redaction.html";
 
 	msgCyan($MSG6_ACTIVATEDIP . ": " . $ddv . "...");
 	if (notSet($ddv))
@@ -779,16 +777,31 @@ function actions_access_on($ddv): string {
 				debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
 		}
 
+		if ( is_file($REDACTFILESRC) ) {
+			$targetFile = $SERVERDATADIR . $ddv . "_redaction.html";
+			if ( !is_file($targetFile) )
+				if ( !copy($REDACTFILESRC, $targetFile) )
+					err_msg(__FUNCTION__ . ": Copy error: " . $ddv . "_redaction.html");
+				else
+					debug(__FUNCTION__ . ": Created $targetFile");
+			else
+				debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
+		}
+
 		$configItemInfo['dbc']         = $DBC;
 		$configItemInfo['ddv']         = $ddv;
 		$configItemInfo['queriesfile'] = $ddv . ".xml";
 		$configItemInfo['ddvtext']     = '--';
-		$token = uniqid("c", FALSE);
+		if ($access_code !== null)
+			$token = $access_code;
+		else
+			$token = uniqid("c", FALSE);
 		$configItemInfo['token']       = $token;
 		$configItemInfo['access']      = $orderInfo->access;
 		$configItemInfo['ref']         = $orderInfo->reference;
 		$configItemInfo['title']       = $orderInfo->title;
 		$configItemInfo['order']       = $orderInfo->order;
+		$configItemInfo['redacted']    = $orderInfo->redact;
 		config_json_add_item($configItemInfo);
 		msgCyan($MSG27_ACTIVATED . ".");
 		config_show();
@@ -815,10 +828,16 @@ function actions_access_off($ddv) {
 		if (is_file($file))
 			if (unlink($file))
 				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".xml");
+
 		$file="$SERVERDATADIR" . $ddv . ".txt";
 		if (is_file($file))
 			if (unlink($file))
 				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".txt");
+
+		$file="$SERVERDATADIR" . $ddv . "_redaction.html";
+		if (is_file($file))
+			if (unlink($file))
+				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . "_redaction.html");
 	}
 }
 

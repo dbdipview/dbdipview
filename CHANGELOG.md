@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.5.0] - 2024-01-05
+### Added
+- packaging: file redaction.html can be part of the package
+- access: GUI header displays information if the database has been redacted; additional link opens redaction.html with description
+### Added
+- test suite: TestAndDemo 2, redaction.html added
+
 ## [3.4.0] - 2023-11-06
 ### Added
 - access: multi-column view is now possible with empty or without empty elements
