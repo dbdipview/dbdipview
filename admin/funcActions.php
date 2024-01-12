@@ -7,20 +7,15 @@
  * @author     Boris Domajnko
  */
 
-/**
- * @var OrderInfo|null
- */
-$orderInfo = null;
 
 /**
  * Find the last DDV or DDV EXT in XML.
  * This will be the name for files unpack folder and activation
  *
+ * @param OrderInfo $orderInfo
  * @return string    Last in a row ddv in XML file
  */
-function get_last_ddv() {
-	global $orderInfo;
-
+function get_last_ddv($orderInfo) {
 	$ddv="";
 	if ( isset($orderInfo->ddvFile ) && $orderInfo->ddvFile != "" ) {
 		$file = $orderInfo->ddvFile;             //filename.zip
@@ -43,15 +38,14 @@ function get_last_ddv() {
  *
  * @param string $name        viewer package name
  * @param string $file        database container where the db is installed
- * @return bool        $OK or $NOK
+ * @return OrderInfo|null
  */
 function actions_Order_read($name, $file) {
 	global $MSG17_FILE_NOT_FOUND;
-	global $ORDER, $DBC, $DDV, $orderInfo;
+	global $ORDER, $DBC, $DDV;
 	global $DDV_DIR_EXTRACTED, $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR, $BFILES_DIR_TARGET;
 	global $LISTFILE;
 	global $PKGFILEPATH;
-	global $OK, $NOK;
 
 	if ($name == "" && $file != "")     //automated run?
 		$name = substr($file, 0, -4);   //filename w/o .xml
@@ -60,20 +54,20 @@ function actions_Order_read($name, $file) {
 	$filepath = $DDV_DIR_PACKED . $file;
 	if ( !is_file($filepath) ) {
 		err_msg($MSG17_FILE_NOT_FOUND . ": ", $filepath);
-		return($NOK);
+		return(null);
 	}
 
 	$orderInfo = loadOrder($filepath);
 
 	$DBC = $orderInfo->dbc;
-	$DDV = get_last_ddv();
+	$DDV = get_last_ddv($orderInfo);
 
 	$PKGFILEPATH = $DDV_DIR_PACKED . $DDV;
 	$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
 	$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $DDV;
 	$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 
-	return($OK);
+	return($orderInfo);
 }
 
 /**
@@ -84,13 +78,14 @@ function actions_Order_read($name, $file) {
  *   then deploy one or more DDVEXT packages
  *   then deploy DDV viewer package
  *
- * @param $access_token force this value for access
- * @return bool        $OK or $NOK
+ * @param string|null $access_code  force this value for access
+ * @param OrderInfo $orderInfo
+ * @return bool                     $OK or $NOK
  */
-function actions_Order_process($access_code) {
+function actions_Order_process($access_code, $orderInfo) {
 	global $MSG30_ALREADY_ACTIVATED, $MSG17_FILE_NOT_FOUND;
 	global $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR_TARGET;
-	global $DBC, $orderInfo;
+	global $DBC;
 	global $OK, $NOK;
 
 	$fsiard = false;
@@ -99,7 +94,7 @@ function actions_Order_process($access_code) {
 		return($NOK);
 
 	$DBC = $orderInfo->dbc;
-	$ddv = get_last_ddv();
+	$ddv = get_last_ddv($orderInfo);
 	if (config_isPackageActivated($ddv, $DBC) > 0) {
 		err_msg($MSG30_ALREADY_ACTIVATED, "$ddv ($DBC)");
 		return($NOK);
@@ -173,7 +168,7 @@ function actions_Order_process($access_code) {
 		if ( $OK != actions_schema_redact($DDV_DIR_EXTRACTED))
 			return($NOK);
 
-	$token = actions_access_on($ddv, $access_code);  //DDV enable
+	$token = actions_access_on($ddv, $access_code, $orderInfo);  //DDV enable
 	if ( $token != "" ) {
 		echo "TOKEN: " . $token . PHP_EOL;
 		return($OK);
@@ -185,10 +180,11 @@ function actions_Order_process($access_code) {
  * remove everything connected with an order
  * Will deactivate and remove a database, remove the files.
  *
+ * @param OrderInfo $orderInfo
+ *
  */
-function actions_Order_remove(): bool {
+function actions_Order_remove($orderInfo): bool {
 	global $MSG17_FILE_NOT_FOUND, $MSG53_DELETINGLOBS;
-	global $orderInfo;
 	global $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR;
 	global $OK, $NOK;
 
@@ -198,7 +194,7 @@ function actions_Order_remove(): bool {
 		return($NOK);
 
 	$DBC = $orderInfo->dbc;
-	$ddv = get_last_ddv();
+	$ddv = get_last_ddv($orderInfo);
 
 	debug(__FUNCTION__ . ": DBC=$DBC with master DDV=$ddv");
 	config_json_remove_item($ddv, $DBC);
@@ -626,10 +622,10 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 /**
  * In the menu mode, read the queries.xml file to get default values for activation
  *
+ * @param OrderInfo $orderInfo
  */
-function actions_DDV_getInfo(): void {
+function actions_DDV_getInfo($orderInfo): void {
 	global $DDV_DIR_EXTRACTED;
-	global $orderInfo;
 
 	$xmlFile = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 	if (file_exists($xmlFile)) {
@@ -726,14 +722,15 @@ function actions_SIARD_grant($listfile): bool {
  * Precondition: the database is prepared
  *
  * @param string $ddv
- * @param string $access_token force this value
- * @return string     access token for quick user access
+ * @param string|null $access_code  force this value for access token
+ * @param OrderInfo   $orderInfo
+ * @return string                   access token for quick user access
  */
-function actions_access_on($ddv, $access_code): string {
+function actions_access_on($ddv, $access_code, $orderInfo): string {
 	global $MSG18_DDV_NOT_SELECTED, $MSG15_DDV_IS_NOT_UNPACKED, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG16_FOLDER_NOT_FOUND;
 	global $MSG17_FILE_NOT_FOUND, $MSG30_ALREADY_ACTIVATED, $MSG27_ACTIVATED, $MSG6_ACTIVATEDIP;
 	global $SERVERDATADIR,$DDV_DIR_EXTRACTED;
-	global $DBC, $orderInfo;
+	global $DBC;
 
 	add_db_functions();
 

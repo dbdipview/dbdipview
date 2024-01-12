@@ -35,8 +35,8 @@ class QueryData {
 	public $viewData = null;
 
 	/**
-	 *  Display title and subtitle for the report
-	 * 	@var boolan
+	 * Display title and subtitle for the report
+	 * @param boolean $inline
 	 **/
 	 public function showHeader($inline): void {
 		if ( $inline )

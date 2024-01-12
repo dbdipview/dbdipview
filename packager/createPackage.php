@@ -241,7 +241,8 @@ if ( $errors > 0 ) {
 }
 
 if ( !(array_key_exists('t', $options)) && !(array_key_exists('n', $options))) {
-	showOptions();
+	echo "Exit, no target has been specified." . PHP_EOL;
+	exit(1);
 }
 
 if (empty($OUTDIR) || !is_dir($OUTDIR)) {

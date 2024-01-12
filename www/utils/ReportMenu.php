@@ -93,6 +93,7 @@ class ReportMenu {
 			}
 
 			$currentMenuItem += 1;
+			$nowLevel = 0;
 
 			if ( ! is_null($screen->id->attributes()) )
 				$attributeHide =	 get_bool($screen->id->attributes()->hide);
@@ -100,8 +101,6 @@ class ReportMenu {
 				$attributeTextOnly = get_bool($screen->attributes()->textOnly);
 				$nowLevel = (int)$screen->attributes()->level;
 			}
-			if (is_null($nowLevel))
-				$nowLevel = 0;
 
 			if ( hasPermissionForThis($screen->needed_permission) ) {
 				$nowLevel = intval($nowLevel);

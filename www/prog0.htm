@@ -10,7 +10,10 @@ HtmlElements::htmlWithLanguage();
 <?php include "head.php"; ?>
 </head>
 <?php
-ini_set( 'session.cookie_httponly', 1 );
+ini_set( 'session.cookie_httponly', '1' );
+ini_set( 'session.cookie_samesite', 'Strict' );
+ini_set( 'session.use_only_cookies', '1' );
+//ini_set( 'session.cookie_secure', '1' );  //DMZ
 session_start();
 session_destroy();
 session_start();

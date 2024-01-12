@@ -5,6 +5,10 @@
  * @author: Boris Domajnko
  */
 ini_set( 'session.cookie_httponly', '1' );
+ini_set( 'session.cookie_samesite', 'Strict' );
+ini_set( 'session.use_only_cookies', '1' );
+//ini_set( 'session.cookie_secure', '1' );  //DMZ
+
 session_start();
 
 define("QUOTE_WHERE","'");     //portability: SELECT * FROM x WHERE name='Abc'
@@ -208,13 +212,13 @@ switch ($submit_cycle) {
 case "ShowMenu":
 case "CheckLogin":
 	echo '<span style="color: var(--main-htext-color);">' . $MSGSW17_Records . ": " . $_SESSION['title'] . '</span><br />';
-	echo  '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer . ": " . $xml->database->name . " (" . $xml->database->ref_number . ")" . check_redaction();'</span>';
+	echo '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer . ": " . $xml->database->name . " (" . $xml->database->ref_number . ")" . check_redaction() . '</span>';
 	$_SESSION['tablelist'] = "table";
 	getQueryNumber();
 	break;
 case "querySelected":
 	echo '<span style="color: var(--main-htext-color);">' . $MSGSW17_Records . ": " . $_SESSION['title'] . '</span><br />';
-	echo '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer .  ": " . $xml->database->name . " (" . $xml->database->ref_number . ")"  . check_redaction();'</span>';
+	echo '<span style="color: var(--main-htext-color);">' . $MSGSW04_Viewer .  ": " . $xml->database->name . " (" . $xml->database->ref_number . ")"  . check_redaction() . '</span>';
 	if( empty($targetQueryNum) ) {
 		getQueryNumber();
 		break;

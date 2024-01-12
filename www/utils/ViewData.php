@@ -40,6 +40,8 @@ class ViewData {
 						array_push($this->arr_colNamesWithNewColumn, $ele);
 						$this->bhas_columnNames = True;
 					}
+				}
+				if( ! is_null($ele->attributes()) ) {    //phpstan
 					if( get_bool($ele->attributes()->noLabel) )
 						array_push($this->arr_colNamesWithNoLabel, $ele);
 				}

@@ -13,13 +13,13 @@ $HOST="localhost";
 $DBTYPE="postgresql";
 $DBPORT=5432;
 
-  $SIARDTOOLDEFAULT="DBPTK";        //default for orders with unspecified tool
-//$SIARDTOOLDEFAULT="SIARDSUITE";
+$SIARDTOOLDEFAULT="DBPTK"; //"DBPTK" or "SIARDSUITE", set default for orders with unspecified tool
 
-//Database Preservation Toolkit. Install the latest version.
-$DBPTKJAR="$PROGDIR/siard/dbptk-app-2.10.0.jar";
-$JAVA="java";
-//$JAVA="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/java";
+//Database Preservation Toolkit DBPTK. Use the latest version.
+//$DBPTKJAR="$PROGDIR/siard/dbptk-app-2.10.4.jar:$PROGDIR/siard/jaxb-api-2.3.1.jar";  //higher versions
+$DBPTKJAR="$PROGDIR/siard/dbptk-app-2.10.4.jar";  //java 8
+$JAVA="java";  //can also be replaced with complete path
 $MEM="-Xmx1000m";
-//SIARD Suite. Install the latest version.
+
+//SIARD Suite. Use the latest version.
 $SIARDSUITECMDJAR="$PROGDIR/siard/siard_suite-2.1/lib/siardcmd.jar";
