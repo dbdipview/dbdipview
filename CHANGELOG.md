@@ -5,15 +5,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
-## [3.5.1] - 2024-01-12
-### Changed
-- deployment: some phpstan warnings removed
-- deployment: DBPTK configuration is now configurable based on java version
-
-## [3.5.0] - 2024-01-05
+## [3.5.0] - 2024-01-12
 ### Added
 - packaging: file redaction.html can be part of the package
 - access: GUI header displays information if the database has been redacted; additional link opens redaction.html with description
+- deployment: DBPTK configuration is now configurable based on java version
+- deployment: some phpstan warnings removed
 ### Added
 - test suite: TestAndDemo 2, redaction.html added
 
