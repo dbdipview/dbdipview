@@ -166,8 +166,9 @@ function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote
  * In case of LIKE compare using the same letter case
  * @param string $field
  * @param string $equal
- * @param string $input
+ * @param string $value
  * @param string $quote
+ * @return string
  */
 function processOperator($field, $equal, $value, $quote) {
 	if ( strcmp("ILIKE", $equal) == 0 )

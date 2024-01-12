@@ -227,7 +227,7 @@ function config_isPackageActivated($ddv, $DBC="") {
  * Returns true or false.
  *
  * @param string $ddv            package name
- * @param string $DBC            selected database (or any)
+ * @param string $dbc            selected database (or any)
  *
  * @return bool $result       redaction status
  */

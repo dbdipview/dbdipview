@@ -48,12 +48,16 @@ function installSIARD($database, $siardfile, $tool): bool {
 			err_msg("DBPTKJAR " . $MSG48_NOTCONFIGURED . " configa.txt, configa.txt.template");
 			return(false);
 		}
-		if ( !file_exists($DBPTKJAR) ) {
-			err_msg($MSG17_FILE_NOT_FOUND . " (DBPTKJAR):", $DBPTKJAR);
-			return(false);
-		}
-		debug(   "$JAVA $MEM $ENCODING -jar $DBPTKJAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn $DBPORT -i siard-2 -if $siardfile");
-		passthru("$JAVA $MEM $ENCODING -jar $DBPTKJAR migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn $DBPORT -i siard-2 -if $siardfile");
+
+		$pieces = explode(":", $DBPTKJAR);
+		foreach ($pieces as $piece)
+			if ( !file_exists($piece) ) {
+				err_msg($MSG17_FILE_NOT_FOUND . " (DBPTKJAR):", $piece);
+				return(false);
+			}
+
+		debug(   "$JAVA $MEM $ENCODING -cp $DBPTKJAR com.databasepreservation.Main migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn $DBPORT -i siard-2 -if $siardfile");
+		passthru("$JAVA $MEM $ENCODING -cp $DBPTKJAR com.databasepreservation.Main migrate -e $DBTYPE -eh $HOST -edb '$database' -eu $SIARDUSER -ep '$SIARDPASS' -ede -epn $DBPORT -i siard-2 -if $siardfile");
 	} else {
 		if ( empty($SIARDSUITECMDJAR) ) {
 			err_msg("SIARDSUITECMDJAR " . $MSG48_NOTCONFIGURED . " configa.txt, configa.txt.template");
@@ -78,7 +82,7 @@ function installSIARD($database, $siardfile, $tool): bool {
  * @param string $path
  * @param string $xml_element
  *
- * @return false|string
+ * @return string
  */
 function get_SIARD_header_element($path, $xml_element) {
 

@@ -86,6 +86,7 @@ $ORDER = "";
 $PKGFILEPATH = "";
 $DDV = "";
 $DBC = "";
+
 $orderInfo = new OrderInfo();
 
 $handleKbd = fopen ("php://stdin","r");
@@ -184,8 +185,11 @@ if (array_key_exists('p', $options)) {
 	$file = $options['p'];
 	if ( false === $file || !is_string($file) ) {
 		echo "Error -p";
-	} else if ($OK == actions_Order_read($name, $file))
-		actions_Order_process($access_code);
+	} else {
+		$orderInfo = actions_Order_read($name, $file);
+		if (! empty($orderInfo) )
+			actions_Order_process($access_code, $orderInfo);
+	}
 	exit(0);
 }
 
@@ -194,8 +198,11 @@ if (array_key_exists('r', $options)) {
 	$file = $options['r'];
 	if ( false === $file || !is_string($file) ) {
 		echo "Error -r";
-	} else if ($OK == actions_Order_read($name, $file))
-		actions_Order_remove();
+	} else {
+		$orderInfo = actions_Order_read($name, $file);
+		if (! empty($orderInfo) )
+			actions_Order_remove($orderInfo);
+	}
 	exit(0);
 }
 
@@ -328,24 +335,31 @@ while ( "$answer" != "q" ) {
 			getPackageName($name, $file, "xml");
 			if ( empty($name) ) {
 				$XOS = ' ';
-			} else if ($OK == actions_Order_read($name, $file)) {
-				echo $ORDER . PHP_EOL;
-				$XOS='X';$XOI=' ';$XOD=' ';
+			} else {
+				$orderInfo = actions_Order_read($name, $file);
+				if (! empty($orderInfo) ) {
+					echo $ORDER . PHP_EOL;
+					$XOS='X';$XOI=' ';$XOD=' ';
+				}
 			}
 			enter();
 			break;
 
 		case "oi": 
 			if ($XOS == 'X') {
-				actions_Order_process($access_code);
-				$XOI='X';
+				if (! empty($orderInfo) ) {
+					actions_Order_process($access_code, $orderInfo);
+					$XOI='X';
+				}
 			}
 			break;
 
 		case "od": 
 			if ($XOS == 'X') {
-				actions_Order_remove();
-				$XOD='X';
+				if (! empty($orderInfo) ) {
+					actions_Order_remove($orderInfo);
+					$XOD='X';
+				}
 			}
 			break;
 
@@ -630,7 +644,7 @@ while ( "$answer" != "q" ) {
 
 		case "6": $X6=' ';
 			if ( $X1 == 'X' || $V1 == 'X' )
-				actions_DDV_getInfo(); //read defaults
+				actions_DDV_getInfo($orderInfo); //read defaults
 				
 			if ( $XOS == ' ' )  {
 				echo "$MSG3_ENABLEACCESS [public]:";
@@ -658,7 +672,7 @@ while ( "$answer" != "q" ) {
 						$orderInfo->title = $answer;
 				}
 			} 
-			if ($OK == actions_access_on($DDV, $access_code)) {
+			if ($OK == actions_access_on($DDV, $access_code, $orderInfo)) {
 				$X6='X';
 			}
 			enter();

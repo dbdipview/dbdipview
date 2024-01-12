@@ -41,5 +41,17 @@ class OrderInfo {
 	* @var string|null
 	*/
 	public $access = null;
-	
+
+	function __construct() {
+		$order = null;
+		$reference = "";
+		$title = "";
+		$dbc = null;
+		$redact = false;
+		$siardFiles = array();
+		$siardTool = null;
+		$ddvExtFiles = array();
+		$ddvFile = null;
+		$access = null;
+	}
 }
