@@ -133,7 +133,6 @@ if ( false === $options) {
 if ( count($options) == 0 || array_key_exists('h', $options) ||
     (count($options) == 1 && array_key_exists('d', $options)) ) {
 	echo "Usage: php menu.php [OPTIONS]" . PHP_EOL;
-	echo "   -h         this help" . PHP_EOL;
 	echo "   -o         order workflow" . PHP_EOL;
 	echo "   -e         extended DDV package workflow" . PHP_EOL;
 	echo "   -L         append data using an additional list file" . PHP_EOL;
@@ -143,6 +142,7 @@ if ( count($options) == 0 || array_key_exists('h', $options) ||
 	echo "   -c <code>  set this access code instead of a calculated one" . PHP_EOL;
 	echo "   -d         debug mode" . PHP_EOL;
 	echo "   -a         show all options (for information only)" . PHP_EOL;
+	echo "   -h         this help" . PHP_EOL;
 	exit;
 }
 
@@ -172,7 +172,7 @@ if (array_key_exists('c', $options)) {
 	if ( false === $access_code || !is_string($access_code) ) {
 		echo "Error -c code";
 		exit(0);
-	} 
+	}
 }
 
 if (array_key_exists('d', $options)) {
@@ -211,7 +211,7 @@ if (array_key_exists('L', $options))
 else
 	$appendList = "";
 
-while ( "$answer" != "q" ) { 
+while ( "$answer" != "q" ) {
 					echo "$TXT_CYAN $MSG_TITLE $TXT_RESET" . PHP_EOL;
 					echo "${XC}c  $MSG0_LISTDIRS" . PHP_EOL;
 	if ( !empty($all) || !empty($om) )  {
@@ -262,7 +262,7 @@ while ( "$answer" != "q" ) {
 					echo "${X3}3  (DDV) (VIEW) $MSG3_ENABLEACCESS [$DDV]" . PHP_EOL;
 	}
 	if ( !empty($all) || ($XD == 'X' && !empty($DDV) && empty($appendList)) )  {
-					if ( config_isPackageActivated($DDV, $DBC) == 0 && 
+					if ( config_isPackageActivated($DDV, $DBC) == 0 &&
 						file_exists($DDV_DIR_EXTRACTED . "/metadata/redactdb.sql") )
 						echo "${X5}5  $MSG46_REDACT [$DBC][$DDV] " . PHP_EOL;
 					echo "${X6}6  $MSG6_ACTIVATEDIP [$DBC][$DDV] " . PHP_EOL;
@@ -294,7 +294,7 @@ while ( "$answer" != "q" ) {
 			break;
 
 		case "q": exit(0);
-		case "c": 
+		case "c":
 			echo "DDV_DIR_PACKED=" . $DDV_DIR_PACKED . PHP_EOL;
 			if ($debug) {
 				echo "DDV_DIR_UNPACKED=" . $DDV_DIR_UNPACKED . PHP_EOL;
@@ -328,7 +328,7 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 
-		case "os": 
+		case "os":
 			echo "$MSGO_ORDER: ";
 			$name = "";
 			$file = "";
@@ -345,7 +345,7 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 
-		case "oi": 
+		case "oi":
 			if ($XOS == 'X') {
 				if (! empty($orderInfo) ) {
 					actions_Order_process($access_code, $orderInfo);
@@ -354,7 +354,7 @@ while ( "$answer" != "q" ) {
 			}
 			break;
 
-		case "od": 
+		case "od":
 			if ($XOS == 'X') {
 				if (! empty($orderInfo) ) {
 					actions_Order_remove($orderInfo);
@@ -443,7 +443,7 @@ while ( "$answer" != "q" ) {
 				err_msg("SIARD!");
 			else if ( !is_file($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
-			else if ($OK == actions_DDVEXT_create_schema($LISTFILE, $DDV_DIR_EXTRACTED)) 
+			else if ($OK == actions_DDVEXT_create_schema($LISTFILE, $DDV_DIR_EXTRACTED))
 				$V3='X';
 
 			if ($V3 == 'X') {
@@ -469,7 +469,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if ($OK == actions_DDVEXT_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET)) {
 				$V4='X';
-			} 
+			}
 			enter();
 			break;
 
@@ -496,7 +496,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if ($OK == actions_DDVEXT_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET)) {
 				$XL='X';
-			} 
+			}
 			enter();
 			break;
 
@@ -535,20 +535,20 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG13_DDV_FOLDER_EXISTS . ":", $DDV);
 				enter();
 				break;
-			} 
+			}
 
 		case "2o": $X2=' ';                         //overwrite the folder, needed for automated mode
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if (!file_exists($PKGFILEPATH))
 				err_msg($MSG12_ERR_DDV_NOT_AVAILABLE . ":", $PKGFILEPATH);
-			else if ($OK == actions_DDV_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED)) 
+			else if ($OK == actions_DDV_unpack($PKGFILEPATH, $DDV_DIR_EXTRACTED))
 				$X2='X';
 			enter();
 			break;
 
 		case "3": $X3=' ';
-			if (file_exists($DDV_DIR_EXTRACTED)) 
+			if (file_exists($DDV_DIR_EXTRACTED))
 				if ($OK == actions_DDV_create_views($DDV_DIR_EXTRACTED)) {
 					actions_DDVEXT_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
 					$X3='X';
@@ -567,7 +567,7 @@ while ( "$answer" != "q" ) {
 			} else {
 				$XP = 'X';$XS=' ';$XT=' ';
 				$SIARDNAME = $name;
-				$SIARDFILE = $DDV_DIR_PACKED . $file; 
+				$SIARDFILE = $DDV_DIR_PACKED . $file;
 				echo $SIARDNAME . PHP_EOL;
 
 				$text = get_SIARD_header_element($SIARDFILE, "dbname");
@@ -600,7 +600,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if ( !file_exists($SIARDFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $SIARDFILE);
-			else if (!isAtype($SIARDFILE, "siard")) 
+			else if (!isAtype($SIARDFILE, "siard"))
 				err_msg($MSG42_NOTSIARD . ":", $SIARDFILE);
 			else if ($OK == actions_SIARD_install($SIARDFILE, "DBPTK")) {
 				actions_SIARD_grant($LISTFILE);
@@ -619,7 +619,7 @@ while ( "$answer" != "q" ) {
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if ( !file_exists($SIARDFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $SIARDFILE);
-			else if (!isAtype($SIARDFILE, "siard")) 
+			else if (!isAtype($SIARDFILE, "siard"))
 				err_msg($MSG42_NOTSIARD . ":", $SIARDFILE);
 			else if ($OK == actions_SIARD_install($SIARDFILE, "SIARDSUITE")) {
 				actions_SIARD_grant($LISTFILE);
@@ -636,7 +636,8 @@ while ( "$answer" != "q" ) {
 			else {
 				if ($OK == actions_schema_redact($DDV_DIR_EXTRACTED)) {
 					$X5='X';
-					$orderInfo->redact = true;
+					if (! empty($orderInfo) )
+						$orderInfo->redact = true;
 				}
 			}
 			enter();
@@ -650,28 +651,29 @@ while ( "$answer" != "q" ) {
 				echo "$MSG3_ENABLEACCESS [public]:";
 				if ( ($answer = fgets($handleKbd)) !== false ) {
 					$answer = trim($answer);
-					if ( empty($answer) )
-						$orderInfo->access = 'public';
-					else
-						$orderInfo->access = $answer;
+					if (! empty($orderInfo) )
+						if ( empty($answer) )
+							$orderInfo->access = 'public';
+						else
+							$orderInfo->access = $answer;
 				}
-			} 
+			}
 			if ( $XOS == ' ' )  {
 				echo "$MSGO_REF [" . $orderInfo->reference . "]:";
 				if ( ($answer = fgets($handleKbd)) !== false ) {
 					$answer = trim($answer);
-					if ( !empty($answer) )
-						$orderInfo->reference = $answer;
+					if ( !empty($answer) && ! empty($orderInfo) )
+							$orderInfo->reference = $answer;
 				}
 			}
 			if ( $XOS == ' ' )  {
 				echo "$MSGO_TITLE [" . $orderInfo->title . "]:";
 				if ( ($answer = fgets($handleKbd)) !== false ) {
 					$answer = trim($answer);
-					if ( !empty($answer) )
+					if ( !empty($answer) && ! empty($orderInfo) )
 						$orderInfo->title = $answer;
 				}
-			} 
+			}
 			if ($OK == actions_access_on($DDV, $access_code, $orderInfo)) {
 				$X6='X';
 			}
@@ -747,7 +749,7 @@ while ( "$answer" != "q" ) {
 		default: err_msg($MSG10_UNKNOWNC . ":", $answer);
 			enter();
 			break;
-	} //case 
+	} //case
 
 
 } //while

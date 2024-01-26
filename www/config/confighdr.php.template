@@ -9,3 +9,5 @@ $Logo2_alt_text = "";
 $Logo3_alt_text = ""; 
 
 // See local/README.txt how to add your logo.
+
+$cookie_secure = "0";  //DMZ?

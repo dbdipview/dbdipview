@@ -242,7 +242,8 @@ function config_isPackageRedacted($ddv, $dbc): bool {
 			( array_key_exists('ddv', $line) && 0==strcmp($line['ddv'],$ddv) ) &&
 			( array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$dbc) )
 			) {
-			$result = $line['redacted'];
+			if (array_key_exists('redacted', $line))
+				$result = $line['redacted'];
 		}
 	}
 	return( get_bool($result) );
@@ -391,15 +392,16 @@ function config_show( $titleMaxLength = 30 ): void {
 		echo mb_strimwidth($line['title'], 0, $length5, "...") . "|";
 
 		if ( isset($line['order']) || array_key_exists('order', $line) )
-			echo mb_str_pad($line['order'],  $length6) . "|" .  PHP_EOL;
+			echo mb_str_pad($line['order'],  $length6) . "|";
 		else
-			echo mb_str_pad("",  $length6) . "|" .  PHP_EOL;
+			echo mb_str_pad("",  $length6) . "|";
 
 		if ( isset($line['redacted']) || array_key_exists('redacted', $line) )
-			echo mb_str_pad($line['redacted'],  $length7) . "|" .  PHP_EOL;
+			echo mb_str_pad($line['redacted'],  $length7) . "|";
 		else
-			echo mb_str_pad("",  $length7) . "|" .  PHP_EOL;
+			echo mb_str_pad("",  $length7) . "|";
 
+		echo PHP_EOL;
 		$i++;
 	}
 	if ($i == 0)
