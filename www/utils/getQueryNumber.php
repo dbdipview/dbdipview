@@ -9,7 +9,7 @@
 function getQueryNumber(): void {
 	global $xml, $MSGSW22_REPORTS, $MSGSW08_Continue, $MSGSW30_Overview;
 	global $myTXTfilePath;
-	global $screensArray, $menuFrameHeight;
+	global $screensArray;
 
 	$reportMenu = new ReportMenu($xml);
 	$lines = $reportMenu->howManyLines();
@@ -25,9 +25,6 @@ function getQueryNumber(): void {
 				<div style="display: table-row;">
 					<div style="display: table-cell; text-align: left; white-space: nowrap; border: thin solid; border-color: var(--main-htext-color); overflow: auto;">
 <?php
-						#if (!is_numeric($menuFrameHeight))  //removed from config.php?
-						#	$menuFrameHeight = 250;
-
 						if ($lines > 16)
 							$lines = 16 * 1.3;
 						else

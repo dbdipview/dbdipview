@@ -1,8 +1,18 @@
 <?php
 $loginMenuLevel = 0;
 include "config/confighdr.php";
-include "utils/HtmlElements.php";
 
+ini_set( 'session.cookie_httponly', '1' );
+ini_set( 'session.cookie_samesite', 'Strict' );
+ini_set( 'session.use_only_cookies', '1' );
+if (isset($cookie_secure) && $cookie_secure == "1")   // DMZ?
+	ini_set( 'session.cookie_secure', '1' );;  
+
+session_start();
+session_destroy();
+session_start();
+
+include "utils/HtmlElements.php";
 HtmlElements::htmlWithLanguage();
 ?>
 <head>
@@ -10,13 +20,6 @@ HtmlElements::htmlWithLanguage();
 <?php include "head.php"; ?>
 </head>
 <?php
-ini_set( 'session.cookie_httponly', '1' );
-ini_set( 'session.cookie_samesite', 'Strict' );
-ini_set( 'session.use_only_cookies', '1' );
-//ini_set( 'session.cookie_secure', '1' );  //DMZ
-session_start();
-session_destroy();
-session_start();
 
 include "messagesw.php";
 include "../admin/funcConfig.php";
@@ -69,17 +72,17 @@ include "../admin/version.php";
 	$debug = "";
 	
 	if(isset($_GET['c']))
-		$c = htmlspecialchars($_GET['c']);   //remove GET for production
+		$c = filter_in('c');   //remove GET for production
 
 	if ( !isset($loginMenuLevel) || $loginMenuLevel < 2 ) {
 		if(isset($_GET['d']))
-			$d = htmlspecialchars($_GET['d']);
+			$d = filter_in('d');
 
 		if(isset($_GET['v']))
-			$v = htmlspecialchars($_GET['v']);
+			$v = filter_in('v');
 	}
 	if(isset($_GET['debug']))
-		$debug = htmlspecialchars($_GET['debug']);
+		$debug = filter_in('debug');
 ?>
 
 <br />

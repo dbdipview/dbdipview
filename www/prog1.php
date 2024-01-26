@@ -4,10 +4,13 @@
  * dbDIPview main loop
  * @author: Boris Domajnko
  */
+include "config/confighdr.php";  //get $myLang
+
 ini_set( 'session.cookie_httponly', '1' );
 ini_set( 'session.cookie_samesite', 'Strict' );
 ini_set( 'session.use_only_cookies', '1' );
-//ini_set( 'session.cookie_secure', '1' );  //DMZ
+if (isset($cookie_secure) && $cookie_secure == "1")  // DMZ?
+	ini_set( 'session.cookie_secure', '1' );
 
 session_start();
 
@@ -16,16 +19,15 @@ define("TABLECOLUMN","_");     //cities.id -> cities_id, needed for parameter pa
 define("UNKNOWN",-1);          //int not set
 
 include "../admin/funcConfig.php";
+include "utils/HtmlElements.php";
 
 if (array_key_exists("submit_cycle", $_GET))
-	$submit_cycle = pg_escape_string($_GET['submit_cycle']);
+	$submit_cycle = filter_in('submit_cycle');
 else
 	$submit_cycle = "CheckLogin";  //first entry
 
 $myXMLfile="";
 $dbName="no_db";
-
-include "config/confighdr.php";  //get $myLang
 
 switch ($submit_cycle) {
 	case "CheckLogin":
@@ -91,27 +93,26 @@ $filespath = "files/" . $dbName . "__" . str_replace(".xml", "", $myXMLfile) . "
 
 include "dbUtilsView.php";
 include "utils/downlds.php";
-include "utils/HtmlElements.php";
 
 switch ($submit_cycle) {
 	case "showBlob":
 		$xml = simplexml_load_file($myXMLfilePath);
-		$id  = pg_escape_string($_GET['id']);
-		$val = pg_escape_string($_GET['val']);
+		$id  = filter_in('id');
+		$val = filter_in('val');
 		showBlobRaw($id, $val);  //and exit
 	case "showCsv":
-		$sql  =     pg_escape_string($_GET['s']);
-		$filename = pg_escape_string($_GET['f']);
-		$title =    pg_escape_string($_GET['t']);
+		$sql  =     filter_in('s');
+		$filename = filter_in('f');
+		$title =    filter_in('t');
 		showCsv($sql, $filename, $title);  //and exit
 	case "setDispMode":
-		$tl = pg_escape_string($_GET['tablelist']);
+		$tl = filter_in('tablelist');
 		if ($tl == "table" || $tl == "list" || $tl == "listAll" || $tl == "listMC" || $tl == "listMCAll")
 			$_SESSION['tablelist'] = $tl;
 		exit(0);
 	case "showFile":
 		$dbDIPview_dir = __DIR__ . "/";
-		$filename = pg_escape_string($_GET['f']);
+		$filename = filter_in('f');
 		showFile($filename, $dbDIPview_dir . $filespath);  //and exit
 }
 
@@ -199,7 +200,7 @@ if( ( strcmp($submit_cycle, "noSession") !== 0 ) &&
 $PARAMS = $_GET;
 
 if( isset($_GET['targetQueryNum']) )
-	$targetQueryNum = pg_escape_string($_GET['targetQueryNum']);
+	$targetQueryNum = filter_in('targetQueryNum');
 else
 	$targetQueryNum = "";
 
