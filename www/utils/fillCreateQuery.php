@@ -516,7 +516,7 @@ define('PRINTER_ICON', '&#x1f5b6;');
 			print "<a style='text-decoration: none' href='#' onclick=\"printContent('bottomframe');\">" . PRINTER_ICON . "</a> ";
 			print "</span>";
 			print '<h2 style="display: inline;">';
-			print $MSGSW18_ReportDescription . ": " . $screen->id . "-" . $screen->selectDescription . "</h2>";
+			print $MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h2>";
 
 			$queryInfo->showHeader(false);
 			print ("<br/>");

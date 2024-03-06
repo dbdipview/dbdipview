@@ -35,7 +35,7 @@ include "../admin/version.php";
 <center>
 <header>
 	<div style="display: table; width: 100%;">
-		<div style="display: table-row;">
+		<div style="display: flex; justify-content: space-between; width: 100%;>
 <?php
 			if( ! isset($Logo1_alt_text) )
 						$Logo1_alt_text = "Logo 1";
@@ -44,17 +44,17 @@ include "../admin/version.php";
 			if( ! isset($Logo3_alt_text) )
 						$Logo3_alt_text = "Logo 3";
 
-			echo '<div style="display: table-cell; text-align: left;">' . PHP_EOL;
+			echo '<div style="display: table-cell; text-align: left; width: 33.33%;">' . PHP_EOL;
 				if( file_exists ("local/logo1.png") )
 					echo '<img border="0" src="local/logo1.png" alt="' . $Logo1_alt_text . '" height="65" />' . PHP_EOL;
 			echo '</div>' . PHP_EOL;
 
-			echo '<div style="display: table-cell; text-align: centerleft;">';
+			echo '<div style="display: table-cell; text-align: center; align-self: center; width: 33.33%;">';
 				if( file_exists ("local/logo2.png") )
 					echo '<img border="0" src="local/logo2.png" alt="' . $Logo2_alt_text . '" height="65" />' . PHP_EOL;
 			echo '</div>' . PHP_EOL;
 
-			echo '<div style="display: table-cell; text-align: right;">';
+			echo '<div style="display: table-cell; text-align: right; width: 33.33%;">';
 				if( file_exists ("local/logo3.png") )
 					echo '<img border="0" src="local/logo3.png" alt="' . $Logo3_alt_text . '" height="65" />' . PHP_EOL;
 			echo '</div>' . PHP_EOL;

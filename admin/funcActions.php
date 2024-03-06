@@ -801,7 +801,7 @@ function actions_access_on($ddv, $access_code, $orderInfo): string {
 		$configItemInfo['redacted']    = $orderInfo->redact;
 		config_json_add_item($configItemInfo);
 		msgCyan($MSG27_ACTIVATED . ".");
-		config_show();
+		//config_show();
 	}
 
 	return($token);
