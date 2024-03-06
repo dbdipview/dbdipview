@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.5.2] - 2024-03-06
+### Fixed
+- access: better centering of the three icons on the opening screen
+
 ## [3.5.1] - 2024-01-26
 ### Security
 - access: security enhancements
