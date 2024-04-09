@@ -16,8 +16,8 @@ $DBPORT=5432;
 $SIARDTOOLDEFAULT="DBPTK"; //"DBPTK" or "SIARDSUITE", set default for orders with unspecified tool
 
 //Database Preservation Toolkit DBPTK. Use the latest version.
-//$DBPTKJAR="$PROGDIR/siard/dbptk-app-2.10.4.jar:$PROGDIR/siard/jaxb-api-2.3.1.jar";  //higher versions
-$DBPTKJAR="$PROGDIR/siard/dbptk-app-2.10.4.jar";  //java 8
+//$DBPTKJAR="$PROGDIR/siard/dbptk-app-2.11.0.jar:$PROGDIR/siard/jaxb-api-2.3.1.jar";  //higher versions
+$DBPTKJAR="$PROGDIR/siard/dbptk-app-2.11.0.jar";  //java 8
 $JAVA="java";  //can also be replaced with complete path
 $MEM="-Xmx1000m";
 
