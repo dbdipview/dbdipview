@@ -1,8 +1,11 @@
-<!doctype html public "-//W3C//DTD HTML 4.0 //EN"> 
+<!doctype html public "-//W3C//DTD HTML 4.0 //EN">
 <html>
 <head>
 <?php include "head.php"; ?>
-	<script language="JavaScript" src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
+	<script
+	src="https://code.jquery.com/jquery-3.7.1.min.js"
+	integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+	crossorigin="anonymous"></script>
 
 	<style>
 		#loader {
@@ -37,8 +40,8 @@
 		document.onreadystatechange = function () {
 		var state = document.readyState
 			if (state == 'interactive') {
-				document.getElementById('loader').style.visibility="visible";		  
-			} 
+				document.getElementById('loader').style.visibility="visible";
+			}
 		}
 		var loc = window.location.href;
 		window.location.href = loc.replace("Load.php", ".php");

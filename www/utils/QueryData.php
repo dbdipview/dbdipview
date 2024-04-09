@@ -54,7 +54,7 @@ class QueryData {
 
 
 	/**
-	 * @param SimpleXMLElement $xml[]
+	 * @param SimpleXMLElement $xml
 	 */
 	public function setAll($xml): void {
 		$this->setAhrefs($xml->ahrefs);
@@ -64,9 +64,12 @@ class QueryData {
 	}
 
 	/**
-	 * @param SimpleXMLElement $imagess[]
+	 * @param SimpleXMLElement[]|null $imagess
 	 */
 	function setImages($imagess): void {
+
+		if ($imagess == null)
+			return;
 
 		foreach ($imagess as $images) {
 			foreach ($images->image as $image) {
@@ -79,9 +82,12 @@ class QueryData {
 	}
 
 	/**
-	 * @param SimpleXMLElement $ahrefss[]
+	 * @param SimpleXMLElement[]|null $ahrefss
 	 */
 	function setAhrefs($ahrefss): void {
+
+		if ($ahrefss == null)
+			return;
 
 		foreach ($ahrefss as $ahrefs) {
 			foreach ($ahrefs->ahref as $ahref) {
@@ -99,9 +105,12 @@ class QueryData {
 	}
 
 	/**
-	 * @param SimpleXMLElement $blobss[]
+	 * @param SimpleXMLElement[]|null $blobss
 	 */
 	function setBlobs($blobss): void {
+
+		if ($blobss == null)
+			return;
 
 		foreach ($blobss as $blobs) {
 			foreach ($blobs->blob as $blob) {
@@ -118,9 +127,12 @@ class QueryData {
 	}
 
 	/**
-	 * @param SimpleXMLElement $linkss[]
+	 * @param SimpleXMLElement[]|null $linkss
 	 */
 	function setLinksToNextScreen($linkss): void {
+
+		if ($linkss == null)
+			return;
 
 		foreach ($linkss as $links_to_next_screen) {
 			foreach ($links_to_next_screen->link as $link) {

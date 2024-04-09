@@ -9,10 +9,8 @@ class HtmlElements {
 		global $myLang;
 
 		echo '<!doctype html public "-//W3C//DTD HTML 4.0 //EN">' . PHP_EOL;
-		if ( isset($myLang) )
-			echo '<html lang="' . $myLang . '">' . PHP_EOL;
-		else
-			echo '<html lang="ee">' . PHP_EOL;
+		$lang = $myLang ?? 'en';
+		echo '<html lang="' . $lang . '">' . PHP_EOL;
 	}
 	
 }

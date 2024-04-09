@@ -17,10 +17,10 @@ class ViewData {
 	*/
 	private $arr_colNamesWithNoLabel = array();
 	/**
-	* @var array<int, string>
+	* @var array<int, positive-int|string>
 	*/
 	private $arr_colNumbers4NewColumn = array();  //if there are no named columns then we will count them
-	private int $numberOfColumns = 4;                 //default if no specific column names are defined
+	private int $numberOfColumns = 4;             //default if no specific column names are defined
 
     /**
 	 * @param SimpleXMLElement $screen

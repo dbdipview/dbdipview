@@ -20,7 +20,7 @@ class ColumnDescriptions
 	 */
 	private $columnsArrayR = array();
 	/**
-	 * @var array<string>
+	 * @var array<array-key, array<string>>
 	 */
 	private $columnsArrayAll = array();
 	/**
@@ -30,7 +30,7 @@ class ColumnDescriptions
 	 */
 	private array $fromDBArray = array();
 	/**
-	 * @var array<string>
+	 * @var array<mixed>
 	 */
 	private $columnsArrayDescriptions = array();
 
@@ -57,7 +57,7 @@ class ColumnDescriptions
 	 * Columns with changed values (e.g. with a function or concatenation in SELECT) will be skipped!
 	 *
 	 * @param string $str
-	 * @param string &$outarray
+	 * @param array<array-key, mixed> &$outarray
 	 *
 	 * @return void
 	 */

@@ -73,13 +73,16 @@ function showBlobRaw($blobId, $val): void {
 			header("Content-Type: $contenttype");
 			header("Content-Disposition: inline; filename=" . $filename);
 			if (version_compare(phpversion(), '8.0.0', '<'))
+				/** @psalm-suppress UndefinedVariable */
 				echo $lob;
 			else
+				/** @psalm-suppress UndefinedVariable */
 				echo stream_get_contents($lob);
 			break;
 		case "BLOB":
 			header("Content-Type: $contenttype");
 			header("Content-Disposition: inline; filename=" . $filename);
+			/** @psalm-suppress UndefinedVariable */
 			echo stream_get_contents($lob);
 			break;
 		case "OID":
