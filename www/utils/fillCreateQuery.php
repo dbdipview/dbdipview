@@ -108,10 +108,12 @@ function appendOrderGroupBy($what, $criteria): string {
 			//remove "unprintable" characters
 			$criteriatmp0 = preg_replace('/\s/', ' ', (string)$criteria);
 			$pattern = '~([ ])\1\1+~';
-			$criteriatmp1 = preg_replace($pattern,'\1',$criteriatmp0);
-			$criteriatmp2 = str_replace('.',  '"."',  $criteriatmp1);  //db.col --> "db"."col"
-			$criteriatmp3 = str_replace(', ', '", "', $criteriatmp2);  //db.col, --> db.col", "
-			$queryTail = " $what \"" . $criteriatmp3 . "\"";
+			if ( !is_null($criteriatmp0) ) {
+				$criteriatmp1 = preg_replace($pattern,'\1',$criteriatmp0);
+				$criteriatmp2 = str_replace('.',  '"."',  $criteriatmp1);  //db.col --> "db"."col"
+				$criteriatmp3 = str_replace(', ', '", "', $criteriatmp2);  //db.col, --> db.col", "
+				$queryTail = " $what \"" . $criteriatmp3 . "\"";
+			}
 		}
 	}
 	return($queryTail);
@@ -215,6 +217,7 @@ foreach ($xml->database->screens->screen as $screen) {
 	$where = "";
 	$mandatory = "";
 	$attrSkipCSVsave = false;
+	$quote=QUOTE_WHERE;   //since postgresql 8.4 no more '';
 
 	if ($screen->id  == $targetQueryNum) {
 		debug("fillCreateQuery: screen id = " . $screen->id);
@@ -273,7 +276,6 @@ foreach ($xml->database->screens->screen as $screen) {
 					continue;  //forget this one and check the next parameter
 				}
 
-			$quote=QUOTE_WHERE;   //since postgresql 8.4 no more '';
 			$equal='=';
 			if (0==strcmp("text", $param->type)) {
 				$quote = QUOTE_WHERE;

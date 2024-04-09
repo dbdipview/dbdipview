@@ -31,10 +31,11 @@ class ReportMenu {
 	function __construct($xml) {
 		foreach ($xml->database->screens->screen as $screen) {
 			array_push($this->screensArray, $screen);
-			if ( ! is_null($screen->id->attributes()) ) 
+			if ( ! is_null($screen->id->attributes()) ) {
 				$attributeHide = get_bool($screen->id->attributes()->hide);
-			if($attributeHide != true)
-				$this->numberOfScreens +=1;
+				if($attributeHide != true)
+					$this->numberOfScreens +=1;
+			}
 		}
 	}
 
@@ -94,6 +95,7 @@ class ReportMenu {
 
 			$currentMenuItem += 1;
 			$nowLevel = 0;
+			$attributeTextOnly = false;
 
 			if ( ! is_null($screen->id->attributes()) )
 				$attributeHide =	 get_bool($screen->id->attributes()->hide);

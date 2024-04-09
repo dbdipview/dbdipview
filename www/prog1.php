@@ -83,8 +83,8 @@ if ( empty($myXMLfile) ) {
 
 $myXMLpath = "data/";
 $myXMLfilePath = $myXMLpath . $myXMLfile;
-$myTXTfilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . ".txt";
-$myRedactionFilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . "_redaction.html";
+$myTXTfilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . ".txt";                    //description.txt
+$myRedactionFilePath = $myXMLpath . rtrim($myXMLfile, ".xml") . "_redaction.html";   //redaction.html
 
 $package_redacted = config_isPackageRedacted( rtrim($myXMLfile, ".xml"), $dbName );
 
@@ -122,7 +122,10 @@ HtmlElements::htmlWithLanguage();
   <title>dbDIPview</title>
 <?php include "head.php"; ?>
   <script language="JavaScript" src="js/sorttable.js" /></script>
-  <script language="JavaScript" src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
+  <script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+  crossorigin="anonymous"></script>
   <script language="JavaScript" src="js/calendar_db.js" /></script>
   <link rel="stylesheet" href="js/calendar.css" />
 </head>

@@ -230,6 +230,7 @@ function isAtype($name, $end): bool {
 		return(false);
 }
 
+
 /**
  * Multibyte string padding
  * example: "xx"->"xx  "
@@ -238,7 +239,9 @@ function isAtype($name, $end): bool {
  * @param int $pad_length
  * @param string $pad_char
  */
-function mb_str_pad($input, $pad_length, $pad_char=' '): string {
-	$mb_diff = mb_strlen($input) - strlen($input);
-	return str_pad($input, $pad_length - $mb_diff, $pad_char, STR_PAD_RIGHT);
+ if (version_compare(PHP_VERSION, '8.3.0', '<')) {
+	function mb_str_pad($input, $pad_length, $pad_char=' '): string {
+		$mb_diff = mb_strlen($input) - strlen($input);
+		return str_pad($input, $pad_length - $mb_diff, $pad_char, STR_PAD_RIGHT);
+	}
 }
