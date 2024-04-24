@@ -85,24 +85,26 @@ function getKeyValue($arr, $key) {
  * Returns: an array with all rows of the result
  *          array is indexed by column number
  * @param string $query
+ * @return  array<int, array<int, string>>
  * @psalm-return list<mixed>
  */
-function qRowsToArray($query): array{
+function qRowsToArray($query) {
 	global $dbConn;
 	$outarray = array();
-	//$result = $dbConn->query()->fetch(PDO::FETCH_NUM);
+
 	$stmt = $dbConn->prepare($query);
 	$stmt->execute();
 
 	if ($dbConn->errorCode() != 0) {
 		debug( implode(",", $dbConn->errorInfo()) );
 		return(array(array("ERROR: qRowsToArray<br />")));
-	} else {
-		while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-			array_push($outarray, $row);
-		}
-		return($outarray);
 	}
+
+	while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))
+		array_push($outarray, $row);
+
+	return($outarray);
+
 }
 
 /**
@@ -176,6 +178,8 @@ function makeParameterReferencesOne($link, $linkval): string {
  * @psalm-return array{0: string, 1: int, 2: int}
  */
 function qToListWithLink($queryData, $totalCount) {
+	global $dbConn;
+	global $filespath;
 
 	$query =                  $queryData->query;
 	$linknextscreen_columns = $queryData->linknextscreen_columns;
@@ -187,10 +191,9 @@ function qToListWithLink($queryData, $totalCount) {
 	if( empty($query) )
 		return(array("", 0, 0));
 
-	global $dbConn;
-	global $filespath;
 	$output = "";
 	$hits = 0;
+	$break = "";
 
 	if ( UNKNOWN == $totalCount ) {
 		$totalLines = 0;   //will be set later

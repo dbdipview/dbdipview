@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.5.4] - 2024-04-24
+### Fixed
+- all: PHPStan static code analysis
+
 ## [3.5.3] - 2024-04-09
 ### Added
 - access: supported php v8.3; latest jquery
@@ -110,7 +114,7 @@ Generally, the master branch is always stable. You can use it for installation o
 
 ## [2.11.1] - 2022-10-04
 ### Fixed
-- all: PHPStan static code analyses has been introduced to increase the quality of the code
+- all: PHPStan static code analysis has been introduced to increase the quality of the code
 
 ## [2.11.0] - 2022-09-16
 ### Changed

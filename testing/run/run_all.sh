@@ -62,7 +62,10 @@ do
 	echo "== deleting ${TESTCASE} ========================================="
 	#skip after first installation
 	if [ -d $UNPACKED/${TESTCASE} ] ; then
+		echo "   Running command: ${MH}/admin/menu.php $DBG -r order_${TESTCASE}.xml"
 		php ${MH}/admin/menu.php $DBG -r order_${TESTCASE}.xml
+	else
+		echo "   Probably not installed, folder does not exist: $UNPACKED/${TESTCASE}"
 	fi
 done
 
