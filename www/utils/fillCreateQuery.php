@@ -100,21 +100,24 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 function appendOrderGroupBy($what, $criteria): string {
 	$queryTail = "";
 	$criteria = chop($criteria);   //remove white space characters
-	if ( strlen($criteria) > 0 ) {
-		debug("fillCreateQuery: $what=$criteria");
-		if ( substr_count($criteria, '"') > 0) {
-			$queryTail = " $what " . $criteria;
-		} else {
-			//remove "unprintable" characters
-			$criteriatmp0 = preg_replace('/\s/', ' ', (string)$criteria);
-			$pattern = '~([ ])\1\1+~';
-			if ( !is_null($criteriatmp0) ) {
-				$criteriatmp1 = preg_replace($pattern,'\1',$criteriatmp0);
-				$criteriatmp2 = str_replace('.',  '"."',  $criteriatmp1);  //db.col --> "db"."col"
-				$criteriatmp3 = str_replace(', ', '", "', $criteriatmp2);  //db.col, --> db.col", "
-				$queryTail = " $what \"" . $criteriatmp3 . "\"";
-			}
-		}
+
+	if ( empty($criteria) )
+		return($queryTail);
+
+	debug("___" . __FUNCTION__ . ": ".  $what . ", " . $criteria);
+	if ( substr_count($criteria, '"') > 0) {
+		$queryTail = " $what " . $criteria;
+	} else {
+		//remove "unprintable" characters
+		$criteriatmp0 = preg_replace('/\s/', ' ', (string)$criteria);
+
+		$pattern = '~([ ])\1\1+~';
+		$criteriatmp1 = empty($criteriatmp0) ? null : preg_replace($pattern,'\1',$criteriatmp0);
+		$criteriatmp2 = empty($criteriatmp1) ? null : str_replace('.',  '"."',   $criteriatmp1);  //db.col --> "db"."col"
+		$criteriatmp3 = empty($criteriatmp2) ? null : str_replace(', ', '", "',  $criteriatmp2);  //db.col, --> db.col", "
+
+		if ( !empty($criteriatmp3) )
+			$queryTail = " $what \"" . $criteriatmp3 . "\"";
 	}
 	return($queryTail);
 }
@@ -152,7 +155,7 @@ function processSimpleOR_ANDqueryParam($operator, $field, $input, $equal, $quote
 				$value = "%".$value."%";
 			$text =   $text . $op . processOperator($field, "NOT " . $equal, $value, $quote);
 		} else {                          //'!' found, remove it
-			$value = trim($value);       
+			$value = trim($value);
 			if ($addPercentage && strpos($value,'%') === false)
 				$value = "%".$value."%";
 			$text =  $text . $op . processOperator($field, $equal, $value, $quote);
@@ -237,7 +240,7 @@ foreach ($xml->database->screens->screen as $screen) {
 				name: $field, type: $param->type, to be forwarded as: $fieldParamForward )");
 
 
-			if ( ! in_array($param->type, $allowedTypes) ) 
+			if ( ! in_array($param->type, $allowedTypes) )
 				debug("________________ ERROR: wrong type: " . $param->type . ". Allowed values: [" . implode(",",$allowedTypes) . "]");
 
 			$fieldType = str_replace(" ", "__20__", $fieldType);

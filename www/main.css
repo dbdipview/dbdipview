@@ -194,6 +194,14 @@ input {
 	border: 0.15rem solid var(--main-boxbg-color);
 }
 
+textarea {
+	font-family: var(--main-fontfamily);
+	font-size: var(--main-font-size);
+	padding: 0.01rem;
+	margin: 0.1rem 0.1rem;
+	border: 0.15rem solid var(--main-boxbg-color);
+}
+
 .required:after {
 	content:"*";
 	color: red;

@@ -328,43 +328,45 @@ function actions_DDVEXT_create_schema($listfile, $DDV_DIR_EXTRACTED) {
 	$CREATEDB0 = $DDV_DIR_EXTRACTED . "/metadata/createdb.sql";
 	$CREATEDB1 = $DDV_DIR_EXTRACTED . "/metadata/createdb01.sql";
 
-	if ( is_file($listfile) ) {
-		msgCyan($MSG29_PROCESSING . " " . basename($listfile) . "...");
-		$listData = new ListData($listfile);
-	
-		foreach ($listData->schemas as $schema) {
-			$SCHEMA = $schema;  //$tok[1];
-			$SCHEMA_Q = addQuotes($SCHEMA);
-			msgCyan($MSG49_CREATINGSCHEMA . " " . $SCHEMA . "...");
-			$rv = dbf_create_schema($DBC, $SCHEMA_Q);
-			if ( $rv != 0 )
-				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-			else {
-				$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA_Q, $DBGUEST);
-				if ( $rv != 0 )
-					err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-			}
-		}
-
-		if ( is_file($CREATEDB0) ) {
-			msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . "...");
-			$rv = dbf_run_sql($DBC, $CREATEDB0);
-			if ( $rv != 0 )
-				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-		} else
-			debug(__FUNCTION__ . ": No file " . basename($CREATEDB0) . "...");
-
-		if ( is_file($CREATEDB1) ) {
-			msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
-			$rv = dbf_run_sql($DBC, $CREATEDB1);
-			if ( $rv != 0 )
-				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-		}
-		msgCyan($MSG25_EMPTY_TABLES_CREATED);
-		$ret = $OK;
-
-	} else
+	if ( !is_file($listfile) ) {
 		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": ", $listfile);
+		return($NOK);
+	}
+
+	msgCyan($MSG29_PROCESSING . " " . basename($listfile) . "...");
+	$listData = new ListData($listfile);
+
+	foreach ($listData->schemas as $schema) {
+		$SCHEMA = $schema;  //$tok[1];
+		$SCHEMA_Q = addQuotes($SCHEMA);
+		msgCyan($MSG49_CREATINGSCHEMA . " " . $SCHEMA . "...");
+		$rv = dbf_create_schema($DBC, $SCHEMA_Q);
+		if ( $rv != 0 )
+			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		else {
+			$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA_Q, $DBGUEST);
+			if ( $rv != 0 )
+				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		}
+	}
+
+	if ( is_file($CREATEDB0) ) {
+		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . "...");
+		$rv = dbf_run_sql($DBC, $CREATEDB0);
+		if ( $rv != 0 )
+			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+	} else
+		debug(__FUNCTION__ . ": No file " . basename($CREATEDB0) . "...");
+
+	if ( is_file($CREATEDB1) ) {
+		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
+		$rv = dbf_run_sql($DBC, $CREATEDB1);
+		if ( $rv != 0 )
+			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+	}
+
+	msgCyan($MSG25_EMPTY_TABLES_CREATED);
+	$ret = $OK;
 
 	return($ret);
 }
@@ -421,14 +423,10 @@ function actions_DDVEXT_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARG
 			debug(__FUNCTION__ . ": granting acces to VIEW " . $view);
 			$rv = dbf_grant_select_on_table($DBC, addQuotes($view), $DBGUEST);
 			$ret = $OK;
-
 		}
 
 	if (! empty($listData->tables) ) {
 		foreach ($listData->tables as $table) {
-			if (empty($table))
-				continue;
-
 			debug(__FUNCTION__ . ": processing table data file " . $table->file);
 			print(".");
 			$TABLE = addQuotes($table->name);
@@ -622,19 +620,23 @@ function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 /**
  * In the menu mode, read the queries.xml file to get default values for activation
  *
- * @param OrderInfo $orderInfo
+ * @param OrderInfo|null $orderInfo
  */
 function actions_DDV_getInfo($orderInfo): void {
 	global $DDV_DIR_EXTRACTED;
 
+	if ( is_null($orderInfo) )
+		return;
+		
 	$xmlFile = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
-	if (file_exists($xmlFile)) {
-		$xml = simplexml_load_file($xmlFile);
-		if (false !== $xml) {
-			$orderInfo->title =     $xml->database->name;
-			$orderInfo->reference = $xml->database->ref_number;
-			$orderInfo->order = "";
-		}
+	if ( !file_exists($xmlFile) )
+		return;
+
+	$xml = simplexml_load_file($xmlFile);
+	if ( false !== $xml ) {
+		$orderInfo->title =     $xml->database->name;
+		$orderInfo->reference = $xml->database->ref_number;
+		$orderInfo->order = "";
 	}
 }
 
@@ -675,16 +677,14 @@ function actions_SIARD_install($siardFile, $tool) {
 	global $DBC, $SIARDTOOLDEFAULT;
 	global $OK, $NOK;
 
-	$ret = $NOK;
-
 	if ( empty($tool) )
 		$tool = $SIARDTOOLDEFAULT;
 
 	msgCyan($MSG50_DEPLOYING . ": " . basename($siardFile) . " ($tool)...");
-	if (installSIARD($DBC, $siardFile, $tool)) {
-		$ret = $OK;
-	}
-	return($ret);
+	if (installSIARD($DBC, $siardFile, $tool))
+		return($OK);
+	else
+		return($NOK);
 }
 
 /**
@@ -697,22 +697,26 @@ function actions_SIARD_grant($listfile): bool {
 	global $DBC, $DBGUEST;
 	global $OK, $NOK;
 
-	$ret = $NOK;
-
 	debug(__FUNCTION__ . ": " . $listfile);
 	msgCyan($MSG3_ENABLEACCESS . "...");
-	if ( is_file($listfile)) {
-		$listData = new ListData($listfile);
-		foreach ($listData->schemas as $schema) {
-			$SCHEMA = $schema; //$tok[1];
-			msgCyan($MSG23_SCHEMA_ACCESS . " " . $SCHEMA);
-			$SCHEMA_Q = addQuotes($SCHEMA);
-			$rv = dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST);
-			if ( $rv != 0 )
-				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-		}
-	} else
+
+	if ( !is_file($listfile)) {
 		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": ", $listfile);
+		return($NOK);
+	}
+
+	$ret = $OK;
+	$listData = new ListData($listfile);
+	foreach ($listData->schemas as $schema) {
+		$SCHEMA = $schema; //$tok[1];
+		msgCyan($MSG23_SCHEMA_ACCESS . " " . $SCHEMA);
+		$SCHEMA_Q = addQuotes($SCHEMA);
+		$rv = dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST);
+		if ( $rv != 0 ) {
+			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+			$ret = $NOK;
+		}
+	}
 
 	return($ret);
 }
@@ -723,7 +727,7 @@ function actions_SIARD_grant($listfile): bool {
  *
  * @param string $ddv
  * @param string|null $access_code  force this value for access token
- * @param OrderInfo   $orderInfo
+ * @param OrderInfo|null   $orderInfo
  * @return string                   access token for quick user access
  */
 function actions_access_on($ddv, $access_code, $orderInfo): string {
@@ -740,69 +744,82 @@ function actions_access_on($ddv, $access_code, $orderInfo): string {
 	$REDACTFILESRC = $DDV_DIR_EXTRACTED . "/metadata/redaction.html";
 
 	msgCyan($MSG6_ACTIVATEDIP . ": " . $ddv . "...");
-	if (notSet($ddv))
-		err_msg($MSG18_DDV_NOT_SELECTED);
-	else if ( !is_dir($DDV_DIR_EXTRACTED) )
-		err_msg($MSG15_DDV_IS_NOT_UNPACKED);
-	else if (notSet($DBC))
-		err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
-	else if ( !is_dir("$SERVERDATADIR") )
-		err_msg($MSG16_FOLDER_NOT_FOUND . ": ", $SERVERDATADIR);
-	else if ( !is_file("$XMLFILESRC") )
-		err_msg($MSG17_FILE_NOT_FOUND . ": ", $XMLFILESRC);
-	else if (config_isPackageActivated($ddv, $DBC) > 0)
-			err_msg($MSG30_ALREADY_ACTIVATED, "$ddv ($DBC)");
-	else {
 
-		$targetFile = $SERVERDATADIR . $ddv . ".xml";
+	if (notSet($ddv)) {
+		err_msg($MSG18_DDV_NOT_SELECTED);
+		return("");
+	}
+	if ( !is_dir($DDV_DIR_EXTRACTED) ) {
+		err_msg($MSG15_DDV_IS_NOT_UNPACKED);
+		return("");
+	}
+	if (notSet($DBC)) {
+		err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
+		return("");
+	}
+	if ( !is_dir("$SERVERDATADIR") ) {
+		err_msg($MSG16_FOLDER_NOT_FOUND . ": ", $SERVERDATADIR);
+		return("");
+	}
+	if ( !is_file("$XMLFILESRC") ) {
+		err_msg($MSG17_FILE_NOT_FOUND . ": ", $XMLFILESRC);
+		return("");
+	}
+	if (config_isPackageActivated($ddv, $DBC) > 0) {
+		err_msg($MSG30_ALREADY_ACTIVATED, "$ddv ($DBC)");
+		return("");
+	}
+	if ( is_null($orderInfo) )
+		return("");
+
+	$targetFile = $SERVERDATADIR . $ddv . ".xml";
+	if ( !is_file($targetFile) )
+		if ( !copy($XMLFILESRC, $targetFile) )
+			err_msg(__FUNCTION__ . ": Copy error: " . $ddv . ".xml");
+		else
+			debug(__FUNCTION__ . ": Created $targetFile");
+	else
+		debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
+
+	if ( is_file($DESCFILESRC) ) {
+		$targetFile = $SERVERDATADIR . $ddv . ".txt";
 		if ( !is_file($targetFile) )
-			if ( !copy($XMLFILESRC, $targetFile) )
-				err_msg(__FUNCTION__ . ": Copy error: " . $ddv . ".xml");
+			if ( !copy($DESCFILESRC, $targetFile) )
+				err_msg(__FUNCTION__ . ": Copy error: " . $ddv . ".txt");
 			else
 				debug(__FUNCTION__ . ": Created $targetFile");
 		else
 			debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
-
-		if ( is_file($DESCFILESRC) ) {
-			$targetFile = $SERVERDATADIR . $ddv . ".txt";
-			if ( !is_file($targetFile) )
-				if ( !copy($DESCFILESRC, $targetFile) )
-					err_msg(__FUNCTION__ . ": Copy error: " . $ddv . ".txt");
-				else
-					debug(__FUNCTION__ . ": Created $targetFile");
-			else
-				debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
-		}
-
-		if ( is_file($REDACTFILESRC) ) {
-			$targetFile = $SERVERDATADIR . $ddv . "_redaction.html";
-			if ( !is_file($targetFile) )
-				if ( !copy($REDACTFILESRC, $targetFile) )
-					err_msg(__FUNCTION__ . ": Copy error: " . $ddv . "_redaction.html");
-				else
-					debug(__FUNCTION__ . ": Created $targetFile");
-			else
-				debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
-		}
-
-		$configItemInfo['dbc']         = $DBC;
-		$configItemInfo['ddv']         = $ddv;
-		$configItemInfo['queriesfile'] = $ddv . ".xml";
-		$configItemInfo['ddvtext']     = '--';
-		if ($access_code !== null)
-			$token = $access_code;
-		else
-			$token = uniqid("c", FALSE);
-		$configItemInfo['token']       = $token;
-		$configItemInfo['access']      = $orderInfo->access;
-		$configItemInfo['ref']         = $orderInfo->reference;
-		$configItemInfo['title']       = $orderInfo->title;
-		$configItemInfo['order']       = $orderInfo->order;
-		$configItemInfo['redacted']    = $orderInfo->redact;
-		config_json_add_item($configItemInfo);
-		msgCyan($MSG27_ACTIVATED . ".");
-		//config_show();
 	}
+
+	if ( is_file($REDACTFILESRC) ) {
+		$targetFile = $SERVERDATADIR . $ddv . "_redaction.html";
+		if ( !is_file($targetFile) )
+			if ( !copy($REDACTFILESRC, $targetFile) )
+				err_msg(__FUNCTION__ . ": Copy error: " . $ddv . "_redaction.html");
+			else
+				debug(__FUNCTION__ . ": Created $targetFile");
+		else
+			debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
+	}
+
+	$configItemInfo['dbc']         = $DBC;
+	$configItemInfo['ddv']         = $ddv;
+	$configItemInfo['queriesfile'] = $ddv . ".xml";
+	$configItemInfo['ddvtext']     = '--';
+	if ($access_code !== null)
+		$token = $access_code;
+	else
+		$token = uniqid("c", FALSE);
+	$configItemInfo['token']       = $token;
+	$configItemInfo['access']      = $orderInfo->access;
+	$configItemInfo['ref']         = $orderInfo->reference;
+	$configItemInfo['title']       = $orderInfo->title;
+	$configItemInfo['order']       = $orderInfo->order;
+	$configItemInfo['redacted']    = $orderInfo->redact;
+	config_json_add_item($configItemInfo);
+	msgCyan($MSG27_ACTIVATED . ".");
+	//config_show();
 
 	return($token);
 }
@@ -818,24 +835,25 @@ function actions_access_off($ddv) {
 	global $MSG37_MOREACTIVE, $MSG26_DELETED;
 	global $SERVERDATADIR;
 
-	if (config_isPackageActivated($ddv) > 0)
+	if (config_isPackageActivated($ddv) > 0) {
 		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE . " (data/" . $ddv . ".xml)");
-	else {
-		$file="$SERVERDATADIR" . $ddv . ".xml";
-		if (is_file($file))
-			if (unlink($file))
-				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".xml");
-
-		$file="$SERVERDATADIR" . $ddv . ".txt";
-		if (is_file($file))
-			if (unlink($file))
-				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".txt");
-
-		$file="$SERVERDATADIR" . $ddv . "_redaction.html";
-		if (is_file($file))
-			if (unlink($file))
-				debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . "_redaction.html");
+		return;
 	}
+	
+	$file="$SERVERDATADIR" . $ddv . ".xml";
+	if (is_file($file))
+		if (unlink($file))
+			debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".xml");
+
+	$file="$SERVERDATADIR" . $ddv . ".txt";
+	if (is_file($file))
+		if (unlink($file))
+			debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . ".txt");
+
+	$file="$SERVERDATADIR" . $ddv . "_redaction.html";
+	if (is_file($file))
+		if (unlink($file))
+			debug(__FUNCTION__ . ": $MSG26_DELETED $ddv" . "_redaction.html");
 }
 
 /**
@@ -857,26 +875,26 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
 	if ( !is_file($REDACTDB0)) {
 		err_msg($MSG17_FILE_NOT_FOUND . ": ", $REDACTDB0);
 		return($NOK);
-	} else {
-		msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB0) . "...");
-		$rv = dbf_run_sql($DBC, $REDACTDB0);
-		if ( $rv != 0 ) {
+	}
+
+	msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB0) . "...");
+	$rv = dbf_run_sql($DBC, $REDACTDB0);
+	if ( $rv != 0 ) {
+		err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+		return($NOK);
+	}
+
+	if (is_file($REDACTDB1)) {
+		msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB1) . "...");
+		$rv = dbf_run_sql($DBC, $REDACTDB1);
+		if ( $rv != 0 ){
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 			return($NOK);
 		}
-
-		if (is_file($REDACTDB1)) {
-			msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB1) . "...");
-			$rv = dbf_run_sql($DBC, $REDACTDB1);
-			if ( $rv != 0 ){
-				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-				return($NOK);
-			}
-		}
-		msgCyan($MSG47_REDACTCOMPLETED);
-		$ret = $OK;
 	}
 
+	msgCyan($MSG47_REDACTCOMPLETED);
+	$ret = $OK;
 	return($ret);
 }
 
@@ -1016,7 +1034,7 @@ function convertListTxtFile($listTxtFile) {
 				if ( count($tok) != 2 || empty($tok[1]) ) {
 					checkShowError("ERROR: missing filename", "line " . $lineNum . " ");
 					$retErrors++;
-				} else 
+				} else
 					$listData->bfiles[] = $tok[1];
 			}
 	
@@ -1056,10 +1074,10 @@ EOD;
 
 	if ( ! empty($listData->revisions) ) {
 		$x_revisions = $x_configuration->addChild('revisions');
-		foreach ($listData->revisions as $revision) 
+		foreach ($listData->revisions as $revision)
 			$x_revisions->addChild('revision', $revision);
 		$x_revision = $x_revisions->addChild('revision', "Migration from list.txt to list.xml");
-		$x_revision->addAttribute('date', date('Y-m-d')); 
+		$x_revision->addAttribute('date', date('Y-m-d'));
 	}
 
 	if ( ! empty($listData->comment) ) {
@@ -1068,13 +1086,13 @@ EOD;
 
 	if ( ! empty($listData->schemas) ) {
 		$x_schemas = $x_configuration->addChild('schemas');
-		foreach ($listData->schemas as $schema) 
+		foreach ($listData->schemas as $schema)
 			$x_schemas->addChild('schema', $schema);
 	}
 
 	if ( ! empty($listData->views) ) {
 		$x_views = $x_configuration->addChild('views');
-		foreach ($listData->views as $view) 
+		foreach ($listData->views as $view)
 			$x_views->addChild('view', $view);
 	}
 
@@ -1102,17 +1120,17 @@ EOD;
 
 	if ( ! empty($listData->bfiles) ) {
 		$x_bfiles = $x_configuration->addChild('bfiles');
-		foreach ($listData->bfiles as $bfile) 
+		foreach ($listData->bfiles as $bfile)
 			$x_bfiles->addChild('bfile', $bfile);
 	}
 
 	$domi = dom_import_simplexml($x_configuration);
 	if ( $domi !== false) {
 		$dom = $domi->ownerDocument;
-		if ($dom != null) {
+		if ($dom !== null) {
 			$dom->formatOutput = true;
 			$dom->save($targetFile);
-		} else 
+		} else
 			print("ERROR: cannot create ". $targetFile . PHP_EOL);
 	}
 }

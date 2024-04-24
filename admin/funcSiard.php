@@ -86,35 +86,18 @@ function installSIARD($database, $siardfile, $tool): bool {
  */
 function get_SIARD_header_element($path, $xml_element) {
 
-	$xmlstart = "<" . $xml_element . ">";
-	$xmlend = "</" . $xml_element . ">";
 	$text = "";
 
-	$zip = zip_open($path);  //This function has been DEPRECATED as of PHP 8.0.0.
-	if ( false !== $zip && is_resource($zip) ) {
-		do {
-			$entry = zip_read($zip);
-		} while ( is_resource($entry) && zip_entry_name($entry) != "header/metadata.xml");
-
-		if ( is_resource($entry) && zip_entry_open($zip, $entry, "r") ) {
-			$entry_content = zip_entry_read($entry, zip_entry_filesize($entry));
-			$text_open_pos  = strpos($entry_content, $xmlstart);
-			$text_close_pos = strpos($entry_content, $xmlend, $text_open_pos);
-
-			if(!empty($text_open_pos)) {
-				 $text = substr(
-						 $entry_content,
-						 $text_open_pos + strlen($xmlstart),
-						 $text_close_pos - ($text_open_pos + strlen($xmlstart))
-				 );
-			}
-
-			zip_entry_close($entry);
-		}
-
-		zip_close($zip);
+	$zip = new ZipArchive();
+	if ($zip->open($path) !== true)
+		return("");
+		
+	$content = $zip->getFromName("header/metadata.xml");
+	if ($content !== false) {
+		$xml = simplexml_load_string($content);
+		if ( $xml !== false )
+			$text = $xml->{$xml_element};
 	}
-
+	$zip->close();
 	return $text;
 }
-

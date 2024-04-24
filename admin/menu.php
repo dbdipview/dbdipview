@@ -636,7 +636,7 @@ while ( "$answer" != "q" ) {
 			else {
 				if ($OK == actions_schema_redact($DDV_DIR_EXTRACTED)) {
 					$X5='X';
-					if (! empty($orderInfo) )
+					if ($orderInfo !== null )
 						$orderInfo->redact = true;
 				}
 			}
@@ -659,7 +659,7 @@ while ( "$answer" != "q" ) {
 				}
 			}
 			if ( $XOS == ' ' )  {
-				echo "$MSGO_REF [" . $orderInfo->reference . "]:";
+				echo "$MSGO_REF [" . ($orderInfo->reference ?? "") . "]:";
 				if ( ($answer = fgets($handleKbd)) !== false ) {
 					$answer = trim($answer);
 					if ( !empty($answer) && ! empty($orderInfo) )
@@ -667,7 +667,7 @@ while ( "$answer" != "q" ) {
 				}
 			}
 			if ( $XOS == ' ' )  {
-				echo "$MSGO_TITLE [" . $orderInfo->title . "]:";
+				echo "$MSGO_TITLE [" . ($orderInfo->title ?? "") . "]:";
 				if ( ($answer = fgets($handleKbd)) !== false ) {
 					$answer = trim($answer);
 					if ( !empty($answer) && ! empty($orderInfo) )

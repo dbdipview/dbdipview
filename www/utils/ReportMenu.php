@@ -104,6 +104,7 @@ class ReportMenu {
 				$nowLevel = (int)$screen->attributes()->level;
 			}
 
+			/** @phpstan-ignore-next-line */
 			if ( hasPermissionForThis($screen->needed_permission) ) {
 				$nowLevel = intval($nowLevel);
 				if ($nowLevel > ($oldLevel + 1)) {
