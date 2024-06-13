@@ -133,13 +133,17 @@ HtmlElements::htmlWithLanguage();
 
 include "utils/dbDipDbView.php";
 include "utils/dbUtilsInputFnc.php";
-include "utils/ColumnDescriptions.php";
-include "utils/getQueryNumber.php";
-include "utils/fillSearchParameters.php";
-include "utils/ViewData.php";
-include "utils/QueryData.php";
-include "utils/fillCreateQuery.php";
 include "utils/ReportMenu.php";
+if ( $submit_cycle == "ShowMenu" || $submit_cycle == "CheckLogin" || $submit_cycle == "querySelected")
+	include "utils/getQueryNumber.php";
+if ( $submit_cycle == "querySelected" )
+	include "utils/fillSearchParameters.php";
+include "utils/ViewData.php";
+if ( $submit_cycle == "searchParametersReady" ) {
+	include "utils/QueryData.php";
+	include "utils/fillCreateQuery.php";
+	include "utils/ColumnDescriptions.php";
+}
 
 include "messagesw.php";
 

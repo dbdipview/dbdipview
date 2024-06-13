@@ -295,7 +295,7 @@ class ColumnDescriptions
 		
 		if ( !empty($this->columnsArrayDescriptions) ) {
 			if( array_key_exists( $col, $this->columnsArrayDescriptions) )
-				$ret = $this->columnsArrayDescriptions[$col];
+				$ret = $this->columnsArrayDescriptions[$col] ?? "";
 		}
 
 		return($ret);

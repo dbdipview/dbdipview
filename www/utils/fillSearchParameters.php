@@ -86,14 +86,14 @@ foreach ($xml->database->screens->screen as $screen) {
 
 			if(0==strcmp("text", $param->type)) {
 				if($bSize)
-					input_text_size($field, (int) $attributeSize, "", TRUE, $currentId);
+					input_text_size($field, (int) $attributeSize, "", TRUE, $currentId, null);
 				else
-					input_text_size($field, 15,                   "", TRUE, $currentId);    //default
+					input_text_size($field, 15,                   "", TRUE, $currentId, null);    //default
 			}
 
 			if(0==strcmp("textlike", $param->type)) {
 				if($bSize)
-					input_text_size($field, (int) $attributeSize, "", TRUE, $currentId);
+					input_text_size($field, (int) $attributeSize, "", TRUE, $currentId, null);
 				else
 					input_text($field, $currentId);
 			}
