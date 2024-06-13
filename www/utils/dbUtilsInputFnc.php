@@ -77,20 +77,26 @@ function input_integer($element_name, $param_size, $id): void {
 
 
 /**
- * IN:  input_text_size("permissions", 5, "abc"], true)
+ * IN:  input_text_size("permissions", 5, "abc", true, "id1", "YYYY_MM")
  * OUT: <input type="text" size="5" name="permissions" value="abc" />
- * @param string $element_name
- * @param int    $param_size
- * @param string $value
- * @param bool   $enabled
- * @param string $id
+ * @param string      $element_name
+ * @param int         $param_size
+ * @param string      $value
+ * @param bool        $enabled
+ * @param string      $id
+ * @param null|string $placeholder
  */
-function input_text_size($element_name, $param_size, $value, $enabled, $id): void {
+function input_text_size($element_name, $param_size, $value, $enabled, $id, $placeholder = null): void {
 	if($enabled) {
-		if( $param_size > 0 )
-			print '<input type="text" size="' . $param_size .'" name="' . $element_name . '" id="' . $id . '" value="' . $value . '"'  . ' />';
+		if ( empty($placeholder) )
+			$ph = "";
 		else
-			print '<input type="text"                           name="' . $element_name . '" id="' . $id . '" value="' . $value . '"'  . ' />';
+			$ph = " placeholder=\"" . $placeholder . "\"";
+
+		if( $param_size > 0 )
+			print '<input type="text" size="' . $param_size .'" name="' . $element_name . '" id="' . $id . '" value="' . $value . '"'  . $ph . ' />';
+		else
+			print '<input type="text"                           name="' . $element_name . '" id="' . $id . '" value="' . $value . '"'  . $ph . ' />';
 	} else {
 		print $value . '&nbsp;';
 	}
