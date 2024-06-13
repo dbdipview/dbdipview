@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.5.5] - 2024-06-16
+### Fixed
+- access: code refactoring
+
 ## [3.5.4] - 2024-04-24
 ### Fixed
 - all: PHPStan static code analysis
