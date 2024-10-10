@@ -1,0 +1,17 @@
+<dbrequest>
+	<order>Order_test_TD3</order>
+	<reference>TEST TD/3</reference>
+	<title>TestAndDemo3: two SIARD and one DDV package; the 2nd SIARD is extracted from a separate package</title>
+	<dbcontainer redact="0">DBC3</dbcontainer>
+
+	<packages_with_siard>
+		<package_with_siard>TAD3/TestAndDemo3_AIP_content_as_DIP0.tar.gz</package_with_siard>
+	</packages_with_siard>
+	<siards tool="DBPTK">
+		<siard>TAD3/TestAndDemo3_A.siard</siard>
+		<siard>TAD3/TestAndDemo3_B.siard</siard>
+	</siards>
+	<viewer>TAD3/TestAndDemo3.zip</viewer>
+	<access>public</access>
+</dbrequest>
+

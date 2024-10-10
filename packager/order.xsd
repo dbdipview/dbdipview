@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.0">
-  <!-- dbDIPview, schema for order xml, v2019-11-23-->
+  <!-- dbDIPview, schema for order xml, v2024-09-23 -->
 
   <xs:element name="dbrequest">
     <xs:complexType>
@@ -30,6 +30,14 @@
           </xs:complexType>
         </xs:element>
 
+        <xs:element name="packages_with_siard" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="package_with_siard" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
         <xs:element name="siards" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
@@ -43,6 +51,14 @@
                 </xs:restriction>
               </xs:simpleType>
             </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="packages_with_csv" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="package_with_csv" type="xs:string" />
+            </xs:sequence>
           </xs:complexType>
         </xs:element>
 

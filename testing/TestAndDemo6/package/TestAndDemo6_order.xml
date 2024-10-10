@@ -3,7 +3,7 @@
 	<reference>TEST TD/6</reference>
 	<title>TestAndDemo6: DDV package, use of content in DBC4</title>
 	<dbcontainer redact="0">DBC4</dbcontainer>
-	<viewer>TestAndDemo6.zip</viewer>
+	<viewer>TAD6/TestAndDemo6.zip</viewer>
 	<access>public</access>
 </dbrequest>
 

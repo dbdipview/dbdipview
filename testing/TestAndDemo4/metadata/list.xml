@@ -2,9 +2,10 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list.xsd" schemaMajorVersion="1">
 	<revisions>
 		<revision date="2022-11-13">Migration from list.txt to list.xml</revision>
+		<revision date="2024-09-23">External AIP package with CSV files</revision>
 	</revisions>
 	<comment>TestAndDemo4 - dbDIPview regression testMake sure that the 
-    tables are created beforehand from a SIARD file! The table is loaded from two CSV files.</comment>
+    tables are created beforehand from a SIARD file! The table is loaded from two CSV files that are in a separate package.</comment>
 	<schemas>
 		<schema>HR members</schema>
 	</schemas>

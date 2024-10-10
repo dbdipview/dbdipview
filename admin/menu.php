@@ -16,76 +16,13 @@
 $PROGDIR=__DIR__;  //e.g. /home/me/dbdipview/admin
 
 set_include_path($PROGDIR);
-
-$SERVERDATADIR = str_replace("admin/../", "",   "$PROGDIR/../www/data/");
-$SERVERCONFIGDIR = str_replace("admin/../", "", "$PROGDIR/../www/config/");
-
-$DDV_DIR_EXTRACTED = "";
-$BFILES_DIR_TARGET = "";
-$PACKAGEFILE = "";
-$SIARDNAME = "";
-$SIARDFILE = "";
-$LISTFILE = "";
-
-if ( !is_file($PROGDIR . '/configa.php') && is_file($PROGDIR . '/configa.txt') ) {
-		echo "Upgrade to 2.8.2, renaming configa.txt" . PHP_EOL;
-		rename($PROGDIR . '/configa.txt', $PROGDIR . '/configa.php');
-}
-
-if ( !is_file($PROGDIR . '/configa.php')) {
-	echo    "File $PROGDIR/configa.php is missing, create it from configa.php.template!" . PHP_EOL;
-	exit(1);
-}
-
-if ( !is_file($SERVERCONFIGDIR . 'config.php') && is_file($SERVERCONFIGDIR . '../config.txt') ) {
-		echo "Upgrade to 2.8.2, renaming config.txt and moving it to www/config folder." . PHP_EOL;
-		rename($SERVERCONFIGDIR . '/../config.txt',    $SERVERCONFIGDIR . 'config.php');
-		rename($SERVERCONFIGDIR . '/../confighdr.txt', $SERVERCONFIGDIR . 'confighdr.php');
-}
-
-if ( !is_file($SERVERCONFIGDIR . 'config.php')) {
-	echo    "File " . $SERVERCONFIGDIR . "config.php is missing, create it from config.php.template!" . PHP_EOL;
-	exit(1);
-}
-
-if (version_compare(phpversion(), '7.4.0', '<')) {
-    die("php version isn't high enough, at least PHP 7.4 is expected." . PHP_EOL);
-}
-
-require 'configa.php';
-
-require $SERVERCONFIGDIR . 'config.php';
-$DBGUEST = $userName;
-
-require 'messagesm.php';
-require 'OrderInfo.php';
-require 'funcConfig.php';
-require 'funcDb.php';
-require 'funcSiard.php';
-require 'funcXml.php';
-require 'funcMenu.php';
-require 'ListData.php';
-require 'funcActions.php';
-
-$DDV_DIR_PACKED   = str_replace("admin/../", "", "$DDV_DIR_PACKED");
-$DDV_DIR_UNPACKED = str_replace("admin/../", "", "$DDV_DIR_UNPACKED");
-$BFILES_DIR       = str_replace("admin/../", "", "$BFILES_DIR");
+require 'orderInit.php';
 
 $XB=' ';$XC=' ';$XD=' ';$X0=' ';$X1=' ';$X2=' ';$X3=' ';
 $XP=' ';$XS=' ';$XT=' ';$XL=' ';
 $X3=' ';$X5=' ';$X6=' ';$X7=' ';$X8=' ';$X9=' ';
 $XOS=' ';$XOI=' ';$XOD=' ';
 $V1=' ';$V2=' ';$V3=' ';$V4=' ';
-
-$SCHEMA = "";
-$debug = false;
-$OK = true;
-$NOK = false;
-
-$ORDER = "";
-$PKGFILEPATH = "";
-$DDV = "";
-$DBC = "";
 
 $orderInfo = new OrderInfo();
 
@@ -125,7 +62,7 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 }
 
 
-$options = getopt("hoesp:r:dc:aL");
+$options = getopt("hoesdc:aL");
 if ( false === $options) {
 	echo "Parse error..";
 	exit();
@@ -137,8 +74,6 @@ if ( count($options) == 0 || array_key_exists('h', $options) ||
 	echo "   -e         extended DDV package workflow" . PHP_EOL;
 	echo "   -L         append data using an additional list file" . PHP_EOL;
 	echo "   -s         SIARD workflow" . PHP_EOL;
-	echo "   -p <file>  deploy an order" . PHP_EOL;
-	echo "   -r <file>  remove an order" . PHP_EOL;
 	echo "   -c <code>  set this access code instead of a calculated one" . PHP_EOL;
 	echo "   -d         debug mode" . PHP_EOL;
 	echo "   -a         show all options (for information only)" . PHP_EOL;
@@ -178,32 +113,6 @@ if (array_key_exists('c', $options)) {
 if (array_key_exists('d', $options)) {
 	$debug = true;
 	debug("debug mode");
-}
-
-if (array_key_exists('p', $options)) {
-	$name = "";
-	$file = $options['p'];
-	if ( false === $file || !is_string($file) ) {
-		echo "Error -p";
-	} else {
-		$orderInfo = actions_Order_read($name, $file);
-		if (! empty($orderInfo) )
-			actions_Order_process($access_code, $orderInfo);
-	}
-	exit(0);
-}
-
-if (array_key_exists('r', $options)) {
-	$name = "";
-	$file = $options['r'];
-	if ( false === $file || !is_string($file) ) {
-		echo "Error -r";
-	} else {
-		$orderInfo = actions_Order_read($name, $file);
-		if (! empty($orderInfo) )
-			actions_Order_remove($orderInfo);
-	}
-	exit(0);
 }
 
 if (array_key_exists('L', $options))
@@ -398,8 +307,11 @@ while ( "$answer" != "q" ) {
 				$V1 = 'X';$V2=' ';$V3=' ';$V4=' ';
 				$DDV = $name;
 				$PACKAGEFILE = $file;
-				$PKGFILEPATH = $DDV_DIR_PACKED . $file;
-				$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
+				if (strpos($file, '/') === 0)
+					$PKGFILEPATH = $file;
+				else
+					$PKGFILEPATH = $DDV_DIR_PACKED . $file;
+				$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . basename($DDV);
 				$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $DDV;
 				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 				echo $DDV . PHP_EOL;
@@ -443,7 +355,7 @@ while ( "$answer" != "q" ) {
 				err_msg("SIARD!");
 			else if ( !is_file($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
-			else if ($OK == actions_DDVEXT_create_schema($LISTFILE, $DDV_DIR_EXTRACTED))
+			else if ($OK == actions_create_schemas_and_views($LISTFILE, $DDV_DIR_EXTRACTED))
 				$V3='X';
 
 			if ($V3 == 'X') {
@@ -467,7 +379,7 @@ while ( "$answer" != "q" ) {
 				err_msg("SIARD!");
 			else if ( !is_file($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
-			else if ($OK == actions_DDVEXT_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET)) {
+			else if ($OK == actions_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET)) {
 				$V4='X';
 			}
 			enter();
@@ -494,7 +406,7 @@ while ( "$answer" != "q" ) {
 			$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/" . $file;
 			if ( !is_file($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
-			else if ($OK == actions_DDVEXT_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET)) {
+			else if ($OK == actions_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET)) {
 				$XL='X';
 			}
 			enter();
@@ -517,8 +429,11 @@ while ( "$answer" != "q" ) {
 				$X1 = 'X';
 				$DDV = $name;
 				$PACKAGEFILE = $file;
-				$PKGFILEPATH = $DDV_DIR_PACKED . $file;
-				$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
+				if (strpos($file, '/') === 0)
+					$PKGFILEPATH = $file;
+				else
+					$PKGFILEPATH = $DDV_DIR_PACKED . $file;
+				$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . basename($DDV);
 				$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 				echo $DDV . PHP_EOL;
 				if (!empty($appendList))
@@ -550,7 +465,7 @@ while ( "$answer" != "q" ) {
 		case "3": $X3=' ';
 			if (file_exists($DDV_DIR_EXTRACTED))
 				if ($OK == actions_DDV_create_views($DDV_DIR_EXTRACTED)) {
-					actions_DDVEXT_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
+					actions_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
 					$X3='X';
 				}
 			enter();
@@ -567,7 +482,10 @@ while ( "$answer" != "q" ) {
 			} else {
 				$XP = 'X';$XS=' ';$XT=' ';
 				$SIARDNAME = $name;
-				$SIARDFILE = $DDV_DIR_PACKED . $file;
+				if (strpos($file, '/') === 0)
+					$SIARDFILE = $file;
+				else
+					$SIARDFILE = $DDV_DIR_PACKED . $file;
 				echo $SIARDNAME . PHP_EOL;
 
 				$text = get_SIARD_header_element($SIARDFILE, "dbname");
@@ -674,7 +592,7 @@ while ( "$answer" != "q" ) {
 						$orderInfo->title = $answer;
 				}
 			}
-			if ($OK == actions_access_on($DDV, $access_code, $orderInfo)) {
+			if ($OK == actions_access_on(basename($DDV), $access_code, $orderInfo)) {
 				$X6='X';
 			}
 			enter();
@@ -683,9 +601,10 @@ while ( "$answer" != "q" ) {
 		case "7": $X7=' ';
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
-			else if ( !is_dir($DDV_DIR_EXTRACTED))
+			else if ( !is_dir($DDV_DIR_EXTRACTED)) {
+				echo $DDV_DIR_EXTRACTED . "??";
 				err_msg($MSG15_DDV_IS_NOT_UNPACKED);
-			else if ( !is_file("$LISTFILE"))
+			} else if ( !is_file("$LISTFILE"))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else {
 				actions_schema_drop($DBC, $DDV, $LISTFILE);
@@ -726,7 +645,10 @@ while ( "$answer" != "q" ) {
 			enter();
 			break;
 			
-			$F= $DDV_DIR_PACKED . $FILE;
+			if (strpos($file, '/') === 0)
+				$F = $FILE;
+			else
+				$F= $DDV_DIR_PACKED . $FILE;
 			if (notSet($DDV))
 				err_msg($MSG18_DDV_NOT_SELECTED);
 			else if (!file_exists($F))

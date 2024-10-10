@@ -26,8 +26,10 @@ function getbool($value): bool {
  */
 function loadOrder($xmlinput) {
 	global $PROGDIR, $MSG35_CHECKXML;
+	$asiardPackages = array();
 	$asiardfiles = array();
 	$siardTool="";
+	$acsvPackages = array();
 	$aextfiles = array();
 	$orderInfo = new OrderInfo();
 	
@@ -50,7 +52,17 @@ function loadOrder($xmlinput) {
 	$orderInfo->dbc =       "" . $xml->dbcontainer;
 	if ( ! is_null($xml->dbcontainer->attributes()) )
 		$orderInfo->redact = getbool($xml->dbcontainer->attributes()->redact);
-	
+
+
+	if(isset ($xml->packages_with_siard)) 
+		foreach ($xml->packages_with_siard->package_with_siard as $v) {
+			if ( !empty($v) ) {
+				debug(__FUNCTION__ . ": package with SIARD files: " . $v);
+				array_push($asiardPackages, $v);
+			}
+		}
+	$orderInfo->siardPackages =  $asiardPackages;
+
 	if( isset ($xml->siards) ) {
 		if ( ! is_null($xml->siards->attributes()) )
 			$siardTool = $xml->siards->attributes()->tool;
@@ -65,19 +77,28 @@ function loadOrder($xmlinput) {
 	}
 	$orderInfo->siardFiles = $asiardfiles;
 	$orderInfo->siardTool = $siardTool;
-	
-	if(isset    ($xml->viewers_extended)) 
+
+	if(isset ($xml->packages_with_csv)) 
+		foreach ($xml->packages_with_csv->package_with_csv as $v) {
+			if ( !empty($v) ) {
+				debug(__FUNCTION__ . ": package with CSV files: " . $v);
+				array_push($acsvPackages, $v);
+			}
+		}
+	$orderInfo->csvPackages =  $acsvPackages;
+
+	if(isset ($xml->viewers_extended)) 
 		foreach ($xml->viewers_extended->viewer_extended as $v) {
 			if ( !empty($v) ) {
-				debug(__FUNCTION__ . ": viewer_extended file=" . $v);
+				debug(__FUNCTION__ . ": viewer_extended file: " . $v);
 				array_push($aextfiles, $v);
 			}
 		}
 	$orderInfo->ddvExtFiles =  $aextfiles;
-	
+
 	$orderInfo->ddvFile = "" . $xml->viewer;
 	$orderInfo->access =  "" . $xml->access;
-	
+
 	return($orderInfo);
 }
 
