@@ -373,7 +373,7 @@ class QueryData {
 		$this->setGroupAIBL($screen);
 		$this->viewData = new ViewData($screen);
 		$this->query = $query . $queryLimitOffset;
-		debug("<b>query</b> = $query");
+		debug("<b>query</b>:<br />$query");
 
 	} //loadScreenSelect
 
@@ -435,7 +435,7 @@ class QueryData {
 				$subquery = $subquery . appendOrderGroupBy("ORDER BY", $subselect->selectOrder);
 			}
 			$this->query = $subquery;
-			debug("<b>subquery". strval($sqindex+1) . " </b> = $subquery");
+			debug("<b>subquery". strval($sqindex+1) . " </b>:<br />$subquery");
 
 	} //loadSubselect
 

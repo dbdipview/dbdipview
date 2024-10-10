@@ -196,7 +196,7 @@ function checkListFile($folder): int {
 		while (false !== ($entry = readdir($handle))) {
 			if ($entry != "." && $entry != "..") {
 				if ( ! in_array($entry, $filesMentioned) ) {
-					print("ERROR: file exists, but is not mentioned in list.xml: ". $entry . PHP_EOL);
+					print("ERROR: file exists, but is not mentioned in list.xml: '" . $entry . "'" . PHP_EOL);
 					$retErrors++;
 				}
 			}

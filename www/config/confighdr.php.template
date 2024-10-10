@@ -1,13 +1,15 @@
 <?php
 
-$myLang = "en";      //en,sl,cs ISO 639-1 language code
-$loginMenuLevel = 0; //0:dropdown with all public databases, 1:database&viewer, 2:code
+$myLang = "en";			//en,sl,cs ISO 639-1 language code
+$loginMenuLevel = 0;	//0:dropdown with all public databases
+						//1:database&viewer
+						//2:code
 
 $INSTITUTION = "My institution";
-$Logo1_alt_text = "";  //alt text for image on the first page, for screen readers
+$Logo1_alt_text = "";	//alt text for image on the first page, for screen readers
 $Logo2_alt_text = ""; 
 $Logo3_alt_text = ""; 
 
 // See local/README.txt how to add your logo.
 
-$cookie_secure = "0";  //DMZ?
+$cookie_secure = "0";	//1:DMZ

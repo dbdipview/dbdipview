@@ -8,18 +8,18 @@
  *   A viewer for SIARD or other EXT DDV packages, also VIEWs and redaction functionality can be used 
  *   - metadata/list.xml
  *   - metadata/info.txt
+ *   - metadata/queries.xml 
  *   - [optional] metadata/description.txt
  *   - [optional] metadata/createdb.sql
  *   - [optional] metadata/createdb01.sql
- *   - metadata/queries.xml 
  *   - [optional] redact.sql, redact01.sql, redaction.html
  * EXT DDV package (file extension: .tar.gz) 
  *   Complete content
  *   - metadata/list.xml
  *   - metadata/info.txt
- *   - [optional] metadata/description.txt
  *   - metadata/queries.xml
- *   - metadata/createdb.sql
+ *   - [optional] metadata/description.txt
+ *   -            metadata/createdb.sql
  *   - [optional] metadata/createdb01.sql
  *   - [optional] metadata/redact.sql, redact01.sql, redaction.html
  *   - data/ folder with database content as CSV files
@@ -73,12 +73,15 @@ function checkRemove($s, $file): void {
  * @return never
  */
 function showOptions() {
-	echo "Usage: php " . basename(__FILE__) . " -s <source_dir> [-t <target_dir> -n <target_package_name>] [-y] -i [info]" . PHP_EOL;
+	echo "Usage: php " . basename(__FILE__) . " -s <source_dir>" . PHP_EOL;
+	echo "       php " . basename(__FILE__) . " -s <source_dir> -t <target_dir> -n <target_package_name> [-a] [-y] -i [info]" . PHP_EOL;
 	echo "Examples:" . PHP_EOL;
 	echo "  Validate input:" . PHP_EOL;
 	echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS" . PHP_EOL;
 	echo "  Validate input and create package:" . PHP_EOL;
-	echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS -t ~/dbdipview/records/DIP0 -n GZSP -y -i 'this is a test package'" . PHP_EOL;
+	echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS -t ~/dbdipview/records/DIP0 -n GZSP    -y -i 'this is a test package'" . PHP_EOL;
+	echo "  Validate input and create package. CSV files must be present, but will not be included in the output package:" . PHP_EOL;
+	echo "       php " . basename(__FILE__) . " -s ~/dbdipview/records/SIP/GZS -t ~/dbdipview/records/DIP0 -n GZSP -a -y -i 'this is a test package'" . PHP_EOL;
 	exit(-2);
 }
 
@@ -114,12 +117,13 @@ require $DDVDIR . "/admin/funcActions.php";
 require $DDVDIR . "/admin/funcDb.php";
 require $DDVDIR . "/admin/version.php";
 
-if ( ($options = getopt("s:t:n:yvi:h")) === false )
+if ( ($options = getopt("s:t:n:ayvi:h")) === false )
 	showOptions();
 
 if ( array_key_exists('h', $options) || !array_key_exists('s', $options) )
 	showOptions();
 
+$aOption = false;
 $VERBOSE = false;
 $SOURCE = "";
 $OUTDIR = "";
@@ -127,6 +131,9 @@ $NAME = "";
 $OUTFILE_TARGZ = "";
 $OUTFILE_ZIP = "";
 $infotext="";
+
+if (array_key_exists('a', $options))
+	$aOption = true;
 
 if (array_key_exists('y', $options))
 	$yesOption = true;
@@ -213,8 +220,15 @@ if ( !is_dir($datadir) ) {
 } else {
 	if ( ($sd = scandir($datadir)) !== false ) {
 		$countDatafiles = count($sd);
-		if ( $countDatafiles ===  2 )
+		if ( $countDatafiles ===  2 ) {
 			echo "No files in $datadir/" . PHP_EOL;
+			echo "Please remove this empty folder before we continue!" . PHP_EOL;
+			exit(1);
+		}
+		elseif ( $countDatafiles > 2 && $aOption) {
+			echo "NOTE: Folder $datadir/ is not empty, but the contents will not be packed due to -a option." . PHP_EOL;
+			$countDatafiles = 0;
+		}
 	} else {
 		echo "    Aborted. Cannot read : " . $datadir . PHP_EOL;
 		exit(1);
@@ -236,12 +250,16 @@ msg_red_on();
 $errors = checkListFile($SOURCE);
 msg_colour_reset();
 if ( $errors > 0 ) {
-	echo "    Aborted. Number of errors: " . $errors . PHP_EOL;
-	exit(1);
+	if ( $aOption )
+		echo "These errors will be ignored because of -a option!" . PHP_EOL;
+	else {
+		echo "    Aborted. Number of errors: " . $errors . PHP_EOL;
+		exit(1);
+	}
 }
 
 if ( !(array_key_exists('t', $options)) && !(array_key_exists('n', $options))) {
-	echo "Exit, no target has been specified." . PHP_EOL;
+	echo "Input validation completed." . PHP_EOL;
 	exit(1);
 }
 
@@ -255,13 +273,16 @@ if (empty($NAME)) {
 	showOptions();
 }
 
-checkRemove("Target package file $OUTFILE_TARGZ already exists.", $OUTFILE_TARGZ);
-checkRemove("Target package file $OUTFILE_ZIP already exists.", $OUTFILE_ZIP);
+if ( $countDatafiles ===  0 )
+	checkRemove("Target package file $OUTFILE_ZIP already exists.", $OUTFILE_ZIP);
+else
+	checkRemove("Target package file $OUTFILE_TARGZ already exists.", $OUTFILE_TARGZ);
+
 createAboutXML($infofile);
 
 if ( $countDatafiles ===  0 ) {
 	$status = 0;
-    echo "Creating DDV package...". PHP_EOL;
+	echo "Creating DDV package...". PHP_EOL;
 	passthru("cd '" . $SOURCE . "' && " .
 		"zip --must-match -r $OUTFILE_ZIP $ALLMETADATA", $status);
 	if ($status != 0)

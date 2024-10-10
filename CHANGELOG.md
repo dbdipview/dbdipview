@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.6.0] - 2024-10-11
+### Added
+- deployment: a set of files for a database can also be in a subfolder below DIP0 (from now on now suggested for all projects)
+- deployment: CSV or SIARD files can now be part of separate packages and will be extracted during deployment
+- packaging: data folder can be skipped with -a option, but CSV files verification can still be done if files exist
+- test suite: source folder for all test cases now use separate subfolders for each database deployment input packages, the order files have been updated accordingly 
+- test suite: TestAndDemo 3: the second SIARD file is in a separate (external) package 
+- test suite: TestAndDemo 4: both CSV files are now in a a separate (external) package and are not stored in EDDV package anymore
+
 ## [3.5.5] - 2024-06-16
 ### Fixed
 - access: code refactoring

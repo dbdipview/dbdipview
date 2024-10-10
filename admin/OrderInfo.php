@@ -24,11 +24,19 @@ class OrderInfo {
 	/**
 	* @var array<int, string>
 	*/
+	public $siardPackages = array();
+	/**
+	* @var array<int, string>
+	*/
 	public $siardFiles = array();
 	/**
 	* @var string|null
 	*/
 	public $siardTool = null;
+	/**
+	* @var array<int, string>
+	*/
+	public $csvPackages = array();
 	/**
 	* @var array<int, string>
 	*/
@@ -48,8 +56,10 @@ class OrderInfo {
 		$title = "";
 		$dbc = null;
 		$redact = false;
+		$siardPackages = array();
 		$siardFiles = array();
 		$siardTool = null;
+		$csvPackages = array();
 		$ddvExtFiles = array();
 		$ddvFile = null;
 		$access = null;

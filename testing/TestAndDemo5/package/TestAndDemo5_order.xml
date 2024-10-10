@@ -4,12 +4,12 @@
 	<title>TestAndDemo5: SIARD, EXT DDV and DDV packages</title>
 	<dbcontainer redact="1">DBC5</dbcontainer>
 	<siards tool="DBPTK">
-		<siard>TestAndDemo4.siard</siard>
+		<siard>TAD4/TestAndDemo4.siard</siard>
 	</siards>
 	<viewers_extended>
-		<viewer_extended>TestAndDemo4.tar.gz</viewer_extended>
+		<viewer_extended>TAD4/TestAndDemo4.tar.gz</viewer_extended>
 	</viewers_extended>
-	<viewer>TestAndDemo5.zip</viewer>
+	<viewer>TAD5/TestAndDemo5.zip</viewer>
 	<access>public</access>
 </dbrequest>
 

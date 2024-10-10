@@ -1,15 +1,14 @@
 <dbrequest>
 	<order>Order_test_TD4</order>
 	<reference>TEST TD/4</reference>
-	<title>TestAndDemo4: SIARD, EXT DDV, redaction</title>
+	<title>TestAndDemo4: SIARD, CSV package, DDV, redaction</title>
 	<dbcontainer redact="1">DBC4</dbcontainer>
 	<siards tool="DBPTK">
-		<siard>TestAndDemo4.siard</siard>
+		<siard>TAD4/TestAndDemo4.siard</siard>
 	</siards>
-	<viewers_extended>
-		<viewer_extended>TestAndDemo4.tar.gz</viewer_extended>
-	</viewers_extended>
-	<viewer></viewer>
+	<packages_with_csv>
+		<package_with_csv>TAD4/TestAndDemo4_AIP_content_as_DIP0.zip</package_with_csv>
+	</packages_with_csv>
+	<viewer>TAD4/TestAndDemo4.zip</viewer>
 	<access>public</access>
 </dbrequest>
-

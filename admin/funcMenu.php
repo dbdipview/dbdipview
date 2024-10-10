@@ -31,6 +31,8 @@ function enter(): void {
 
 	echo "................................................." . $MSG_ENTER;
 	$key = fgets($handleKbd);
+	if (trim($key) == "q")
+		exit(0);
 }
 
 $TXT_RED=  chr(27).'[31m';
@@ -55,7 +57,7 @@ function debug($p1): void {
 	global $TXT_CYAN, $TXT_RESET;
 
 	if ($debug)
-		echo $TXT_CYAN . $p1 . $TXT_RESET . PHP_EOL;
+		echo "   " . $TXT_CYAN . $p1 . $TXT_RESET . PHP_EOL;
 }
 
 /**
@@ -106,6 +108,7 @@ function getPackageName(&$outname, &$outfilename, $extension, $dir = NULL): void
 
 	$arrPkgName = array();
 	$arrFilename = array();
+	$out = array();
 
 	$i = 1;
 	$description="UNKNOWN";
@@ -114,22 +117,17 @@ function getPackageName(&$outname, &$outfilename, $extension, $dir = NULL): void
 		$dir = $DDV_DIR_PACKED;
 
 	msgCyan($MSG19_DDV_PACKAGES . "(" . $extension . ")");
-	//$out = array_diff(scandir($DDV_DIR_PACKED), array('.', '..'));
 
 	if ( !is_dir($dir) ) {
 		err_msg($MSG16_FOLDER_NOT_FOUND . ":", $dir);
 		return;
 	}
-	if ($dh = opendir($dir)) {
-		$out = array();
-		while (($file = readdir($dh)) !== false) {
-			if (strcasecmp(substr($file, strlen($file) - strlen($extension)), $extension) == 0) {   //name.ext
+	
+	$files = scanFolder($dir);
+	if (! empty($files) )
+		foreach($files as $file)
+			if (strcasecmp(substr($file, strlen($file) - strlen($extension)), $extension) == 0)	//name.ext
 				array_push($out, $file);
-			}
-		}
-		closedir($dh);
-	} else
-		return;
 
 	sort($out, SORT_LOCALE_STRING);
 	foreach($out as $key => $value) {
@@ -157,7 +155,8 @@ function getPackageName(&$outname, &$outfilename, $extension, $dir = NULL): void
 		if (!(0==strcmp($value, "list.xml")||
 			  0==strcmp($value, "info.txt")||
 			  0==strcmp($value, "description.txt"))) {    //these files bother in append mode
-			$arrPkgName[$i] = $val1;
+
+			$arrPkgName[$i]  = ltrim($val1, $dir);
 			$arrFilename[$i] = $value;
 			echo str_pad( (string)$i, 3, " ", STR_PAD_LEFT ) . " ";
 			echo str_pad($arrPkgName[$i],35) . " ";
@@ -180,17 +179,33 @@ function getPackageName(&$outname, &$outfilename, $extension, $dir = NULL): void
 		err_msg($MSG36_NOPACKAGE);
 }
 
-// function showFilesInFolder($dir): void {
-	// if ($handle = opendir($dir)) {
-		// while (false !== ($entry = readdir($handle))) {
 
-			// if ($entry != "." && $entry != "..") {
-				// echo "$entry" . PHP_EOL;
-			// }
-		// }
-		// closedir($handle);
-	// }
-// }
+/**
+ * @param string $directory
+ * @return string[]
+ */
+function scanFolder($directory): array {
+	$out = array();
+	$dir = rtrim($directory, "/");
+
+	if (!is_dir($dir))
+		return $out;
+
+	$files = scandir($dir);
+	if ( empty($files) )
+		return $out;
+
+	foreach ($files as $file) {
+		if ($file != '.' && $file != '..') {
+			$path = $dir . '/' . $file;
+			if (is_dir($path))
+				$out = array_merge($out, scanFolder($path));
+		else
+			array_push($out, $path);
+		}
+	}
+	return $out;
+}
 
 /**
  * Set quotes to schema or table name
@@ -231,8 +246,7 @@ function isAtype($name, $end): bool {
 }
 
 
-
- if (version_compare(PHP_VERSION, '8.3.0', '<')) {
+if (version_compare(PHP_VERSION, '8.3.0', '<')) {
 	 /**
 	 * Multibyte string padding
 	 * example: "xx"->"xx  "

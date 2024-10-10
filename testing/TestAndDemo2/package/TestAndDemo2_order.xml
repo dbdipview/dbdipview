@@ -4,7 +4,7 @@
 	<title>TestAndDemo2: EXT DDV with external files, column descriptions</title>
 	<dbcontainer redact="1">DBC2</dbcontainer>
 	<viewers_extended>
-		<viewer_extended>TestAndDemo2.tar.gz</viewer_extended>
+		<viewer_extended>TAD2/TestAndDemo2.tar.gz</viewer_extended>
 	</viewers_extended>
 	<access>public</access>
 </dbrequest>
