@@ -62,20 +62,20 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 }
 
 
-$options = getopt("hoesdc:aL");
+$options = getopt("hoesvc:aL");
 if ( false === $options) {
 	echo "Parse error..";
 	exit();
 }
 if ( count($options) == 0 || array_key_exists('h', $options) ||
-    (count($options) == 1 && array_key_exists('d', $options)) ) {
+    (count($options) == 1 && array_key_exists('v', $options)) ) {
 	echo "Usage: php menu.php [OPTIONS]" . PHP_EOL;
 	echo "   -o         order workflow" . PHP_EOL;
 	echo "   -e         extended DDV package workflow" . PHP_EOL;
 	echo "   -L         append data using an additional list file" . PHP_EOL;
 	echo "   -s         SIARD workflow" . PHP_EOL;
 	echo "   -c <code>  set this access code instead of a calculated one" . PHP_EOL;
-	echo "   -d         debug mode" . PHP_EOL;
+	echo "   -v         verbose mode" . PHP_EOL;
 	echo "   -a         show all options (for information only)" . PHP_EOL;
 	echo "   -h         this help" . PHP_EOL;
 	exit;
@@ -110,9 +110,9 @@ if (array_key_exists('c', $options)) {
 	}
 }
 
-if (array_key_exists('d', $options)) {
+if (array_key_exists('v', $options)) {
 	$debug = true;
-	debug("debug mode");
+	debug("Verbose mode");
 }
 
 if (array_key_exists('L', $options))
@@ -187,7 +187,7 @@ while ( "$answer" != "q" ) {
 					echo "${XB}B  $MSGB_RMDB [$DBC]" . PHP_EOL;
 	}
 	if ( !empty($all) || $debug )
-					echo " debug  toggle debug" . PHP_EOL;
+					echo " v  toggle verbose mode" . PHP_EOL;
 					echo " q  $MSG_EXIT" . PHP_EOL;
 					echo "$MSG_CMD";
 	$answer = fgets($handleKbd);
@@ -197,9 +197,9 @@ while ( "$answer" != "q" ) {
 		$answer = "";
 
 	switch($answer) {
-		case 'D':
+		case 'v':
 		case "debug": $debug = $debug ? false : true;
-			msgCyan("debug=" . ($debug ? "on" : "off"));
+			msgCyan("Verbose mode=" . ($debug ? "on" : "off"));
 			break;
 
 		case "q": exit(0);
@@ -241,7 +241,7 @@ while ( "$answer" != "q" ) {
 			echo "$MSGO_ORDER: ";
 			$name = "";
 			$file = "";
-			getPackageName($name, $file, "xml");
+			getPackageName($name, $file, "_order.xml");
 			if ( empty($name) ) {
 				$XOS = ' ';
 			} else {

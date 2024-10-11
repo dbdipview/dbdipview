@@ -109,19 +109,8 @@ function actions_Order_process($access_code, $orderInfo) {
 		return($NOK);
 
 	foreach ($orderInfo->siardPackages as $file) {
-		debug(__FUNCTION__ . ": unpack external package " . $file);
-		$filepath = $DDV_DIR_PACKED . $file;
-		
-		debug(__FUNCTION__ . ": filepath========= " . $filepath);
-		if ( is_file($filepath) ) {
-			if ( $OK !== actions_extract($filepath, dirname($filepath), "siard") ) {
-				err_msg($MSG_ERROR, $file);
-				return($NOK);
-			}
-		} else {
-			err_msg($MSG17_FILE_NOT_FOUND . ": ", $filepath);
+		if ( $OK !== unpack_external_package($file, "siard") )
 			return($NOK);
-		}
 	}
 
 	debug(__FUNCTION__ . ": install SIARD...");
@@ -152,18 +141,9 @@ function actions_Order_process($access_code, $orderInfo) {
 					msgCyan("WARNING: extraction of CSV package(s) was done with first EDDV!");
 				else
 					foreach ($orderInfo->csvPackages as $file) {
-						debug(__FUNCTION__ . ": unpack external CSV package " . $file);
-						$filepath = $DDV_DIR_PACKED . $file;
-						if ( is_file($filepath) ) {
-							if ( $OK !== actions_extract($filepath, $DDV_DIR_EXTRACTED . "/data", "csv") ) {
-								err_msg($MSG_ERROR, $file);
-								return($NOK);
-							}
-							$csvPackagesExtracted = true;
-						} else {
-							err_msg($MSG17_FILE_NOT_FOUND . ": ", $filepath);
+						if ( $OK !== unpack_external_package($file, "csv") )
 							return($NOK);
-						}
+						$csvPackagesExtracted = true;
 					}
 			
 				$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
@@ -193,17 +173,8 @@ function actions_Order_process($access_code, $orderInfo) {
 				msgCyan("WARNING: extraction of CSV package(s) was done with first EDDV!");
 			else
 				foreach ($orderInfo->csvPackages as $file) {
-					debug(__FUNCTION__ . ": unpack external CSV package " . $file);
-					$filepath = $DDV_DIR_PACKED . $file;
-					if ( is_file($filepath) ) {
-						if ( $OK !== actions_extract($filepath, $DDV_DIR_EXTRACTED . "/data", "csv") ) {
-							err_msg($MSG_ERROR, $file);
-							return($NOK);
-						}
-					} else {
-						err_msg($MSG17_FILE_NOT_FOUND . ": ", $filepath);
+					if ( $OK !== unpack_external_package($file, "csv") )
 						return($NOK);
-					}
 				}
 
 			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
@@ -438,46 +409,7 @@ function actions_create_schemas_and_views($listfile, $DDV_DIR_EXTRACTED) {
 }
 
 /**
- * OBSOLETE!!
- *
- * For a DDV package:
- * Maybe the database has already been created, e.g. from SIARD.
- * However, createdb.sql is still run if present.
- * createdb01.sql is run to add VIEWs
- *
- * @param string $DDV_DIR_EXTRACTED
- * @return bool        $OK or $NOK
- */
-function actions_DDV_create_views($DDV_DIR_EXTRACTED) {
-	global $MSG_ERROR, $MSG29_EXECUTING;
-	global $OK, $NOK;
-	global $DBC;
-
-	$ret = $NOK;
-	$CREATEDB0 = $DDV_DIR_EXTRACTED . "/metadata/createdb.sql";
-	$CREATEDB1 = $DDV_DIR_EXTRACTED . "/metadata/createdb01.sql";
-
-	if ( is_file($CREATEDB0) ) {
-		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . "...");
-		$rv = dbf_run_sql($DBC, $CREATEDB0);
-		if ( $rv != 0 )
-			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-	} else
-		debug(__FUNCTION__ . ": No file " . basename($CREATEDB0) . "...");
-
-	if ( is_file($CREATEDB1) ) {
-		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
-		$rv = dbf_run_sql($DBC, $CREATEDB1);
-		if ( $rv != 0 )
-			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-	}
-	$ret = $OK;
-
-	return($ret);
-}
-
-/**
- * Populate database tables from a DDV EXTended package
+ * Populate database tables
  *
  * @param string $listfile
  * @param string $DDV_DIR_EXTRACTED
@@ -557,14 +489,46 @@ function actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 			if (empty($bfile))
 				continue;
 
-			$FILE = $bfile;  //$tok[1];
+			$FILE = $bfile;
 			$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
 
 			msgCyan($MSG45_EXTRACTBFILES . " ($FILE)...");
-			actions_extract($SRCFILE, $BFILES_DIR_TARGET, "");
+			actions_extract_files($SRCFILE, $BFILES_DIR_TARGET, "");
 		}
 
 	return($ret);
+}
+
+/**
+ * Extract files from a ZIP/tar/tar.gz
+ *
+ * @param string    $file
+ * @param string    $extension"siard", "csv", ""
+ * @return bool     $OK or $NOK
+ */
+function unpack_external_package($file, $extension) {
+	global $DDV_DIR_PACKED, $DDV_DIR_EXTRACTED;
+	global $MSG_ERROR, $MSG17_FILE_NOT_FOUND;
+	global $OK, $NOK;
+	
+	debug(__FUNCTION__ . " " . $extension . " : " . $file);
+	$filepath = $DDV_DIR_PACKED . $file;
+	if ( $extension == "siard" )
+		$target_dir = dirname($filepath);
+	else
+		$target_dir = $DDV_DIR_EXTRACTED . "/data";
+
+	debug(__FUNCTION__ . ": filepath ========= " . $filepath);
+	if ( is_file($filepath) ) {
+		if ( $OK !== actions_extract_files($filepath, $target_dir, $extension) ) {
+			err_msg($MSG_ERROR, $file);
+			return($NOK);
+		}
+	} else {
+		err_msg($MSG17_FILE_NOT_FOUND . ": ", $filepath);
+		return($NOK);
+	}
+	return $OK;
 }
 
 /**
@@ -575,7 +539,7 @@ function actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
  * @param string    $mode            csv or normal: CSV files will be extracted into the top folder
  * @return bool     $OK or $NOK
  */
-function actions_extract($SRCFILE, $DIR_TARGET, $mode) {
+function actions_extract_files($SRCFILE, $DIR_TARGET, $mode) {
 	global $MSG51_EXTRACTING;
 	global $OK, $NOK;
 	global $DDV_DIR_PACKED;
