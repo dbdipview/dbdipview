@@ -7,11 +7,19 @@
 	<packages_with_siard>
 		<package_with_siard>TAD3/TestAndDemo3_AIP_content_as_DIP0.tar.gz</package_with_siard>
 	</packages_with_siard>
+
 	<siards tool="DBPTK">
 		<siard>TAD3/TestAndDemo3_A.siard</siard>
-		<siard>TAD3/TestAndDemo3_B.siard</siard>
+		<siard>TestAndDemo3_B.siard</siard>
 	</siards>
-	<viewer>TAD3/TestAndDemo3.zip</viewer>
+
+	<packages_with_csv />
+
+	<packages_with_lob_packages />
+
+	<viewers_extended />
+
+	<viewer>TAD3/TestAndDemo3_ddv.zip</viewer>
+
 	<access>public</access>
 </dbrequest>
-

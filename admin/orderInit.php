@@ -71,8 +71,6 @@ $PKGFILEPATH = "";
 $DDV = "";
 $DBC = "";
 
-$orderInfo = new OrderInfo();
-
 //after installation?
 if (!is_dir($SERVERDATADIR)) {
 	msgCyan($MSG43_INITCONFIG . ": " . $SERVERDATADIR);

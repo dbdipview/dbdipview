@@ -196,11 +196,11 @@ class QueryData {
 	 * @param SimpleXMLElement $screen
 	 * @param string           $queryLimitOffset
 	 */
-	function loadScreenSelect($screen, $queryLimitOffset): void {
+	function loadScreenSelect($screen, $queryLimitOffset): bool {
 		global $MSGSW24_NOPARAMETER;
 
 		if ($screen == null)
-			return;
+			return false;
 		if ($screen->attributes() !== null)
 			$this->attrSkipCSVsave = get_bool($screen->attributes()->skipCSVsave);
 
@@ -212,6 +212,7 @@ class QueryData {
 
 		$where = "";
 
+		debug(__CLASS__ . "->" . __FUNCTION__ . ": checking ...");
 		foreach ($screen->param as $param) {
 
 			if ($param->attributes() !== null)
@@ -219,8 +220,11 @@ class QueryData {
 			$field=            $param->dbtable.TABLECOLUMN.$param->dbcolumn;                  //cities.id -> cities_id
 			$fieldType=        $param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
 			$fieldParamForward=$param->forwardToSubqueryName;                                 //to be used in subquery
-			debug("______ checking parameter for column: \"$param->dbtable\".\"$param->dbcolumn\" (
-				name: $field, type: $param->type, to be forwarded as: $fieldParamForward )");
+			if ( empty($param->dbtable) )
+				debug("______ checking data for parameter: \"$param->dbcolumn\"");
+			else
+				debug("______ checking data for parameter: \"$param->dbtable\".\"$param->dbcolumn\"");
+			debug("___________________________________ ( name: $field, type: $param->type, to be forwarded as: $fieldParamForward )");
 
 
 			if ( ! in_array($param->type, $allowedTypes) )
@@ -231,9 +235,10 @@ class QueryData {
 
 			$paramFound = false;
 			$internalParameters = array("submit_cycle", "targetQueryNum", "__page", "maxcount", "x", "y", "tablelist" );
+
 			foreach($_GET as $key => $value){
 				if (! in_array($key, $internalParameters) ) {             //skip other keywords
-					//debug("_________ COMPARING KEY $key with db field $field ...");
+					debug("_________ comparing GET key $key with PARAM field $field$param->type ...");
 					if ( 0 == strcmp($key, $field . $param->type) ||
 						0 == strcmp($key, $field) ) {                     //this comes with links_to_next_screens
 						if (!empty($value)) {
@@ -310,14 +315,17 @@ class QueryData {
 				if ( is_string($value) && strlen($value)>0 ) {
 					$value = str_replace("'", '', $value); // ' not needed
 					$value = str_replace('"', '', $value); // " not needed
-					$myColumn = '"' . $param->dbtable . '"."' . $param->dbcolumn . '"';  // "table"."column" = ...
+					if ( empty($param->dbtable) )
+						$myColumn = '"' . $param->dbcolumn . '"';
+					else
+						$myColumn = '"' . $param->dbtable . '"."' . $param->dbcolumn . '"';  // "table"."column" = ...
 
 					if    ((0==strcmp("textlike", $param->type) || 0==strcmp("combotext", $param->type)) &&
 						strpos($value,'||') > 0)
 						$wheretext = processSimpleOR_ANDqueryParam("OR", $myColumn, $value, $equal, $quote, $addPercentage);
 					else if (0==strcmp("textlike", $param->type) && strpos($value, "&&") > 0)
 						$wheretext = processSimpleOR_ANDqueryParam("AND",$myColumn, $value, $equal, $quote, $addPercentage);
-					else if (strlen($value)>1 && substr( $value, 0, 1 ) === "!") {   //is negation? e.g. !ABC
+					else if (strlen($value)>1 && substr( $value, 0, 1 ) === "!") {  //is negation? e.g. !ABC
 						$value = substr($value, 1);                                 //'!' found, remove it
 						$value = trim($value);                                      // treat "! ABC" as "!ABC"
 						if (0==strcmp("textlike", $param->type) && strpos($value,'%') === false)
@@ -355,7 +363,7 @@ class QueryData {
 
 		if ( !empty($mandatory) ) {
 			echo "$MSGSW24_NOPARAMETER: " . $mandatory;
-			return;
+			return false;
 		}
 
 		if (! empty($this->screenQuery) ) {
@@ -374,6 +382,7 @@ class QueryData {
 		$this->viewData = new ViewData($screen);
 		$this->query = $query . $queryLimitOffset;
 		debug("<b>query</b>:<br />$query");
+		return true;
 
 	} //loadScreenSelect
 
@@ -406,7 +415,10 @@ class QueryData {
 					if (strlen($param->dbcolumn)>0 && strlen($param->forwardedParamName) > 0) {     //use 3 now: SELECT ... WHERE xyz = 3
 						$value = str_replace("'", '', $value); // ' not needed
 						$value = str_replace('"', '', $value); // " not needed
-						$myColumn = '"' . $param->dbtable . '"."' . $param->dbcolumn . '"';  // "table"."column" = ...
+						if ( empty($param->dbtable) )
+							$myColumn = '"' . $param->dbcolumn . '"';                            // "column" = ...
+						else
+							$myColumn = '"' . $param->dbtable . '"."' . $param->dbcolumn . '"';  // "table"."column" = ...
 
 						if (strpos($value, '||') > 0)
 							$wheretext = processSimpleOR_ANDqueryParam("OR", $myColumn, $value, $equal, $quote, false);
@@ -549,9 +561,12 @@ function is_where_already_here($selectStmnt): bool {
 	//do not count WHERE in situations like SELECT ... (SELECT COUNT(*) WHERE ...)
 
 	// remove anything between ( and )
-	if ( ($left =                   preg_replace("/\([^)]+\)/"," ",$selectStmnt)) !== null )
-		if ( ($right =              preg_replace("/\([^)]+\(/"," ",$left))        !== null )
-			if ( ($no_wrong_where = preg_replace("/\([^)]+\)/"," ",$right))       !== null )
+	#if ( ($left =                   preg_replace("/\([^)]+\)/"," ",$selectStmnt)) !== null )
+	#	if ( ($right =              preg_replace("/\([^)]+\(/"," ",$left))        !== null )
+	#		if ( ($no_wrong_where = preg_replace("/\([^)]+\)/"," ",$right))       !== null )
+	if ( ($left =                   preg_replace("/\([^()]*\)/"," ",$selectStmnt)) !== null )
+		if ( ($right =              preg_replace("/\([^()]*\)/"," ",$left))        !== null )
+			if ( ($no_wrong_where = preg_replace("/\([^()]*\)/"," ",$right))       !== null )
 				if ( ($s =          preg_replace('/\s+/', ' ', $no_wrong_where))  !== null ) //new line -> ' '
 					$no_wrong_where = $s;
 

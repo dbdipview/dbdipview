@@ -3,13 +3,22 @@
 	<reference>TEST TD/5</reference>
 	<title>TestAndDemo5: SIARD, EXT DDV and DDV packages</title>
 	<dbcontainer redact="1">DBC5</dbcontainer>
+
+	<packages_with_siard />
+
 	<siards tool="DBPTK">
 		<siard>TAD4/TestAndDemo4.siard</siard>
 	</siards>
+
+	<packages_with_csv />
+
+	<packages_with_lob_packages />
+
 	<viewers_extended>
-		<viewer_extended>TAD4/TestAndDemo4.tar.gz</viewer_extended>
+		<viewer_extended>TAD4/TestAndDemo4_eddv.tar.gz</viewer_extended>
 	</viewers_extended>
-	<viewer>TAD5/TestAndDemo5.zip</viewer>
+
+	<viewer>TAD5/TestAndDemo5_ddv.zip</viewer>
+
 	<access>public</access>
 </dbrequest>
-

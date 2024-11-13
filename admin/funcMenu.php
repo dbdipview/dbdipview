@@ -31,7 +31,7 @@ function enter(): void {
 
 	echo "................................................." . $MSG_ENTER;
 	$key = fgets($handleKbd);
-	if (trim($key) == "q")
+	if ($key !== false && trim($key) == "q")
 		exit(0);
 }
 

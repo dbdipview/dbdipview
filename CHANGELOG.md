@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.6.1] - 2024-11-13
+### Added
+- deployment: packed LOB files can now be part of separate packages and will be extracted during deployment
+- test suite: TestAndDemo 2: tests this new functionality 
+- deployment: code refactoring
+
 ## [3.6.0] - 2024-10-11
 ### Added
 - deployment: a set of files for a database can also be in a subfolder below DIP0 (from now on now suggested for all projects)

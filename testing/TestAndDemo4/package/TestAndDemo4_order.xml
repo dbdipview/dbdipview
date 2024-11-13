@@ -3,12 +3,22 @@
 	<reference>TEST TD/4</reference>
 	<title>TestAndDemo4: SIARD, CSV package, DDV, redaction</title>
 	<dbcontainer redact="1">DBC4</dbcontainer>
+
+	<packages_with_siard />
+
 	<siards tool="DBPTK">
 		<siard>TAD4/TestAndDemo4.siard</siard>
 	</siards>
+
 	<packages_with_csv>
 		<package_with_csv>TAD4/TestAndDemo4_AIP_content_as_DIP0.zip</package_with_csv>
 	</packages_with_csv>
-	<viewer>TAD4/TestAndDemo4.zip</viewer>
+
+	<packages_with_lob_packages />
+
+	<viewers_extended />
+
+	<viewer>TAD4/TestAndDemo4_ddv.zip</viewer>
+
 	<access>public</access>
 </dbrequest>

@@ -87,7 +87,7 @@ function dbf_delete_dbc($DBC): bool {
 	else if (config_isDBCactive($DBC) > 0)
 		err_msg($MSG44_ISACTIVEDB . ": " . $DBC);
 	else {
-		msgCyan($MSG26_DELETING . ": " . $DBC . "...");
+		msgCyan($MSG26_DELETING . ": " . $DBC . " ...");
 		passthru("PGPASSWORD=$DBADMINPASS dropdb " . $DBC .
 			" -U ". $DBADMINUSER . " --if-exists", $rv);
 		$retval = $OK;
@@ -204,7 +204,7 @@ function dbf_delete_dbc($DBC): bool {
 	$ENCODING = dbf_encoding_param($codeset);
 
 	$rv = "";
-	debug(__FUNCTION__ . ": Copy table data from CSV $SRCFILE to $TABLE...");
+	debug(__FUNCTION__ . ": Copy table data from CSV $SRCFILE to $TABLE ...");
 	if ($DELIMITER == ";")
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
 			"COPY " . $TABLE . " FROM \'$SRCFILE\' DELIMITER \'\;\' CSV $HEADER NULL AS \'$NULLAS\' ENCODING \'$ENCODING\' " .
@@ -251,7 +251,7 @@ function dbf_delete_dbc($DBC): bool {
 	$ENCODING = dbf_encoding_param($codeset);
 
 	$rv = "";
-	debug("Copy table data from $SRCFILE to $TABLE...");
+	debug("Copy table data from $SRCFILE to $TABLE ...");
 	passthru("echo SET datestyle=" . $DATEMODE . "\;" .
 		"COPY " . $TABLE . " FROM \'$SRCFILE\' $HEADER WITH NULL AS \'$NULLAS\' ENCODING \'$ENCODING\' " .
 		" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
@@ -367,7 +367,7 @@ function add_db_functions(): bool {
 	global $OK, $NOK;
 	global $DBC;
 
-	debug(__FUNCTION__ . ": adding DB functions...");
+	debug(__FUNCTION__ . ": adding DB functions ...");
 
 	$FUNCT = <<<EOD
 CREATE OR REPLACE FUNCTION public.get_count\(schema text, tablename text\) \
