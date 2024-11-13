@@ -176,7 +176,10 @@ function fillCreateQuery() {
 			$queryLimitOffset = $queryLimitOffset . " OFFSET " . $offset;
 		}
 		
-		$queryInfo->loadScreenSelect($screen, $queryLimitOffset);
+		if( ! $queryInfo->loadScreenSelect($screen, $queryLimitOffset) ) {
+			$sqindex = 1; //disable showing the page number
+			continue;
+		}
 
 		//-------------------
 		// subqeries are additional simple queries that will be executed separately AFTER the basic query.

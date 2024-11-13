@@ -24,7 +24,7 @@ $X3=' ';$X5=' ';$X6=' ';$X7=' ';$X8=' ';$X9=' ';
 $XOS=' ';$XOI=' ';$XOD=' ';
 $V1=' ';$V2=' ';$V3=' ';$V4=' ';
 
-$orderInfo = new OrderInfo();
+
 
 $handleKbd = fopen ("php://stdin","r");
 if (false === $handleKbd)
@@ -464,7 +464,7 @@ while ( "$answer" != "q" ) {
 
 		case "3": $X3=' ';
 			if (file_exists($DDV_DIR_EXTRACTED))
-				if ($OK == actions_DDV_create_views($DDV_DIR_EXTRACTED)) {
+				if ($OK == actions_create_schemas_and_views($LISTFILE, $DDV_DIR_EXTRACTED)) {
 					actions_populate($LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
 					$X3='X';
 				}

@@ -15,25 +15,32 @@ $PROGDIR=__DIR__;  //e.g. /home/me/dbdipview/admin
 set_include_path($PROGDIR);
 require 'orderInit.php';
 
-$orderInfo = new OrderInfo();
-
-$options = getopt("p:r:c:v");
-if ( false === $options) {
-	echo "Parse error..";
-	exit(2);
-}
-if ( count($options) == 0 || array_key_exists('h', $options) ||
-    (count($options) == 1 && array_key_exists('d', $options)) ) {
+/**
+ * @param int $ret
+ */
+function usage($ret): void {
 	echo "Usage: php orderploy.php OPTIONS" . PHP_EOL;
 	echo "   -p <file>  deploy an order" . PHP_EOL;
 	echo "   -r <file>  remove an order" . PHP_EOL;
-	echo "   -c <code>  set this access code instead of a calculated one" . PHP_EOL;
+	echo "   -c <code>  set this access code instead of a random one" . PHP_EOL;
 	echo "   -v         verbose" . PHP_EOL;
-	exit(0);
+	exit($ret);
+}
+
+$options = getopt("p:r:c:v");
+if ( $options == false )
+	usage(2);
+
+if ( isset($options['h']) )
+	usage(0);
+
+if (!isset($options['p']) && !isset($options['r'])) {
+    echo "Error: Either -p or -r option must be specified." . PHP_EOL;
+    usage(1);
 }
 
 $access_code = null;
-if (array_key_exists('c', $options)) {
+if ( isset($options['c']) ) {
 	$access_code = $options['c'];
 	if ( false === $access_code || !is_string($access_code) ) {
 		echo "Error -c code";
@@ -41,11 +48,12 @@ if (array_key_exists('c', $options)) {
 	}
 }
 
-if (array_key_exists('v', $options)) {
+if ( isset($options['v']) )
 	$debug = true;
-}
 
-if (array_key_exists('p', $options)) {
+$start_time = microtime(true);
+
+if ( isset($options['p']) ) {
 	$name = "";
 	$file = $options['p'];
 	if ( false === $file || !is_string($file) ) {
@@ -57,7 +65,7 @@ if (array_key_exists('p', $options)) {
 	}
 }
 
-if (array_key_exists('r', $options)) {
+if ( isset($options['r']) ) {
 	$name = "";
 	$file = $options['r'];
 	if ( false === $file || !is_string($file) ) {
@@ -69,5 +77,15 @@ if (array_key_exists('r', $options)) {
 	}
 }
 
+$end_time = microtime(true);
+$execution_time = ($end_time - $start_time);
+if ( $execution_time > 3 ) {
+	$minutes = floor($execution_time / 60);
+	$seconds = floor($execution_time % 60);
+	echo "Execution Time = ";
+	if ( $minutes > 0 )
+		echo $minutes . "m ";
+	echo $seconds . "s" . PHP_EOL;
+}
 exit(0);
 ?>

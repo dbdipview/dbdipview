@@ -23,9 +23,11 @@
 		<table file="Keys tab.txt" format="TSV" delimiter="tab" header="0" nullas="NULL">"TestCSV"."test4"</table>
 	</tables>
 	<bfiles>
+		<!-- these files are in EXT DDV package -->
 		<bfile>filesInTar.tar</bfile>
 		<bfile>filesInTarGz.tar.gz</bfile>
 		<bfile>filesInTgz.tgz</bfile>
+		<!-- this file is in an external package -->
 		<bfile>filesInZip.zip</bfile>
 	</bfiles>
 </configuration>

@@ -226,8 +226,8 @@ if ( !is_dir($datadir) ) {
 			exit(1);
 		}
 		elseif ( $countDatafiles > 2 && $aOption) {
-			echo "NOTE: Folder $datadir/ is not empty, but the contents will not be packed due to -a option." . PHP_EOL;
-			$countDatafiles = 0;
+			//echo "NOTE: Folder $datadir/ is not empty, but the contents will not be packed due to -a option." . PHP_EOL;
+			//$countDatafiles = 0;
 		}
 	} else {
 		echo "    Aborted. Cannot read : " . $datadir . PHP_EOL;

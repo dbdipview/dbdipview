@@ -3,9 +3,22 @@
 	<reference>TEST TD/2</reference>
 	<title>TestAndDemo2: EXT DDV with external files, column descriptions</title>
 	<dbcontainer redact="1">DBC2</dbcontainer>
+
+	<packages_with_siard />
+
+	<siards />
+
+	<packages_with_csv />
+
+	<packages_with_lob_packages>
+		<package_with_lob_packages>TAD2/external_package_with_LOB_packages.zip</package_with_lob_packages>
+	</packages_with_lob_packages>
+
 	<viewers_extended>
-		<viewer_extended>TAD2/TestAndDemo2.tar.gz</viewer_extended>
+		<viewer_extended>TAD2/TestAndDemo2_eddv.tar.gz</viewer_extended>
 	</viewers_extended>
+
+	<viewer />
+
 	<access>public</access>
 </dbrequest>
-

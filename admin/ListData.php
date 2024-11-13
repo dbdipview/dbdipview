@@ -74,9 +74,9 @@ class ListData {
 	public $bfiles = array();
 
 	/**
-	 * @param string $listfile
+	 * @param string|null $listfile
 	 */
-	function __construct($listfile = null) {
+	function __construct($listfile) {
 		global $MSG_ERROR, $MSG29_PROCESSING;
 		
 		if ( $listfile == null )
@@ -124,8 +124,7 @@ class ListData {
 					$this->bfiles[] = $bfile;
 
 		} else
-			err_msg(__FUNCTION__ . ": " . $MSG_ERROR); //if handleList
-
+			err_msg(__FUNCTION__ . ": " . $MSG_ERROR . "(simplexml_load_file)" );
 	}
 
 }

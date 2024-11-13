@@ -33,7 +33,7 @@
         <xs:element name="packages_with_siard" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element maxOccurs="unbounded" name="package_with_siard" type="xs:string" />
+              <xs:element maxOccurs="unbounded" name="package_with_siard" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -41,7 +41,7 @@
         <xs:element name="siards" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element maxOccurs="unbounded" name="siard" type="xs:string" />
+              <xs:element maxOccurs="unbounded" name="siard" type="xs:string" minOccurs="0" />
             </xs:sequence>
             <xs:attribute name="tool" use="optional">
               <xs:simpleType>
@@ -57,7 +57,15 @@
         <xs:element name="packages_with_csv" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element maxOccurs="unbounded" name="package_with_csv" type="xs:string" />
+              <xs:element maxOccurs="unbounded" name="package_with_csv" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="packages_with_lob_packages" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="package_with_lob_packages" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -65,7 +73,7 @@
         <xs:element name="viewers_extended" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element maxOccurs="unbounded" name="viewer_extended" type="xs:string" />
+              <xs:element maxOccurs="unbounded" name="viewer_extended" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

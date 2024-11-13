@@ -9,31 +9,6 @@
 
 
 /**
- * Find the last DDV or DDV EXT in XML.
- * This will be the name for files unpack folder and activation
- *
- * @param OrderInfo $orderInfo
- * @return string    Last in a row ddv in XML file
- */
-function get_last_ddv($orderInfo) {
-	$ddv="";
-	if ( isset($orderInfo->ddvFile ) && $orderInfo->ddvFile != "" ) {
-		$file = $orderInfo->ddvFile;                   //filename.zip
-		$ddv = substr( basename($file), 0, -4);        //filename  w/o .zip
-		debug(__FUNCTION__ . ": DDV found: " . $ddv);
-	} else
-		//if ( isset($orderInfo->ddvExtFiles) )
-		{
-		debug(__FUNCTION__ . ": DDV not found, will check EXT...");
-		foreach ($orderInfo->ddvExtFiles as $file) {   //no ddv, therefore take the last ddvext
-			$ddv = substr( basename($file), 0, -7);    //filename w/o .tar.gz
-		}
-		debug(__FUNCTION__ . ": DDV EXT found: " . $ddv);
-	}
-	return($ddv);
-}
-
-/**
  * open order XML file
  *
  * @param string $name        viewer package name
@@ -60,10 +35,10 @@ function actions_Order_read($name, $file) {
 		return(null);
 	}
 
-	$orderInfo = loadOrder($filepath);
+	$orderInfo = new OrderInfo($filepath);
 
 	$DBC = $orderInfo->dbc;
-	$DDV = get_last_ddv($orderInfo);
+	$DDV = $orderInfo->last_ddv;
 
 	$PKGFILEPATH = $DDV_DIR_PACKED . $DDV;
 	$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . basename($DDV);
@@ -97,7 +72,7 @@ function actions_Order_process($access_code, $orderInfo) {
 		return($NOK);
 
 	$DBC = $orderInfo->dbc;
-	$ddv = get_last_ddv($orderInfo);
+	$ddv = $orderInfo->last_ddv;
 	if (config_isPackageActivated($ddv, $DBC) > 0) {
 		err_msg($MSG30_ALREADY_ACTIVATED, "$ddv ($DBC)");
 		debug(__FUNCTION__ . ": if there is a problem, check config.json.");
@@ -109,16 +84,26 @@ function actions_Order_process($access_code, $orderInfo) {
 		return($NOK);
 
 	foreach ($orderInfo->siardPackages as $file) {
-		if ( $OK !== unpack_external_package($file, "siard") )
+		if ( $OK !== unpack_external_package($file, "siard", true) )
 			return($NOK);
 	}
 
-	debug(__FUNCTION__ . ": install SIARD...");
+	foreach ($orderInfo->lobPackages as $file) {
+		if ( $OK !== unpack_external_package($file, "lob", true) )
+			return($NOK);
+	}
+
+	debug(__FUNCTION__ . ": deploy SIARD files ...");
 	foreach ($orderInfo->siardFiles as $file) {
 		$siardFile = $DDV_DIR_PACKED . $file;
 		if ( !is_file($siardFile) ) {
-			err_msg($MSG17_FILE_NOT_FOUND . ": ", $siardFile);
-			return($NOK);
+			debug(__FUNCTION__ . ": " . $siardFile . " not found, will try data folder for file " . basename($file) );
+			$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $ddv;
+			$siardFile = $DDV_DIR_EXTRACTED . "/data/" . basename($file);  //no folder for extratced files!
+			if ( !is_file($siardFile) ) {
+				err_msg($MSG17_FILE_NOT_FOUND . ": ", $siardFile . " nor " . $DDV_DIR_PACKED . $file);
+				return($NOK);
+			}
 		}
 		if ( $OK != actions_SIARD_install($siardFile, $orderInfo->siardTool) )
 			return($NOK);
@@ -141,7 +126,7 @@ function actions_Order_process($access_code, $orderInfo) {
 					msgCyan("WARNING: extraction of CSV package(s) was done with first EDDV!");
 				else
 					foreach ($orderInfo->csvPackages as $file) {
-						if ( $OK !== unpack_external_package($file, "csv") )
+						if ( $OK !== unpack_external_package($file, "csv", true) )
 							return($NOK);
 						$csvPackagesExtracted = true;
 					}
@@ -173,7 +158,7 @@ function actions_Order_process($access_code, $orderInfo) {
 				msgCyan("WARNING: extraction of CSV package(s) was done with first EDDV!");
 			else
 				foreach ($orderInfo->csvPackages as $file) {
-					if ( $OK !== unpack_external_package($file, "csv") )
+					if ( $OK !== unpack_external_package($file, "csv", true) )
 						return($NOK);
 				}
 
@@ -183,7 +168,7 @@ function actions_Order_process($access_code, $orderInfo) {
 		} else
 			return($NOK);
 	} else {
-		debug(__FUNCTION__ . ": DDV not found, will check EXT...");
+		debug(__FUNCTION__ . ": DDV not found, will check EXT ...");
 		foreach ($orderInfo->ddvExtFiles as $file) {  //no ddv, therefore take the last ddvext
 			if (! empty($file) )
 				$ddv = substr( basename($file), 0, -7);          //filename w/o .tar.gz
@@ -220,13 +205,13 @@ function actions_Order_remove($orderInfo): bool {
 	global $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR;
 	global $OK, $NOK;
 
-	debug(__FUNCTION__ . "...");
+	debug(__FUNCTION__ . " ...");
 
 	if ( empty($orderInfo->dbc) )
 		return($NOK);
 
 	$DBC = $orderInfo->dbc;
-	$ddv = get_last_ddv($orderInfo);
+	$ddv = $orderInfo->last_ddv;
 
 	debug(__FUNCTION__ . ": DBC=$DBC with master DDV=$ddv");
 	config_json_remove_item($ddv, $DBC);
@@ -234,7 +219,7 @@ function actions_Order_remove($orderInfo): bool {
 
 	$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $ddv;   //location for all external files as LOBs
 	if (is_dir("$BFILES_DIR_TARGET")) {
-		msgCyan("$MSG53_DELETINGLOBS " . basename($BFILES_DIR_TARGET) . "...");
+		msgCyan("$MSG53_DELETINGLOBS " . basename($BFILES_DIR_TARGET) . " ...");
 		passthru("rm -r " . $BFILES_DIR_TARGET, $rv);
 	}
 
@@ -268,7 +253,7 @@ function actions_Order_remove($orderInfo): bool {
  * @return bool        $OK or $NOK
  */
 function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
-	global $MSG29_EXECUTING, $MSG14_UNPACKED, $MSG35_CHECKXML, $MSG51_EXTRACTING;
+	global $MSG29_EXECUTING, $MSG14_UNPACKED, $MSG51_EXTRACTING;
 	global $PROGDIR;
 	global $OK, $NOK;
 
@@ -286,7 +271,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 	}
 
 	if (! empty($cmd)) {
-		msgCyan($MSG51_EXTRACTING . " EDDV " . basename($packageFile) . "...");
+		msgCyan($MSG51_EXTRACTING . " EDDV " . basename($packageFile) . " ...");
 		debug(__FUNCTION__ . ": " . $MSG29_EXECUTING . " " . $cmd);
 		$rv = 0;
 		passthru($cmd, $rv);
@@ -328,7 +313,7 @@ function actions_DDVEXT_unpack($packageFile, $DDV_DIR_EXTRACTED) {
 function checkValidateXml($fileXml, $schema):void {
 	global $MSG35_CHECKXML;
 
-	msgCyan($MSG35_CHECKXML . " " . basename($fileXml) . "...");
+	msgCyan($MSG35_CHECKXML . " " . basename($fileXml) . " ...");
 	
 	$fileTxt = substr_replace($fileXml , 'txt', strrpos($fileXml , '.') +1);
 
@@ -370,13 +355,13 @@ function actions_create_schemas_and_views($listfile, $DDV_DIR_EXTRACTED) {
 		return($NOK);
 	}
 
-	msgCyan($MSG29_PROCESSING . " " . basename($listfile) . "...");
+	msgCyan($MSG29_PROCESSING . " " . basename($listfile) . " ...");
 	$listData = new ListData($listfile);
 
 	foreach ($listData->schemas as $schema) {
-		$SCHEMA = $schema;  //$tok[1];
+		$SCHEMA = $schema;
 		$SCHEMA_Q = addQuotes($SCHEMA);
-		msgCyan($MSG49_CREATINGSCHEMA . " " . $SCHEMA . "...");
+		msgCyan($MSG49_CREATINGSCHEMA . " " . $SCHEMA . " ...");
 		$rv = dbf_create_schema($DBC, $SCHEMA_Q);
 		if ( $rv != 0 )
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -388,16 +373,16 @@ function actions_create_schemas_and_views($listfile, $DDV_DIR_EXTRACTED) {
 	}
 
 	if ( is_file($CREATEDB0) ) {
-		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . "...");
+		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . " ...");
 		$rv = dbf_run_sql($DBC, $CREATEDB0);
 		if ( $rv != 0 )
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
 		msgCyan($MSG25_EMPTY_TABLES_CREATED);
 	} else
-		debug(__FUNCTION__ . ": No file " . basename($CREATEDB0) . "...");
+		debug(__FUNCTION__ . ": No file " . basename($CREATEDB0) . " ...");
 
 	if ( is_file($CREATEDB1) ) {
-		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . "...");
+		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . " ...");
 		$rv = dbf_run_sql($DBC, $CREATEDB1);
 		if ( $rv != 0 )
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -420,11 +405,11 @@ function actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 	global $MSG_ERROR, $MSG29_EXECUTING, $MSG5_MOVEDATA, $MSG45_EXTRACTBFILES, $MSG31_NOSCHEMA, $MSG33_SKIPPING;
 	global $OK, $NOK;
 	global $DBC, $DBGUEST;
-	global $PROGDIR;
+	global $DDV_DIR_PACKED, $PROGDIR;
 
 	$ret = $NOK;
-	msgCyan($MSG5_MOVEDATA . "...");
-	debug(__FUNCTION__ . ": processing  " . $listfile . "...");
+	msgCyan($MSG5_MOVEDATA . " ...");
+	debug(__FUNCTION__ . ": processing  " . $listfile . " ...");
 
 	$listData = new ListData($listfile);
 
@@ -433,7 +418,7 @@ function actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 			if (empty($view))
 				continue;
 
-			debug(__FUNCTION__ . ": Granting acces to VIEW " . $view . "...");
+			debug(__FUNCTION__ . ": Granting acces to VIEW " . $view . " ...");
 			$rv = dbf_grant_select_on_table($DBC, addQuotes($view), $DBGUEST);
 			$ret = $OK;
 		}
@@ -484,6 +469,7 @@ function actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 		print(PHP_EOL);
 	}
 
+	//unpack packages with attachments (LOB files)
 	if (! empty($listData->bfiles) )
 		foreach ($listData->bfiles as $bfile) {
 			if (empty($bfile))
@@ -492,8 +478,8 @@ function actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 			$FILE = $bfile;
 			$SRCFILE= $DDV_DIR_EXTRACTED . "/data/$FILE";
 
-			msgCyan($MSG45_EXTRACTBFILES . " ($FILE)...");
-			actions_extract_files($SRCFILE, $BFILES_DIR_TARGET, "");
+			msgCyan($MSG45_EXTRACTBFILES . " ($FILE) ...");
+			actions_extract_files($SRCFILE, $BFILES_DIR_TARGET, "", false);
 		}
 
 	return($ret);
@@ -503,24 +489,30 @@ function actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
  * Extract files from a ZIP/tar/tar.gz
  *
  * @param string    $file
- * @param string    $extension"siard", "csv", ""
+ * @param string    $extension          type, e.g. "siard", "csv", "lob", ""
+ * @param boolean   $ignore_folders     skip any folders in the filename
  * @return bool     $OK or $NOK
  */
-function unpack_external_package($file, $extension) {
+function unpack_external_package($file, $extension, $ignore_folders) {
 	global $DDV_DIR_PACKED, $DDV_DIR_EXTRACTED;
 	global $MSG_ERROR, $MSG17_FILE_NOT_FOUND;
 	global $OK, $NOK;
 	
-	debug(__FUNCTION__ . " " . $extension . " : " . $file);
+	debug(__FUNCTION__ . " " . $extension . ": " . $file);
 	$filepath = $DDV_DIR_PACKED . $file;
-	if ( $extension == "siard" )
-		$target_dir = dirname($filepath);
-	else
-		$target_dir = $DDV_DIR_EXTRACTED . "/data";
+	switch($extension) {
+		case "xxsiard":
+			$target_dir = dirname($filepath);
+			break;
+		default:
+			$target_dir = $DDV_DIR_EXTRACTED . "/data";
+			break;
+	}
 
-	debug(__FUNCTION__ . ": filepath ========= " . $filepath);
+	debug(__FUNCTION__ . ": source: " . $filepath);
+	debug(__FUNCTION__ . ": target: " . $target_dir);
 	if ( is_file($filepath) ) {
-		if ( $OK !== actions_extract_files($filepath, $target_dir, $extension) ) {
+		if ( $OK !== actions_extract_files($filepath, $target_dir, $extension, $ignore_folders) ) {
 			err_msg($MSG_ERROR, $file);
 			return($NOK);
 		}
@@ -533,42 +525,52 @@ function unpack_external_package($file, $extension) {
 
 /**
  * Extract files from a ZIP/tar/tar.gz
+ * 
  *
  * @param string    $SRCFILE
  * @param string    $DIR_TARGET
- * @param string    $mode            csv or normal: CSV files will be extracted into the top folder
+ * @param string    $what_to_get        csv or normal: CSV files will be extracted into the top folder
+ * @param boolean   $ignore_folders     skip any folders in the filename
  * @return bool     $OK or $NOK
  */
-function actions_extract_files($SRCFILE, $DIR_TARGET, $mode) {
+function actions_extract_files($SRCFILE, $DIR_TARGET, $what_to_get, $ignore_folders) {
 	global $MSG51_EXTRACTING;
 	global $OK, $NOK;
 	global $DDV_DIR_PACKED;
 
 	$ret = $NOK;
 
-	//skip folders for file types
-	if ( $mode == "csv" )
-		$filetypes = " '*.csv' '*.txt' '*.CSV' '*.TXT'";
-	elseif ( $mode == "siard" )
-		$filetypes = " '*.siard' '*.SIARD'";
-	else
-		$filetypes = "";
+	//set file extensions for the files to be extracted:
+	switch($what_to_get) {
+		case "csv":
+			$filetypes = " '*.csv' '*.txt' '*.CSV' '*.TXT'";
+			break;
+		case "siard":
+			$filetypes = " '*.siard' ";
+			break;
+		case "lob":
+			$filetypes = " '*.zip' '*.tar' '*.tar.gz' '*.tgz' ";
+			break;
+		default:
+			$filetypes = "";
+			break;
+	}
 
 	if (isAtype($SRCFILE, "tar")) {
-		if ( $mode == "csv" || $mode == "siard" )
-			$cmd="tar -xf "  . $SRCFILE . " -C " . $DIR_TARGET . " --transform 's,^.*/,,g' --wildcards " . $filetypes;
+		if ( $ignore_folders )
+			$cmd="tar -xf '"  . $SRCFILE . "' -C " . $DIR_TARGET . " --transform 's,^.*/,,g' --wildcards " . $filetypes;
 		else
-			$cmd="tar -xf "  . $SRCFILE . " -C " . $DIR_TARGET;
+			$cmd="tar -xf '"  . $SRCFILE . "' -C " . $DIR_TARGET;
 	} elseif (isAtype($SRCFILE, "tar.gz") || isAtype($SRCFILE, "tgz")) {
-		if ( $mode == "csv" || $mode == "siard" )
-			$cmd="tar -xzf " . $SRCFILE . " -C " . $DIR_TARGET . " --transform 's,^.*/,,g' --wildcards " . $filetypes;
+		if ( $ignore_folders )
+			$cmd="tar -xzf '" . $SRCFILE . "' -C " . $DIR_TARGET . " --transform 's,^.*/,,g' --wildcards " . $filetypes;
 		else
-			$cmd="tar -xzf " . $SRCFILE . " -C " . $DIR_TARGET;
+			$cmd="tar -xzf '" . $SRCFILE . "' -C " . $DIR_TARGET;
 	} elseif (isAtype($SRCFILE, "zip")) {
-		if ( $mode == "csv" || $mode == "siard" )
-			$cmd="unzip -j -q -o " .  $SRCFILE . " -d " . $DIR_TARGET . $filetypes;
+		if ( $ignore_folders )
+			$cmd="unzip -j -q -o '" .  $SRCFILE . "' -d " . $DIR_TARGET . $filetypes;
 		else
-			$cmd="unzip    -q -o " .  $SRCFILE . " -d " . $DIR_TARGET;
+			$cmd="unzip    -q -o '" .  $SRCFILE . "' -d " . $DIR_TARGET;
 	} else {
 		err_msg(__FUNCTION__ . ": " . "Error - unknown package file type: " . $SRCFILE);
 		$cmd="";
@@ -576,8 +578,8 @@ function actions_extract_files($SRCFILE, $DIR_TARGET, $mode) {
 
 	if ( !empty($cmd) ) {
 		$FILE = basename($SRCFILE);
-		msgCyan($MSG51_EXTRACTING . $filetypes . " ($FILE)...");
-		debug(__FUNCTION__ . ": $SRCFILE...");
+		msgCyan($MSG51_EXTRACTING . $filetypes . " ('" . $FILE . "') ...");
+		debug(__FUNCTION__ . ": $SRCFILE ...");
 		if (!file_exists($DIR_TARGET)) {
 			debug(__FUNCTION__ . ": Creating folder " . $DIR_TARGET);
 			mkdir($DIR_TARGET, 0777, true);
@@ -656,11 +658,11 @@ function checkShowError($s, $prefix = ""): void {
  * @return bool        $OK or $NOK
  */
 function actions_DDV_unpack($packageFile, $DDV_DIR_EXTRACTED) {
-	global $MSG_ERROR, $MSG29_EXECUTING, $MSG14_UNPACKED, $MSG35_CHECKXML, $MSG51_EXTRACTING;
+	global $MSG_ERROR, $MSG14_UNPACKED, $MSG29_EXECUTING, $MSG51_EXTRACTING;
 	global $PROGDIR;
 	global $OK, $NOK;
 
-	msgCyan($MSG51_EXTRACTING . " DDV " . basename($packageFile) . "-->" . $DDV_DIR_EXTRACTED . "...");
+	msgCyan($MSG51_EXTRACTING . " DDV " . basename($packageFile) . "-->" . $DDV_DIR_EXTRACTED . " ...");
 	$ret = $NOK;
 
 	clearstatcache();
@@ -765,7 +767,7 @@ function actions_SIARD_install($siardFile, $tool) {
 	if ( empty($tool) )
 		$tool = $SIARDTOOLDEFAULT;
 
-	msgCyan($MSG50_DEPLOYING . ": " . basename($siardFile) . " ($tool)...");
+	msgCyan($MSG50_DEPLOYING . ": " . basename($siardFile) . " ($tool) ...");
 	if (installSIARD($DBC, $siardFile, $tool))
 		return($OK);
 	else
@@ -782,8 +784,8 @@ function actions_SIARD_grant($listfile): bool {
 	global $DBC, $DBGUEST;
 	global $OK, $NOK;
 
+	msgCyan($MSG3_ENABLEACCESS . " ...");
 	debug(__FUNCTION__ . ": " . $listfile);
-	msgCyan($MSG3_ENABLEACCESS . "...");
 
 	if ( !is_file($listfile)) {
 		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": ", $listfile);
@@ -794,7 +796,7 @@ function actions_SIARD_grant($listfile): bool {
 	$listData = new ListData($listfile);
 	foreach ($listData->schemas as $schema) {
 		$SCHEMA = $schema; //$tok[1];
-		msgCyan($MSG23_SCHEMA_ACCESS . " " . $SCHEMA . "...");
+		msgCyan($MSG23_SCHEMA_ACCESS . " " . $SCHEMA . " ...");
 		$SCHEMA_Q = addQuotes($SCHEMA);
 		$rv = dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST);
 		if ( $rv != 0 ) {
@@ -828,7 +830,7 @@ function actions_access_on($ddv, $access_code, $orderInfo): string {
 	$DESCFILESRC = $DDV_DIR_EXTRACTED . "/metadata/description.txt";
 	$REDACTFILESRC = $DDV_DIR_EXTRACTED . "/metadata/redaction.html";
 
-	msgCyan($MSG6_ACTIVATEDIP . ": " . $ddv . "...");
+	msgCyan($MSG6_ACTIVATEDIP . ": " . $ddv . " ...");
 
 	if (notSet($ddv)) {
 		err_msg($MSG18_DDV_NOT_SELECTED);
@@ -963,7 +965,7 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
 		return($NOK);
 	}
 
-	msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB0) . "...");
+	msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB0) . " ...");
 	$rv = dbf_run_sql($DBC, $REDACTDB0);
 	if ( $rv != 0 ) {
 		err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -971,7 +973,7 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
 	}
 
 	if (is_file($REDACTDB1)) {
-		msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB1) . "...");
+		msgCyan($MSG29_EXECUTING . " " . basename($REDACTDB1) . " ...");
 		$rv = dbf_run_sql($DBC, $REDACTDB1);
 		if ( $rv != 0 ){
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
@@ -991,10 +993,10 @@ function actions_schema_redact($DDV_DIR_EXTRACTED) {
  * Drop the schemas
  */
 function actions_schema_drop($DBC, $DDV, $listfile): void {
-	global $MSG24_NO_SCHEMA, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG17_FILE_NOT_FOUND, $MSG26_DELETING;
+	global $MSG15_DDV_IS_NOT_UNPACKED, $MSG17_FILE_NOT_FOUND, $MSG24_NO_SCHEMA, $MSG26_DELETING, $MSG32_SERVER_DATABASE_NOT_SELECTED;
 	global $SERVERDATADIR;
 
-	debug(__FUNCTION__ . ": DBC=$DBC, DDV=$DDV...");
+	debug(__FUNCTION__ . ": DBC=$DBC, DDV=$DDV ...");
 	if ( is_file($listfile)) {
 		$listData = new ListData($listfile);
 		foreach ($listData->schemas as $schema) {
@@ -1004,12 +1006,14 @@ function actions_schema_drop($DBC, $DDV, $listfile): void {
 			else if (notSet($DBC))
 				err_msg($MSG32_SERVER_DATABASE_NOT_SELECTED);
 			else {
-				msgCyan($MSG26_DELETING . " SCHEMA " . $schema . "...");
+				msgCyan($MSG26_DELETING . " SCHEMA " . $schema . " ...");
 				$rv = dbf_drop_schema($DBC, $SCHEMA_Q);
 			}
 		}
-	} else
-		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": ", $listfile);
+	} else {
+		msgCyan($MSG15_DDV_IS_NOT_UNPACKED . "!"); 
+		debug(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": " . $listfile);
+	}
 }
 
 /**
@@ -1022,20 +1026,28 @@ function actions_schema_drop($DBC, $DDV, $listfile): void {
 function actions_remove_folders($DDV, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET): void {
 	global $MSG53_DELETINGLOBS, $MSG52_DELETINGUPACKED, $MSG37_MOREACTIVE, $MSG16_FOLDER_NOT_FOUND;
 
-	debug(__FUNCTION__ . ": " . $DDV . ", " . $DDV_DIR_EXTRACTED . ", " . $BFILES_DIR_TARGET);
-	if (config_isPackageActivated($DDV) > 0)
+	//debug(__FUNCTION__ . ": " . $DDV . ", " . $DDV_DIR_EXTRACTED . ", " . $BFILES_DIR_TARGET . " ...");
+	if (config_isPackageActivated($DDV) > 0) {
 		err_msg(__FUNCTION__ . ": " . $MSG37_MOREACTIVE .  " ($DDV)");
-	else if (is_dir("$DDV_DIR_EXTRACTED")) {
-		msgCyan($MSG52_DELETINGUPACKED . ": " . basename($DDV_DIR_EXTRACTED) . "...");
-		passthru("rm -r " . $DDV_DIR_EXTRACTED, $rv);
+		return;
+	}
 
-		if (!empty($BFILES_DIR_TARGET) && is_dir($BFILES_DIR_TARGET)) {
-			debug(__FUNCTION__ . ": Removing " . $BFILES_DIR_TARGET . "...");
-			msgCyan($MSG53_DELETINGLOBS . ": " . basename($BFILES_DIR_TARGET) . "...");
-			passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
-		}
+	if (is_dir("$DDV_DIR_EXTRACTED")) {
+		msgCyan($MSG52_DELETINGUPACKED . ": " . basename($DDV_DIR_EXTRACTED) . " ...");
+		debug(__FUNCTION__ . ": Removing " . $DDV_DIR_EXTRACTED . " ...");
+		passthru("rm -r " . $DDV_DIR_EXTRACTED, $rv);
 	} else
 		debug(__FUNCTION__ . ": " . $MSG16_FOLDER_NOT_FOUND . ": " . $DDV_DIR_EXTRACTED);
+
+	if (empty($BFILES_DIR_TARGET))
+		return;
+
+	if ( is_dir($BFILES_DIR_TARGET) ) {
+		msgCyan($MSG53_DELETINGLOBS . ": " . basename($BFILES_DIR_TARGET) . " ...");
+		debug(__FUNCTION__ . ": Removing " . $BFILES_DIR_TARGET . " ...");
+		passthru("rm -rI " . $BFILES_DIR_TARGET, $rv);
+	} else
+		debug(__FUNCTION__ . ": " . $MSG16_FOLDER_NOT_FOUND . ": " . $BFILES_DIR_TARGET);
 }
 
 /**
@@ -1056,12 +1068,12 @@ VIEW	"aero"."view_years"
  */
 function convertListTxtFile($listTxtFile) {
 
-	$listData = new ListData();
+	$listData = new ListData(null);
 
 	$retErrors = 0;
 	$lineNum = 0;
 
-	print("Converting list.txt to list.xml..." . PHP_EOL);
+	print("Converting list.txt to list.xml ..." . PHP_EOL);
 	if ( file_exists($listTxtFile) && (($handleList = fopen($listTxtFile, "r")) !== FALSE) ) {
 		while ( ($line = fgets($handleList)) !== false ) {
 			$lineNum++;
