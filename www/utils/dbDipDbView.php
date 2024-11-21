@@ -212,7 +212,7 @@ function qToListWithLink($queryData, $totalCount) {
 
 	if ($dbConn->errorCode() != 0) {
 		debug( implode(",", $dbConn->errorInfo()) );
-		$output = "ERROR: qToListWithLink<br />";
+		$output = "ERROR: SQL or database connection (qToListWithLink)<br />";
 	} else {
 		$hits = $result->rowCount();
 
@@ -388,7 +388,7 @@ function qToTableWithLink($queryData, $totalCount, $queryId) {
 
 	if ($dbConn->errorCode() != 0) {
 		debug( implode(",", $dbConn->errorInfo()) );
-		$output .= "ERROR: qToTableWithLink<br />";
+		$output .= "ERROR: SQL or database connection (qToTableWithLink)<br />";
 	} else {
 		$hits = $result->rowCount();
 		$output .= "<br />\n<table class=\"sortable\" id=\"" . $tableid . "\" aria-label=\"" . $MSGSW33_TableOutput . "\">" . PHP_EOL;

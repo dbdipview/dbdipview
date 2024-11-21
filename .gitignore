@@ -1,0 +1,11 @@
+admin/configa.php
+www/config/confighdr.php
+www/config/config.php
+www/local/*.png
+*.odg
+*.docx
+www/tools/configPrep
+www/tools/configPrep/__pycache__
+www/tools/configPrep/in
+www/tools/configPrep/out
+www/tools/configPrep/cookie.dat

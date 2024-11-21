@@ -201,11 +201,11 @@ function config_isDBCactive($DBC) {
  * Returns number of lines with the same package (0..N) or with combination package+database (0..1).
  *
  * @param string $ddv            package name
- * @param string $DBC            selected database (or any)
+ * @param string $DBC|null       selected database (or any)
  *
  * @return int $found            number of occurencies
  */
-function config_isPackageActivated($ddv, $DBC="") {
+function config_isPackageActivated($ddv, $DBC=null) {
 	global $SERVERCONFIGJSON;
 
 	$found = 0;
@@ -214,7 +214,7 @@ function config_isPackageActivated($ddv, $DBC="") {
 	foreach ($array as $index=>$line) {
 		if (
 			(array_key_exists('ddv', $line) && 0==strcmp($line['ddv'],$ddv)) &&
-			( $DBC == "" || (array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC)) )
+			( is_null($DBC) || (array_key_exists('dbc', $line) && 0==strcmp($line['dbc'],$DBC)) )
 			) {
 			$found++;
 		}
