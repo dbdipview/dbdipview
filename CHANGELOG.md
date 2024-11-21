@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.6.2] - 2024-11-21
+### Added
+- deployment: menu allows manual steps for the new functionality (automated in ordeploy with 3.6.1)
+
 ## [3.6.1] - 2024-11-13
 ### Added
 - deployment: packed LOB files can now be part of separate packages and will be extracted during deployment
