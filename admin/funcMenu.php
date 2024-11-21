@@ -83,51 +83,74 @@ function msg_colour_reset(): void {
 }
 
 /**
- * @param string $var
+ * @param string|null $var
  */
 function notSet($var): bool {
-	if ("$var" == "-" || "$var" == "")
+	if (is_null($var) || "$var" == "-" || "$var" == "")
 		return(true);
 	else
 		return(false);
 }
 
 /**
+ * @param string $str
+ * @param string $prefix
+ */
+function remove_prefix($str, $prefix): string {
+    $pos = strpos($str, $prefix);
+    if ($pos === 0) {
+        return substr($str, strlen($prefix));
+    } else {
+        return $str;
+    }
+}
+
+/**
  * List all files with a given extension, then select a file
  *
- * @param string &$outname       package name
- * @param string &$outfilename   filename
- * @param string $extension     filename extension for search criteria, e.g. "siard"
- * @param string|null $dir
+ * @param string   &$outname       package name
+ * @param string   &$outfilename   filename
+ * @param string   $extension      filename extension for search criteria, e.g. "siard","lob","csv", or "packed"
+ * @param string[] $dirs            source folder
  *
  * @return void
  */
-function getPackageName(&$outname, &$outfilename, $extension, $dir = NULL): void {
-	global $MSG19_DDV_PACKAGES, $MSG21_SELECT_DDV, $MSG36_NOPACKAGE, $MSG16_FOLDER_NOT_FOUND;
-	global $handleKbd, $DDV_DIR_PACKED;
+function getPackageName(&$outname, &$outfilename, $extension, $dirs): void {
+	global $MSG19_ALL_PACKAGES, $MSG1_SELECTPKG, $MSG36_NOPACKAGE, $MSG16_FOLDER_NOT_FOUND;
+	global $handleKbd;
 
-	$arrPkgName = array();
-	$arrFilename = array();
+	$arrPkgShortName = array();
+	$arrPkgFilename = array();
 	$out = array();
 
 	$i = 1;
 	$description="UNKNOWN";
 
-	if ( is_null($dir) )
-		$dir = $DDV_DIR_PACKED;
+	msgCyan($MSG19_ALL_PACKAGES . "(" . $extension . ")");
 
-	msgCyan($MSG19_DDV_PACKAGES . "(" . $extension . ")");
-
-	if ( !is_dir($dir) ) {
-		err_msg($MSG16_FOLDER_NOT_FOUND . ":", $dir);
+	if ( !is_dir($dirs[0]) ) {
+		err_msg($MSG16_FOLDER_NOT_FOUND . ":", $dirs[0]);
 		return;
 	}
 	
-	$files = scanFolder($dir);
+	if ($extension == "packed")
+		$extensions = array('zip', 'gz', 'tar', 'tgz');
+	else
+		$extensions = array($extension);
+
+	$files1 = scanFolder( $dirs[0] );
+	if ( count($dirs) > 1 ) {
+		$files2 = scanFolder( $dirs[1] );
+		$files = array_merge( $files1, $files2);
+	} else
+		$files = $files1;
+
 	if (! empty($files) )
-		foreach($files as $file)
-			if (strcasecmp(substr($file, strlen($file) - strlen($extension)), $extension) == 0)	//name.ext
+		foreach($files as $file) {
+			$ext_found = pathinfo($file, PATHINFO_EXTENSION);
+			if ( in_array($ext_found, $extensions) )
 				array_push($out, $file);
+		}
 
 	sort($out, SORT_LOCALE_STRING);
 	foreach($out as $key => $value) {
@@ -136,13 +159,19 @@ function getPackageName(&$outname, &$outfilename, $extension, $dir = NULL): void
 			$description = "database structure and content package (SIARD)";
 			$val1 = substr($value, 0, -6);
 		} else if (isAtype($value, "zip")) {
-			$description = "dbdipview viewer configuration file (.zip)";
+			$description = "dbdipview viewer configuration file (.zip), or external package";
 			$val1 = substr($value, 0, -4);
 		} else if (isAtype($value, "xml")) {
 			$description = "order file with a list of packages (.xml)";
 			$val1 = substr($value, 0, -4);
+		} else if (isAtype($value, "tar")) {
+			$description = "a tar package of anything (.tar)";
+			$val1 = substr($value, 0, -4);
+		} else if (isAtype($value, "tgz")) {
+			$description = "a tar gz package of anything (.tgz)";
+			$val1 = substr($value, 0, -4);
 		} else if (isAtype($value, "tar.gz")) {
-			$description = "dbdipview extended viewer configuration file (.tar.gz)";
+			$description = "dbdipview extended viewer configuration file (.tar.gz), or external package";
 			$val1 = substr($value, 0, -7);
 		} else if (isAtype($value, "txt")) {
 			$description = "dbdipview list file (.txt)";
@@ -156,22 +185,26 @@ function getPackageName(&$outname, &$outfilename, $extension, $dir = NULL): void
 			  0==strcmp($value, "info.txt")||
 			  0==strcmp($value, "description.txt"))) {    //these files bother in append mode
 
-			$arrPkgName[$i]  = ltrim($val1, $dir);
-			$arrFilename[$i] = $value;
+			if ( count($dirs) > 1 )
+				$s = remove_prefix($val1, $dirs[1]);
+			else
+				$s = $val1;
+			$arrPkgShortName[$i]  = remove_prefix($s, $dirs[0]);
+			$arrPkgFilename[$i] = $value;
 			echo str_pad( (string)$i, 3, " ", STR_PAD_LEFT ) . " ";
-			echo str_pad($arrPkgName[$i],35) . " ";
+			echo str_pad($arrPkgShortName[$i],35) . " ";
 			echo $description . PHP_EOL;
 			$i++;
 		}
 	}
 
 	if ($i > 1) {
-		echo $MSG21_SELECT_DDV . ": ";
+		echo $MSG1_SELECTPKG . ": ";
 		if ( ($s = fgets($handleKbd)) !== false ) {
 			$name = trim($s);
 			if (is_numeric($name) && $name < $i) {
-				$outname = $arrPkgName[intval($name)];
-				$outfilename = $arrFilename[intval($name)];
+				$outname = basename( $arrPkgShortName[intval($name)] );
+				$outfilename = $arrPkgFilename[intval($name)];
 			}
 		} else
 			err_msg($MSG36_NOPACKAGE);		

@@ -62,7 +62,7 @@ class OrderInfo {
 	 * @param string $xmlinput
 	 *
 	 */
-	function __construct($xmlinput) {
+	function __construct($xmlinput = null) {
 		$order = null;
 		$reference = "";
 		$title = "";
@@ -78,7 +78,7 @@ class OrderInfo {
 		$access = null;
 		$last_ddv = null;
 		
-		if ( !empty($xmlinput) )
+		if ( isset($xmlinput) )
 			$this->loadOrder($xmlinput);
 	}
 	
@@ -180,8 +180,8 @@ class OrderInfo {
 	function set_last_ddv() {
 		$ddv="";
 		if ( isset($this->ddvFile ) && $this->ddvFile != "" ) {
-			$file = $this->ddvFile;                        //filename.zip
-			$ddv = substr( basename($file), 0, -4);        //filename  w/o .zip
+			$file = $this->ddvFile;                        // folder/filename.zip
+			$ddv = substr( basename($file), 0, -4);        //        filename
 			debug(__FUNCTION__ . ": DDV found: " . $ddv);
 		} else
 			//if ( isset($this->ddvExtFiles) )

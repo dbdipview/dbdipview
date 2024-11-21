@@ -210,6 +210,7 @@ class QueryData {
 		$allowedTypes = array("text", "textlike", "integer", "combotext", "date", "date_ge", "date_lt");
 		$noParametersAvailable = true;
 
+		$query = "";
 		$where = "";
 
 		debug(__CLASS__ . "->" . __FUNCTION__ . ": checking ...");

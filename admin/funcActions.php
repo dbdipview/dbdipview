@@ -41,7 +41,7 @@ function actions_Order_read($name, $file) {
 	$DDV = $orderInfo->last_ddv;
 
 	$PKGFILEPATH = $DDV_DIR_PACKED . $DDV;
-	$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . basename($DDV);
+	$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . $DDV;
 	$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $DDV;
 	$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 
@@ -63,7 +63,6 @@ function actions_Order_read($name, $file) {
 function actions_Order_process($access_code, $orderInfo) {
 	global $MSG30_ALREADY_ACTIVATED, $MSG17_FILE_NOT_FOUND, $MSG_ERROR;
 	global $DDV_DIR_PACKED, $DDV_DIR_UNPACKED, $BFILES_DIR_TARGET;
-	global $DBC;
 	global $OK, $NOK;
 
 	$fsiard = false;
@@ -84,12 +83,12 @@ function actions_Order_process($access_code, $orderInfo) {
 		return($NOK);
 
 	foreach ($orderInfo->siardPackages as $file) {
-		if ( $OK !== unpack_external_package($file, "siard", true) )
+		if ( $OK !== unpack_external_package($DDV_DIR_PACKED . $file, "siard", true) )
 			return($NOK);
 	}
 
 	foreach ($orderInfo->lobPackages as $file) {
-		if ( $OK !== unpack_external_package($file, "lob", true) )
+		if ( $OK !== unpack_external_package($DDV_DIR_PACKED . $file, "lob", true) )
 			return($NOK);
 	}
 
@@ -105,7 +104,7 @@ function actions_Order_process($access_code, $orderInfo) {
 				return($NOK);
 			}
 		}
-		if ( $OK != actions_SIARD_install($siardFile, $orderInfo->siardTool) )
+		if ( $OK != actions_SIARD_install($DBC, $siardFile, $orderInfo->siardTool) )
 			return($NOK);
 
 		$fsiard = true;
@@ -126,14 +125,14 @@ function actions_Order_process($access_code, $orderInfo) {
 					msgCyan("WARNING: extraction of CSV package(s) was done with first EDDV!");
 				else
 					foreach ($orderInfo->csvPackages as $file) {
-						if ( $OK !== unpack_external_package($file, "csv", true) )
+						if ( $OK !== unpack_external_package($DDV_DIR_PACKED . $file, "csv", true) )
 							return($NOK);
 						$csvPackagesExtracted = true;
 					}
 			
 				$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
-				if ($OK == actions_create_schemas_and_views($listfile, $DDV_DIR_EXTRACTED))
-					actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
+				if ($OK == actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED))
+					actions_populate($DBC, $listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
 			} else
 				return($NOK);
 		} else {
@@ -158,13 +157,13 @@ function actions_Order_process($access_code, $orderInfo) {
 				msgCyan("WARNING: extraction of CSV package(s) was done with first EDDV!");
 			else
 				foreach ($orderInfo->csvPackages as $file) {
-					if ( $OK !== unpack_external_package($file, "csv", true) )
+					if ( $OK !== unpack_external_package($DDV_DIR_PACKED . $file, "csv", true) )
 						return($NOK);
 				}
 
 			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
-			if ($OK == actions_create_schemas_and_views($listfile, $DDV_DIR_EXTRACTED))
-				actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
+			if ($OK == actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED))
+				actions_populate($DBC, $listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
 		} else
 			return($NOK);
 	} else {
@@ -178,14 +177,14 @@ function actions_Order_process($access_code, $orderInfo) {
 	$DDV_DIR_EXTRACTED = $DDV_DIR_UNPACKED . basename($ddv);   //ddv from DDV or last DDVEXT package
 	$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
 	if ($fsiard) {
-		actions_SIARD_grant($LISTFILE);            //DDV info for SIARD grant
+		actions_SIARD_grant($DBC, $LISTFILE);            //DDV info for SIARD grant
 	}
 
 	if ($orderInfo->redact)						//redaction must be done
-		if ( $OK != actions_schema_redact($DDV_DIR_EXTRACTED))
+		if ( $OK != actions_schema_redact($DBC, $DDV_DIR_EXTRACTED))
 			return($NOK);
 
-	$token = actions_access_on(basename($ddv), $access_code, $orderInfo);  //DDV enable
+	$token = actions_access_on($access_code, $orderInfo);  //DDV enable
 	if ( $token != "" ) {
 		echo "TOKEN: " . $token . PHP_EOL;
 		return($OK);
@@ -336,15 +335,16 @@ function checkValidateXml($fileXml, $schema):void {
  * However, createdb.sql is still run if present.
  * createdb01.sql is run to add VIEWs
  *
+ * @param string $DBC
  * @param string $listfile
  * @param string $DDV_DIR_EXTRACTED
  * @return bool  $OK or $NOK
  */
-function actions_create_schemas_and_views($listfile, $DDV_DIR_EXTRACTED) {
+function actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED) {
 	global $MSG_ERROR, $MSG29_EXECUTING, $MSG29_PROCESSING, $MSG25_EMPTY_TABLES_CREATED, $MSG17_FILE_NOT_FOUND;
 	global $MSG49_CREATINGSCHEMA;
 	global $OK, $NOK;
-	global $DBC, $DBGUEST;
+	global $DBGUEST;
 
 	$ret = $NOK;
 	$CREATEDB0 = $DDV_DIR_EXTRACTED . "/metadata/createdb.sql";
@@ -396,15 +396,16 @@ function actions_create_schemas_and_views($listfile, $DDV_DIR_EXTRACTED) {
 /**
  * Populate database tables
  *
+ * @param string $DBC
  * @param string $listfile
  * @param string $DDV_DIR_EXTRACTED
  * @param string $BFILES_DIR_TARGET
  * @return bool        $OK or $NOK
  */
-function actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
+function actions_populate($DBC, $listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 	global $MSG_ERROR, $MSG29_EXECUTING, $MSG5_MOVEDATA, $MSG45_EXTRACTBFILES, $MSG31_NOSCHEMA, $MSG33_SKIPPING;
 	global $OK, $NOK;
-	global $DBC, $DBGUEST;
+	global $DBGUEST;
 	global $DDV_DIR_PACKED, $PROGDIR;
 
 	$ret = $NOK;
@@ -488,18 +489,17 @@ function actions_populate($listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET) {
 /**
  * Extract files from a ZIP/tar/tar.gz
  *
- * @param string    $file
+ * @param string    $filepath
  * @param string    $extension          type, e.g. "siard", "csv", "lob", ""
  * @param boolean   $ignore_folders     skip any folders in the filename
  * @return bool     $OK or $NOK
  */
-function unpack_external_package($file, $extension, $ignore_folders) {
-	global $DDV_DIR_PACKED, $DDV_DIR_EXTRACTED;
+function unpack_external_package($filepath, $extension, $ignore_folders) {
+	global $DDV_DIR_EXTRACTED;
 	global $MSG_ERROR, $MSG17_FILE_NOT_FOUND;
 	global $OK, $NOK;
 	
-	debug(__FUNCTION__ . " " . $extension . ": " . $file);
-	$filepath = $DDV_DIR_PACKED . $file;
+	debug(__FUNCTION__ . " " . $extension . ": " . $filepath);
 	switch($extension) {
 		case "xxsiard":
 			$target_dir = dirname($filepath);
@@ -513,7 +513,7 @@ function unpack_external_package($file, $extension, $ignore_folders) {
 	debug(__FUNCTION__ . ": target: " . $target_dir);
 	if ( is_file($filepath) ) {
 		if ( $OK !== actions_extract_files($filepath, $target_dir, $extension, $ignore_folders) ) {
-			err_msg($MSG_ERROR, $file);
+			err_msg($MSG_ERROR, $filepath);
 			return($NOK);
 		}
 	} else {
@@ -755,13 +755,14 @@ function actions_DDV_showInfo(): void {
 /**
  * Export a SIARD package contents to a database
  *
+ * @param string $DBC
  * @param string $siardFile
  * @param string|null $tool
  * @return bool        $OK or $NOK
  */
-function actions_SIARD_install($siardFile, $tool) {
+function actions_SIARD_install($DBC, $siardFile, $tool) {
 	global $MSG50_DEPLOYING;
-	global $DBC, $SIARDTOOLDEFAULT;
+	global $SIARDTOOLDEFAULT;
 	global $OK, $NOK;
 
 	if ( empty($tool) )
@@ -777,11 +778,13 @@ function actions_SIARD_install($siardFile, $tool) {
 /**
  * Enable access for tables in schemas of a SIAD package (as defined in DDV package)
  * Precondition: At least one SIARD package has been deployed
+ *
+ * @param string $DBC
  * @param string $listfile
  */
-function actions_SIARD_grant($listfile): bool {
+function actions_SIARD_grant($DBC, $listfile): bool {
 	global $MSG_ERROR, $MSG3_ENABLEACCESS, $MSG23_SCHEMA_ACCESS, $MSG17_FILE_NOT_FOUND;
-	global $DBC, $DBGUEST;
+	global $DBGUEST;
 	global $OK, $NOK;
 
 	msgCyan($MSG3_ENABLEACCESS . " ...");
@@ -812,19 +815,18 @@ function actions_SIARD_grant($listfile): bool {
  * Activate the access to the database
  * Precondition: the database is prepared
  *
- * @param string $ddv
  * @param string|null $access_code  force this value for access token
- * @param OrderInfo|null   $orderInfo
+ * @param OrderInfo   $orderInfo
  * @return string                   access token for quick user access
  */
-function actions_access_on($ddv, $access_code, $orderInfo): string {
+function actions_access_on($access_code, $orderInfo): string {
 	global $MSG18_DDV_NOT_SELECTED, $MSG15_DDV_IS_NOT_UNPACKED, $MSG32_SERVER_DATABASE_NOT_SELECTED, $MSG16_FOLDER_NOT_FOUND;
 	global $MSG17_FILE_NOT_FOUND, $MSG30_ALREADY_ACTIVATED, $MSG27_ACTIVATED, $MSG6_ACTIVATEDIP;
 	global $SERVERDATADIR,$DDV_DIR_EXTRACTED;
-	global $DBC;
 
 	add_db_functions();
-
+	$DBC = $orderInfo->dbc;
+	$ddv = $orderInfo->last_ddv;
 	$token = "";
 	$XMLFILESRC = $DDV_DIR_EXTRACTED . "/metadata/queries.xml";
 	$DESCFILESRC = $DDV_DIR_EXTRACTED . "/metadata/description.txt";
@@ -857,8 +859,6 @@ function actions_access_on($ddv, $access_code, $orderInfo): string {
 		debug(__FUNCTION__ . ": if there is a problem, check config.json.");
 		return("");
 	}
-	if ( is_null($orderInfo) )
-		return("");
 
 	$targetFile = $SERVERDATADIR . $ddv . ".xml";
 	if ( !is_file($targetFile) )
@@ -948,13 +948,13 @@ function actions_access_off($ddv) {
  * If redact.sql and redact01.sql exist, run the sql to redact the tables
  * The tables must be already populated at this stage.
  *
+ * @param string $DBC
  * @param string $DDV_DIR_EXTRACTED
  * @return bool        $OK or $NOK
  */
-function actions_schema_redact($DDV_DIR_EXTRACTED) {
+function actions_schema_redact($DBC, $DDV_DIR_EXTRACTED) {
 	global $MSG_ERROR, $MSG29_EXECUTING, $MSG47_REDACTCOMPLETED, $MSG17_FILE_NOT_FOUND;
 	global $OK, $NOK;
-	global $DBC;
 
 	$ret = $NOK;
 	$REDACTDB0 = $DDV_DIR_EXTRACTED . "/metadata/redactdb.sql";
