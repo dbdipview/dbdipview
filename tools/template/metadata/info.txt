@@ -1,0 +1,6 @@
+CHANGE THIS FILE (info.txt)
+
+General description of the whole package.
+
+This package is an empty package with no database and viewer configured.
+However, it can be deployed.

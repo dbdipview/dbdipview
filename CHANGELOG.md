@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [[3.6.3] - 2024-12-03
+### Added
+- packaging: templates are now available in folder tools
+
 ## [3.6.2] - 2024-11-21
 ### Added
 - deployment: menu allows manual steps for the new functionality (automated in ordeploy with 3.6.1)

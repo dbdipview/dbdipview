@@ -1,0 +1,40 @@
+<dbrequest>
+	<!-- dbDIPview order file tmplate -->
+	<!-- comment... -->
+	<order>Order id</order>
+	<reference>Reference code of archival records (unit of description)</reference>
+	<title>Title of the ordered unit of description</title>
+	<dbcontainer redact="0">tbd_container</dbcontainer>
+
+	<!-- Remove the elements that are not needed. -->
+	<!-- It is convenient to use tbd as a placeholder for the subfolder name. -->
+
+	<!-- Packages can be: .zip/.tar/.tar.gz/.tgz and are located in the subfolder tbd -->
+	<packages_with_siard>
+		<package_with_siard>tbd/packed_siard_files.zip</package_with_siard>
+	</packages_with_siard>
+
+	<!-- siard files to be deployed from input folder, or from package_in_siard -->
+	<siards tool="DBPTK">
+		<siard>tbd/abc.siard</siard>
+	</siards>
+
+	<!-- Packages can be: .zip/.tar/.tar.gz/.tgz and are located in the subfolder tbd -->
+	<packages_with_csv>
+		<package_with_csv>tbd/packed_csv_files.zip</package_with_csv>
+	</packages_with_csv>
+
+	<!-- Packages can be: .zip/.tar/.tar.gz/.tgz and are located in the subfolder tbd -->
+	<!-- The contained files are again packages with actual LOB files as listed in list.xml for deployment --> 
+	<packages_with_lob_packages>
+		<package_with_lob_packages>tbd/packed_lob_packages.zip</package_with_lob_packages>
+	</packages_with_lob_packages>
+
+	<viewers_extended>
+		<viewer_extended>tbd/abc_eddv.tar.gz</viewer_extended>
+	</viewers_extended>
+
+	<viewer>tbd/abc_ddv.zip</viewer>
+
+	<access>public</access>
+</dbrequest>
