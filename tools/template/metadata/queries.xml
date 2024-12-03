@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dbDIPview
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="dbDIPview.xsd"
+           schemaMajorVersion="2">
+	<database>
+		<name>Name of the viewer</name>
+		<revisions>
+			<revision date="2021-06-16" version="0.1">Template. This empty XML file can be used as a template.</revision>
+		</revisions>
+		<ref_number>001</ref_number>
+		<screens>
+
+			<screen>
+				<id>1</id>
+				<selectDescription>Menu item (a report)</selectDescription>
+				<title>This is the title</title>
+				<subtitle>This is the subtitle. No query has been defined.</subtitle>
+				<description>
+This is text from queries.xml.
+&lt;BR /&gt;&lt;BR /&gt;
+YOu can change it.
+				</description>
+				<query/>
+				<selectGroup></selectGroup>
+				<selectOrder>"firstColumn", "secondColumn"</selectOrder>
+				<links_to_next_screen>
+					<link>
+						<dbcolumnname>source column header name, see also attribute valueFromColumn</dbcolumnname>
+						<next_screen_id>1a</next_screen_id>
+						<dbtable>target table name</dbtable>
+						<dbcolumn>target column name</dbcolumn>
+					</link>
+				</links_to_next_screen>
+			</screen>
+
+			<screen>
+				<id hide="1">1a</id>
+				<selectDescription>Value is ignored if hidden</selectDescription>
+				<title>This report is not shown in the menu</title>
+				<subtitle>It is called from another report</subtitle>
+				<param mandatory="1" size='12' skipNewLine="0">
+					<name>field label for GUI</name>
+					<infotip>This is a sample help text for this field. &lt;br /&gt;
+					Some basic html formatting is &lt;b&gt;possible&lt;/b&gt;</infotip>
+					<dbtable>table name</dbtable>
+					<dbcolumn>column name</dbcolumn>
+					<!-- types: text, textlike, combotext, integer, date_ge, date_lt  -->
+					<type>text</type>
+					<forwardToSubqueryName>param1</forwardToSubqueryName>
+				</param>
+				<query> </query>
+
+				<subselect>
+					<title> </title>
+					<subtitle> </subtitle>
+					<param>
+						<forwardedParamName>param1</forwardedParamName>
+						<dbtable>table name</dbtable>
+						<dbcolumn>column name</dbcolumn>
+					</param>
+					<query>
+					</query>
+					<selectGroup></selectGroup>
+					<selectOrder></selectOrder>
+					<ahrefs>
+						<ahref>
+							<dbcolumnname>source column name</dbcolumnname>
+							<atext> </atext>
+						</ahref>
+						<ahref>
+							<dbcolumnname>source column name</dbcolumnname>
+							<atext> </atext>
+							<URLprefix> </URLprefix>
+						</ahref>
+					</ahrefs>
+					<images>
+						<image>
+							<dbcolumnname>source column name</dbcolumnname>
+							<style> </style>
+						</image>
+					</images>
+					<view default="listMC">
+						<columnName newCol="1" noLabel="1">image</columnName>
+					</view>
+				</subselect>
+			</screen>
+
+			<!-- this part is also generated automatically by the generator -->
+			<screen level='0' textOnly='1'>
+				<id/>
+				<selectDescription>Database reports</selectDescription>
+			</screen>
+
+			<screen level='1' skipCSVsave="1">
+				<id>C1</id>
+				<selectDescription>Number of records in each table</selectDescription>
+				<title>Number of records in each table</title>
+				<subtitle>NOTE: The macro will do the job</subtitle>
+				<querymacro>NUMBER_OF_RECORDS_IN_TABLES</querymacro>
+			</screen>
+
+			<screen level='1' skipCSVsave='1'>
+				<id>ALL10</id>
+				<selectDescription>First 10 records from each table</selectDescription>
+				<title/>
+				<subtitle>This report enables a quick overview</subtitle>
+				<query/>
+				<subselect>
+					<title>table 1</title>
+					<subtitle>First 10 records</subtitle>
+					<query>SELECT * FROM "PUBLIC"."table1" LIMIT 10</query>
+				</subselect>
+			</screen>
+
+			<screen level='1' textOnly='1'>
+				<id>ALLALL</id>
+				<selectDescription>Display content of each table</selectDescription>
+			</screen>
+			<screen level='2'>
+				<id>T1</id>
+				<selectDescription>Table 1</selectDescription>
+				<title>Records in table 1</title>
+				<query>SELECT * FROM "PUBLIC"."table1"</query>
+			</screen>
+
+		</screens>
+	</database>
+</dbDIPview>

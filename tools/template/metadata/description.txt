@@ -1,0 +1,8 @@
+<h3>Additional explanation of the menu.</h3>
+<br />
+This is content from description.txt and is just a template<br/>
+
+<div style="font-family:Courier">
+<p>text text text</p>
+</div>
+

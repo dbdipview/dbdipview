@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list.xsd" schemaMajorVersion="1">
+	<revisions>
+		<revision date="2024-10-11">Template. Change the values.</revision>
+	</revisions>
+	<comment>
+This is the main configuration file for deployment of a dbDIPview package.
+Describes the objects that need some action during deployment or later removal.
+Use the following elements (to enable setting the permission or loading the files):
+- For CSV based packages: SCHEMA, TABLE, BFILES
+- For SIARD based packages: SCHEMA
+- For additional VIEW or TABLE elements created by createdb01.sql: VIEW
+See TestAndDemo for examples.
+	</comment>
+	<schemas>
+		<!-- as used in SIARD and query.xml; needed here to set permission  -->
+		<schema>schemaName</schema>
+	</schemas>
+	<views>
+		<!-- views are usually created by createddb01.sql; needed here to set permission -->
+		<view></view>
+	</views>
+	<tables>
+		<!-- see packager list.xsd for all attributes and their default values;
+			CSV come from EXT DDV or external package as defined in order file -->
+		<table file="fileName.csv">schemaName.tableName</table>
+	</tables>
+	<bfiles>
+		<!-- .zip, .tar, .tar.gz packages in EXT DDV packages with LOB files -->
+		<bfile></bfile>
+	</bfiles>
+</configuration>
