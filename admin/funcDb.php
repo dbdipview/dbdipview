@@ -114,15 +114,15 @@ function dbf_delete_dbc($DBC): bool {
 /**
  * Grant usage on schema
  * @param string $DBC
- * @param string $SCHEMA
+ * @param string $SCHEMA_Q     schema name with quotes
  * @param string $DBGUEST
  */
- function  dbf_grant_usage_on_schema($DBC, $SCHEMA, $DBGUEST): int {
+ function  dbf_grant_usage_on_schema($DBC, $SCHEMA_Q, $DBGUEST): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
 	$rv = "";
-	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST);
-	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST .
+	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA_Q . " TO " . $DBGUEST);
+	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA_Q . " TO " . $DBGUEST .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
@@ -163,19 +163,19 @@ function dbf_delete_dbc($DBC): bool {
 /**
  * Grant select on all tables in schema for the user
  * @param string $DBC
- * @param string $SCHEMA
+ * @param string $SCHEMA_Q     schema name with quotes
  * @param string $DBGUEST
  */
- function dbf_grant_select_all_tables($DBC, $SCHEMA, $DBGUEST): int {
+ function dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
 	$rv = "";
-	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST);
-	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA . " TO " . $DBGUEST .
+	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA_Q . " TO " . $DBGUEST);
+	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA_Q . " TO " . $DBGUEST .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 
-	debug(        "GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA);
-	passthru("echo GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA . " TO " . $DBGUEST .
+	debug(        "GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA_Q);
+	passthru("echo GRANT SELECT ON ALL TABLES IN SCHEMA " . $SCHEMA_Q . " TO " . $DBGUEST .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }

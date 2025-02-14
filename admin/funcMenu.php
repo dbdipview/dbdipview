@@ -111,7 +111,7 @@ function remove_prefix($str, $prefix): string {
  * @param string   &$outname       package name
  * @param string   &$outfilename   filename
  * @param string   $extension      filename extension for search criteria, e.g. "siard","lob","csv", or "packed"
- * @param string[] $dirs            source folder
+ * @param string[] $dirs           source folder
  *
  * @return void
  */
@@ -161,8 +161,11 @@ function getPackageName(&$outname, &$outfilename, $extension, $dirs): void {
 		} else if (isAtype($value, "zip")) {
 			$description = "dbdipview viewer configuration file (.zip), or external package";
 			$val1 = substr($value, 0, -4);
+		} else if (isAtype($value, "xml") && substr( $value, 0, 4 ) === "list") {
+			$description = "dbdipview list file (.xml)";
+			$val1 = substr($value, 0, -4);
 		} else if (isAtype($value, "xml")) {
-			$description = "order file with a list of packages (.xml)";
+			$description = "order file with a list of packages, or incremental list file (.xml)";
 			$val1 = substr($value, 0, -4);
 		} else if (isAtype($value, "tar")) {
 			$description = "a tar package of anything (.tar)";
@@ -171,11 +174,8 @@ function getPackageName(&$outname, &$outfilename, $extension, $dirs): void {
 			$description = "a tar gz package of anything (.tgz)";
 			$val1 = substr($value, 0, -4);
 		} else if (isAtype($value, "tar.gz")) {
-			$description = "dbdipview extended viewer configuration file (.tar.gz), or external package";
+			$description = "dbdipview extended viewer configuration file, or external package (.tar.gz)";
 			$val1 = substr($value, 0, -7);
-		} else if (isAtype($value, "txt")) {
-			$description = "dbdipview list file (.txt)";
-			$val1 = substr($value, 0, -4);
 		} else {
 			$description = "ERROR: unknown type!";
 			$val1 = $value;
@@ -189,6 +189,7 @@ function getPackageName(&$outname, &$outfilename, $extension, $dirs): void {
 				$s = remove_prefix($val1, $dirs[1]);
 			else
 				$s = $val1;
+
 			$arrPkgShortName[$i]  = remove_prefix($s, $dirs[0]);
 			$arrPkgFilename[$i] = $value;
 			echo str_pad( (string)$i, 3, " ", STR_PAD_LEFT ) . " ";

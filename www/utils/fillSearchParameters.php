@@ -230,7 +230,7 @@ if($screenFields == 0)
 				aria-label="<?php echo $MSGSW16_Display; ?>"
 				title="<?php echo $MSGSW16_Display; ?>"
 				alt="<?php echo $MSGSW16_Display; ?>"
-				style="font-size: 1rem; width: 98%;"/>
+				style="font-size: 1em; width: 98%;"/>
 <!--		<input type="image" src="img/go.png" alt="<?php echo $MSGSW16_Display; ?>" /> -->
 		</center>
 

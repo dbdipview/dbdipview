@@ -187,7 +187,7 @@ function input_date($field, $default, $form, $id): void {
 	global $MSGSW21_YYYYMMDD;
 ?>
 	<input type="text"
-			pattern="[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])" 
+			pattern="[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])"
 			maxlength="10"
 			placeholder="<?php echo "$MSGSW21_YYYYMMDD"; ?>"
 			size="10"
@@ -279,7 +279,7 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 
 				<abbr title="<?php echo $paramname; ?>"
 					><select
-				name="<?php echo "$fieldname". ($multiple != "" ? "[]" : ""); ?>" 
+				name="<?php echo "$fieldname". ($multiple != "" ? "[]" : ""); ?>"
 				id=  "<?php echo "$currentId"; ?>"
 				      <?php echo "$multiple"; ?>
 				size="<?php echo "$rowlines"; ?>">
@@ -310,10 +310,7 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 
 $infoTipNumber = 0;
 
-/**
- * @param string $text
- * @param string $id
- */
+
 function showInfotipInline($text, $id): string {
 	global $infoTipNumber;
 	global $MSGSW35_Infotip;
@@ -323,13 +320,35 @@ function showInfotipInline($text, $id): string {
 	if ( $text == "" )
 		return("");
 
-	$out =  "<span class=\"noClipboard\" \n";
-	$out .= "  onmouseover=\"ShowText('" . $msgid . "'); return true;\"" . PHP_EOL;
-	$out .= "  onmouseout= \"HideText('" . $msgid . "'); return true;\"" . PHP_EOL;
-	$out .= "  href=\"javascript:ShowText('" . $msgid . "')\">" . PHP_EOL;
-	$out .= "  <img src=\"img/question_mark.gif\" alt=\"" . $MSGSW35_Infotip . "\">" . PHP_EOL;
+	$out =  "<span class='no-print noClipboard' \n";
+	$out .= "    onmouseover=\"ShowText('" . $msgid . "'); return true;\"" . PHP_EOL;
+	$out .= "    onmouseout= \"HideText('" . $msgid . "'); return true;\"" . PHP_EOL;
+	$out .= "    href=\"javascript:ShowText('" . $msgid . "')\">" . PHP_EOL;
+	$out .= "    <img src=\"img/question_mark.gif\" alt=\"" . $MSGSW35_Infotip . "\">" . PHP_EOL;
 	$out .= "</span>";
 	$out .= "<span id=\"" . $msgid . "\" class=\"box\">" . $text . "</span>" . PHP_EOL;
+	return($out);
+}
+
+
+/**
+ * returns html code for print icon
+ */
+function printIcon(): string {
+	global $MSGSW31_Print;
+
+	$out =  "<img style=\"width:1em; height:1em;\" title=\"$MSGSW31_Print\" src=\"img/printer-icon.svg\"></img>";
+	return($out);
+}
+
+
+/**
+ * returns html code for download icon
+ */
+function downloadIcon(): string {
+	global $MSGSW28_SAVESASCSV;
+
+	$out =  "<img style=\"width:1em; height:1em;\" title=\"$MSGSW28_SAVESASCSV\" src=\"img/download-arrow-icon.svg\"></img>";
 	return($out);
 }
 

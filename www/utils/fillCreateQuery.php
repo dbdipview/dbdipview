@@ -86,13 +86,13 @@ function createAhrefCSV($selectdescription, $title, $subtitle, $csvquery, $filen
 
 	$csvtitle .= '"' . $MSGSW20_ReportSubTitle .    ": " .  fbr($subtitle) .           '"' . ";\n";
 
-	print("<a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv" .
+	print("<span class='no-print'><a href='" . $_SERVER["PHP_SELF"] . "?submit_cycle=showCsv" .
 		"&s=" . rawurlencode(base64_encode($csvquery)) .
 		"&f=" . $filename .
 		"&t=" . rawurlencode(base64_encode($csvtitle)) .
 		"' aria-label='" . $MSGSW28_SAVESASCSV . "'>" .
-		"<span class='downloadArrow'>&#129123;</span>" .
-		"</a>&nbsp;");
+		downloadIcon() .
+		"</a></span>&nbsp;");
 }
 
 /**
@@ -198,8 +198,6 @@ function fillCreateQuery() {
 
 		debug(str_repeat("-",80));
 
-define('PRINTER_ICON', '&#x1f5b6;');
-
 		$tablelist = $_SESSION['tablelist'];
 		$hitsOnPage = 0;
 		if ( strcmp($tablelist, "table") == 0) {
@@ -208,7 +206,7 @@ define('PRINTER_ICON', '&#x1f5b6;');
 			print "<a style='text-decoration: none;' href='#' " .
 					"onclick=\"printContent('bottomframe');\" " .
 					"aria-label=\"$MSGSW31_Print\" >" .
-				PRINTER_ICON . "</a> ";
+				  printIcon() . "</a> ";
 			print "</span>";
 
 			if ($queryInfo->attrSkipCSVsave === false) {
@@ -232,7 +230,7 @@ define('PRINTER_ICON', '&#x1f5b6;');
 			print "<tr><td>" . PHP_EOL;
 
 			print "<span class='no-print'>";
-			print "<a style='text-decoration: none' href='#' onclick=\"printContent('bottomframe');\">" . PRINTER_ICON . "</a> ";
+			print "<a style='text-decoration: none' href='#' onclick=\"printContent('bottomframe');\">" . printIcon() . "</a> ";
 			print "</span>";
 			print '<h2 style="display: inline;">';
 			print $MSGSW18_ReportDescription . " " . $screen->id . ": " . $screen->selectDescription . "</h2>";

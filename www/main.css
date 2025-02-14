@@ -11,6 +11,12 @@ html {
 	}
 }
 
+@media print {
+  input[type="checkbox"].no_print {
+    display: none;
+  }
+}
+
 body {
 	background-color: var(--main-background-color);
 	color: var(--main-body-color);

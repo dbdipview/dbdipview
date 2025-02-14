@@ -62,7 +62,7 @@ if (!is_dir($DDV_DIR_UNPACKED)) {
 }
 
 
-$options = getopt("hoesvc:aL");
+$options = getopt("hoesvc:aLA");
 if ( false === $options) {
 	echo "Parse error..";
 	exit();
@@ -169,7 +169,7 @@ while ( "$answer" != "q" ) {
 	}
 
 	if ( !empty($all) || ($X1 == 'X' && !empty($appendList)) ) {
-					echo "${XL}a  $MSG54_APPENDDATA [$DBC] [$DDV]" . PHP_EOL;
+					echo "${XL}A  $MSG54_APPENDDATA [$DBC] [$DDV]" . PHP_EOL;
 	}
 
 	if ( !empty($all) || (!empty($srd) && $XD == 'X') )  {
@@ -412,11 +412,12 @@ while ( "$answer" != "q" ) {
 			$name="";
 			$file="";
 			echo ": " . $DDV_DIR_EXTRACTED . "/metadata" . PHP_EOL;
-			getPackageName($name, $file, "xml", [$DDV_DIR_EXTRACTED . "/metadata"]);
+			getPackageName($name, $file, "xml", [$DDV_DIR_EXTRACTED . "/metadata/"]);
 			if ( empty($file) )
 				break;
 
-			$LISTFILE = $DDV_DIR_EXTRACTED . "/metadata/" . $file;
+			$LISTFILE = $file;
+			$BFILES_DIR_TARGET = $BFILES_DIR . $DBC . "__" . $DDV;
 			if ( !is_file($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if ($OK == actions_populate($DBC, $LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET)) {
