@@ -8,6 +8,7 @@ if (! isset($SERVERDATADIR))
 	$SERVERDATADIR = "data/";
 
 $SERVERCONFIGJSON = "$SERVERDATADIR" . "config.json";
+$SERVERCONFIGJSONBAK = "$SERVERDATADIR" . "config.json.1";
 $SERVERCONFIGCSV  = "$SERVERDATADIR" . "configuration.dat";  //obsolete
 
 
@@ -29,7 +30,7 @@ function get_bool($txt): bool {
  * Create an empty configuration file after installation
  */
 function config_create(): void {
-	global $SERVERCONFIGJSON, $MSG43_INITCONFIG;
+	global $SERVERCONFIGJSON, $SERVERCONFIGJSONBAK, $MSG43_INITCONFIG;
 
 	if (!file_exists($SERVERCONFIGJSON)) {
 		msgCyan($MSG43_INITCONFIG . ": " . $SERVERCONFIGJSON);
@@ -42,7 +43,7 @@ function config_create(): void {
 
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 	if ( !is_array($array) ) {
-		err_msg("ERROR: corrupted file: " . $SERVERCONFIGJSON);
+		err_msg("ERROR: corrupted file: " . $SERVERCONFIGJSON, ". Check " . $SERVERCONFIGJSONBAK);
 		exit(1);
 	}
 }
@@ -106,7 +107,8 @@ function config_list(): void {
  *     title         title of the unit of description
  */
 function config_json_add_item($configItemInfo): void {
-	global $SERVERCONFIGJSON, $MSG17_FILE_NOT_FOUND;
+	global $SERVERCONFIGJSON, $SERVERCONFIGJSONBAK;
+	global $MSG56_CANNOT_CREATE, $MSG17_FILE_NOT_FOUND;
 
 	$newjson  = '{';
 	$newjson .= '"dbc":"' .                             $configItemInfo['dbc']         . '",';
@@ -119,6 +121,13 @@ function config_json_add_item($configItemInfo): void {
 	$newjson .= '"title":"' .      str_replace('"', "", $configItemInfo['title'])      . '",';
 	$newjson .= '"order":"' .                           $configItemInfo['order']       . '",';
 	$newjson .= '"redacted":"' .                        $configItemInfo['redacted']    . '"}';
+
+	if ( file_exists($SERVERCONFIGJSON) && filesize($SERVERCONFIGJSON)>0 ) {
+		if (!copy($SERVERCONFIGJSON, $SERVERCONFIGJSONBAK)) {
+			err_msg("ERROR: " . $MSG56_CANNOT_CREATE, $SERVERCONFIGJSONBAK);
+			return;
+		}
+	}
 
 	$i = 0;
 	$json = "[";
@@ -210,6 +219,9 @@ function config_isPackageActivated($ddv, $DBC=null) {
 
 	$found = 0;
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
+
+	if ( is_null($array) )
+		return($found);
 
 	foreach ($array as $index=>$line) {
 		if (

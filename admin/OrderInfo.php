@@ -54,7 +54,7 @@ class OrderInfo {
 	*/
 	public $access = null;
 	/**
-	* @var string
+	* @var string|null
 	*/
 	public $last_ddv = null;
 

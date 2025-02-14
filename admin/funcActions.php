@@ -346,7 +346,7 @@ function actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED) {
 	global $OK, $NOK;
 	global $DBGUEST;
 
-	$ret = $NOK;
+	$ret = $OK;
 	$CREATEDB0 = $DDV_DIR_EXTRACTED . "/metadata/createdb.sql";
 	$CREATEDB1 = $DDV_DIR_EXTRACTED . "/metadata/createdb01.sql";
 
@@ -363,20 +363,25 @@ function actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED) {
 		$SCHEMA_Q = addQuotes($SCHEMA);
 		msgCyan($MSG49_CREATINGSCHEMA . " " . $SCHEMA . " ...");
 		$rv = dbf_create_schema($DBC, $SCHEMA_Q);
-		if ( $rv != 0 )
+		if ( $rv != 0 ) {
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
-		else {
+			$ret = $NOK;
+		} else {
 			$rv = dbf_grant_usage_on_schema($DBC, $SCHEMA_Q, $DBGUEST);
-			if ( $rv != 0 )
+			if ( $rv != 0 ) {
 				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+				$ret = $NOK;
+			}
 		}
 	}
 
 	if ( is_file($CREATEDB0) ) {
 		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB0) . " ...");
 		$rv = dbf_run_sql($DBC, $CREATEDB0);
-		if ( $rv != 0 )
+		if ( $rv != 0 ) {
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+			$ret = $NOK;
+		}
 		msgCyan($MSG25_EMPTY_TABLES_CREATED);
 	} else
 		debug(__FUNCTION__ . ": No file " . basename($CREATEDB0) . " ...");
@@ -384,11 +389,21 @@ function actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED) {
 	if ( is_file($CREATEDB1) ) {
 		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . " ...");
 		$rv = dbf_run_sql($DBC, $CREATEDB1);
-		if ( $rv != 0 )
+		if ( $rv != 0 ) {
 			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+			$ret = $NOK;
+		}
 	}
 
-	$ret = $OK;
+	foreach ($listData->schemas as $schema) {
+		$SCHEMA = $schema;
+		$SCHEMA_Q = addQuotes($SCHEMA);
+		$rv = dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST);
+		if ( $rv != 0 ) {
+			err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+			$ret = $NOK;
+		}
+	}
 
 	return($ret);
 }
@@ -862,9 +877,10 @@ function actions_access_on($access_code, $orderInfo): string {
 
 	$targetFile = $SERVERDATADIR . $ddv . ".xml";
 	if ( !is_file($targetFile) )
-		if ( !copy($XMLFILESRC, $targetFile) )
+		if ( !copy($XMLFILESRC, $targetFile) ) {
 			err_msg(__FUNCTION__ . ": Copy error: " . $ddv . ".xml");
-		else
+			return("");
+		} else
 			debug(__FUNCTION__ . ": Created $targetFile");
 	else
 		debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
@@ -872,9 +888,10 @@ function actions_access_on($access_code, $orderInfo): string {
 	if ( is_file($DESCFILESRC) ) {
 		$targetFile = $SERVERDATADIR . $ddv . ".txt";
 		if ( !is_file($targetFile) )
-			if ( !copy($DESCFILESRC, $targetFile) )
+			if ( !copy($DESCFILESRC, $targetFile) ) {
 				err_msg(__FUNCTION__ . ": Copy error: " . $ddv . ".txt");
-			else
+				return("");
+			} else
 				debug(__FUNCTION__ . ": Created $targetFile");
 		else
 			debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");
@@ -883,9 +900,10 @@ function actions_access_on($access_code, $orderInfo): string {
 	if ( is_file($REDACTFILESRC) ) {
 		$targetFile = $SERVERDATADIR . $ddv . "_redaction.html";
 		if ( !is_file($targetFile) )
-			if ( !copy($REDACTFILESRC, $targetFile) )
+			if ( !copy($REDACTFILESRC, $targetFile) ) {
 				err_msg(__FUNCTION__ . ": Copy error: " . $ddv . "_redaction.html");
-			else
+				return("");
+			} else
 				debug(__FUNCTION__ . ": Created $targetFile");
 		else
 			debug(__FUNCTION__ . ": ALREADY EXISTS $targetFile");

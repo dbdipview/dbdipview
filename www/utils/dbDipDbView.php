@@ -250,12 +250,15 @@ function qToListWithLink($queryData, $totalCount) {
 					if( empty($val) )
 						continue;
 
-				$output .= showInfotipInline($columnDescriptions->getDescriptionForColumn($col), $col);
+				$infoTip = showInfotipInline($columnDescriptions->getDescriptionForColumn($col), $col);
 				if( ! $viewData->isNoLabel($col) )
 					if ($currentColNumber == 1) {
-						$output .= '<h4 style="font-weight: bold; color: var(--mydbtable-color); margin-top: 0rem;">' . $col . ":";
+						$output .= '<h4 style="font-weight: bold; color: var(--mydbtable-color); margin-top: 0rem;">';
+						$output .= $infoTip;
+						$output .= $col . ":";
 						$break = "</h4>";
 					} else {
+						$output .= $infoTip;
 						$output .= "<b>$col:</b>";
 						$break = "<br />";
 					}
@@ -315,7 +318,7 @@ function qToListWithLink($queryData, $totalCount) {
 							$id=$column["id"];
 							$output .= "<a href='" . $_SERVER["PHP_SELF"] .
 								"?submit_cycle=showBlob&id=$id&val=$val' target='_blank'>" .
-								"<span class='downloadArrow'>&#129123;</span>" .
+								downloadIcon() .
 								"</a>" . $break . PHP_EOL;
 						}
 						continue;
@@ -404,9 +407,12 @@ function qToTableWithLink($queryData, $totalCount, $queryId) {
 			$field = $fields['name'];
 			$hcol = $j + 1;
 			if ( strlen($queryId) > 0 && ($j !== 0)) {
-				$mycheckbox = "<input type=\"checkbox\" name=\"" .
-								$tableid . "_col$hcol\" checked=\"checked\" aria-label=\"" .
-								$MSGSW34_HideColumn . "\" class=\"noClipboard\" />";
+				$mycheckbox = "<span class=\"noClipboard\"><input type=\"checkbox\" " .
+								"name=\"" . $tableid . "_col$hcol\" " .
+								"checked=\"checked\" " .
+								"aria-label=\"" . $MSGSW34_HideColumn . "\" " .
+								"title=\"" . $MSGSW34_HideColumn . "\" " .
+								"class=\"no_print\" /></span>";
 			} else
 				$mycheckbox = "";
 			$description = showInfotipInline($columnDescriptions->getDescriptionForColumn($field), $field);
@@ -488,7 +494,7 @@ function qToTableWithLink($queryData, $totalCount, $queryId) {
 							$output .= "  <td>" .
 							"<a href='" . $_SERVER["PHP_SELF"] .
 								"?submit_cycle=showBlob&id=$id&val=$val' target='_blank'>" .
-								"<div class='downloadArrow' style='text-align:center;'>&#129123;</div>" .
+								downloadIcon() .
 								"</a></td>" . PHP_EOL;
 						}
 						continue;
