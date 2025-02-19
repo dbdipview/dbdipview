@@ -642,19 +642,6 @@ function checkIsTable($table): int {
 		return(0);
 }
 
-/**
- *
- * @param string $dir
- * @param string $f
- * @return int          number of errors
- */
-function checkIsFile($dir, $f): int {
-	if ( !is_file($dir . $f) ) {
-		checkShowError("ERROR: missing file: '" . $f . "'");
-		return(1);
-	} else
-		return(0);
-}
 
 /**
  *

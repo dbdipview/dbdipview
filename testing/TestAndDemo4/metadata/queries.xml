@@ -7,7 +7,9 @@
 	<database>
 		<name>TestAndDemo4 regression test with packages: SIARD, CSV and DDV</name>
 		<overview>
-An empty database was created from a SIARD package, and the table was then populated from the contents of an external package with two CSV files.&lt;BR /&gt;
+An empty database was created from a SIARD package, and the table was then populated from 
+the contents of an external package with two CSV files.&lt;BR /&gt;
+It is possible to set the redaction flag in TestAndDemo4_order.xml.
 		</overview>
 		<revisions>
 			<revision date="2019-12-01" version="0.1">First test</revision>

@@ -2,7 +2,7 @@
 	<order>Order_test_TD5</order>
 	<reference>TEST TD/5</reference>
 	<title>TestAndDemo5: SIARD, EXT DDV and DDV packages</title>
-	<dbcontainer redact="1">DBC5</dbcontainer>
+	<dbcontainer redact="0">DBC5</dbcontainer>
 
 	<packages_with_siard />
 

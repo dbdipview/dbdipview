@@ -6,18 +6,22 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 Generally, the master branch is always stable. You can use it for installation or updating.
 
 
-## [[3.6.5] - 2025-02-14
+## [3.6.6] - 2025-02-19
+### Changed
+- test suite: in order file, redaction is now off for test cases 4 and 5
+ 
+## [3.6.5] - 2025-02-14
 ### Fixed
-- deployment: config.json backup file saved in case of disk-full
+- deployment: save config.json backup file in case of disk-full
 - deployment: incremental mode revisited and use of option -A 
 - access: on Android, print and download icons were not visible
 - access: infotip icons and column select checkboxes do not appear on printed report anymore
 
-## [[3.6.4] - 2025-01-15
+## [3.6.4] - 2025-01-15
 ### Fixed
 - access: explicit check for wrong date format in user input added
 
-## [[3.6.3] - 2024-12-03
+## [3.6.3] - 2024-12-03
 ### Added
 - packaging: templates are now available in folder tools
 
