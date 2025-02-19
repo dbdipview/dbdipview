@@ -175,33 +175,33 @@ if($screenFields == 0)
 		}
 		?>
 
-		<label><input type="radio" name="tablelist" value="table" onclick="setTreeOrList()" id="wantTable" <?php echo $checkedT; ?>
+		<label title="<?php echo $MSGSW25_TABLEVIEW; ?>"
+		><input type="radio" name="tablelist" value="table" onclick="setTreeOrList()" id="wantTable" <?php echo $checkedT; ?>
 				/><img src="img/table.png"
-						title="<?php echo $MSGSW25_TABLEVIEW; ?>"
 						alt="<?php echo $MSGSW25_TABLEVIEW . " "; ?>">
 				</img></label>
 
-		<label><input type="radio" name="tablelist" value="list" onclick="setTreeOrList()" id="wantList" <?php echo $checkedL; ?>
+		<label title="<?php echo $MSGSW26a_LISTVIEW; ?>"
+		><input type="radio" name="tablelist" value="list" onclick="setTreeOrList()" id="wantList" <?php echo $checkedL; ?>
 				/><img src="img/list.png"
-						title="<?php echo $MSGSW26a_LISTVIEW; ?>"
 						alt="<?php echo $MSGSW26a_LISTVIEW . " "; ?>">
 				</img></label>
 
-		<label><input type="radio" name="tablelist" value="listAll" onclick="setTreeOrList()" id="wantListAll" <?php echo $checkedLA; ?>
+		<label title="<?php echo $MSGSW26b_LISTVIEW; ?>"
+		><input type="radio" name="tablelist" value="listAll" onclick="setTreeOrList()" id="wantListAll" <?php echo $checkedLA; ?>
 				/><img src="img/listAll.png"
-						title="<?php echo $MSGSW26b_LISTVIEW; ?>"
 						alt="<?php echo $MSGSW26b_LISTVIEW . " "; ?>">
 				</img></label>
 
-		<label><input type="radio" name="tablelist" value="listMC" onclick="setTreeOrList()" id="wantListMC" <?php echo $checkedLMC; ?>
+		<label title="<?php echo $MSGSW26c_LISTVIEW; ?>"
+		><input type="radio" name="tablelist" value="listMC" onclick="setTreeOrList()" id="wantListMC" <?php echo $checkedLMC; ?>
 				/><img src="img/listMC.png"
-						title="<?php echo $MSGSW26c_LISTVIEW; ?>"
 						alt="<?php echo $MSGSW26c_LISTVIEW . " "; ?>">
 				</img></label>
 
-		<label><input type="radio" name="tablelist" value="listMCAll" onclick="setTreeOrList()" id="wantListMCAll" <?php echo $checkedLMCA; ?>
+		<label title="<?php echo $MSGSW26d_LISTVIEW; ?>"
+		><input type="radio" name="tablelist" value="listMCAll" onclick="setTreeOrList()" id="wantListMCAll" <?php echo $checkedLMCA; ?>
 				/><img src="img/listMCAll.png"
-						title="<?php echo $MSGSW26d_LISTVIEW; ?>"
 						alt="<?php echo $MSGSW26d_LISTVIEW . " "; ?>">
 				</img></label>
 		<br /><br />

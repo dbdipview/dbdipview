@@ -9,3 +9,4 @@ www/tools/configPrep/__pycache__
 www/tools/configPrep/in
 www/tools/configPrep/out
 www/tools/configPrep/cookie.dat
+.gitconfig

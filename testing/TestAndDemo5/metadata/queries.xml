@@ -6,7 +6,7 @@
 
 	<database>
 		<name>TestAndDemo5 regression test viewer with packages: SIARD, EXT DDV, and DDV</name>
-		<overview>OVERVIEW: test and demo #5</overview>
+		<overview>Test and demo #5&lt;BR /&gt;It is possible to set the redaction flag in TestAndDemo4_order.xml</overview>
 		<revisions>
 			<revision date="2019-12-01" version="0.1">First test</revision>
 			<revision date="2020-06-10" version="1.0">Added element overview</revision>

@@ -190,12 +190,12 @@ function checkListFile($folder): int {
 		}
 	}
 
-	//check for superflouous files
+	//check for superfluous files
 	if ( is_dir($df) && ($handle = opendir($df)) ) {
 		while (false !== ($entry = readdir($handle))) {
 			if ($entry != "." && $entry != "..") {
 				if ( ! in_array($entry, $filesMentioned) ) {
-					print("ERROR: file exists, but is not mentioned in list.xml: '" . $entry . "'" . PHP_EOL);
+					print("WARNING: file exists, but is not mentioned in list.xml: '" . $entry . "'" . PHP_EOL);
 					$retErrors++;
 				}
 			}
@@ -206,3 +206,17 @@ function checkListFile($folder): int {
 	return($retErrors);
 }
 
+
+/**
+ *
+ * @param string $dir
+ * @param string $f
+ * @return int          number of errors
+ */
+function checkIsFile($dir, $f): int {
+	if ( !is_file($dir . $f) ) {
+		checkShowError("WARNING: this file is not present: '" . $f . "'");
+		return(1);
+	} else
+		return(0);
+}

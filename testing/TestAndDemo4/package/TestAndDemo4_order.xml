@@ -2,7 +2,7 @@
 	<order>Order_test_TD4</order>
 	<reference>TEST TD/4</reference>
 	<title>TestAndDemo4: SIARD, CSV package, DDV, redaction</title>
-	<dbcontainer redact="1">DBC4</dbcontainer>
+	<dbcontainer redact="0">DBC4</dbcontainer>
 
 	<packages_with_siard />
 
