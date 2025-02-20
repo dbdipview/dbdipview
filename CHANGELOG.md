@@ -5,10 +5,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.6.7] - 2025-02-20
+### Fixed
+- deployment: creation of materialized view for CSV input scenarios
 
 ## [3.6.6] - 2025-02-19
 ### Changed
-- test suite: in order file, redaction is now off for test cases 4 and 5
+- test suite: by default, redaction is now off for test cases 4 and 5.
  
 ## [3.6.5] - 2025-02-14
 ### Fixed
