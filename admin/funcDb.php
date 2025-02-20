@@ -32,7 +32,7 @@ function dbf_create_dbc($DBC): bool {
 	global $DBADMINPASS, $DBADMINUSER;
 	global $OK, $NOK;
 
-	$rv = "";
+	$rv = null;
 	$retval = $NOK;
 
 	if (notSet($DBC))
@@ -79,7 +79,7 @@ function dbf_delete_dbc($DBC): bool {
 	global $DBADMINPASS, $DBADMINUSER;
 	global $OK, $NOK;
 
-	$rv = "";
+	$rv = null;
 	$retval = $NOK;
 
 	if (notSet($DBC))
@@ -104,7 +104,7 @@ function dbf_delete_dbc($DBC): bool {
  function  dbf_create_schema($DBC, $SCHEMA): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
-	$rv = "";
+	$rv = null;
 	debug(        "CREATE SCHEMA IF NOT EXISTS " . $SCHEMA . " AUTHORIZATION " . $DBADMINUSER);
 	passthru("echo CREATE SCHEMA IF NOT EXISTS " . $SCHEMA . " AUTHORIZATION " . $DBADMINUSER .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
@@ -120,7 +120,7 @@ function dbf_delete_dbc($DBC): bool {
  function  dbf_grant_usage_on_schema($DBC, $SCHEMA_Q, $DBGUEST): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
-	$rv = "";
+	$rv = null;
 	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA_Q . " TO " . $DBGUEST);
 	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA_Q . " TO " . $DBGUEST .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
@@ -135,7 +135,7 @@ function dbf_delete_dbc($DBC): bool {
  function  dbf_drop_schema($DBC, $SCHEMA): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
-	$rv = "";
+	$rv = null;
 	debug(        "DROP SCHEMA " . $SCHEMA);
 	passthru("echo DROP SCHEMA " . $SCHEMA .
 		" CASCADE | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
@@ -150,13 +150,13 @@ function dbf_delete_dbc($DBC): bool {
  * @param string $DBGUEST
  * @psalm-return ''
  */
- function dbf_grant_select_on_table($DBC, $TABLE, $DBGUEST): string {
+ function dbf_grant_select_on_table($DBC, $TABLE, $DBGUEST): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
-	$rv = "";
+	$rv = null;
 	debug(        "GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST);
 	passthru("echo GRANT SELECT ON " . $TABLE . " TO " . $DBGUEST .
-		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
+		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
 
@@ -169,7 +169,7 @@ function dbf_delete_dbc($DBC): bool {
  function dbf_grant_select_all_tables($DBC, $SCHEMA_Q, $DBGUEST): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
-	$rv = "";
+	$rv = null;
 	debug(        "GRANT USAGE ON SCHEMA " . $SCHEMA_Q . " TO " . $DBGUEST);
 	passthru("echo GRANT USAGE ON SCHEMA " . $SCHEMA_Q . " TO " . $DBGUEST .
 		"| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
@@ -193,7 +193,7 @@ function dbf_delete_dbc($DBC): bool {
  * @param string $codeset
  * @psalm-return ''
  */
- function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $BHEADER, $NULLAS, $codeset): string {
+ function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $BHEADER, $NULLAS, $codeset): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
 	if ( $BHEADER === true )
@@ -203,7 +203,7 @@ function dbf_delete_dbc($DBC): bool {
 
 	$ENCODING = dbf_encoding_param($codeset);
 
-	$rv = "";
+	$rv = 0;
 	debug(__FUNCTION__ . ": Copy table data from CSV $SRCFILE to $TABLE ...");
 	if ($DELIMITER == ";")
 		passthru("echo SET datestyle=" . $DATEMODE . "\;" .
@@ -240,7 +240,7 @@ function dbf_delete_dbc($DBC): bool {
  * @param string $codeset
  * @psalm-return ''
  */
- function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $BHEADER, $NULLAS, $codeset): string {
+ function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $BHEADER, $NULLAS, $codeset): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
 	if ( $BHEADER )
@@ -250,11 +250,11 @@ function dbf_delete_dbc($DBC): bool {
 
 	$ENCODING = dbf_encoding_param($codeset);
 
-	$rv = "";
+	$rv = null;
 	debug("Copy table data from $SRCFILE to $TABLE ...");
 	passthru("echo SET datestyle=" . $DATEMODE . "\;" .
 		"COPY " . $TABLE . " FROM \'$SRCFILE\' $HEADER WITH NULL AS \'$NULLAS\' ENCODING \'$ENCODING\' " .
-		" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL);
+		" | PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
 
@@ -338,7 +338,7 @@ function dbf_encoding_params_get() {
  function  dbf_run_sql($DBC, $SQL): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
-	$rv = "";
+	$rv = null;
 	passthru("cat " . $SQL . "| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }
@@ -352,7 +352,7 @@ function dbf_encoding_params_get() {
  function  dbf_run_sql_p($DBC, $SQL): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
 
-	$rv = "";
+	$rv = null;
 	passthru("echo " . $SQL . "| PGPASSWORD=$DBADMINPASS psql " . $DBC . " -U " . $DBADMINUSER . $DEVNULL, $rv);
 	return($rv);
  }

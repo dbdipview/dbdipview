@@ -131,8 +131,10 @@ function actions_Order_process($access_code, $orderInfo) {
 					}
 			
 				$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
-				if ($OK == actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED))
+				if ($OK == actions_create_schemas_and_tables($DBC, $listfile, $DDV_DIR_EXTRACTED)) {
 					actions_populate($DBC, $listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
+					actions_create_views_and_grant($DBC, $listfile, $DDV_DIR_EXTRACTED);
+				}
 			} else
 				return($NOK);
 		} else {
@@ -162,8 +164,10 @@ function actions_Order_process($access_code, $orderInfo) {
 				}
 
 			$listfile = $DDV_DIR_EXTRACTED . "/metadata/list.xml";
-			if ($OK == actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED))
+			if ($OK == actions_create_schemas_and_tables($DBC, $listfile, $DDV_DIR_EXTRACTED)) {
 				actions_populate($DBC, $listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
+				actions_create_views_and_grant($DBC, $listfile, $DDV_DIR_EXTRACTED);
+			}
 		} else
 			return($NOK);
 	} else {
@@ -340,7 +344,7 @@ function checkValidateXml($fileXml, $schema):void {
  * @param string $DDV_DIR_EXTRACTED
  * @return bool  $OK or $NOK
  */
-function actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED) {
+function actions_create_schemas_and_tables($DBC, $listfile, $DDV_DIR_EXTRACTED) {
 	global $MSG_ERROR, $MSG29_EXECUTING, $MSG29_PROCESSING, $MSG25_EMPTY_TABLES_CREATED, $MSG17_FILE_NOT_FOUND;
 	global $MSG49_CREATINGSCHEMA;
 	global $OK, $NOK;
@@ -386,6 +390,37 @@ function actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED) {
 	} else
 		debug(__FUNCTION__ . ": No file " . basename($CREATEDB0) . " ...");
 
+	return($ret);
+}
+
+
+/**
+ * The database has been created and populated
+ *
+ * createdb01.sql is run to add additional coomands (e.g. create view, materialised view)
+ *
+ * @param string $DBC
+ * @param string $listfile
+ * @param string $DDV_DIR_EXTRACTED
+ * @return bool  $OK or $NOK
+ */
+function actions_create_views_and_grant($DBC, $listfile, $DDV_DIR_EXTRACTED) {
+	global $MSG_ERROR, $MSG29_EXECUTING, $MSG29_PROCESSING, $MSG17_FILE_NOT_FOUND;
+	global $MSG49_CREATINGSCHEMA;
+	global $OK, $NOK;
+	global $DBGUEST;
+
+	$ret = $OK;
+	$CREATEDB1 = $DDV_DIR_EXTRACTED . "/metadata/createdb01.sql";
+
+	if ( !is_file($listfile) ) {
+		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": ", $listfile);
+		return($NOK);
+	}
+
+	msgCyan($MSG29_PROCESSING . " " . basename($listfile) . " ...");
+	$listData = new ListData($listfile);
+
 	if ( is_file($CREATEDB1) ) {
 		msgCyan($MSG29_EXECUTING . " " . basename($CREATEDB1) . " ...");
 		$rv = dbf_run_sql($DBC, $CREATEDB1);
@@ -404,6 +439,19 @@ function actions_create_schemas_and_views($DBC, $listfile, $DDV_DIR_EXTRACTED) {
 			$ret = $NOK;
 		}
 	}
+
+	if (! empty($listData->views) )
+		foreach ($listData->views as $view) {
+			if (empty($view))
+				continue;
+
+			debug(__FUNCTION__ . ": Granting acces to VIEW " . $view . " ...");
+			$rv = dbf_grant_select_on_table($DBC, addQuotes($view), $DBGUEST);
+			if ( $rv != 0 ) {
+				err_msg(__FUNCTION__ . ": " . $MSG_ERROR);
+				$ret = $NOK;
+			}
+		}
 
 	return($ret);
 }
@@ -428,16 +476,6 @@ function actions_populate($DBC, $listfile, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGE
 	debug(__FUNCTION__ . ": processing  " . $listfile . " ...");
 
 	$listData = new ListData($listfile);
-
-	if (! empty($listData->views) )
-		foreach ($listData->views as $view) {
-			if (empty($view))
-				continue;
-
-			debug(__FUNCTION__ . ": Granting acces to VIEW " . $view . " ...");
-			$rv = dbf_grant_select_on_table($DBC, addQuotes($view), $DBGUEST);
-			$ret = $OK;
-		}
 
 	if (! empty($listData->tables) ) {
 		foreach ($listData->tables as $table) {
@@ -778,7 +816,7 @@ function actions_SIARD_install($DBC, $siardFile, $tool) {
 }
 
 /**
- * Enable access for tables in schemas of a SIAD package (as defined in DDV package)
+ * Enable access for tables in schemas of a SIAD package
  * Precondition: At least one SIARD package has been deployed
  *
  * @param string $DBC
