@@ -148,7 +148,6 @@ function dbf_delete_dbc($DBC): bool {
  * @param string $DBC
  * @param string $TABLE
  * @param string $DBGUEST
- * @psalm-return ''
  */
  function dbf_grant_select_on_table($DBC, $TABLE, $DBGUEST): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
@@ -191,7 +190,6 @@ function dbf_delete_dbc($DBC): bool {
  * @param bool   $BHEADER
  * @param string $NULLAS
  * @param string $codeset
- * @psalm-return ''
  */
  function dbf_populate_table_csv($DBC, $DATEMODE, $TABLE, $SRCFILE, $DELIMITER, $BHEADER, $NULLAS, $codeset): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;
@@ -238,7 +236,6 @@ function dbf_delete_dbc($DBC): bool {
  * @param bool   $BHEADER
  * @param string $NULLAS
  * @param string $codeset
- * @psalm-return ''
  */
  function dbf_populate_table_tab($DBC, $DATEMODE, $TABLE, $SRCFILE, $BHEADER, $NULLAS, $codeset): int {
 	global $DBADMINPASS, $DBADMINUSER, $DEVNULL;

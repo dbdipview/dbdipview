@@ -219,7 +219,7 @@ class QueryData {
 			if ($param->attributes() !== null)
 				$attrParamMandatory = get_bool($param->attributes()->mandatory);
 			$field=            $param->dbtable.TABLECOLUMN.$param->dbcolumn;                  //cities.id -> cities_id
-			$fieldType=        $param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
+			$field_with_type=  $param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
 			$fieldParamForward=$param->forwardToSubqueryName;                                 //to be used in subquery
 			if ( empty($param->dbtable) )
 				debug("______ checking data for parameter: \"$param->dbcolumn\"");
@@ -231,15 +231,15 @@ class QueryData {
 			if ( ! in_array($param->type, $allowedTypes) )
 				debug("________________ ERROR: wrong type: " . $param->type . ". Allowed values: [" . implode(",",$allowedTypes) . "]");
 
-			$fieldType = str_replace(" ", "__20__", $fieldType);
-			$field     = str_replace(" ", "__20__", $field);     //temporarily replace space
+			$field =           mask_special_characters($field);
+			$field_with_type = mask_special_characters($field_with_type);
 
 			$paramFound = false;
 			$internalParameters = array("submit_cycle", "targetQueryNum", "__page", "maxcount", "x", "y", "tablelist" );
 
 			foreach($_GET as $key => $value){
 				if (! in_array($key, $internalParameters) ) {             //skip other keywords
-					debug("_________ comparing GET key $key with PARAM field $field$param->type ...");
+					debug("_________ comparing GET key $key with queries.xml PARAM $field$param->type ...");
 					if ( 0 == strcmp($key, $field . $param->type) ||
 						0 == strcmp($key, $field) ) {                     //this comes with links_to_next_screens
 						if (!empty($value)) {
@@ -294,13 +294,13 @@ class QueryData {
 
 			$and = is_where_already_here($this->screenQuery);     //true=yes, put AND before for next search element
 
-			//debug("(checking) field=$field, fieldType=$fieldType");
-			if (isset($_GET[$field]) || isset($_GET[$fieldType])) {
+			//debug("(checking) field=$field, fieldType=$field_with_type");
+			if (isset($_GET[$field]) || isset($_GET[$field_with_type])) {
 
 				if (isset($_GET[$field])) {
 					$value = trim($_GET[$field], "\t\n\r\0\x0B");   //trim, but leave the blank
 				} else {
-					$valueIN = $_GET[$fieldType];
+					$valueIN = $_GET[$field_with_type];
 					if (is_array($valueIN)) {
 						//multiple combo selection, simulate aaa || bbb entry for further processing
 						$value="";
@@ -355,7 +355,7 @@ class QueryData {
 			} //if isset
 			else {
 				print("ERROR: wrong parameter to query " . $field);
-				debug("fillCreateQuery: parameter NOT SET: field=$field, fieldType=$fieldType");
+				debug("fillCreateQuery: parameter NOT SET: field=$field, fieldType=$field_with_type");
 			}
 		} //for each param
 

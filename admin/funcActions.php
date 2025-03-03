@@ -72,6 +72,10 @@ function actions_Order_process($access_code, $orderInfo) {
 
 	$DBC = $orderInfo->dbc;
 	$ddv = $orderInfo->last_ddv;
+
+	if ( empty($ddv) )
+		return($NOK);
+	
 	if (config_isPackageActivated($ddv, $DBC) > 0) {
 		err_msg($MSG30_ALREADY_ACTIVATED, "$ddv ($DBC)");
 		debug(__FUNCTION__ . ": if there is a problem, check config.json.");
@@ -217,6 +221,10 @@ function actions_Order_remove($orderInfo): bool {
 	$ddv = $orderInfo->last_ddv;
 
 	debug(__FUNCTION__ . ": DBC=$DBC with master DDV=$ddv");
+	
+	if ( empty($ddv) )
+		return($NOK);
+
 	config_json_remove_item($ddv, $DBC);
 	actions_access_off($ddv);
 

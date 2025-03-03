@@ -209,8 +209,8 @@ function config_isDBCactive($DBC) {
  * Checks if a given package has beed activated, based on information in the config file.
  * Returns number of lines with the same package (0..N) or with combination package+database (0..1).
  *
- * @param string $ddv            package name
- * @param string $DBC|null       selected database (or any)
+ * @param string|null $ddv       package name
+ * @param string|null $DBC       selected database (or any)
  *
  * @return int $found            number of occurencies
  */
@@ -220,7 +220,7 @@ function config_isPackageActivated($ddv, $DBC=null) {
 	$found = 0;
 	$array = json_decode(file_get_contents($SERVERCONFIGJSON) , true);
 
-	if ( is_null($array) )
+	if ( is_null($array) || empty($ddv) )
 		return($found);
 
 	foreach ($array as $index=>$line) {

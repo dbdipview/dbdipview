@@ -310,7 +310,12 @@ function input_combotext_db($fieldname, $paramname, $paramselect, $default, $all
 
 $infoTipNumber = 0;
 
-
+/**
+ * displays hoover text as help
+ *
+ * @param string $text
+ * @param string $id
+ */
 function showInfotipInline($text, $id): string {
 	global $infoTipNumber;
 	global $MSGSW35_Infotip;

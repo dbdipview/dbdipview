@@ -61,7 +61,7 @@
 					<name>Number of motors</name>
 					<dbtable>models</dbtable>
 					<dbcolumn>motors_code</dbcolumn>
-					<select>SELECT "motors_code", "motors_text" FROM "AirplanesLinks"."view_codes_NumOfEngines" ORDER BY "motors_text"</select>
+					<select>SELECT "motors_code", "motors_text" FROM "views"."view_codes_NumOfEngines" ORDER BY "motors_text"</select>
 					<type>combotext</type>
 					<forwardToSubqueryName>param2</forwardToSubqueryName>
 				</param>
@@ -171,7 +171,7 @@
 				<title>Test of access to the VIEW; Test of attribute skip CSV save - disabled save.</title>
 				<subtitle>Note: This view was created in createdb01.sql as a simple example.</subtitle>
 				<query>SELECT *	
-						FROM "AirplanesLinks"."my_view"
+						FROM "views"."my_view"
 				</query>
 				
 				<subselect>
@@ -324,7 +324,7 @@
 				</param>
 				<query>SELECT "id", 
 						"name Ü"
-						FROM "AirplanesLinks"."models_full_text_view" 
+						FROM "views"."models_full_text_view" 
 				</query>
 				<links_to_next_screen>
 					<link>
