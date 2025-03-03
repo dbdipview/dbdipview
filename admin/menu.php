@@ -368,7 +368,7 @@ while ( "$answer" != "q" ) {
 				err_msg("SIARD!");
 			else if ( !is_file($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
-			else if ($OK == actions_create_schemas_and_views($DBC, $LISTFILE, $DDV_DIR_EXTRACTED))
+			else if ($OK == actions_create_schemas_and_tables($DBC, $LISTFILE, $DDV_DIR_EXTRACTED))
 				$V3='X';
 
 			if ($V3 == 'X') {
@@ -524,7 +524,7 @@ while ( "$answer" != "q" ) {
 
 		case "3": $X3=' ';
 			if (file_exists($DDV_DIR_EXTRACTED))
-				if ($OK == actions_create_schemas_and_views($DBC, $LISTFILE, $DDV_DIR_EXTRACTED)) {
+				if ($OK == actions_create_schemas_and_tables($DBC, $LISTFILE, $DDV_DIR_EXTRACTED)) {
 					actions_populate($DBC, $LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET);
 					$X3='X';
 				}

@@ -157,13 +157,23 @@ function makeParameterReferences($val, $row, array $column): string{
 }
 
 /**
- *
+ * Prepare URL parameter, e.g. "&x=12"
  * @param string $link
  * @param string $linkval
  */
 function makeParameterReferencesOne($link, $linkval): string {
-	$link = str_replace(" ", "__20__", $link);   //temporarily replace space
-	$out = "&" . $link . "=" . urlencode($linkval);
+	$out = "&" . mask_special_characters($link) . "=" . urlencode($linkval);
+	return($out);
+}
+
+/**
+ * Prepare for URL parameter, e.g. "some name" --> "some__20__name"
+ * Temporarily replace characters that cause problems
+ * @param string $in
+ */
+function mask_special_characters($in): string {
+	$in =  str_replace('.', "_2E_", $in);   //column name with a dot
+	$out = str_replace(" ", "_20_", $in);
 	return($out);
 }
 

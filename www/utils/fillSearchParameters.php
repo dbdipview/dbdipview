@@ -71,9 +71,9 @@ foreach ($xml->database->screens->screen as $screen) {
 				$bSize = FALSE;
 
 			$screenFields+=1;
-			$field=$param->dbtable.TABLECOLUMN.$param->dbcolumn.$param->type;     //cities.id -> cities_idinteger
-			$field = str_replace(" ","__20__", $field);		                      //temporarily replace space
-			
+			$field = $param->dbtable . TABLECOLUMN . $param->dbcolumn . $param->type;     //cities.id -> cities_idinteger
+			$field = mask_special_characters($field);		                      //temporarily replace space
+
 			$attrParamMandatory = get_bool($param->attributes()->mandatory);
 			if($attrParamMandatory)
 				echo "<label class=\"required\" for=\"" . $currentId . "\">" . $param->name . "</label> ";
@@ -81,7 +81,7 @@ foreach ($xml->database->screens->screen as $screen) {
 				#echo "$param->name ";
 				echo "<label for=\"" . $currentId . "\">" . $param->name . "</label> ";
 			}
-			
+
 			$infotip = (string) $param->infotip;
 
 			if(0==strcmp("text", $param->type)) {

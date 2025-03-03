@@ -9,17 +9,18 @@
 	<schemas>
 		<schema>AirplanesLinks</schema>
 		<schema>TestCSV</schema>
+		<schema>views</schema>
 	</schemas>
 	<views>
 		<view>AirplanesLinks.view_codes_NumOfEngines</view>
-		<view>AirplanesLinks.my_view</view>
-		<view>AirplanesLinks.models_full_text_view</view>
+		<view>views.my_view</view>
+		<view>views.models_full_text_view</view>
 	</views>
 	<tables>
 		<table file="models.csv">AirplanesLinks.models</table>
-		<table file="Keys semicolon.csv" delimiter=";">TestCSV.test1</table>
-		<table file="Keys comma.csv" header="0">TestCSV.TEST2</table>
-		<table file="Keys tab.csv" delimiter="tab" header="0">TestCSV.test3</table>
+		<table file="Keys semicolon.csv"        delimiter=";">TestCSV.test1</table>
+		<table file="Keys comma.csv"                            header="0">TestCSV.TEST2</table>
+		<table file="Keys tab.csv"              delimiter="tab" header="0">TestCSV.test3</table>
 		<table file="Keys tab.txt" format="TSV" delimiter="tab" header="0" nullas="NULL">"TestCSV"."test4"</table>
 	</tables>
 	<bfiles>

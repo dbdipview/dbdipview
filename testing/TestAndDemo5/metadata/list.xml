@@ -2,13 +2,17 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="list.xsd" schemaMajorVersion="1">
 	<revisions>
 		<revision date="2022-11-13">Migration from list.txt to list.xml</revision>
+		<revision date="2025-02-21">views</revision>
 	</revisions>
 	<comment>TestAndDemo5 - dbDIPview regression test
   Two VIEWS and no SCHEMA and TABLE in this packageUse with TestAndDemo4.siard (database) 
   and TestAndDemo4.tar.gz (EXT DDV with a CSV table data) and TestAndDemo5.zip (VIEWs, viewer)
   See order_TestAndDemo5.xml</comment>
+	<schemas>
+		<schema>views</schema>
+	</schemas>
 	<views>
-		<view>HR members.my_test_viewA</view>
-		<view>"HR members"."my_test_viewB"</view>
+		<view>views.my_test_viewA</view>
+		<view>"views"."my_test_viewB"</view>
 	</views>
 </configuration>

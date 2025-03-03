@@ -11,6 +11,7 @@
 			<revision date="2019-12-01" version="0.1">First test</revision>
 			<revision date="2020-06-10" version="1.0">Added element overview</revision>
 			<revision date="2020-12-01" version="1.1">Added demonstration of creating VIEWs for an existing (e.g. SIARD) database</revision>
+			<revision date="2025-02-21" version="1.2">materialized views</revision>
 		</revisions>
 		<ref_number>TestAndDemo5</ref_number>
 		<screens>
@@ -43,24 +44,24 @@
 				
 				<subselect>
 					<title>A VIEW was created for the database</title>
-					<subtitle>Let's test use of createdb.sql. Search parameter Hired might be passed</subtitle>
+					<subtitle>A view from createdb01.sql. Search parameter Hired might be passed</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>my_test_viewA</dbtable>
 						<dbcolumn>Hired</dbcolumn>
 					</param>
-					<query>SELECT * FROM "HR members"."my_test_viewA"</query>
+					<query>SELECT * FROM "views"."my_test_viewA"</query>
 				</subselect>
 
 				<subselect>
-					<title>A VIEW was created for the database</title>
-					<subtitle>Let's test use of createdb01.sql. Search parameter Hired might be passed</subtitle>
+					<title>A MATERIALIZED VIEW was created for the database</title>
+					<subtitle>A materialized view from createdb01.sql. Search parameter Hired might be passed</subtitle>
 					<param>
 						<forwardedParamName>param1</forwardedParamName>
 						<dbtable>my_test_viewB</dbtable>
 						<dbcolumn>Hired</dbcolumn>
 					</param>
-					<query>SELECT * FROM "HR members"."my_test_viewB"</query>
+					<query>SELECT * FROM "views"."my_test_viewB"</query>
 				</subselect>
 
 			</screen>
