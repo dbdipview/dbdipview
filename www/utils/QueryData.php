@@ -169,11 +169,11 @@ class QueryData {
 
 				debug(__CLASS__ . "->" . __FUNCTION__ . ": adding hyperlink in column: $link->dbcolumnname");
 				if ( ! is_null($link->dbcolumnname->attributes()) )
-					debug("_____________________ use value from column (attr.): " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
-				debug("_____________________ target screen id:  $link->next_screen_id");
-				debug("_____________________ target dbtable:    $link->dbtable");
-				debug("_____________________ target dbcolumn:   $link->dbcolumn");
-				debug("_____________________ target linkaction: $link->linkaction");
+					debug("________________________________ use value from column (attr.): " . (string) $link->dbcolumnname->attributes()->valueFromColumn);
+				debug("________________________________ target screen id:  $link->next_screen_id");
+				debug("________________________________ target dbtable:    $link->dbtable");
+				debug("________________________________ target dbcolumn:   $link->dbcolumn");
+				debug("________________________________ target linkaction: $link->linkaction");
 
 				$linknextscreen_column["next_screen_id"]  = $link->next_screen_id;
 				$linknextscreen_column["dbtable"]         = $link->dbtable;
@@ -246,9 +246,9 @@ class QueryData {
 							$paramFound = true;
 							$noParametersAvailable = false;
 							if (is_array($value))
-								debug("________________ found keys:&nbsp;&nbsp;" . $key . " = '" . $value[0] . "' ...\r\n");
+								debug("________________ found keys:&nbsp;&nbsp;" . $key . " = '" . $value[0] . "' ...");
 							else
-								debug("________________ found key:&nbsp;&nbsp;" . $key . " = '" . $value . "'\r\n");
+								debug("________________ found key:&nbsp;&nbsp;" . $key . " = '" . $value . "'");
 						}
 					}
 				}
@@ -349,7 +349,7 @@ class QueryData {
 					if (strlen("$fieldParamForward") > 0) {
 						$this->paramForwardNum["$fieldParamForward"] = "$quote$value$quote";
 						$this->paramForwardEqual["$fieldParamForward"] = $equal;
-						debug("________________ (prepared)&nbsp;&nbsp;" . $fieldParamForward . ": " . $value . "\r\n");
+						debug("________________ (prepared)&nbsp;&nbsp;'" . $fieldParamForward . ": " . $value . "'");
 					}
 				}
 			} //if isset
