@@ -6,10 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 Generally, the master branch is always stable. You can use it for installation or updating.
 
 
+## [3.7.0] - 2025-04-22
+### Added
+- packaging: two tools to check CSV files (tools/CSV_check)
+- packaging: create configuration drafts from a SIARD or from an excel file (tools/configPrep)
+
 ## [3.6.8] - 2025-03-03
 ### Fixed
 - access: a dot is allowed in a searchable table column name
-- test suite: more about the views
 
 ## [3.6.7] - 2025-02-21
 ### Fixed
