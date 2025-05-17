@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 """
 Checks if files in the selected folder are UTF-8
 """
