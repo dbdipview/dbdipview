@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Checks width of all columns in a CSV file
 Also displays value of a column with largest length

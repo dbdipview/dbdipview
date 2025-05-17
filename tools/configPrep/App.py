@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Create initial version for metadata folder files of a dbDIPview package
 

@@ -14,6 +14,7 @@ COMMENT ON COLUMN "TestCSV"."TEST2"."value" IS 'Description for column "value" i
 COMMENT ON COLUMN "TestCSV"."test3"."value" IS 'Description for column "value" in table test3';
 COMMENT ON COLUMN "TestCSV"."test4"."value" IS 'Description for column "value" in table test4';
 
+-- enable simple full text search
 CREATE VIEW "views"."models_full_text_view" 
 	AS
 	SELECT
@@ -23,3 +24,10 @@ CREATE VIEW "views"."models_full_text_view"
 		COALESCE("ext_link", '') ||
 		COALESCE("motors_text", '') AS "text"
 	FROM "AirplanesLinks"."models";
+
+-- create a special table for dropdown list in the search form
+CREATE VIEW "views"."view_codes_NumOfEngines"
+  AS
+  SELECT DISTINCT "motors_code", "motors_text" FROM  "AirplanesLinks"."models"
+  WHERE "motors_code" IS NOT NULL
+  ORDER BY "motors_text"
