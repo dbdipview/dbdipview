@@ -394,6 +394,7 @@ while ( "$answer" != "q" ) {
 			else if ( !is_file($LISTFILE))
 				err_msg($MSG17_FILE_NOT_FOUND . ":", $LISTFILE);
 			else if ($OK == actions_populate($DBC, $LISTFILE, $DDV_DIR_EXTRACTED, $BFILES_DIR_TARGET)) {
+				actions_create_views_and_grant($DBC, $LISTFILE, $DDV_DIR_EXTRACTED);
 				$V4='X';
 			}
 			enter();
