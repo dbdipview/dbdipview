@@ -3,9 +3,12 @@ admin/siard/
 www/config/confighdr.php
 www/config/config.php
 www/data/
+www/files/*
+!www/files/README.txt
 dbptk-app-*.txt
 records/
-www/local/*.png
+www/local/*
+!www/local/README.txt
 *.odg
 *.docx
 dSTN/

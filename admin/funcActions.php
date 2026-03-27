@@ -345,7 +345,6 @@ function checkValidateXml($fileXml, $schema):void {
  * For a DDV package:
  * Maybe the database has already been created, e.g. from SIARD.
  * However, createdb.sql is still run if present.
- * createdb01.sql is run to add VIEWs
  *
  * @param string $DBC
  * @param string $listfile
@@ -360,7 +359,6 @@ function actions_create_schemas_and_tables($DBC, $listfile, $DDV_DIR_EXTRACTED) 
 
 	$ret = $OK;
 	$CREATEDB0 = $DDV_DIR_EXTRACTED . "/metadata/createdb.sql";
-	$CREATEDB1 = $DDV_DIR_EXTRACTED . "/metadata/createdb01.sql";
 
 	if ( !is_file($listfile) ) {
 		err_msg(__FUNCTION__ . ": " . $MSG17_FILE_NOT_FOUND . ": ", $listfile);
@@ -405,7 +403,7 @@ function actions_create_schemas_and_tables($DBC, $listfile, $DDV_DIR_EXTRACTED) 
 /**
  * The database has been created and populated
  *
- * createdb01.sql is run to add additional coomands (e.g. create view, materialised view)
+ * createdb01.sql is run with additional commands (e.g. create view, materialised view)
  *
  * @param string $DBC
  * @param string $listfile

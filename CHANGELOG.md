@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 Generally, the master branch is always stable. You can use it for installation or updating.
 
+## [3.7.2] - 2026-03-27
+### Fixed
+- deployment: menu V4 command did not run createdb01.sql
+
 ## [3.7.1] - 2025-05-17
 ### Added
 - deployment: commands can be executed without prefix php; execution bit set
